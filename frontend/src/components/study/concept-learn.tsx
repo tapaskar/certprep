@@ -106,7 +106,7 @@ const conceptLabs: Record<string, LabResource[]> = {
     { title: "VPC Peering Lab", platform: "AWS Workshops", url: "https://catalog.workshops.aws/networking/en-US", free: true, duration: "45 min", description: "Set up VPC peering between two VPCs with route table configuration" },
   ],
   "aws-sap-transit-gateway": [
-    { title: "Transit Gateway Workshop", platform: "AWS Workshops", url: "https://catalog.workshops.aws/transitgateway/en-US", free: true, duration: "2 hours", description: "Build hub-and-spoke with Transit Gateway across multiple VPCs" },
+    { title: "Transit Gateway Lab", platform: "AWS Workshops", url: "https://catalog.workshops.aws/networking/en-US/beginner/lab1/030-tgw", free: true, duration: "2 hours", description: "Build hub-and-spoke with Transit Gateway across multiple VPCs" },
     { title: "TGW Terraform Module", platform: "GitHub", url: "https://github.com/terraform-aws-modules/terraform-aws-transit-gateway", free: true, duration: "1 hour", description: "Deploy Transit Gateway with Terraform in your Free Tier account" },
   ],
   "aws-sap-direct-connect": [
