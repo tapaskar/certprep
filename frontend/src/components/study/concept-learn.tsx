@@ -119,23 +119,23 @@ const conceptLabs: Record<string, LabResource[]> = {
     { title: "Control Tower Immersion Day", platform: "AWS Workshops", url: "https://catalog.workshops.aws/control-tower/en-US", free: true, duration: "3 hours", description: "Set up Control Tower, guardrails, and Account Factory" },
   ],
   "aws-sap-lambda": [
-    { title: "Serverless Workshop", platform: "AWS Workshops", url: "https://catalog.workshops.aws/serverless/en-US", free: true, duration: "2 hours", description: "Build a serverless app with Lambda, API Gateway, DynamoDB" },
+    { title: "Serverless Patterns Workshop", platform: "AWS Workshops", url: "https://catalog.workshops.aws/serverless-patterns/en-US", free: true, duration: "2 hours", description: "Build a serverless app with Lambda, API Gateway, DynamoDB" },
     { title: "Lambda Playground", platform: "KodeKloud", url: "https://kodekloud.com/cloud-playgrounds/aws-free", free: true, duration: "30 min", description: "Experiment with Lambda in a free sandbox (no AWS account needed)" },
   ],
   "aws-sap-ecs-fargate": [
-    { title: "ECS Workshop", platform: "AWS Workshops", url: "https://catalog.workshops.aws/ecs/en-US", free: true, duration: "3 hours", description: "Deploy containers with ECS, Fargate, and CI/CD pipeline" },
+    { title: "ECS Immersion Day", platform: "AWS Workshops", url: "https://catalog.workshops.aws/ecs-immersion-day/en-US", free: true, duration: "3 hours", description: "Deploy containers with ECS, Fargate, and CI/CD pipeline" },
   ],
   "aws-sap-s3-storage-classes": [
     { title: "S3 Hands-on Lab", platform: "AWS Skill Builder", url: "https://explore.skillbuilder.aws/", free: true, duration: "45 min", description: "Create S3 buckets, configure storage classes and lifecycle policies" },
   ],
   "aws-sap-rds-aurora": [
-    { title: "Aurora Serverless Lab", platform: "AWS Workshops", url: "https://catalog.workshops.aws/rds/en-US", free: true, duration: "1 hour", description: "Deploy Aurora Serverless v2, test auto-scaling and global database" },
+    { title: "RDS Hands-on Lab", platform: "AWS Workshops", url: "https://catalog.workshops.aws/general-immersionday/en-US/basic-modules/50-rds/rds", free: true, duration: "1 hour", description: "Deploy RDS MySQL instance, connect and query in a guided lab" },
   ],
   "aws-sap-dynamodb": [
     { title: "DynamoDB Workshop", platform: "AWS Workshops", url: "https://catalog.workshops.aws/dynamodb-labs/en-US", free: true, duration: "2 hours", description: "Single-table design, GSIs, Streams, and DAX caching" },
   ],
   "aws-sap-dms": [
-    { title: "DMS Migration Lab", platform: "AWS Workshops", url: "https://catalog.workshops.aws/dms/en-US", free: true, duration: "2 hours", description: "Migrate a database with DMS and Schema Conversion Tool" },
+    { title: "DMS Migration Lab", platform: "AWS Workshops", url: "https://catalog.workshops.aws/databasemigration/", free: true, duration: "2 hours", description: "Migrate a database with DMS and Schema Conversion Tool" },
   ],
   "aws-sap-cost-optimization": [
     { title: "Cost Optimization Lab", platform: "Well-Architected Labs", url: "https://www.wellarchitectedlabs.com/cost/", free: true, duration: "1 hour", description: "Analyze spending with Cost Explorer, set up Budgets and alerts" },
