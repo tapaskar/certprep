@@ -1,10 +1,95 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, ChevronDown, ChevronUp, ArrowRight, AlertTriangle } from "lucide-react";
+import { Check, X, ChevronDown, ChevronUp, ArrowRight, AlertTriangle, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
-import type { Question, AnswerResult } from "@/lib/api-types";
+import type { Question, AnswerResult, ConceptDetail } from "@/lib/api-types";
+
+// Map concept IDs to relevant AWS doc links
+const conceptDocLinks: Record<string, { label: string; url: string }[]> = {
+  "aws-sap-vpc-peering": [
+    { label: "VPC Peering Guide", url: "https://docs.aws.amazon.com/vpc/latest/peering/what-is-vpc-peering.html" },
+  ],
+  "aws-sap-transit-gateway": [
+    { label: "Transit Gateway Guide", url: "https://docs.aws.amazon.com/vpc/latest/tgw/what-is-transit-gateway.html" },
+    { label: "TGW Network Manager", url: "https://docs.aws.amazon.com/network-manager/latest/tgwnm/what-are-global-networks.html" },
+  ],
+  "aws-sap-direct-connect": [
+    { label: "Direct Connect Guide", url: "https://docs.aws.amazon.com/directconnect/latest/UserGuide/Welcome.html" },
+  ],
+  "aws-sap-site-to-site-vpn": [
+    { label: "Site-to-Site VPN Guide", url: "https://docs.aws.amazon.com/vpn/latest/s2svpn/VPC_VPN.html" },
+  ],
+  "aws-sap-privatelink": [
+    { label: "PrivateLink Guide", url: "https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html" },
+  ],
+  "aws-sap-vpc-fundamentals": [
+    { label: "VPC User Guide", url: "https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html" },
+  ],
+  "aws-sap-security-groups": [
+    { label: "Security Groups for VPC", url: "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html" },
+  ],
+  "aws-sap-nacls": [
+    { label: "Network ACLs", url: "https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html" },
+  ],
+  "aws-sap-organizations": [
+    { label: "AWS Organizations Guide", url: "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html" },
+    { label: "SCP Documentation", url: "https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html" },
+  ],
+  "aws-sap-control-tower": [
+    { label: "Control Tower Guide", url: "https://docs.aws.amazon.com/controltower/latest/userguide/what-is-control-tower.html" },
+  ],
+  "aws-sap-iam-advanced": [
+    { label: "IAM Policy Evaluation", url: "https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html" },
+    { label: "Permission Boundaries", url: "https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html" },
+  ],
+  "aws-sap-lambda": [
+    { label: "Lambda Developer Guide", url: "https://docs.aws.amazon.com/lambda/latest/dg/welcome.html" },
+  ],
+  "aws-sap-ecs-fargate": [
+    { label: "ECS Developer Guide", url: "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/Welcome.html" },
+    { label: "Fargate User Guide", url: "https://docs.aws.amazon.com/AmazonECS/latest/userguide/what-is-fargate.html" },
+  ],
+  "aws-sap-s3-storage-classes": [
+    { label: "S3 Storage Classes", url: "https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html" },
+  ],
+  "aws-sap-s3-lifecycle": [
+    { label: "S3 Lifecycle Configuration", url: "https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html" },
+  ],
+  "aws-sap-rds-aurora": [
+    { label: "Aurora User Guide", url: "https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_AuroraOverview.html" },
+    { label: "RDS User Guide", url: "https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html" },
+  ],
+  "aws-sap-dynamodb": [
+    { label: "DynamoDB Developer Guide", url: "https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html" },
+  ],
+  "aws-sap-migration-strategies": [
+    { label: "Migration Strategies", url: "https://docs.aws.amazon.com/prescriptive-guidance/latest/large-migration-guide/migration-strategies.html" },
+  ],
+  "aws-sap-dms": [
+    { label: "DMS User Guide", url: "https://docs.aws.amazon.com/dms/latest/userguide/Welcome.html" },
+    { label: "Schema Conversion Tool", url: "https://docs.aws.amazon.com/SchemaConversionTool/latest/userguide/CHAP_Welcome.html" },
+  ],
+  "aws-sap-cost-optimization": [
+    { label: "Savings Plans Guide", url: "https://docs.aws.amazon.com/savingsplans/latest/userguide/what-is-savings-plans.html" },
+    { label: "EC2 Pricing", url: "https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html" },
+  ],
+};
+
+function getDocLinksForQuestion(question: Question): { label: string; url: string }[] {
+  const links: { label: string; url: string }[] = [];
+  const seen = new Set<string>();
+  for (const conceptId of question.concept_ids || []) {
+    for (const link of conceptDocLinks[conceptId] || []) {
+      if (!seen.has(link.url)) {
+        seen.add(link.url);
+        links.push(link);
+      }
+    }
+  }
+  return links;
+}
 
 interface AnswerFeedbackProps {
   question: Question;
@@ -158,8 +243,33 @@ export function AnswerFeedback({
         {showExplanation ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
       </button>
       {showExplanation && explanationText && (
-        <div className="rounded-lg border border-stone-200 bg-stone-100 px-4 py-3 text-sm leading-6 text-stone-700">
-          {explanationText}
+        <div className="space-y-3">
+          <div className="rounded-lg border border-stone-200 bg-stone-100 px-4 py-3 text-sm leading-6 text-stone-700">
+            {explanationText}
+          </div>
+
+          {/* AWS Documentation Links */}
+          {getDocLinksForQuestion(question).length > 0 && (
+            <div className="rounded-lg border border-stone-200 bg-white px-4 py-3">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-stone-400">
+                AWS Documentation
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {getDocLinksForQuestion(question).map((link) => (
+                  <a
+                    key={link.url}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200 bg-stone-50 px-3 py-1.5 text-sm text-amber-600 transition-all hover:border-amber-400 hover:shadow-sm"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
