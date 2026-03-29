@@ -1,0 +1,423 @@
+[
+  {
+    "id": "q-sap-net-001",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-org-complexity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company has 15 VPCs across 3 AWS regions. They need full mesh connectivity with centralized network monitoring. The solution must support inter-region traffic with encryption in transit. Which architecture meets these requirements with the LEAST operational overhead?",
+    "options": [
+      {"id": "A", "text": "Create VPC peering connections between all VPCs with VPN overlays for encryption", "is_correct": false},
+      {"id": "B", "text": "Deploy Transit Gateway in each region with inter-region peering and enable encryption", "is_correct": true},
+      {"id": "C", "text": "Use AWS PrivateLink endpoints in each VPC connected to a central monitoring VPC", "is_correct": false},
+      {"id": "D", "text": "Establish Site-to-Site VPN connections from each VPC to a central hub VPC", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Transit Gateway supports hub-and-spoke at regional level. Inter-region TGW peering provides cross-region connectivity. TGW supports encryption in transit natively. Centralized monitoring via TGW flow logs and Network Manager.",
+      "why_not_A": "15 VPCs = 105 peering connections (n*(n-1)/2). Massive operational overhead. VPC peering doesn't support transitive routing, so full mesh is the only option. VPN overlay adds even more complexity.",
+      "why_not_C": "PrivateLink is for service-level access, not VPC-to-VPC connectivity. Cannot provide full mesh networking between VPCs.",
+      "why_not_D": "VPN connections to a hub create a single point of failure and don't scale well. VPN throughput is limited to ~1.25 Gbps per connection."
+    },
+    "concept_ids": ["aws-sap-transit-gateway", "aws-sap-vpc-peering"],
+    "decision_tree_id": "dt-networking-connectivity",
+    "tags": ["multi-region", "hub-and-spoke", "encryption", "operational-overhead"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-net-002",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-org-complexity",
+    "type": "factual",
+    "difficulty": 1,
+    "stem": "Which of the following statements about VPC peering is correct?",
+    "options": [
+      {"id": "A", "text": "VPC peering supports transitive routing between peered VPCs", "is_correct": false},
+      {"id": "B", "text": "VPC peering requires that the two VPCs have non-overlapping CIDR blocks", "is_correct": true},
+      {"id": "C", "text": "VPC peering automatically updates route tables when established", "is_correct": false},
+      {"id": "D", "text": "VPC peering is limited to VPCs within the same AWS region", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC peering requires non-overlapping CIDR blocks. This is a fundamental requirement because routes need to be unambiguous.",
+      "why_not_A": "VPC peering is explicitly non-transitive. If VPC A peers with B and B peers with C, A cannot reach C through B.",
+      "why_not_C": "Route table entries must be manually added for peered VPC traffic. This is a common misconception.",
+      "why_not_D": "VPC peering supports cross-region peering, though with bandwidth considerations."
+    },
+    "concept_ids": ["aws-sap-vpc-peering"],
+    "tags": ["vpc-peering", "networking-basics"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.15,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-net-003",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-org-complexity",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company needs to connect their on-premises data center to AWS. They require consistent low-latency connectivity with 5 Gbps throughput. The connection must also be encrypted. Which solution should the solutions architect recommend?",
+    "options": [
+      {"id": "A", "text": "AWS Site-to-Site VPN with two tunnels for high availability", "is_correct": false},
+      {"id": "B", "text": "AWS Direct Connect with a VPN connection over the Direct Connect link", "is_correct": true},
+      {"id": "C", "text": "AWS Direct Connect with MACsec encryption", "is_correct": false},
+      {"id": "D", "text": "Multiple Site-to-Site VPN connections with ECMP routing", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Direct Connect provides consistent low-latency with high throughput. Since DX is not encrypted by default, adding a VPN overlay provides encryption. This combination gives both performance and security.",
+      "why_not_A": "VPN throughput is limited to ~1.25 Gbps per tunnel. Even with two tunnels, this doesn't meet the 5 Gbps requirement. Also, VPN over the internet cannot guarantee consistent latency.",
+      "why_not_C": "MACsec provides Layer 2 encryption but requires 10 Gbps or 100 Gbps dedicated connections and specific hardware support. It may be overkill and not supported at all DX locations.",
+      "why_not_D": "Multiple VPN connections with ECMP still go over the internet, so consistent low latency cannot be guaranteed."
+    },
+    "concept_ids": ["aws-sap-direct-connect", "aws-sap-site-to-site-vpn"],
+    "tags": ["hybrid-connectivity", "encryption", "throughput"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-org-001",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-org-complexity",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An enterprise with 200 AWS accounts uses AWS Organizations. The security team wants to prevent any account from launching EC2 instances in regions outside of us-east-1 and eu-west-1, while still allowing the security account to run GuardDuty in all regions. Which approach achieves this with the LEAST management overhead?",
+    "options": [
+      {"id": "A", "text": "Create an SCP that denies EC2 actions in non-approved regions and attach it to the root OU. Create an exception in the SCP using a condition for the security account's IAM roles.", "is_correct": false},
+      {"id": "B", "text": "Create an SCP that denies EC2 actions in non-approved regions and attach it to all OUs except the security OU. Ensure the security account is in its own OU.", "is_correct": true},
+      {"id": "C", "text": "Use IAM permission boundaries on all IAM users and roles in every account to restrict EC2 to approved regions.", "is_correct": false},
+      {"id": "D", "text": "Enable AWS Control Tower and configure a preventive guardrail to restrict region usage across all accounts.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Placing the security account in its own OU and attaching the region-restriction SCP to all other OUs is the cleanest approach. SCPs don't affect the management account, and the security OU gets its own policy space.",
+      "why_not_A": "SCPs cannot have exceptions based on account identity in condition keys. You can't use aws:PrincipalAccount in SCP conditions to exempt specific accounts.",
+      "why_not_C": "Managing permission boundaries across 200 accounts and all IAM entities is extremely high overhead. This doesn't scale.",
+      "why_not_D": "Control Tower guardrails are less flexible than custom SCPs for this specific use case, and setting up Control Tower for 200 existing accounts is a significant undertaking."
+    },
+    "concept_ids": ["aws-sap-organizations", "aws-sap-iam-advanced"],
+    "tags": ["multi-account", "scps", "region-restriction"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-org-002",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-org-complexity",
+    "type": "factual",
+    "difficulty": 1,
+    "stem": "Which statement about AWS Organizations Service Control Policies (SCPs) is true?",
+    "options": [
+      {"id": "A", "text": "SCPs can grant permissions to IAM users and roles", "is_correct": false},
+      {"id": "B", "text": "SCPs affect the management (root) account of the organization", "is_correct": false},
+      {"id": "C", "text": "SCPs define the maximum available permissions for member accounts", "is_correct": true},
+      {"id": "D", "text": "SCPs override resource-based policies in member accounts", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "SCPs define the maximum permissions boundary. They don't grant permissions — they restrict what permissions can be used. Even if an IAM policy grants access, the SCP must also allow it.",
+      "why_not_A": "SCPs cannot grant permissions. They only restrict. You still need IAM policies to grant actual permissions.",
+      "why_not_B": "SCPs do NOT affect the management account. This is a critical distinction for exam questions.",
+      "why_not_D": "SCPs don't override resource-based policies. The interaction is more nuanced — both must allow the action."
+    },
+    "concept_ids": ["aws-sap-organizations"],
+    "tags": ["scps", "permissions"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.15,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-compute-001",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-new-solutions",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company needs to run a batch processing workload that processes millions of images. Each image takes 2-5 minutes to process. The workload has a deadline of 4 hours and can tolerate interruptions. Which compute solution provides the MOST cost-effective approach?",
+    "options": [
+      {"id": "A", "text": "AWS Lambda with provisioned concurrency processing images from an SQS queue", "is_correct": false},
+      {"id": "B", "text": "Amazon ECS on Fargate with auto-scaling task count based on queue depth", "is_correct": false},
+      {"id": "C", "text": "Amazon EC2 Spot Instances in an Auto Scaling group processing from SQS with Spot interruption handling", "is_correct": true},
+      {"id": "D", "text": "AWS Batch with a managed compute environment using On-Demand instances", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Spot Instances offer up to 90% savings over On-Demand. The workload tolerates interruptions (batch processing), has a reasonable deadline (4 hours), and SQS provides natural retry for interrupted work. This is the ideal Spot Instance use case.",
+      "why_not_A": "Lambda has a 15-minute timeout, which is fine for 2-5 min processing, but provisioned concurrency adds cost. For millions of images, Spot Instances are significantly cheaper.",
+      "why_not_B": "Fargate is more expensive than Spot EC2 and doesn't support Spot pricing as effectively as EC2 Auto Scaling groups.",
+      "why_not_D": "AWS Batch is a good service for this, but using On-Demand instances instead of Spot misses the major cost optimization opportunity."
+    },
+    "concept_ids": ["aws-sap-cost-optimization", "aws-sap-lambda", "aws-sap-ecs-fargate"],
+    "tags": ["batch-processing", "cost-optimization", "spot-instances"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-storage-001",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-new-solutions",
+    "type": "factual",
+    "difficulty": 1,
+    "stem": "Which S3 storage class provides millisecond access time with the lowest cost for data accessed once per quarter?",
+    "options": [
+      {"id": "A", "text": "S3 Standard", "is_correct": false},
+      {"id": "B", "text": "S3 Standard-Infrequent Access", "is_correct": false},
+      {"id": "C", "text": "S3 Glacier Instant Retrieval", "is_correct": true},
+      {"id": "D", "text": "S3 Intelligent-Tiering", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Glacier Instant Retrieval provides millisecond access (same as Standard) at a lower storage cost, designed for data accessed once per quarter. It's the cheapest option for rare-access data that still needs instant retrieval.",
+      "why_not_A": "Standard works but is more expensive for rarely accessed data. No reason to pay Standard prices for quarterly access.",
+      "why_not_B": "Standard-IA is cheaper than Standard but more expensive than Glacier Instant Retrieval for this access pattern.",
+      "why_not_D": "Intelligent-Tiering would work but has a small monitoring fee per object and may not settle to the cheapest tier immediately."
+    },
+    "concept_ids": ["aws-sap-s3-storage-classes"],
+    "tags": ["s3", "storage-classes", "cost"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.15,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-db-001",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-new-solutions",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A global e-commerce company needs a database solution for their product catalog. Requirements: sub-millisecond read latency, automatic scaling, multi-region availability with eventual consistency, and the ability to handle 100,000 reads per second. The data model is key-value with some document queries. Which solution meets ALL requirements?",
+    "options": [
+      {"id": "A", "text": "Amazon Aurora Global Database with read replicas in each region", "is_correct": false},
+      {"id": "B", "text": "Amazon DynamoDB Global Tables with DynamoDB Accelerator (DAX) in each region", "is_correct": true},
+      {"id": "C", "text": "Amazon ElastiCache for Redis with Global Datastore across regions", "is_correct": false},
+      {"id": "D", "text": "Amazon DocumentDB with cross-region read replicas", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DynamoDB Global Tables provide multi-region replication with eventual consistency. DAX provides microsecond (sub-millisecond) read latency. DynamoDB handles the key-value model perfectly and scales automatically to handle 100K reads/sec.",
+      "why_not_A": "Aurora provides low latency but not sub-millisecond. Aurora Global Database has <1 second replication lag but is designed for relational data, not key-value. It would work but isn't optimal for this access pattern.",
+      "why_not_C": "ElastiCache Redis is an in-memory cache, not a primary database. Global Datastore works but Redis isn't designed as a primary data store for a product catalog — it lacks the durability and query capabilities needed.",
+      "why_not_D": "DocumentDB doesn't natively support multi-region active-active replication. Cross-region replicas are read-only."
+    },
+    "concept_ids": ["aws-sap-dynamodb", "aws-sap-rds-aurora"],
+    "tags": ["database", "global", "low-latency", "scaling"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-migration-001",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "migration-planning",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company wants to migrate their on-premises Oracle database to AWS with minimal downtime. They also want to take this opportunity to move to an open-source database engine. Which combination of services should they use?",
+    "options": [
+      {"id": "A", "text": "AWS DMS with the Schema Conversion Tool (SCT) to migrate to Amazon Aurora PostgreSQL", "is_correct": true},
+      {"id": "B", "text": "AWS DMS to directly replicate to Amazon Aurora PostgreSQL", "is_correct": false},
+      {"id": "C", "text": "Native Oracle Data Pump export to S3, then import into Aurora PostgreSQL", "is_correct": false},
+      {"id": "D", "text": "AWS Application Migration Service (MGN) to migrate the database server to EC2, then migrate to Aurora", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "This is a heterogeneous migration (Oracle to PostgreSQL). SCT converts the schema (stored procedures, data types, etc.) while DMS handles the data migration with CDC for minimal downtime.",
+      "why_not_B": "DMS alone cannot handle schema conversion for heterogeneous migrations. SCT is required to convert Oracle-specific schema elements to PostgreSQL equivalents.",
+      "why_not_C": "Data Pump is Oracle-native and doesn't convert to PostgreSQL format. This would require significant manual effort and downtime.",
+      "why_not_D": "MGN migrates entire servers (lift-and-shift). It doesn't help with database engine conversion. This would just move Oracle to EC2, not to Aurora PostgreSQL."
+    },
+    "concept_ids": ["aws-sap-dms", "aws-sap-migration-strategies"],
+    "tags": ["migration", "database", "heterogeneous"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-migration-002",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "migration-planning",
+    "type": "factual",
+    "difficulty": 1,
+    "stem": "Which migration strategy involves moving an application to AWS with minimal changes, such as moving a VM to an EC2 instance?",
+    "options": [
+      {"id": "A", "text": "Replatform", "is_correct": false},
+      {"id": "B", "text": "Refactor", "is_correct": false},
+      {"id": "C", "text": "Rehost", "is_correct": true},
+      {"id": "D", "text": "Repurchase", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Rehost (lift and shift) means moving the application as-is to the cloud with minimal or no changes. Moving a VM to EC2 is the classic rehost example.",
+      "why_not_A": "Replatform involves some optimization during migration, like moving to RDS instead of self-managed database on EC2.",
+      "why_not_B": "Refactor means redesigning the application to be cloud-native, which is the most effort-intensive strategy.",
+      "why_not_D": "Repurchase means replacing the application with a cloud-based alternative, like moving from on-prem CRM to Salesforce."
+    },
+    "concept_ids": ["aws-sap-migration-strategies"],
+    "tags": ["migration", "7-rs"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.15,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-cost-001",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "cost-control",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company runs a production web application on a fleet of m5.xlarge EC2 instances. Usage is predictable and steady 24/7. They want to reduce compute costs by at least 30%. Which pricing option should they choose?",
+    "options": [
+      {"id": "A", "text": "Spot Instances with a Spot Fleet", "is_correct": false},
+      {"id": "B", "text": "Compute Savings Plan with a 1-year term", "is_correct": true},
+      {"id": "C", "text": "Standard Reserved Instances with a 3-year term and all upfront payment", "is_correct": false},
+      {"id": "D", "text": "On-Demand Instances with scheduled scaling", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Compute Savings Plans offer up to 66% savings with a 1-year commitment and provide flexibility to change instance families, sizes, regions, and even use Fargate or Lambda. For steady 24/7 production workloads, this is the best balance of savings and flexibility.",
+      "why_not_A": "Spot Instances can be interrupted with 2-minute notice. This is a production web application — interruptions are unacceptable.",
+      "why_not_C": "3-year all upfront gives the maximum savings (up to 72%) but locks you in for 3 years with no flexibility. The question asks for 30%+ savings — a 1-year Savings Plan achieves this with more flexibility.",
+      "why_not_D": "On-Demand with scaling doesn't reduce per-hour cost. Since usage is steady 24/7, there's nothing to scale down."
+    },
+    "concept_ids": ["aws-sap-cost-optimization"],
+    "tags": ["pricing", "savings-plans", "reserved-instances"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-cost-002",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "cost-control",
+    "type": "factual",
+    "difficulty": 1,
+    "stem": "Which EC2 pricing model provides the highest potential savings but comes with the risk of instance termination?",
+    "options": [
+      {"id": "A", "text": "Reserved Instances", "is_correct": false},
+      {"id": "B", "text": "Savings Plans", "is_correct": false},
+      {"id": "C", "text": "Spot Instances", "is_correct": true},
+      {"id": "D", "text": "Dedicated Hosts", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Spot Instances offer up to 90% savings over On-Demand but can be reclaimed by AWS with a 2-minute warning when capacity is needed.",
+      "why_not_A": "Reserved Instances offer up to 72% savings but are guaranteed — no termination risk.",
+      "why_not_B": "Savings Plans offer up to 66-72% savings with guaranteed capacity.",
+      "why_not_D": "Dedicated Hosts are the most expensive option, not a cost savings mechanism."
+    },
+    "concept_ids": ["aws-sap-cost-optimization"],
+    "tags": ["pricing", "spot"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.15,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-sec-001",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-org-complexity",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "What is the key difference between Security Groups and Network ACLs in a VPC?",
+    "options": [
+      {"id": "A", "text": "Security Groups operate at the subnet level, while NACLs operate at the instance level", "is_correct": false},
+      {"id": "B", "text": "Security Groups are stateful and support allow rules only, while NACLs are stateless and support both allow and deny rules", "is_correct": true},
+      {"id": "C", "text": "Security Groups evaluate rules in order, while NACLs evaluate all rules simultaneously", "is_correct": false},
+      {"id": "D", "text": "Security Groups are applied per VPC, while NACLs are applied per Availability Zone", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Security Groups are stateful (return traffic auto-allowed) and only support allow rules. NACLs are stateless (must explicitly allow return traffic) and support both allow and deny rules. This is the fundamental distinction.",
+      "why_not_A": "This is backwards. Security Groups operate at the instance (ENI) level. NACLs operate at the subnet level.",
+      "why_not_C": "This is also backwards. NACLs evaluate rules in number order (stop at first match). Security Groups evaluate all rules as a combined set.",
+      "why_not_D": "Security Groups are applied per ENI (instance). NACLs are applied per subnet, not per AZ."
+    },
+    "concept_ids": ["aws-sap-security-groups", "aws-sap-nacls"],
+    "tags": ["security", "networking", "comparison"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-net-004",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-org-complexity",
+    "type": "troubleshooting",
+    "difficulty": 5,
+    "stem": "A company has set up VPC peering between VPC-A (10.0.0.0/16) and VPC-B (10.1.0.0/16). An EC2 instance in VPC-A cannot communicate with an EC2 instance in VPC-B, despite the peering connection showing 'Active' status. The security groups on both instances allow all inbound and outbound traffic. What is the MOST likely cause?",
+    "options": [
+      {"id": "A", "text": "The Network ACLs on both subnets are blocking the traffic", "is_correct": false},
+      {"id": "B", "text": "Route table entries for the peered VPC CIDR have not been added", "is_correct": true},
+      {"id": "C", "text": "DNS resolution is not enabled on the peering connection", "is_correct": false},
+      {"id": "D", "text": "The instances are in different Availability Zones", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC peering does NOT automatically update route tables. You must manually add routes pointing to the peered VPC's CIDR block via the peering connection in each VPC's route tables. This is the most common misconfiguration.",
+      "why_not_A": "While NACLs could block traffic, the default NACL allows all traffic. Since security groups already allow all traffic and the question says this, NACLs are unlikely the issue.",
+      "why_not_C": "DNS resolution affects name resolution, not connectivity. The instances can still communicate via IP addresses even without DNS resolution enabled.",
+      "why_not_D": "VPC peering works across all AZs within the peered VPCs. AZ placement doesn't affect peering connectivity."
+    },
+    "concept_ids": ["aws-sap-vpc-peering", "aws-sap-vpc-fundamentals"],
+    "tags": ["troubleshooting", "vpc-peering", "route-tables"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-sap-compute-002",
+    "exam_id": "aws-sap-c02",
+    "domain_id": "design-new-solutions",
+    "type": "factual",
+    "difficulty": 1,
+    "stem": "What is the maximum execution time for an AWS Lambda function?",
+    "options": [
+      {"id": "A", "text": "5 minutes", "is_correct": false},
+      {"id": "B", "text": "15 minutes", "is_correct": true},
+      {"id": "C", "text": "30 minutes", "is_correct": false},
+      {"id": "D", "text": "60 minutes", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Lambda functions have a maximum execution timeout of 15 minutes (900 seconds). This is important for determining whether Lambda is suitable for your workload.",
+      "why_not_A": "5 minutes was the original Lambda limit but it was increased to 15 minutes.",
+      "why_not_C": "30 minutes exceeds the Lambda limit. For workloads requiring more than 15 minutes, consider ECS, Fargate, or Step Functions.",
+      "why_not_D": "60 minutes is well beyond Lambda's capabilities. Use containers or EC2 for long-running processes."
+    },
+    "concept_ids": ["aws-sap-lambda"],
+    "tags": ["lambda", "limits"],
+    "estimated_time_seconds": 30,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.15,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  }
+]

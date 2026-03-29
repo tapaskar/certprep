@@ -1,0 +1,18 @@
+[Unit]
+Description=CertPrep FastAPI Backend
+After=network.target postgresql.service redis6.service
+Wants=postgresql.service redis6.service
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/opt/certprep/backend
+Environment=PATH=/opt/certprep/backend/.venv/bin:/usr/local/bin:/usr/bin
+ExecStart=/opt/certprep/backend/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
