@@ -1,0 +1,567 @@
+[
+  {
+    "id": "aws-saa-iam-roles-policies",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-secure-architectures",
+    "topic_id": "identity-access",
+    "name": "IAM Roles and Policies",
+    "description": "IAM roles for service and cross-account access with identity-based and resource-based policies",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Identity-based policies attach to users, groups, or roles",
+      "Resource-based policies attach directly to resources like S3 buckets",
+      "Roles use temporary credentials via STS AssumeRole",
+      "Policy evaluation: explicit deny > explicit allow > implicit deny",
+      "Use IAM Access Analyzer to identify resources shared externally"
+    ],
+    "common_misconceptions": [
+      "Resource-based policies can be attached to any AWS resource (only some services support them)",
+      "IAM policies are evaluated independently (identity-based and resource-based policies interact)"
+    ],
+    "aws_services": ["IAM", "STS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-kms-encryption", "transfer_weight": 0.2},
+      {"concept_id": "aws-saa-security-groups-nacls", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-saa-kms-encryption",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-secure-architectures",
+    "topic_id": "encryption",
+    "name": "KMS and Encryption",
+    "description": "AWS Key Management Service for encryption at rest and in transit",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "KMS manages customer master keys (CMKs) for envelope encryption",
+      "AWS managed keys vs customer managed keys vs AWS owned keys",
+      "Automatic key rotation available (every year for customer managed keys)",
+      "S3 supports SSE-S3, SSE-KMS, and SSE-C encryption options",
+      "KMS keys are regional; multi-region keys available for cross-region use"
+    ],
+    "common_misconceptions": [
+      "SSE-S3 and SSE-KMS are the same (SSE-KMS provides audit trail via CloudTrail and key access control)",
+      "KMS keys can be used across regions by default (keys are regional, multi-region keys must be explicitly created)"
+    ],
+    "aws_services": ["KMS", "S3", "EBS", "CloudTrail"],
+    "prerequisites": ["aws-saa-iam-roles-policies"],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-iam-roles-policies", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-saa-security-groups-nacls",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-secure-architectures",
+    "topic_id": "network-security",
+    "name": "Security Groups and NACLs",
+    "description": "Instance-level and subnet-level firewalls for VPC traffic control",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Security Groups are stateful: return traffic is automatically allowed",
+      "Security Groups support allow rules only, no deny rules",
+      "NACLs are stateless: return traffic must be explicitly allowed",
+      "NACLs support both allow and deny rules, evaluated in order by rule number",
+      "Security Groups applied at ENI level, NACLs at subnet level"
+    ],
+    "common_misconceptions": [
+      "Security Groups can deny traffic (they can only allow; use NACLs for deny rules)",
+      "NACLs are stateful (NACLs are stateless; you must allow ephemeral port ranges for return traffic)"
+    ],
+    "aws_services": ["VPC", "Security Groups", "Network ACLs"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-iam-roles-policies", "transfer_weight": 0.2},
+      {"concept_id": "aws-saa-waf-shield", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-saa-waf-shield",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-secure-architectures",
+    "topic_id": "perimeter-security",
+    "name": "WAF and Shield",
+    "description": "Web application firewall and DDoS protection services",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "WAF protects against common web exploits (SQL injection, XSS) at Layer 7",
+      "WAF can be deployed on ALB, CloudFront, API Gateway, and AppSync",
+      "Shield Standard provides automatic DDoS protection at no extra cost",
+      "Shield Advanced provides enhanced DDoS protection with 24/7 DDoS Response Team",
+      "Shield Advanced includes cost protection for DDoS-related scaling"
+    ],
+    "common_misconceptions": [
+      "WAF protects against DDoS attacks at all layers (WAF is Layer 7 only; Shield handles Layer 3/4)",
+      "Shield Standard requires a subscription (it is automatically included for all AWS customers)"
+    ],
+    "aws_services": ["WAF", "Shield", "CloudFront", "ALB"],
+    "prerequisites": ["aws-saa-security-groups-nacls"],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-security-groups-nacls", "transfer_weight": 0.25},
+      {"concept_id": "aws-saa-cloudfront", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-saa-cloudtrail",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-secure-architectures",
+    "topic_id": "logging-monitoring",
+    "name": "CloudTrail",
+    "description": "API activity logging service for governance, compliance, and auditing",
+    "exam_weight": 0.0350,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Records API calls made in your AWS account",
+      "Management events logged by default (90 days in Event History)",
+      "Data events (S3 object-level, Lambda invocations) require explicit configuration",
+      "Trails can deliver logs to S3 and CloudWatch Logs",
+      "Organization trail can log events for all accounts"
+    ],
+    "common_misconceptions": [
+      "CloudTrail logs all events by default (data events must be explicitly enabled)",
+      "CloudTrail and CloudWatch are the same (CloudTrail logs API calls, CloudWatch monitors metrics and logs)"
+    ],
+    "aws_services": ["CloudTrail", "S3", "CloudWatch"],
+    "prerequisites": ["aws-saa-iam-roles-policies"],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-iam-roles-policies", "transfer_weight": 0.15},
+      {"concept_id": "aws-saa-kms-encryption", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-saa-multi-az-ha",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "topic_id": "high-availability",
+    "name": "Multi-AZ and High Availability",
+    "description": "Deploying resources across multiple Availability Zones for fault tolerance",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Multi-AZ deployments survive AZ failures",
+      "RDS Multi-AZ uses synchronous replication with automatic failover",
+      "ELB automatically distributes traffic across AZs",
+      "Auto Scaling can launch instances in multiple AZs",
+      "S3 automatically stores data across at least 3 AZs (except One Zone-IA)"
+    ],
+    "common_misconceptions": [
+      "Multi-AZ RDS improves read performance (it is for HA only; use Read Replicas for read scaling)",
+      "Multi-AZ is the same as multi-region (Multi-AZ is within one region)"
+    ],
+    "aws_services": ["RDS", "ELB", "EC2 Auto Scaling", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-auto-scaling", "transfer_weight": 0.3},
+      {"concept_id": "aws-saa-elb", "transfer_weight": 0.3},
+      {"concept_id": "aws-saa-rds-multi-az", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-saa-auto-scaling",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "topic_id": "scalability",
+    "name": "Auto Scaling",
+    "description": "Automatic scaling of compute resources based on demand",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Launch templates define the instance configuration",
+      "Scaling policies: target tracking, step scaling, simple scaling, scheduled",
+      "Target tracking is the recommended default (e.g., maintain 50% CPU utilization)",
+      "Cooldown periods prevent rapid scaling oscillation",
+      "Predictive scaling uses ML to pre-scale based on traffic patterns"
+    ],
+    "common_misconceptions": [
+      "Auto Scaling only scales out (it scales both in and out based on policies)",
+      "Auto Scaling works immediately (cooldown periods and health check grace periods cause delays)"
+    ],
+    "aws_services": ["EC2 Auto Scaling", "CloudWatch"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-elb", "transfer_weight": 0.35},
+      {"concept_id": "aws-saa-multi-az-ha", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-saa-elb",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "topic_id": "load-balancing",
+    "name": "Elastic Load Balancing",
+    "description": "Application, Network, and Gateway Load Balancers for traffic distribution",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "ALB operates at Layer 7 (HTTP/HTTPS), supports path-based and host-based routing",
+      "NLB operates at Layer 4 (TCP/UDP), provides ultra-low latency and static IP",
+      "GLB operates at Layer 3, used for deploying third-party virtual appliances",
+      "ALB supports target groups with EC2, ECS, Lambda, and IP addresses",
+      "Connection draining (deregistration delay) allows in-flight requests to complete"
+    ],
+    "common_misconceptions": [
+      "ALB can handle millions of requests per second with static IP (NLB provides static IP; use NLB or Global Accelerator for static IPs with ALB)",
+      "All load balancers support WebSocket (ALB natively supports WebSocket, NLB supports it at TCP level)"
+    ],
+    "aws_services": ["ALB", "NLB", "GLB"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-auto-scaling", "transfer_weight": 0.35},
+      {"concept_id": "aws-saa-multi-az-ha", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-saa-route53-failover",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "topic_id": "dns-routing",
+    "name": "Route 53 Routing and Failover",
+    "description": "DNS routing policies for high availability and disaster recovery",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Simple routing: single resource, no health checks",
+      "Weighted routing: distribute traffic by percentage across resources",
+      "Latency-based routing: route to the lowest-latency region",
+      "Failover routing: active-passive with automatic failover using health checks",
+      "Geolocation routing: route based on user geographic location"
+    ],
+    "common_misconceptions": [
+      "Failover routing requires manual intervention (it is automatic based on health checks)",
+      "Latency routing uses geographic proximity (it measures actual network latency, not distance)"
+    ],
+    "aws_services": ["Route 53"],
+    "prerequisites": ["aws-saa-multi-az-ha"],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-multi-az-ha", "transfer_weight": 0.25},
+      {"concept_id": "aws-saa-s3-replication", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-saa-s3-replication",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "topic_id": "data-protection",
+    "name": "S3 Replication",
+    "description": "Cross-region and same-region replication for S3 objects",
+    "exam_weight": 0.0350,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cross-Region Replication (CRR) copies objects to a bucket in a different region",
+      "Same-Region Replication (SRR) copies objects within the same region",
+      "Versioning must be enabled on both source and destination buckets",
+      "Replication is asynchronous",
+      "Delete markers are not replicated by default"
+    ],
+    "common_misconceptions": [
+      "Replication copies existing objects automatically (only new objects are replicated; use S3 Batch Replication for existing objects)",
+      "Delete operations replicate by default (delete markers are not replicated unless configured)"
+    ],
+    "aws_services": ["S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-route53-failover", "transfer_weight": 0.15},
+      {"concept_id": "aws-saa-s3-lifecycle", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-saa-rds-multi-az",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "topic_id": "database-resilience",
+    "name": "RDS Multi-AZ and Read Replicas",
+    "description": "Database high availability with Multi-AZ and read scaling with replicas",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Multi-AZ: synchronous standby in another AZ for automatic failover",
+      "Read Replicas: asynchronous replication for read scaling",
+      "Read Replicas can be cross-region for disaster recovery",
+      "Read Replicas can be promoted to standalone databases",
+      "Aurora supports up to 15 replicas with automatic failover and replication lag under 100ms"
+    ],
+    "common_misconceptions": [
+      "Multi-AZ standby can serve read traffic (only the primary handles traffic; use Read Replicas for reads)",
+      "Read Replicas provide automatic failover (only Multi-AZ provides automatic failover in standard RDS)"
+    ],
+    "aws_services": ["RDS", "Aurora"],
+    "prerequisites": ["aws-saa-multi-az-ha"],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-multi-az-ha", "transfer_weight": 0.35},
+      {"concept_id": "aws-saa-aurora", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-saa-cloudfront",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "topic_id": "content-delivery",
+    "name": "CloudFront",
+    "description": "Content delivery network for low-latency global content distribution",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Caches content at 400+ Edge Locations globally",
+      "Origins can be S3, ALB, EC2, or any HTTP endpoint",
+      "Origin Access Control (OAC) restricts S3 access to CloudFront only",
+      "Supports custom SSL certificates and alternate domain names",
+      "Lambda@Edge and CloudFront Functions for edge compute"
+    ],
+    "common_misconceptions": [
+      "CloudFront only serves static content (it can also accelerate dynamic content and APIs)",
+      "Origin Access Identity is the current best practice (OAC has replaced OAI as the recommended approach)"
+    ],
+    "aws_services": ["CloudFront", "S3", "ACM"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-elasticache", "transfer_weight": 0.2},
+      {"concept_id": "aws-saa-waf-shield", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-saa-elasticache",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "topic_id": "caching",
+    "name": "ElastiCache",
+    "description": "Managed in-memory caching with Redis and Memcached",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Redis supports data persistence, replication, Multi-AZ failover, and pub/sub",
+      "Memcached supports multi-threaded architecture and simple caching with no persistence",
+      "Common patterns: lazy loading (cache on read miss) and write-through (cache on write)",
+      "ElastiCache can store session data to make applications stateless",
+      "Redis Global Datastore provides cross-region replication"
+    ],
+    "common_misconceptions": [
+      "Redis and Memcached have the same features (Redis supports persistence and replication, Memcached does not)",
+      "ElastiCache replaces a database (it supplements databases by caching frequently accessed data)"
+    ],
+    "aws_services": ["ElastiCache"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-dynamodb", "transfer_weight": 0.2},
+      {"concept_id": "aws-saa-cloudfront", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-saa-dynamodb",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "topic_id": "database",
+    "name": "DynamoDB",
+    "description": "Serverless NoSQL database with single-digit millisecond latency",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Key-value and document data model with partition key and optional sort key",
+      "Provisioned mode: specify RCUs and WCUs; On-demand mode: pay per request",
+      "DynamoDB Accelerator (DAX) provides microsecond latency caching",
+      "Global Tables for multi-region active-active replication",
+      "DynamoDB Streams capture item-level changes for event-driven architectures"
+    ],
+    "common_misconceptions": [
+      "DynamoDB is good for complex relational queries with joins (use RDS or Aurora for relational workloads)",
+      "On-demand mode is always cheaper (provisioned capacity is cheaper for predictable, steady workloads)"
+    ],
+    "aws_services": ["DynamoDB", "DAX"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-aurora", "transfer_weight": 0.2},
+      {"concept_id": "aws-saa-elasticache", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-saa-aurora",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "topic_id": "database",
+    "name": "Amazon Aurora",
+    "description": "Cloud-native relational database with high performance and availability",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Compatible with MySQL and PostgreSQL",
+      "5x throughput of MySQL, 3x throughput of PostgreSQL",
+      "Storage auto-scales up to 128 TB in 10 GB increments",
+      "Up to 15 read replicas with sub-10ms replication lag",
+      "Aurora Serverless v2 scales capacity in fine-grained increments (0.5 ACU minimum)"
+    ],
+    "common_misconceptions": [
+      "Aurora is just a managed MySQL/PostgreSQL (it has a completely different storage architecture with 6-way replication)",
+      "Aurora Serverless can scale to zero (v2 has a minimum of 0.5 ACU)"
+    ],
+    "aws_services": ["Aurora", "RDS"],
+    "prerequisites": ["aws-saa-rds-multi-az"],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-rds-multi-az", "transfer_weight": 0.35},
+      {"concept_id": "aws-saa-dynamodb", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-saa-ebs-volume-types",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "topic_id": "storage",
+    "name": "EBS Volume Types",
+    "description": "Block storage volume types optimized for different workloads",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "gp3: general purpose SSD, 3000 IOPS baseline, independently configurable IOPS and throughput",
+      "io2 Block Express: provisioned IOPS SSD, up to 256,000 IOPS, for critical databases",
+      "st1: throughput-optimized HDD for large sequential workloads like data warehouses",
+      "sc1: cold HDD, lowest cost for infrequently accessed data",
+      "Only SSD volumes (gp2/gp3, io1/io2) can be boot volumes"
+    ],
+    "common_misconceptions": [
+      "gp2 and gp3 have the same pricing model (gp3 is cheaper and allows independent IOPS/throughput configuration)",
+      "HDD volumes can be used as boot volumes (only SSD volumes can be boot volumes)"
+    ],
+    "aws_services": ["EBS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-efs", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-saa-efs",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "topic_id": "storage",
+    "name": "EFS (Elastic File System)",
+    "description": "Managed NFS file system for shared access across multiple instances",
+    "exam_weight": 0.0300,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NFS-based shared file system accessible from multiple EC2 instances concurrently",
+      "Automatically scales storage capacity as files are added or removed",
+      "Supports two performance modes: General Purpose and Max I/O",
+      "Storage classes: Standard and Infrequent Access with lifecycle management",
+      "Works across AZs within a region; One Zone option for cost savings"
+    ],
+    "common_misconceptions": [
+      "EFS works with Windows instances (EFS is Linux/NFS only; use FSx for Windows)",
+      "EFS has a fixed storage capacity (it auto-scales with no pre-provisioning required)"
+    ],
+    "aws_services": ["EFS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-ebs-volume-types", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-saa-reserved-instances",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-cost-optimized-architectures",
+    "topic_id": "pricing-models",
+    "name": "Reserved Instances and Savings Plans",
+    "description": "Commitment-based pricing models for significant compute cost savings",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Standard RIs: up to 72% savings, locked to instance type and region",
+      "Convertible RIs: up to 66% savings, can change instance family, OS, and tenancy",
+      "Compute Savings Plans: flexible across instance families, regions, OS, and compute services",
+      "EC2 Instance Savings Plans: locked to instance family in a region, higher discount",
+      "1-year or 3-year term; all upfront payment gives maximum discount"
+    ],
+    "common_misconceptions": [
+      "Reserved Instances reserve physical capacity by default (only Zonal RIs reserve capacity; Regional RIs do not)",
+      "Savings Plans and RIs provide the same flexibility (Savings Plans are more flexible, especially Compute Savings Plans)"
+    ],
+    "aws_services": ["EC2", "Savings Plans"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-spot-instances", "transfer_weight": 0.3},
+      {"concept_id": "aws-saa-s3-lifecycle", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-saa-spot-instances",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-cost-optimized-architectures",
+    "topic_id": "pricing-models",
+    "name": "Spot Instances",
+    "description": "Spare EC2 capacity at up to 90% discount with interruption risk",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Up to 90% savings compared to On-Demand pricing",
+      "AWS can reclaim instances with a 2-minute warning",
+      "Ideal for batch processing, CI/CD, big data, stateless web servers",
+      "Spot Fleet: collection of Spot and optional On-Demand instances",
+      "Can combine with Auto Scaling using mixed instance policies"
+    ],
+    "common_misconceptions": [
+      "Spot Instances are unreliable for all workloads (they are excellent for fault-tolerant and flexible workloads)",
+      "Spot price can exceed On-Demand price (Spot price is capped at On-Demand price)"
+    ],
+    "aws_services": ["EC2", "EC2 Auto Scaling"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-reserved-instances", "transfer_weight": 0.3},
+      {"concept_id": "aws-saa-auto-scaling", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-saa-s3-lifecycle",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-cost-optimized-architectures",
+    "topic_id": "storage-optimization",
+    "name": "S3 Storage Classes and Lifecycle",
+    "description": "S3 storage tiers and automated lifecycle transitions for cost optimization",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Standard: frequent access, 99.99% availability",
+      "Standard-IA: infrequent access, lower storage cost but retrieval fee, 30-day minimum",
+      "One Zone-IA: single AZ, 20% cheaper than Standard-IA",
+      "Glacier Instant Retrieval: millisecond access for quarterly data",
+      "Lifecycle rules automate transitions between storage classes and object expiration"
+    ],
+    "common_misconceptions": [
+      "Objects can be transitioned back from Glacier to Standard via lifecycle rules (transitions are one-directional; restore first then copy)",
+      "Intelligent-Tiering has retrieval fees for frequent and infrequent tiers (retrieval fees only apply to archive tiers)"
+    ],
+    "aws_services": ["S3", "S3 Glacier"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-reserved-instances", "transfer_weight": 0.15},
+      {"concept_id": "aws-saa-s3-replication", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-saa-right-sizing",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-cost-optimized-architectures",
+    "topic_id": "optimization",
+    "name": "Right-Sizing and Cost Tools",
+    "description": "Optimizing resource sizes and using AWS cost management tools",
+    "exam_weight": 0.0350,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "AWS Compute Optimizer analyzes utilization and recommends optimal instance types",
+      "Cost Explorer visualizes spending trends and provides Reserved Instance recommendations",
+      "AWS Budgets sets alerts when spending exceeds defined thresholds",
+      "Trusted Advisor identifies idle resources and underutilized instances",
+      "Right-sizing should be done continuously, not just at initial deployment"
+    ],
+    "common_misconceptions": [
+      "Right-sizing only means downsizing (it can also mean upgrading to a more cost-effective instance family)",
+      "Cost optimization is a one-time activity (it should be continuous as workloads and pricing change)"
+    ],
+    "aws_services": ["Compute Optimizer", "Cost Explorer", "Budgets", "Trusted Advisor"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-saa-reserved-instances", "transfer_weight": 0.2},
+      {"concept_id": "aws-saa-spot-instances", "transfer_weight": 0.15}
+    ]
+  }
+]

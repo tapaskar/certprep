@@ -1,0 +1,401 @@
+[
+  {
+    "id": "aws-scs-guardduty-findings",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "threat-detection-incident-response",
+    "topic_id": "threat-detection",
+    "name": "GuardDuty Findings and Threat Detection",
+    "description": "Intelligent threat detection service that continuously monitors AWS accounts and workloads for malicious activity",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Analyzes CloudTrail events, VPC Flow Logs, and DNS logs automatically",
+      "Findings categorized by severity: Low, Medium, High",
+      "Supports multi-account management via AWS Organizations delegated administrator",
+      "Malware Protection scans EBS volumes attached to EC2 instances",
+      "S3 Protection monitors object-level API operations for anomalies"
+    ],
+    "common_misconceptions": [
+      "GuardDuty blocks threats automatically (it only detects and alerts, remediation requires separate action)",
+      "GuardDuty requires enabling CloudTrail separately (it reads CloudTrail management events independently)"
+    ],
+    "aws_services": ["GuardDuty", "CloudTrail", "EventBridge", "Security Hub"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-security-hub", "transfer_weight": 0.3},
+      {"concept_id": "aws-scs-detective", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-scs-security-hub",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "threat-detection-incident-response",
+    "topic_id": "threat-detection",
+    "name": "AWS Security Hub",
+    "description": "Central security dashboard that aggregates findings from multiple AWS security services and third-party tools",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Aggregates findings in AWS Security Finding Format (ASFF)",
+      "Automated compliance checks against CIS AWS Foundations, PCI DSS, and AWS Foundational Security Best Practices",
+      "Cross-region and cross-account aggregation via delegated administrator",
+      "Custom actions trigger EventBridge rules for automated remediation",
+      "Integrates with GuardDuty, Inspector, Macie, Firewall Manager, and third-party products"
+    ],
+    "common_misconceptions": [
+      "Security Hub replaces individual security services (it aggregates their findings but does not replace them)",
+      "Security Hub automatically remediates findings (it reports findings; remediation requires custom automation)"
+    ],
+    "aws_services": ["Security Hub", "EventBridge", "GuardDuty", "Inspector", "Config"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-guardduty-findings", "transfer_weight": 0.3},
+      {"concept_id": "aws-scs-config-rules", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-scs-detective",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "threat-detection-incident-response",
+    "topic_id": "threat-detection",
+    "name": "Amazon Detective",
+    "description": "Security service that uses graph analysis to investigate and identify root causes of security findings",
+    "exam_weight": 0.0350,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Automatically builds a behavior graph from CloudTrail, VPC Flow Logs, and GuardDuty findings",
+      "Retains up to 12 months of aggregated data for investigation",
+      "Visualizes resource interactions and API call patterns over time",
+      "Integrates directly with GuardDuty findings for one-click investigation"
+    ],
+    "common_misconceptions": [
+      "Detective detects threats (it investigates findings from GuardDuty and other sources, it does not detect them)",
+      "Detective replaces GuardDuty (Detective is for post-detection investigation, GuardDuty is for detection)"
+    ],
+    "aws_services": ["Detective", "GuardDuty", "CloudTrail", "VPC Flow Logs"],
+    "prerequisites": ["aws-scs-guardduty-findings"],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-guardduty-findings", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-scs-cloudtrail",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "security-logging-monitoring",
+    "topic_id": "security-logging",
+    "name": "CloudTrail for Security Auditing",
+    "description": "Governance, compliance, and audit service that records AWS API calls for security analysis",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Management events enabled by default; data events require explicit configuration",
+      "CloudTrail Lake provides SQL-based querying of events for up to 7 years",
+      "Organization trail captures events across all accounts in an AWS Organization",
+      "Log file integrity validation detects tampering using SHA-256 hashing",
+      "Insights events detect unusual API activity patterns"
+    ],
+    "common_misconceptions": [
+      "CloudTrail logs data events by default (only management events are logged by default)",
+      "CloudTrail events appear instantly (there can be up to 15-minute delay for delivery to S3)"
+    ],
+    "aws_services": ["CloudTrail", "S3", "CloudWatch Logs", "Athena", "CloudTrail Lake"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-vpc-flow-logs", "transfer_weight": 0.2},
+      {"concept_id": "aws-scs-guardduty-findings", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-scs-vpc-flow-logs",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "security-logging-monitoring",
+    "topic_id": "security-logging",
+    "name": "VPC Flow Logs and S3 Access Logging",
+    "description": "Network traffic logging for VPCs and access logging for S3 buckets to support security monitoring",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "VPC Flow Logs capture IP traffic at VPC, subnet, or ENI level",
+      "Flow logs can be sent to CloudWatch Logs, S3, or Kinesis Data Firehose",
+      "Custom format allows selecting specific fields to reduce costs",
+      "S3 server access logging records requests made to an S3 bucket in a target bucket",
+      "Flow logs do not capture DNS traffic to Route 53 Resolver, DHCP, or instance metadata traffic"
+    ],
+    "common_misconceptions": [
+      "VPC Flow Logs capture packet contents (they only capture metadata like source, destination, ports, and action)",
+      "S3 access logs are guaranteed to be complete (they are delivered on a best-effort basis)"
+    ],
+    "aws_services": ["VPC Flow Logs", "CloudWatch Logs", "S3", "Athena", "Kinesis Data Firehose"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-cloudtrail", "transfer_weight": 0.2},
+      {"concept_id": "aws-scs-config-rules", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-scs-config-rules",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "security-logging-monitoring",
+    "topic_id": "security-logging",
+    "name": "AWS Config for Compliance Monitoring",
+    "description": "Service that tracks resource configurations and evaluates them against desired settings for compliance",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Records resource configuration changes and maintains a configuration history",
+      "Managed rules cover common compliance checks like encrypted EBS, public S3, and required tags",
+      "Custom rules use Lambda functions for organization-specific evaluations",
+      "Conformance packs bundle multiple Config rules and remediation actions as a single entity",
+      "Automatic remediation via SSM Automation documents when resources become non-compliant"
+    ],
+    "common_misconceptions": [
+      "Config prevents non-compliant resources from being created (it evaluates after creation; use SCPs for prevention)",
+      "Config rules evaluate in real-time (evaluation triggers on configuration changes or periodic schedules)"
+    ],
+    "aws_services": ["Config", "SSM", "Lambda", "Organizations", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-security-hub", "transfer_weight": 0.2},
+      {"concept_id": "aws-scs-scps-governance", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-scs-waf-shield",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "infrastructure-security",
+    "topic_id": "infra-security",
+    "name": "WAF Rules and Shield Advanced",
+    "description": "Web application firewall and DDoS protection services for protecting AWS resources",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "WAF attaches to CloudFront, ALB, API Gateway, and AppSync",
+      "Rule groups are reusable collections of rules with capacity units (WCU) limit of 5000 per web ACL",
+      "Managed rule groups from AWS and AWS Marketplace provide pre-built protections",
+      "Shield Standard is free and protects against common Layer 3/4 DDoS attacks",
+      "Shield Advanced provides cost protection, DDoS Response Team access, and advanced metrics"
+    ],
+    "common_misconceptions": [
+      "WAF can be attached to EC2 instances directly (it requires CloudFront, ALB, API Gateway, or AppSync)",
+      "Shield Standard requires subscription (it is automatically included at no extra cost)"
+    ],
+    "aws_services": ["WAF", "Shield", "CloudFront", "ALB", "Firewall Manager"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-network-firewall", "transfer_weight": 0.25},
+      {"concept_id": "aws-scs-security-groups-best-practices", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-scs-network-firewall",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "infrastructure-security",
+    "topic_id": "infra-security",
+    "name": "AWS Network Firewall",
+    "description": "Managed network firewall service for fine-grained control over VPC network traffic",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Stateful and stateless rule groups for Layer 3-7 traffic inspection",
+      "Supports Suricata-compatible IPS/IDS rules for deep packet inspection",
+      "Deployed in a dedicated firewall subnet in each AZ",
+      "Integrates with Firewall Manager for centralized policy across multiple accounts",
+      "Supports TLS inspection for encrypted traffic analysis"
+    ],
+    "common_misconceptions": [
+      "Network Firewall replaces security groups and NACLs (it provides complementary Layer 7 inspection)",
+      "Network Firewall is the same as WAF (WAF is Layer 7 HTTP/HTTPS only; Network Firewall covers Layers 3-7)"
+    ],
+    "aws_services": ["Network Firewall", "Firewall Manager", "VPC", "Route 53 Resolver DNS Firewall"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-waf-shield", "transfer_weight": 0.25},
+      {"concept_id": "aws-scs-security-groups-best-practices", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-scs-security-groups-best-practices",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "infrastructure-security",
+    "topic_id": "infra-security",
+    "name": "Security Groups Best Practices",
+    "description": "Designing least-privilege security group configurations for defense-in-depth network security",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Reference other security groups instead of CIDR blocks for dynamic environments",
+      "Use separate security groups per tier (web, app, database) for layered security",
+      "Prefix lists simplify management of common CIDR ranges across security groups",
+      "VPC security group rules support descriptions for audit documentation"
+    ],
+    "common_misconceptions": [
+      "Opening port 0-65535 to a security group is safe because it is internal (it violates least-privilege even internally)",
+      "Security groups alone provide sufficient network security (defense-in-depth requires NACLs and firewall layers)"
+    ],
+    "aws_services": ["VPC", "Security Groups", "EC2", "Managed Prefix Lists"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-network-firewall", "transfer_weight": 0.2},
+      {"concept_id": "aws-scs-waf-shield", "transfer_weight": 0.1}
+    ]
+  },
+  {
+    "id": "aws-scs-cross-account-iam",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "identity-access-management",
+    "topic_id": "iam",
+    "name": "Cross-Account Roles and Permission Boundaries",
+    "description": "Configuring secure cross-account access patterns and limiting maximum permissions with boundaries",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Cross-account roles require a trust policy in the target account and sts:AssumeRole in the source account",
+      "Permission boundaries set the maximum permissions an IAM entity can have regardless of identity policies",
+      "Effective permissions are the intersection of identity-based policies and permission boundaries",
+      "External ID in trust policies prevents confused deputy attacks from third-party access",
+      "Session policies further restrict permissions when assuming a role via STS"
+    ],
+    "common_misconceptions": [
+      "Permission boundaries grant permissions (they only limit the maximum allowed permissions)",
+      "External ID is a secret authentication mechanism (it is a public identifier to prevent cross-account confusion)"
+    ],
+    "aws_services": ["IAM", "STS", "Organizations"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-abac-federation", "transfer_weight": 0.3},
+      {"concept_id": "aws-scs-scps-governance", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-scs-abac-federation",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "identity-access-management",
+    "topic_id": "iam",
+    "name": "ABAC and Identity Federation",
+    "description": "Attribute-based access control and federated identity patterns for scalable access management",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "ABAC uses resource and principal tags in IAM policy conditions for scalable access control",
+      "SAML 2.0 federation maps identity provider attributes to IAM role session tags",
+      "IAM Identity Center (SSO) provides centralized workforce access to multiple AWS accounts",
+      "Web identity federation with Cognito supports mobile and web application authentication",
+      "ABAC eliminates the need to update policies when new resources are created if tags are consistent"
+    ],
+    "common_misconceptions": [
+      "ABAC replaces RBAC entirely (they are complementary; ABAC works best alongside role-based controls)",
+      "Cognito User Pools and Identity Pools are the same (User Pools handle authentication, Identity Pools handle authorization to AWS services)"
+    ],
+    "aws_services": ["IAM", "IAM Identity Center", "Cognito", "STS"],
+    "prerequisites": ["aws-scs-cross-account-iam"],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-cross-account-iam", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-scs-kms-key-management",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "data-protection",
+    "topic_id": "data-protection",
+    "name": "KMS Key Policies and CMK Rotation",
+    "description": "Managing encryption keys with KMS key policies, grants, and automatic key rotation",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Key policy is the primary access control mechanism for KMS keys and is required",
+      "Key policy must explicitly allow IAM policies to control access (via the root account statement)",
+      "Automatic key rotation rotates backing key material annually while keeping the same key ID",
+      "Imported key material does not support automatic rotation; manual rotation creates a new key",
+      "Grants provide temporary, granular access to KMS keys without modifying key policies"
+    ],
+    "common_misconceptions": [
+      "IAM policies alone can control KMS access (the key policy must allow IAM policy evaluation first)",
+      "Key rotation changes the key ID (the key ID stays the same; only the backing material changes)"
+    ],
+    "aws_services": ["KMS", "IAM", "CloudTrail"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-s3-encryption", "transfer_weight": 0.3},
+      {"concept_id": "aws-scs-secrets-manager", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-scs-s3-encryption",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "data-protection",
+    "topic_id": "data-protection",
+    "name": "S3 Encryption and ACM",
+    "description": "Encryption options for S3 objects and TLS certificate management with AWS Certificate Manager",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SSE-S3 uses AES-256 with Amazon-managed keys and is the default encryption for new buckets",
+      "SSE-KMS provides audit trail via CloudTrail and allows key policy control over access",
+      "SSE-C requires the customer to manage and supply keys with every request",
+      "S3 Bucket Keys reduce KMS API costs by generating a bucket-level key for SSE-KMS",
+      "ACM provides free public TLS certificates that auto-renew for use with CloudFront, ALB, and API Gateway"
+    ],
+    "common_misconceptions": [
+      "SSE-S3 provides per-object key access control (only SSE-KMS provides that via key policies)",
+      "ACM certificates can be exported for use on EC2 (only ACM Private CA certificates can be exported)"
+    ],
+    "aws_services": ["S3", "KMS", "ACM", "CloudFront", "ALB"],
+    "prerequisites": ["aws-scs-kms-key-management"],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-kms-key-management", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-scs-secrets-manager",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "data-protection",
+    "topic_id": "data-protection",
+    "name": "Secrets Manager and Parameter Store",
+    "description": "Securely storing and automatically rotating secrets, credentials, and configuration data",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Secrets Manager supports automatic rotation using Lambda functions for RDS, Redshift, and DocumentDB",
+      "Cross-account secret sharing via resource-based policies",
+      "Parameter Store Standard tier is free; Advanced tier supports larger values and policies",
+      "Secrets Manager encrypts secrets with KMS and charges per secret per month",
+      "Parameter Store SecureString parameters are encrypted with KMS but lack native rotation"
+    ],
+    "common_misconceptions": [
+      "Parameter Store and Secrets Manager are interchangeable (Secrets Manager adds automatic rotation and cross-account sharing)",
+      "Secrets Manager rotation happens without any Lambda function (a Lambda function performs the rotation logic)"
+    ],
+    "aws_services": ["Secrets Manager", "Systems Manager Parameter Store", "KMS", "Lambda"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-kms-key-management", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-scs-scps-governance",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "management-security-governance",
+    "topic_id": "governance",
+    "name": "SCPs, Config Rules, and Audit Manager",
+    "description": "Preventive and detective governance controls across AWS Organizations accounts",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SCPs are preventive controls that define maximum permissions for organization member accounts",
+      "SCPs do not affect the management account or service-linked roles",
+      "Conformance packs deploy a collection of Config rules and remediation actions as a single unit",
+      "AWS Audit Manager automates evidence collection for compliance frameworks like SOC 2 and GDPR",
+      "Tag policies enforce standardized tagging across organization accounts"
+    ],
+    "common_misconceptions": [
+      "SCPs affect the management account (they do not; the management account is always unrestricted by SCPs)",
+      "Conformance packs automatically remediate issues (remediation actions must be explicitly configured)"
+    ],
+    "aws_services": ["Organizations", "Config", "Audit Manager", "Control Tower"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-scs-config-rules", "transfer_weight": 0.3},
+      {"concept_id": "aws-scs-cross-account-iam", "transfer_weight": 0.2}
+    ]
+  }
+]

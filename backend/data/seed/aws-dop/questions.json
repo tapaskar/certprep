@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-dop-sdlc-001",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "sdlc-automation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company wants to implement a deployment strategy for their Lambda-based API where 10% of traffic is routed to the new version for 10 minutes. If the error rate exceeds 1% during this period, the deployment should automatically roll back. Which combination of services and configurations achieves this?",
+    "options": [
+      {"id": "A", "text": "CodeDeploy with a canary deployment configuration (LambdaCanary10Percent10Minutes) and a CloudWatch alarm on Lambda errors as a rollback trigger", "is_correct": true},
+      {"id": "B", "text": "API Gateway canary release with 10% traffic and a Lambda function to monitor errors and roll back", "is_correct": false},
+      {"id": "C", "text": "Lambda alias with weighted routing (90/10) and an EventBridge rule to detect errors and update weights", "is_correct": false},
+      {"id": "D", "text": "CodePipeline with a manual approval action after 10 minutes to verify the deployment health", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "CodeDeploy natively supports Lambda canary deployments with predefined configurations like LambdaCanary10Percent10Minutes. Adding a CloudWatch alarm as a rollback trigger enables automatic rollback when the error rate exceeds the threshold during the canary period.",
+      "why_not_B": "API Gateway canary releases shift traffic at the stage level, not per Lambda version. There is no built-in automatic rollback mechanism tied to error rates.",
+      "why_not_C": "Manually managing Lambda alias weights and building custom error detection is undifferentiated heavy lifting. CodeDeploy provides this capability natively with less operational overhead.",
+      "why_not_D": "Manual approval does not provide automatic rollback based on metrics. A human must notice the issue and act within the window."
+    },
+    "concept_ids": ["aws-dop-codedeploy", "aws-dop-canary-releases"],
+    "tags": ["lambda", "canary", "deployment", "rollback"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-sdlc-002",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "sdlc-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps engineer is designing a CI/CD pipeline using CodePipeline. The build stage must compile a Java application, run unit tests, generate a code coverage report, and produce a deployable artifact. The build environment needs access to a private Maven repository running in a VPC. How should the build stage be configured?",
+    "options": [
+      {"id": "A", "text": "Use CodeBuild with a buildspec.yml that defines all build phases and configure VPC access in the CodeBuild project settings", "is_correct": true},
+      {"id": "B", "text": "Use an EC2 instance as a Jenkins build server connected to the VPC with a CodePipeline custom action", "is_correct": false},
+      {"id": "C", "text": "Use CodeBuild with multiple separate projects chained together, one for each build phase", "is_correct": false},
+      {"id": "D", "text": "Use Lambda functions in the VPC to compile, test, and package the application in separate pipeline stages", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "CodeBuild's buildspec.yml defines phases (install, pre_build, build, post_build) that handle compilation, testing, and artifact creation in a single project. VPC configuration in CodeBuild allows the build environment to access private resources like the Maven repository.",
+      "why_not_B": "Running a Jenkins server adds operational overhead for server management, patching, and scaling. CodeBuild is serverless and natively integrates with CodePipeline.",
+      "why_not_C": "Splitting into multiple CodeBuild projects adds unnecessary complexity and inter-project artifact management. A single buildspec.yml with multiple phases handles this naturally.",
+      "why_not_D": "Lambda has a 15-minute timeout and limited compute resources, making it unsuitable for Java compilation. Lambda also has a 250 MB deployment package limit."
+    },
+    "concept_ids": ["aws-dop-codebuild", "aws-dop-codepipeline"],
+    "tags": ["codebuild", "codepipeline", "vpc", "ci-cd"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-sdlc-003",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "sdlc-automation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company runs an ECS service behind an ALB. They want to deploy new versions using a blue/green strategy where traffic shifts linearly over 30 minutes (10% every 3 minutes). If the target group's 5xx error rate exceeds 5%, the deployment must automatically roll back. Which approach meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Use CodeDeploy with ECS blue/green deployment type, a linear deployment configuration, and a CloudWatch alarm on ALB 5xx metrics as a rollback trigger", "is_correct": true},
+      {"id": "B", "text": "Use ECS rolling update deployment with circuit breaker enabled and a deployment controller", "is_correct": false},
+      {"id": "C", "text": "Use ALB weighted target groups with a Lambda function that adjusts weights every 3 minutes and monitors error rates", "is_correct": false},
+      {"id": "D", "text": "Use Route 53 weighted routing to shift DNS traffic between two ECS services over 30 minutes", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "CodeDeploy supports ECS blue/green deployments with linear traffic shifting configurations. A CloudWatch alarm monitoring the ALB Target Group's HTTPCode_Target_5XX_Count metric triggers automatic rollback when the threshold is breached. This is the purpose-built solution.",
+      "why_not_B": "ECS rolling updates replace tasks in batches but do not support traffic shifting. The circuit breaker triggers rollback on task health, not on HTTP error rates from the ALB.",
+      "why_not_C": "Building custom traffic shifting with Lambda adds significant operational overhead and lacks the built-in rollback capabilities of CodeDeploy.",
+      "why_not_D": "Route 53 weighted routing operates at the DNS level with TTL-dependent propagation delays, making precise 3-minute traffic shifts unreliable. It also requires two separate ALBs."
+    },
+    "concept_ids": ["aws-dop-codedeploy", "aws-dop-canary-releases"],
+    "tags": ["ecs", "blue-green", "linear", "deployment", "rollback"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-iac-001",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "configuration-management-iac",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A DevOps team manages infrastructure across 50 AWS accounts in an organization. They need to deploy a standard security baseline (Config rules, GuardDuty, CloudTrail) to every account. New accounts should automatically receive this baseline. Which approach provides the LEAST operational overhead?",
+    "options": [
+      {"id": "A", "text": "Create individual CloudFormation stacks in each account using cross-account IAM roles", "is_correct": false},
+      {"id": "B", "text": "Use CloudFormation StackSets with service-managed permissions and automatic deployment enabled for the organization", "is_correct": true},
+      {"id": "C", "text": "Use AWS CDK with a custom pipeline that iterates over all accounts and deploys stacks", "is_correct": false},
+      {"id": "D", "text": "Use AWS Service Catalog with a shared portfolio and require each account to launch the security product", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "StackSets with service-managed permissions integrate with Organizations. Automatic deployment ensures new accounts added to the organization automatically receive the stack. This is a deploy-once-and-forget approach with the least ongoing operational overhead.",
+      "why_not_A": "Managing 50 individual stacks with cross-account roles requires per-account setup and ongoing maintenance. Adding new accounts requires manual intervention.",
+      "why_not_C": "A custom CDK pipeline requires building and maintaining deployment logic, handling failures, and updating the pipeline when new accounts are added. This is more effort than StackSets.",
+      "why_not_D": "Service Catalog requires each account to manually launch the product. It does not automatically deploy to new accounts without additional automation."
+    },
+    "concept_ids": ["aws-dop-cloudformation-advanced", "aws-dop-service-catalog"],
+    "tags": ["stacksets", "multi-account", "organizations", "automation"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-iac-002",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "configuration-management-iac",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps engineer discovers that someone manually changed the security group rules on a production EC2 instance, deviating from the CloudFormation template. Which CloudFormation feature should they use to identify this discrepancy?",
+    "options": [
+      {"id": "A", "text": "Change sets to compare the template with the current stack", "is_correct": false},
+      {"id": "B", "text": "Drift detection to identify differences between the template and actual resource configurations", "is_correct": true},
+      {"id": "C", "text": "Stack policies to prevent unauthorized changes to the security group", "is_correct": false},
+      {"id": "D", "text": "Resource import to bring the modified resource back under stack management", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Drift detection compares the expected resource configuration defined in the CloudFormation template with the actual resource configuration in AWS. It identifies resources that have been modified outside of CloudFormation (drifted resources) and shows the specific property differences.",
+      "why_not_A": "Change sets preview what would change if you applied a template update. They do not detect manual changes that have already been made to resources.",
+      "why_not_C": "Stack policies prevent CloudFormation updates from modifying protected resources, but they do not prevent or detect manual changes made directly to AWS resources.",
+      "why_not_D": "Resource import adds existing resources to a stack. It does not detect discrepancies between the template and the current resource state."
+    },
+    "concept_ids": ["aws-dop-cloudformation-advanced"],
+    "tags": ["cloudformation", "drift-detection", "compliance"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-res-001",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "resilient-cloud-solutions",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A financial services company requires a disaster recovery solution with an RPO of 1 second and an RTO of 1 minute for their primary database. They use Aurora PostgreSQL. The DR region must serve read traffic during normal operations to justify the cost. Which architecture meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Aurora cross-region read replica with manual promotion during failover", "is_correct": false},
+      {"id": "B", "text": "Aurora Global Database with a secondary region that serves read traffic and supports managed failover", "is_correct": true},
+      {"id": "C", "text": "RDS Multi-AZ with cross-region automated backups and point-in-time recovery", "is_correct": false},
+      {"id": "D", "text": "DynamoDB Global Tables with multi-region active-active replication", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Aurora Global Database provides sub-second replication (RPO ~1 second) to the secondary region. The secondary cluster can serve read traffic, justifying cost. Managed planned failover or unplanned failover with detach-and-promote enables RTO under 1 minute.",
+      "why_not_A": "Cross-region read replicas have higher replication lag (typically seconds to minutes) and require manual promotion, making sub-1-minute RTO difficult to guarantee.",
+      "why_not_C": "Cross-region automated backups with point-in-time recovery have an RPO of up to 5 minutes and RTO of potentially hours for a full database restore.",
+      "why_not_D": "DynamoDB Global Tables have sub-second replication but this is a different database engine. Migrating from Aurora PostgreSQL to DynamoDB would require a complete application rewrite."
+    },
+    "concept_ids": ["aws-dop-multi-region-dr"],
+    "tags": ["aurora", "global-database", "disaster-recovery", "rpo", "rto"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-res-002",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "resilient-cloud-solutions",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A DevOps team wants to validate that their application can handle the failure of an entire Availability Zone. They need to run a controlled experiment that terminates all EC2 instances in a specific AZ while monitoring application availability. The experiment must automatically stop if the overall error rate exceeds 10%. Which approach should they use?",
+    "options": [
+      {"id": "A", "text": "Write a custom Lambda function that terminates instances by AZ and monitors CloudWatch metrics", "is_correct": false},
+      {"id": "B", "text": "Use AWS Fault Injection Service with an experiment template that targets instances by AZ, with a CloudWatch alarm stop condition", "is_correct": true},
+      {"id": "C", "text": "Manually terminate instances in the AZ from the EC2 console while watching the CloudWatch dashboard", "is_correct": false},
+      {"id": "D", "text": "Use Auto Scaling group scheduled actions to set the AZ's capacity to zero during the test window", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Fault Injection Service (FIS) is purpose-built for chaos engineering experiments. Experiment templates define the target resources (filtered by AZ), actions (EC2 instance termination), and stop conditions (CloudWatch alarm on error rate). The experiment automatically halts if the safety threshold is breached.",
+      "why_not_A": "Building custom chaos engineering tooling requires significant development effort and lacks the safety guardrails (stop conditions, audit trail) that FIS provides natively.",
+      "why_not_C": "Manual termination is uncontrolled, not repeatable, and has no automatic safety mechanism to stop if the error rate threshold is exceeded.",
+      "why_not_D": "Auto Scaling scheduled actions change desired capacity at set times. They do not simulate AZ failure, lack stop conditions, and cannot target specific AZs."
+    },
+    "concept_ids": ["aws-dop-chaos-engineering"],
+    "tags": ["fis", "chaos-engineering", "resilience", "az-failure"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-mon-001",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "monitoring-logging",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A microservices application running on ECS Fargate experiences intermittent latency spikes. The DevOps team needs to identify which downstream service call is causing the bottleneck. Logs show no errors. Which tool provides the MOST effective way to diagnose this issue?",
+    "options": [
+      {"id": "A", "text": "CloudWatch Logs Insights to query application logs for slow operations", "is_correct": false},
+      {"id": "B", "text": "X-Ray to trace requests across services and identify the high-latency segment", "is_correct": true},
+      {"id": "C", "text": "CloudWatch Container Insights to analyze ECS task-level CPU and memory metrics", "is_correct": false},
+      {"id": "D", "text": "VPC Flow Logs to identify network-level latency between services", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "X-Ray traces requests as they flow through microservices, showing the latency contribution of each service call. The service map visualizes dependencies, and trace analysis identifies which downstream call introduces the latency spike.",
+      "why_not_A": "CloudWatch Logs Insights searches log data, but the question states logs show no errors. Without specific latency logging in the application, Logs Insights cannot pinpoint inter-service call bottlenecks.",
+      "why_not_C": "Container Insights shows infrastructure-level metrics (CPU, memory, network). If the latency is caused by a slow downstream API call, Container Insights would not identify the specific service causing the delay.",
+      "why_not_D": "VPC Flow Logs capture network traffic metadata (source, destination, bytes, allow/deny) but do not measure application-level latency or trace individual requests."
+    },
+    "concept_ids": ["aws-dop-xray", "aws-dop-cloudwatch-advanced"],
+    "tags": ["x-ray", "distributed-tracing", "microservices", "latency"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-mon-002",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "monitoring-logging",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps team wants to publish custom business metrics (e.g., orders per minute, payment failures) from their application running on ECS without modifying the application code to call the CloudWatch PutMetricData API. What is the MOST efficient approach?",
+    "options": [
+      {"id": "A", "text": "Install the CloudWatch agent on the ECS tasks and configure custom metric collection", "is_correct": false},
+      {"id": "B", "text": "Use CloudWatch Embedded Metric Format (EMF) by writing structured JSON log lines that CloudWatch automatically extracts as metrics", "is_correct": true},
+      {"id": "C", "text": "Create a sidecar container that reads application logs and calls PutMetricData", "is_correct": false},
+      {"id": "D", "text": "Use CloudWatch Contributor Insights to automatically extract metrics from log patterns", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Embedded Metric Format allows applications to emit structured JSON log entries containing metric definitions. CloudWatch automatically extracts these as custom metrics without requiring API calls. The application just writes logs in the EMF format, requiring minimal code changes.",
+      "why_not_A": "The CloudWatch agent collects system-level metrics (CPU, memory, disk). It cannot collect custom business metrics like orders per minute without custom configuration that essentially amounts to PutMetricData.",
+      "why_not_C": "A sidecar container adds operational complexity (building, deploying, monitoring the sidecar) and still requires PutMetricData API calls.",
+      "why_not_D": "Contributor Insights identifies top contributors (top N patterns) from log data. It does not extract arbitrary business metrics from logs."
+    },
+    "concept_ids": ["aws-dop-cloudwatch-advanced"],
+    "tags": ["cloudwatch", "emf", "custom-metrics", "ecs"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-inc-001",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "incident-event-response",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A security team requires that any public S3 bucket be automatically remediated by removing public access within 5 minutes of detection. The solution must work across all accounts in the organization. Which architecture achieves this?",
+    "options": [
+      {"id": "A", "text": "AWS Config managed rule 's3-bucket-public-read-prohibited' with automatic remediation using an SSM Automation document that blocks public access", "is_correct": true},
+      {"id": "B", "text": "CloudTrail logging S3 API calls with an EventBridge rule to trigger a Lambda function that blocks public access", "is_correct": false},
+      {"id": "C", "text": "S3 Block Public Access at the account level for all accounts in the organization", "is_correct": false},
+      {"id": "D", "text": "GuardDuty with S3 protection enabled and a Lambda function triggered by findings", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "AWS Config's managed rule detects public S3 buckets and automatic remediation via SSM Automation can call the PutPublicAccessBlock API to block public access. Config aggregator provides organization-wide visibility, and the remediation acts within minutes of detection.",
+      "why_not_B": "CloudTrail with EventBridge could work, but it requires custom Lambda code, cross-account event forwarding, and does not provide the compliance reporting that Config offers. It also cannot detect buckets that were already public before the solution was deployed.",
+      "why_not_C": "Account-level S3 Block Public Access is preventive and would be the strongest control, but the question asks for remediation of detected public buckets, implying some buckets may legitimately need specific configurations.",
+      "why_not_D": "GuardDuty S3 protection detects suspicious access patterns and data exfiltration, not whether a bucket's ACL or policy allows public access."
+    },
+    "concept_ids": ["aws-dop-eventbridge-remediation", "aws-dop-ssm-runbooks"],
+    "tags": ["config", "remediation", "s3", "security", "automation"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-inc-002",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "incident-event-response",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A production EC2 instance becomes unresponsive due to a full root volume. The DevOps team wants to implement an automated response that detects this condition, creates a snapshot for forensics, extends the EBS volume, and sends a notification to the on-call team. Which approach provides the BEST automation?",
+    "options": [
+      {"id": "A", "text": "CloudWatch alarm on disk utilization with an SNS notification that triggers a Lambda function for all remediation steps", "is_correct": false},
+      {"id": "B", "text": "CloudWatch alarm on disk utilization triggering an EventBridge rule that invokes an SSM Automation runbook for the multi-step remediation", "is_correct": true},
+      {"id": "C", "text": "CloudWatch alarm on disk utilization with EC2 Auto Recovery action to replace the instance", "is_correct": false},
+      {"id": "D", "text": "AWS Health event detection with EventBridge triggering a Step Functions state machine", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SSM Automation runbooks are designed for multi-step operational procedures: snapshot creation, EBS volume modification, filesystem extension, and SNS notification can all be defined as sequential steps. EventBridge integrates with CloudWatch alarm state changes to trigger the runbook automatically.",
+      "why_not_A": "A Lambda function could perform these steps, but managing multi-step operational procedures with error handling, approvals, and rate control is the purpose of SSM Automation, not Lambda.",
+      "why_not_C": "EC2 Auto Recovery restarts the instance on the same host when underlying hardware fails. It does not extend EBS volumes or create snapshots.",
+      "why_not_D": "AWS Health events are for AWS service-level issues, not application-level disk utilization problems. Step Functions could orchestrate the workflow, but SSM Automation is purpose-built for operational tasks."
+    },
+    "concept_ids": ["aws-dop-ssm-runbooks", "aws-dop-eventbridge-remediation"],
+    "tags": ["automation", "ssm-runbook", "remediation", "incident-response"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-sec-001",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A DevOps team must implement automatic rotation of RDS PostgreSQL database credentials every 30 days. The application retrieves credentials at runtime and must experience zero downtime during rotation. Which approach meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Store credentials in Systems Manager Parameter Store with a Lambda function that rotates them and updates RDS", "is_correct": false},
+      {"id": "B", "text": "Use Secrets Manager with the built-in RDS rotation template and a multi-user rotation strategy", "is_correct": true},
+      {"id": "C", "text": "Store credentials in an encrypted S3 file with a scheduled Lambda function that generates new credentials monthly", "is_correct": false},
+      {"id": "D", "text": "Use IAM database authentication to eliminate the need for password rotation entirely", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Secrets Manager provides built-in RDS rotation Lambda templates. The multi-user rotation strategy creates two database users and alternates between them, ensuring the application always has valid credentials. The rotation process (createSecret, setSecret, testSecret, finishSecret) completes without downtime.",
+      "why_not_A": "Parameter Store does not have built-in rotation capability. Building custom rotation with Lambda requires implementing the full rotation workflow, error handling, and multi-user strategy from scratch.",
+      "why_not_C": "Storing credentials in S3 introduces latency, lacks versioning with staging labels, has no built-in rotation workflow, and is not designed for secrets management.",
+      "why_not_D": "IAM database authentication is a valid approach that eliminates password rotation, but it has limitations: 15-minute token lifetime, connection throttling, and not all PostgreSQL features support it. The question specifically asks about credential rotation."
+    },
+    "concept_ids": ["aws-dop-secrets-rotation"],
+    "tags": ["secrets-manager", "rotation", "rds", "zero-downtime"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-sec-002",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A DevOps team needs to ensure continuous compliance with PCI-DSS across 30 AWS accounts. They want to deploy a standard set of Config rules that map to PCI-DSS requirements, receive a consolidated compliance dashboard, and automatically remediate common violations. Which architecture achieves this with the LEAST operational overhead?",
+    "options": [
+      {"id": "A", "text": "Deploy individual Config rules in each account using Terraform with a centralized state backend", "is_correct": false},
+      {"id": "B", "text": "Use Config conformance packs deployed via CloudFormation StackSets with automatic remediation actions and Config aggregator for centralized reporting", "is_correct": true},
+      {"id": "C", "text": "Enable Security Hub with the PCI-DSS standard in each account and use custom Lambda functions for remediation", "is_correct": false},
+      {"id": "D", "text": "Deploy GuardDuty across all accounts with a delegated administrator and create EventBridge rules for compliance violations", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Config conformance packs bundle PCI-DSS-mapped Config rules together. StackSets deploy them across all 30 accounts with automatic deployment for new accounts. Config aggregator provides the consolidated compliance dashboard. SSM Automation remediation actions handle common violations.",
+      "why_not_A": "Managing individual Config rules across 30 accounts with Terraform requires maintaining Terraform state, pipelines, and per-account configurations. Conformance packs reduce this to a single deployment artifact.",
+      "why_not_C": "Security Hub with PCI-DSS provides compliance scoring, but custom Lambda functions for remediation require significant development and maintenance. Config with native remediation actions is more streamlined.",
+      "why_not_D": "GuardDuty is a threat detection service, not a compliance framework tool. It does not evaluate resources against PCI-DSS requirements."
+    },
+    "concept_ids": ["aws-dop-guardduty-automation", "aws-dop-cloudformation-advanced"],
+    "tags": ["config", "conformance-packs", "pci-dss", "compliance", "multi-account"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-iac-003",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "configuration-management-iac",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps engineer uses AWS CDK to define infrastructure. They want to see what CloudFormation changes will be made before deploying an update to their stack. Which CDK command should they run?",
+    "options": [
+      {"id": "A", "text": "cdk synth to generate the CloudFormation template and review it manually", "is_correct": false},
+      {"id": "B", "text": "cdk diff to compare the current deployed stack with the pending changes", "is_correct": true},
+      {"id": "C", "text": "cdk doctor to validate the stack and identify potential issues", "is_correct": false},
+      {"id": "D", "text": "cdk deploy --dry-run to simulate the deployment without applying changes", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "cdk diff compares the locally synthesized CloudFormation template with the currently deployed stack and shows additions, removals, and modifications. This is analogous to CloudFormation change sets and is the standard way to review changes before deployment.",
+      "why_not_A": "cdk synth generates the full CloudFormation template, but manually reading a JSON/YAML template to identify changes is error-prone and impractical for large stacks.",
+      "why_not_C": "cdk doctor checks the CDK project configuration and environment setup (Node.js version, CDK toolkit version). It does not compare infrastructure changes.",
+      "why_not_D": "cdk deploy does not have a --dry-run flag. The equivalent functionality is provided by cdk diff."
+    },
+    "concept_ids": ["aws-dop-cdk"],
+    "tags": ["cdk", "infrastructure-as-code", "change-management"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dop-sdlc-004",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "sdlc-automation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company uses separate AWS accounts for development, staging, and production. They want a single CodePipeline in the development account to deploy a CloudFormation stack to all three accounts sequentially. The staging deployment requires automated integration tests before promoting to production. Which architecture achieves this?",
+    "options": [
+      {"id": "A", "text": "Create three separate CodePipeline pipelines, one per account, triggered by the completion of the previous pipeline via EventBridge", "is_correct": false},
+      {"id": "B", "text": "Use a single CodePipeline with cross-account deploy actions using IAM roles in each target account, and a CodeBuild test action between staging and production stages", "is_correct": true},
+      {"id": "C", "text": "Use CodePipeline with a Lambda function that assumes roles in each account and deploys CloudFormation stacks sequentially", "is_correct": false},
+      {"id": "D", "text": "Use CloudFormation StackSets to deploy the stack to all three accounts simultaneously from the development account", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "CodePipeline natively supports cross-account actions by assuming IAM roles in target accounts. A single pipeline can have sequential stages for dev, staging, and production. A CodeBuild action between staging and production stages runs integration tests before promotion, providing the gating mechanism.",
+      "why_not_A": "Three separate pipelines add operational complexity for pipeline management, artifact sharing, and failure tracking. Cross-pipeline coordination via EventBridge is fragile compared to a single pipeline with cross-account stages.",
+      "why_not_C": "A Lambda function performing deployments is custom code that replicates the built-in cross-account deployment capability of CodePipeline. It adds maintenance burden and lacks pipeline-native features like execution history and stage transitions.",
+      "why_not_D": "StackSets deploy to all accounts simultaneously, not sequentially. They do not support staged promotion with testing gates between environments, which is a core requirement."
+    },
+    "concept_ids": ["aws-dop-codepipeline", "aws-dop-codebuild"],
+    "tags": ["cross-account", "codepipeline", "multi-account", "ci-cd", "promotion"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  }
+]

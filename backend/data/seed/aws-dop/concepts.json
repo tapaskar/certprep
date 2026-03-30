@@ -1,0 +1,396 @@
+[
+  {
+    "id": "aws-dop-codepipeline",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "sdlc-automation",
+    "topic_id": "ci-cd",
+    "name": "CodePipeline",
+    "description": "Fully managed continuous delivery service for automated release pipelines",
+    "exam_weight": 0.0800,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Stages contain action groups that run sequentially or in parallel",
+      "Supports source, build, test, deploy, approval, and invoke action types",
+      "Manual approval actions for gated deployments",
+      "Pipeline execution history and state transitions tracked automatically",
+      "Cross-account and cross-region pipeline actions supported"
+    ],
+    "common_misconceptions": [
+      "CodePipeline performs builds itself (it orchestrates; CodeBuild performs the builds)",
+      "Pipeline stages must be sequential (action groups within a stage can run in parallel)"
+    ],
+    "aws_services": ["CodePipeline", "CodeBuild", "CodeDeploy", "S3", "CloudFormation"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-codebuild", "transfer_weight": 0.35},
+      {"concept_id": "aws-dop-codedeploy", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-dop-codebuild",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "sdlc-automation",
+    "topic_id": "ci-cd",
+    "name": "CodeBuild",
+    "description": "Fully managed build service that compiles source code, runs tests, and produces artifacts",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "buildspec.yml defines build phases: install, pre_build, build, post_build",
+      "Supports custom Docker images for build environments",
+      "Build artifacts stored in S3; logs in CloudWatch Logs",
+      "Local caching (source, Docker layer, custom) reduces build times",
+      "VPC support enables access to private resources during builds"
+    ],
+    "common_misconceptions": [
+      "CodeBuild requires managing build servers (it is fully serverless)",
+      "Build environment is persistent between builds (each build runs in a fresh container)"
+    ],
+    "aws_services": ["CodeBuild", "S3", "CloudWatch Logs", "ECR"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-codepipeline", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-dop-codedeploy",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "sdlc-automation",
+    "topic_id": "deployment-strategies",
+    "name": "CodeDeploy Deployment Strategies",
+    "description": "Blue/green, canary, and rolling deployments for EC2, Lambda, and ECS",
+    "exam_weight": 0.0800,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "EC2/On-premises: in-place or blue/green deployment types",
+      "Lambda: canary, linear, and all-at-once traffic shifting",
+      "ECS: canary, linear, and all-at-once with replacement task sets",
+      "AppSpec file defines lifecycle hooks and deployment instructions",
+      "Automatic rollback on deployment failure or CloudWatch alarm trigger"
+    ],
+    "common_misconceptions": [
+      "Blue/green for EC2 reuses existing instances (it provisions entirely new instances)",
+      "Canary and linear deployments are only for Lambda (ECS also supports them)"
+    ],
+    "aws_services": ["CodeDeploy", "EC2", "Lambda", "ECS", "ALB"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-codepipeline", "transfer_weight": 0.35},
+      {"concept_id": "aws-dop-canary-releases", "transfer_weight": 0.4}
+    ]
+  },
+  {
+    "id": "aws-dop-canary-releases",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "sdlc-automation",
+    "topic_id": "deployment-strategies",
+    "name": "Canary and Blue/Green Deployments",
+    "description": "Progressive deployment patterns with traffic shifting and automated rollback",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Canary: shifts small percentage first (e.g., 10%), then remaining after validation",
+      "Linear: shifts traffic in equal increments at regular intervals",
+      "Blue/green: runs two identical environments, switches all traffic at once",
+      "CloudWatch alarms can trigger automatic rollback during traffic shifting",
+      "ALB weighted target groups enable fine-grained traffic distribution"
+    ],
+    "common_misconceptions": [
+      "Canary always means 5% traffic (percentage and interval are configurable)",
+      "Blue/green deployment doubles infrastructure cost permanently (the old environment is terminated after validation)"
+    ],
+    "aws_services": ["CodeDeploy", "ALB", "Route 53", "CloudWatch"],
+    "prerequisites": ["aws-dop-codedeploy"],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-codedeploy", "transfer_weight": 0.4}
+    ]
+  },
+  {
+    "id": "aws-dop-cloudformation-advanced",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "configuration-management-iac",
+    "topic_id": "infrastructure-as-code",
+    "name": "CloudFormation Advanced Features",
+    "description": "Nested stacks, StackSets, drift detection, and custom resources",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Nested stacks enable component reuse and modular templates",
+      "StackSets deploy stacks across multiple accounts and regions simultaneously",
+      "Drift detection identifies resources modified outside CloudFormation",
+      "Custom resources invoke Lambda for unsupported resource types",
+      "cfn-signal and CreationPolicy coordinate with instance bootstrapping"
+    ],
+    "common_misconceptions": [
+      "StackSets update all instances simultaneously (they update sequentially by default with configurable concurrency)",
+      "Drift detection runs automatically (it must be manually initiated or scheduled)"
+    ],
+    "aws_services": ["CloudFormation", "Lambda", "Organizations"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-cdk", "transfer_weight": 0.3},
+      {"concept_id": "aws-dop-service-catalog", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dop-cdk",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "configuration-management-iac",
+    "topic_id": "infrastructure-as-code",
+    "name": "AWS CDK",
+    "description": "Define cloud infrastructure using familiar programming languages",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Supports TypeScript, Python, Java, C#, and Go",
+      "Constructs: L1 (CFN resources), L2 (opinionated defaults), L3 (patterns)",
+      "cdk synth generates CloudFormation templates from code",
+      "cdk diff shows infrastructure changes before deployment",
+      "Assets (Docker images, Lambda code) are automatically uploaded to S3/ECR"
+    ],
+    "common_misconceptions": [
+      "CDK replaces CloudFormation (CDK generates CloudFormation templates under the hood)",
+      "CDK constructs are only for simple resources (L3 constructs define complex multi-resource patterns)"
+    ],
+    "aws_services": ["CDK", "CloudFormation", "S3", "ECR"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-cloudformation-advanced", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dop-service-catalog",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "configuration-management-iac",
+    "topic_id": "governance",
+    "name": "Service Catalog",
+    "description": "Self-service portal of approved IT products for governance at scale",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Products are defined as CloudFormation templates with versioning",
+      "Portfolios group products and control access via IAM",
+      "Launch constraints define the IAM role used when provisioning products",
+      "Shared portfolios enable cross-account product distribution",
+      "TagOptions enforce tagging standards on provisioned resources"
+    ],
+    "common_misconceptions": [
+      "End users need CloudFormation knowledge to use Service Catalog (they interact through a simplified portal)",
+      "Service Catalog products can only be CloudFormation (it also supports Terraform via external engine)"
+    ],
+    "aws_services": ["Service Catalog", "CloudFormation", "IAM", "Organizations"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-cloudformation-advanced", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dop-multi-region-dr",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "resilient-cloud-solutions",
+    "topic_id": "disaster-recovery",
+    "name": "Multi-Region DR Strategies",
+    "description": "Disaster recovery architectures with defined RTO and RPO targets",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Backup and restore: lowest cost, highest RTO/RPO (hours)",
+      "Pilot light: minimal core infrastructure running in DR region",
+      "Warm standby: scaled-down but fully functional copy in DR region",
+      "Multi-site active/active: full production in multiple regions, lowest RTO/RPO",
+      "RTO: time to recover; RPO: acceptable data loss window"
+    ],
+    "common_misconceptions": [
+      "Pilot light and warm standby are the same (pilot light runs minimal infrastructure; warm standby is a scaled-down full copy)",
+      "Active/active eliminates all data loss (network partitions can still cause brief inconsistency)"
+    ],
+    "aws_services": ["Route 53", "Aurora Global Database", "S3 Cross-Region Replication", "DynamoDB Global Tables"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-chaos-engineering", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dop-chaos-engineering",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "resilient-cloud-solutions",
+    "topic_id": "resilience-testing",
+    "name": "Chaos Engineering and Fault Injection",
+    "description": "Testing system resilience through controlled fault injection experiments",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "AWS Fault Injection Service (FIS) runs controlled experiments",
+      "Experiment templates define actions, targets, and stop conditions",
+      "Supports EC2 instance termination, CPU/memory stress, network disruption",
+      "Stop conditions halt experiments if safety thresholds are breached",
+      "Integrates with CloudWatch alarms for automatic experiment termination"
+    ],
+    "common_misconceptions": [
+      "Chaos engineering means randomly breaking things in production (experiments are controlled with safety guardrails)",
+      "FIS only works with EC2 (it supports ECS, EKS, RDS, and more)"
+    ],
+    "aws_services": ["Fault Injection Service", "CloudWatch", "EC2", "ECS", "RDS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-multi-region-dr", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dop-cloudwatch-advanced",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "monitoring-logging",
+    "topic_id": "observability",
+    "name": "CloudWatch Advanced Monitoring",
+    "description": "CloudWatch Logs Insights, Container Insights, and custom metrics for deep observability",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Logs Insights supports SQL-like queries across multiple log groups",
+      "Container Insights collects ECS and EKS metrics at cluster, service, and task level",
+      "Embedded Metric Format (EMF) publishes custom metrics from structured log events",
+      "Contributor Insights identifies top contributors (e.g., top IP addresses, top URLs)",
+      "Anomaly detection uses ML to create metric baselines and alert on deviations"
+    ],
+    "common_misconceptions": [
+      "Container Insights is enabled by default (it must be explicitly enabled per cluster)",
+      "CloudWatch Logs Insights queries run in real-time (they query historical log data)"
+    ],
+    "aws_services": ["CloudWatch", "CloudWatch Logs Insights", "Container Insights"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-xray", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dop-xray",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "monitoring-logging",
+    "topic_id": "distributed-tracing",
+    "name": "X-Ray Distributed Tracing",
+    "description": "End-to-end tracing for analyzing and debugging distributed applications",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Traces follow requests across services (API Gateway, Lambda, ECS, EC2)",
+      "Segments represent work done by a service; subsegments add detail",
+      "Service map visualizes application architecture and latency",
+      "Sampling rules control the percentage of requests traced to manage costs",
+      "Annotations enable trace filtering; metadata adds non-indexed detail"
+    ],
+    "common_misconceptions": [
+      "X-Ray traces every request by default (default sampling traces the first request per second plus 5% of additional requests)",
+      "X-Ray replaces CloudWatch (X-Ray is for tracing; CloudWatch is for metrics and logs)"
+    ],
+    "aws_services": ["X-Ray", "API Gateway", "Lambda", "ECS", "EC2"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-cloudwatch-advanced", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dop-eventbridge-remediation",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "incident-event-response",
+    "topic_id": "automated-response",
+    "name": "EventBridge Auto-Remediation",
+    "description": "Event-driven automated incident response and remediation patterns",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "EventBridge rules trigger Lambda functions for automated remediation",
+      "AWS Health events can trigger automated responses to service disruptions",
+      "Config rule compliance changes can trigger remediation workflows",
+      "SNS fan-out pattern enables parallel notification and remediation",
+      "Step Functions orchestrate multi-step remediation runbooks"
+    ],
+    "common_misconceptions": [
+      "EventBridge can only trigger Lambda (it supports 20+ target types including Step Functions, SQS, SNS, ECS tasks)",
+      "Automated remediation replaces incident response processes (it handles known issues; novel incidents still need human judgment)"
+    ],
+    "aws_services": ["EventBridge", "Lambda", "SNS", "Step Functions", "Systems Manager"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-ssm-runbooks", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-dop-ssm-runbooks",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "incident-event-response",
+    "topic_id": "operational-automation",
+    "name": "SSM Automation Runbooks",
+    "description": "Predefined and custom operational runbooks for automated incident resolution",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Automation documents define multi-step operational procedures",
+      "AWS provides 300+ pre-built runbooks for common operational tasks",
+      "Supports approval workflows for change management",
+      "Rate control limits concurrent execution across a fleet",
+      "Can be invoked by EventBridge, Config remediation, or manually"
+    ],
+    "common_misconceptions": [
+      "SSM Automation and Run Command are the same (Automation runs multi-step workflows; Run Command executes single commands)",
+      "Custom runbooks require coding in a programming language (they use YAML or JSON document format)"
+    ],
+    "aws_services": ["Systems Manager Automation", "EventBridge", "Config"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-eventbridge-remediation", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-dop-secrets-rotation",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "security-compliance",
+    "topic_id": "secrets-management",
+    "name": "Secrets Manager Rotation",
+    "description": "Automated secret rotation for database credentials and API keys",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Automatic rotation uses Lambda functions on a configurable schedule",
+      "Built-in rotation templates for RDS, Redshift, and DocumentDB",
+      "Multi-user rotation strategy for zero-downtime credential updates",
+      "Secrets versioned with staging labels (AWSCURRENT, AWSPENDING, AWSPREVIOUS)",
+      "Resource-based policies control cross-account secret access"
+    ],
+    "common_misconceptions": [
+      "Secrets Manager and Parameter Store are interchangeable (Secrets Manager has built-in rotation; Parameter Store does not)",
+      "Rotation happens instantly (the rotation Lambda goes through createSecret, setSecret, testSecret, finishSecret steps)"
+    ],
+    "aws_services": ["Secrets Manager", "Lambda", "RDS", "KMS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-guardduty-automation", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dop-guardduty-automation",
+    "exam_id": "aws-dop-c02",
+    "domain_id": "security-compliance",
+    "topic_id": "threat-detection",
+    "name": "GuardDuty and Security Automation",
+    "description": "Automated threat detection and response using GuardDuty with Config conformance packs",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "GuardDuty analyzes CloudTrail, VPC Flow Logs, and DNS logs for threats",
+      "Findings published to EventBridge for automated response workflows",
+      "Config conformance packs bundle rules for compliance frameworks (PCI-DSS, HIPAA)",
+      "Suppression rules filter expected GuardDuty findings to reduce noise",
+      "Delegated administrator model for multi-account GuardDuty management"
+    ],
+    "common_misconceptions": [
+      "GuardDuty prevents attacks (it detects threats; prevention requires additional remediation)",
+      "Config conformance packs enforce compliance (they detect non-compliance; SCPs enforce)"
+    ],
+    "aws_services": ["GuardDuty", "Config", "EventBridge", "Lambda", "Security Hub"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dop-secrets-rotation", "transfer_weight": 0.2},
+      {"concept_id": "aws-dop-eventbridge-remediation", "transfer_weight": 0.3}
+    ]
+  }
+]

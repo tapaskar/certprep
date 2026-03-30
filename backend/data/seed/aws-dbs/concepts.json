@@ -1,0 +1,402 @@
+[
+  {
+    "id": "aws-dbs-aurora-vs-rds",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "workload-specific-database-design",
+    "topic_id": "db-design",
+    "name": "Aurora vs RDS Architecture",
+    "description": "Comparing Aurora's cloud-native storage architecture with standard RDS for workload-specific database selection",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Aurora storage uses a distributed, fault-tolerant cluster volume across 3 AZs with 6 copies of data",
+      "Aurora supports up to 15 read replicas with sub-10ms replica lag vs RDS read replicas with potentially minutes of lag",
+      "Aurora Serverless v2 scales in increments of 0.5 ACU with minimum 0.5 ACU",
+      "RDS Multi-AZ uses synchronous block-level replication to a standby for HA, not read scaling",
+      "Aurora Global Database provides cross-region replication with typically under 1-second lag"
+    ],
+    "common_misconceptions": [
+      "RDS Multi-AZ provides read scaling (the standby is not available for reads; use read replicas)",
+      "Aurora is always more cost-effective than RDS (for small or simple workloads, standard RDS can be cheaper)"
+    ],
+    "aws_services": ["Aurora", "RDS", "Aurora Serverless"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-rds-snapshots", "transfer_weight": 0.2},
+      {"concept_id": "aws-dbs-performance-insights", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dbs-dynamodb-modeling",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "workload-specific-database-design",
+    "topic_id": "db-design",
+    "name": "DynamoDB Data Modeling",
+    "description": "Designing efficient partition key, sort key, and secondary index structures for DynamoDB access patterns",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Partition key determines data distribution; high-cardinality keys prevent hot partitions",
+      "Composite primary key (partition + sort key) enables range queries within a partition",
+      "Global Secondary Index (GSI) has its own partition and sort key with eventually consistent reads only",
+      "Local Secondary Index (LSI) shares the table partition key but uses an alternate sort key; must be created at table creation",
+      "Single-table design consolidates multiple entity types using overloaded sort keys to reduce query latency"
+    ],
+    "common_misconceptions": [
+      "GSIs support strongly consistent reads (they only support eventually consistent reads)",
+      "LSIs can be added after table creation (they must be defined at table creation time)"
+    ],
+    "aws_services": ["DynamoDB", "DAX"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-dynamodb-encryption", "transfer_weight": 0.2},
+      {"concept_id": "aws-dbs-aurora-vs-rds", "transfer_weight": 0.1}
+    ]
+  },
+  {
+    "id": "aws-dbs-redshift-design",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "workload-specific-database-design",
+    "topic_id": "db-design",
+    "name": "Redshift Distribution Styles and Sort Keys",
+    "description": "Optimizing Redshift table design with distribution styles, sort keys, and compression for analytical workloads",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "KEY distribution co-locates rows with the same distribution key value on the same node for join optimization",
+      "EVEN distribution spreads rows uniformly when no clear join key exists",
+      "ALL distribution replicates the entire table to every node for small dimension tables",
+      "Compound sort keys are best for queries that filter on a prefix of the key columns in order",
+      "Interleaved sort keys give equal weight to each column for ad-hoc query patterns"
+    ],
+    "common_misconceptions": [
+      "AUTO distribution always chooses the optimal strategy (it may not for complex query patterns; manual tuning can outperform it)",
+      "Interleaved sort keys are always better than compound (interleaved has higher vacuum overhead and is slower for prefix-based queries)"
+    ],
+    "aws_services": ["Redshift", "Redshift Spectrum", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-redshift-wlm", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dbs-neptune-graph",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "workload-specific-database-design",
+    "topic_id": "db-design",
+    "name": "Neptune Graph Database Design",
+    "description": "Using Amazon Neptune for graph and knowledge graph workloads with Gremlin and SPARQL query languages",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Supports both Property Graph (Gremlin) and RDF (SPARQL) query models",
+      "Optimized for highly connected datasets like social networks, fraud detection, and knowledge graphs",
+      "Read replicas provide read scaling with up to 15 replicas across AZs",
+      "Neptune Streams captures graph changes for event-driven architectures",
+      "Neptune ML integrates with SageMaker for graph neural network predictions"
+    ],
+    "common_misconceptions": [
+      "Neptune replaces relational databases for all use cases (it is purpose-built for graph traversals and relationship-heavy queries)",
+      "Gremlin and SPARQL can query the same data interchangeably (they use different data models: Property Graph vs RDF)"
+    ],
+    "aws_services": ["Neptune", "SageMaker", "Neptune Streams"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-dynamodb-modeling", "transfer_weight": 0.1}
+    ]
+  },
+  {
+    "id": "aws-dbs-dms-migration",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "deployment-migration",
+    "topic_id": "deployment-migration",
+    "name": "DMS and Schema Conversion Tool",
+    "description": "Using AWS Database Migration Service and Schema Conversion Tool for homogeneous and heterogeneous migrations",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "DMS supports full load, CDC (change data capture), and full load plus CDC migration types",
+      "SCT converts schema objects including stored procedures, functions, and views between database engines",
+      "DMS replication instance must be sized based on the volume of data and rate of change",
+      "Multi-AZ replication instances provide HA for the migration process itself",
+      "SCT assessment report identifies conversion complexity and manual intervention needed"
+    ],
+    "common_misconceptions": [
+      "DMS handles schema conversion automatically (SCT is needed for heterogeneous migrations to convert schema)",
+      "CDC captures schema changes (CDC only captures data changes; schema changes require manual handling)"
+    ],
+    "aws_services": ["DMS", "SCT", "RDS", "Aurora", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-rds-snapshots", "transfer_weight": 0.2},
+      {"concept_id": "aws-dbs-aurora-vs-rds", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-dbs-rds-snapshots",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "deployment-migration",
+    "topic_id": "deployment-migration",
+    "name": "RDS Snapshots and Aurora Cloning",
+    "description": "Database backup, restore, and cloning strategies for deployment and disaster recovery",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Automated backups enable point-in-time recovery (PITR) with 5-minute granularity",
+      "Manual snapshots persist until explicitly deleted; automated backups are deleted with the instance",
+      "Aurora cloning uses copy-on-write protocol and creates a clone in minutes regardless of database size",
+      "Cross-region snapshot copy enables disaster recovery in another region",
+      "Sharing encrypted snapshots across accounts requires sharing the KMS key used for encryption"
+    ],
+    "common_misconceptions": [
+      "Aurora clones are full copies that consume the same storage (they use copy-on-write and initially share storage)",
+      "Automated backups are retained after deleting an RDS instance (they are deleted unless a final snapshot is taken)"
+    ],
+    "aws_services": ["RDS", "Aurora", "KMS", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-aurora-vs-rds", "transfer_weight": 0.2},
+      {"concept_id": "aws-dbs-rds-encryption", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dbs-cross-region-replicas",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "deployment-migration",
+    "topic_id": "deployment-migration",
+    "name": "Cross-Region Replicas and Global Databases",
+    "description": "Multi-region database architectures for disaster recovery and low-latency global access",
+    "exam_weight": 0.0350,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "RDS cross-region read replicas use asynchronous replication with potential minutes of lag",
+      "Aurora Global Database provides managed cross-region replication with typically under 1-second lag",
+      "DynamoDB Global Tables provide active-active multi-region replication with eventual consistency",
+      "Aurora Global Database supports managed planned failover for controlled region switchover",
+      "Cross-region replication incurs data transfer costs between regions"
+    ],
+    "common_misconceptions": [
+      "Aurora Global Database secondaries can serve writes (only the primary region handles writes; secondaries are read-only unless promoted)",
+      "DynamoDB Global Tables support strongly consistent reads across regions (cross-region reads are eventually consistent)"
+    ],
+    "aws_services": ["Aurora", "RDS", "DynamoDB", "Global Accelerator"],
+    "prerequisites": ["aws-dbs-aurora-vs-rds"],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-aurora-vs-rds", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dbs-parameter-groups",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "management-operations",
+    "topic_id": "management-ops",
+    "name": "Parameter Groups and Maintenance Windows",
+    "description": "Managing database engine configuration and scheduled maintenance for RDS and Aurora",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "DB parameter groups control engine-level settings like max_connections and innodb_buffer_pool_size",
+      "DB cluster parameter groups apply to all instances in an Aurora cluster",
+      "Some parameter changes require a reboot to take effect (static parameters) while others apply immediately (dynamic parameters)",
+      "Maintenance windows define when patches and minor upgrades are applied",
+      "Option groups enable additional features like Oracle TDE or SQL Server Audit"
+    ],
+    "common_misconceptions": [
+      "All parameter changes take effect immediately (static parameters require a reboot; only dynamic parameters apply immediately)",
+      "Modifying the default parameter group is best practice (always create a custom parameter group; the default cannot be modified)"
+    ],
+    "aws_services": ["RDS", "Aurora", "Systems Manager"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-performance-insights", "transfer_weight": 0.2},
+      {"concept_id": "aws-dbs-rds-proxy", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-dbs-performance-insights",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "management-operations",
+    "topic_id": "management-ops",
+    "name": "Performance Insights and RDS Proxy",
+    "description": "Database performance monitoring and connection management tools for RDS and Aurora",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Performance Insights visualizes database load by waits, SQL statements, hosts, and users",
+      "DB load metric measures Active Sessions normalized by vCPU count",
+      "RDS Proxy pools and shares database connections to reduce connection churn",
+      "RDS Proxy supports IAM authentication for database access without storing credentials",
+      "RDS Proxy improves Lambda function performance by reusing database connections across invocations"
+    ],
+    "common_misconceptions": [
+      "Performance Insights incurs high cost (free tier retains 7 days of history; longer retention is paid)",
+      "RDS Proxy eliminates connection limits (it manages connections more efficiently but the database max_connections limit still applies)"
+    ],
+    "aws_services": ["RDS", "Aurora", "Performance Insights", "RDS Proxy", "Lambda"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-parameter-groups", "transfer_weight": 0.2},
+      {"concept_id": "aws-dbs-cloudwatch-rds", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dbs-cloudwatch-rds",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "monitoring-troubleshooting",
+    "topic_id": "monitoring",
+    "name": "CloudWatch RDS Metrics and Enhanced Monitoring",
+    "description": "Monitoring RDS and Aurora performance using CloudWatch metrics and Enhanced Monitoring for OS-level visibility",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Standard CloudWatch metrics include CPUUtilization, FreeableMemory, ReadIOPS, WriteIOPS at 1-minute intervals",
+      "Enhanced Monitoring provides OS-level metrics at up to 1-second granularity via an agent on the instance",
+      "Enhanced Monitoring captures process-level CPU, memory, and I/O not available in standard CloudWatch",
+      "CloudWatch Alarms can trigger SNS notifications or Auto Scaling actions based on RDS metrics",
+      "DatabaseConnections metric helps detect connection exhaustion before it affects applications"
+    ],
+    "common_misconceptions": [
+      "Standard CloudWatch provides OS-level metrics for RDS (Enhanced Monitoring is required for OS-level visibility)",
+      "Enhanced Monitoring data goes to CloudWatch Metrics (it is published to CloudWatch Logs as JSON documents)"
+    ],
+    "aws_services": ["CloudWatch", "RDS", "Aurora", "SNS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-performance-insights", "transfer_weight": 0.25},
+      {"concept_id": "aws-dbs-slow-query-logs", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dbs-slow-query-logs",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "monitoring-troubleshooting",
+    "topic_id": "monitoring",
+    "name": "Slow Query Logs and Troubleshooting",
+    "description": "Identifying and resolving database performance issues using query logs and execution plan analysis",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "MySQL slow query log captures queries exceeding the long_query_time threshold",
+      "PostgreSQL pg_stat_statements extension tracks execution statistics for all SQL statements",
+      "RDS logs can be published to CloudWatch Logs for centralized analysis and alarming",
+      "Aurora MySQL audit logs capture database activity for compliance requirements",
+      "EXPLAIN and EXPLAIN ANALYZE reveal query execution plans for optimization"
+    ],
+    "common_misconceptions": [
+      "Slow query logs are enabled by default (they must be enabled via parameter groups)",
+      "Query performance issues are always CPU-related (I/O waits, lock contention, and network latency are equally common causes)"
+    ],
+    "aws_services": ["RDS", "Aurora", "CloudWatch Logs", "Performance Insights"],
+    "prerequisites": ["aws-dbs-cloudwatch-rds"],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-cloudwatch-rds", "transfer_weight": 0.2},
+      {"concept_id": "aws-dbs-performance-insights", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dbs-redshift-wlm",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "monitoring-troubleshooting",
+    "topic_id": "monitoring",
+    "name": "Redshift WLM and Query Monitoring",
+    "description": "Workload management configuration and query monitoring for Amazon Redshift performance optimization",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "WLM queues allocate memory and concurrency slots to different workload types",
+      "Automatic WLM dynamically manages memory and concurrency based on workload patterns",
+      "Short Query Acceleration (SQA) detects and routes short-running queries to a dedicated pool",
+      "Concurrency Scaling adds transient clusters during demand spikes for consistent performance",
+      "STL and SVL system tables provide detailed query execution and compilation metrics"
+    ],
+    "common_misconceptions": [
+      "Manual WLM is recommended over Automatic WLM (Automatic WLM is the AWS-recommended default for most workloads)",
+      "Concurrency Scaling is always active (it activates only when queued queries exceed the configured WLM threshold)"
+    ],
+    "aws_services": ["Redshift", "CloudWatch", "Redshift Advisor"],
+    "prerequisites": ["aws-dbs-redshift-design"],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-redshift-design", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dbs-rds-encryption",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "database-security",
+    "topic_id": "db-security",
+    "name": "RDS and DynamoDB Encryption",
+    "description": "Encryption at rest and in transit for RDS, Aurora, and DynamoDB databases",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "RDS encryption at rest must be enabled at creation time; you cannot encrypt an existing unencrypted instance directly",
+      "To encrypt an existing unencrypted RDS instance: create snapshot, copy with encryption, restore from encrypted snapshot",
+      "Aurora encrypts all replicas, snapshots, and backups automatically once the cluster is encrypted",
+      "DynamoDB encryption at rest is enabled by default using an AWS owned key; customer managed KMS keys are optional",
+      "RDS supports SSL/TLS connections; some engines like PostgreSQL can enforce SSL via the rds.force_ssl parameter"
+    ],
+    "common_misconceptions": [
+      "You can enable encryption on an existing unencrypted RDS instance (you must create an encrypted copy via snapshot)",
+      "DynamoDB does not support encryption at rest (it is encrypted by default since 2018)"
+    ],
+    "aws_services": ["RDS", "Aurora", "DynamoDB", "KMS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-iam-db-auth", "transfer_weight": 0.25},
+      {"concept_id": "aws-dbs-rds-snapshots", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dbs-iam-db-auth",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "database-security",
+    "topic_id": "db-security",
+    "name": "IAM Database Authentication and Audit Logging",
+    "description": "Token-based database authentication using IAM and database activity auditing",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "IAM DB authentication generates temporary tokens valid for 15 minutes for MySQL and PostgreSQL on RDS and Aurora",
+      "SSL/TLS is required when using IAM DB authentication",
+      "Database Activity Streams provide near-real-time streams of database activity for compliance",
+      "Aurora MySQL advanced audit logs capture DML and DDL operations with configurable detail levels",
+      "RDS Proxy supports IAM authentication and forwards connections to the database using stored credentials"
+    ],
+    "common_misconceptions": [
+      "IAM DB authentication works with all database engines (it only supports MySQL and PostgreSQL on RDS and Aurora)",
+      "IAM DB authentication tokens are long-lived (they expire after 15 minutes and must be regenerated)"
+    ],
+    "aws_services": ["RDS", "Aurora", "IAM", "RDS Proxy", "Kinesis Data Streams"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-rds-encryption", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dbs-ssl-connections",
+    "exam_id": "aws-dbs-c01",
+    "domain_id": "database-security",
+    "topic_id": "db-security",
+    "name": "SSL Connections and Network Security",
+    "description": "Enforcing encrypted connections and network isolation for database instances",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "RDS instances should be deployed in private subnets with no public accessibility",
+      "DB subnet groups define which subnets in a VPC can host RDS instances",
+      "Security groups control inbound access to RDS instances at the port level",
+      "PostgreSQL rds.force_ssl parameter enforces SSL for all connections",
+      "MySQL require_secure_transport parameter enforces SSL when set via a custom parameter group"
+    ],
+    "common_misconceptions": [
+      "RDS instances in a VPC are automatically inaccessible from the internet (Public Accessibility must be set to No explicitly)",
+      "SSL is enforced by default on all RDS engines (SSL is available but not enforced by default; it must be configured per engine)"
+    ],
+    "aws_services": ["RDS", "Aurora", "VPC", "Security Groups", "ACM"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dbs-rds-encryption", "transfer_weight": 0.2},
+      {"concept_id": "aws-dbs-iam-db-auth", "transfer_weight": 0.15}
+    ]
+  }
+]

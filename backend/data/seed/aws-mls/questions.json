@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-mls-001",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "data-engineering",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data science team needs to build a data lake for ML training data. The dataset contains 500 million records with 200 features. Training jobs access only 20-30 features at a time. Storage costs must be minimized, and data loading into SageMaker training jobs must be as fast as possible. Which storage configuration BEST meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Store data as CSV files in S3 Standard, compressed with gzip, and use SageMaker File mode to download files before training.", "is_correct": false},
+      {"id": "B", "text": "Store data as Parquet files in S3 Standard, partitioned by date, and use SageMaker Pipe mode to stream only the required columns during training.", "is_correct": true},
+      {"id": "C", "text": "Store data as JSON files in S3 Intelligent-Tiering with automatic archiving and use SageMaker File mode for training.", "is_correct": false},
+      {"id": "D", "text": "Store data in Amazon RDS with a read replica and have SageMaker training jobs query the database directly during training.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Parquet is a columnar format that enables reading only the 20-30 required columns without scanning the entire row, significantly reducing I/O for wide datasets. Parquet also provides built-in compression reducing storage costs. Pipe mode streams data directly from S3 to the training container, eliminating the need to download entire files to disk before training begins.",
+      "why_not_A": "CSV is a row-based format that requires reading entire rows even when only 20-30 of 200 features are needed. This wastes I/O bandwidth. File mode downloads all data before training starts, increasing startup time for large datasets.",
+      "why_not_C": "JSON has significant storage overhead due to repeated key names across 500 million records. It is not a columnar format so all fields must be read. Intelligent-Tiering may archive data to access tiers with retrieval delays unsuitable for training.",
+      "why_not_D": "Reading directly from RDS during training creates a bottleneck. RDS is not designed for the high-throughput sequential reads needed for ML training. Network I/O between RDS and training instances limits throughput compared to S3 streaming."
+    },
+    "concept_ids": ["aws-mls-s3-data-lakes", "aws-mls-glue-etl-features"],
+    "tags": ["data-lake", "parquet", "pipe-mode", "storage-optimization"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-002",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "data-engineering",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company collects clickstream data from their website at 50,000 events per second. The data needs to be enriched with user profile data from DynamoDB, transformed into ML features, and made available for both real-time fraud detection inference and batch model retraining. Which architecture handles both requirements?",
+    "options": [
+      {"id": "A", "text": "Ingest events with Kinesis Data Streams. Use a Kinesis Data Analytics Flink application to enrich events with DynamoDB lookups and invoke a SageMaker endpoint for real-time inference. Use Kinesis Data Firehose to deliver raw events to S3 for batch retraining.", "is_correct": true},
+      {"id": "B", "text": "Ingest events with Amazon SQS. Use Lambda functions to enrich events and invoke SageMaker for inference. Store processed events in DynamoDB for batch retraining.", "is_correct": false},
+      {"id": "C", "text": "Ingest events directly into S3 using S3 event notifications. Use Glue ETL streaming jobs to enrich and transform data. Use SageMaker Batch Transform for fraud detection.", "is_correct": false},
+      {"id": "D", "text": "Ingest events with Kinesis Data Firehose directly to S3. Use a scheduled Glue ETL job to enrich data from DynamoDB. Invoke SageMaker endpoints from an API Gateway for real-time inference.", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Kinesis Data Streams handles 50,000 events per second with sub-second latency. Kinesis Data Analytics with Flink provides real-time stream processing for enrichment and can invoke SageMaker endpoints for immediate fraud detection. Kinesis Data Firehose as a second consumer delivers the same data to S3 for batch model retraining, serving both real-time and batch requirements from a single ingestion stream.",
+      "why_not_B": "SQS does not maintain ordering and has higher latency for real-time processing. Lambda concurrent execution limits at 50,000 events per second would require significant concurrency scaling. DynamoDB for batch retraining storage is expensive and not optimized for sequential ML data access.",
+      "why_not_C": "S3 event notifications do not provide real-time ingestion capability. Batch Transform runs on stored data, not streaming data, so it cannot provide real-time fraud detection within the required latency.",
+      "why_not_D": "Kinesis Data Firehose introduces at least a 60-second buffering delay, which is too slow for real-time fraud detection. API Gateway is for request-response patterns, not stream processing. Scheduled Glue ETL adds further delay to enrichment."
+    },
+    "concept_ids": ["aws-mls-kinesis-streaming", "aws-mls-sagemaker-endpoints"],
+    "tags": ["streaming", "real-time-inference", "batch-retraining", "fraud-detection"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-003",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "data-engineering",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A data engineer needs to transform raw data in S3 into ML-ready features. The transformations include joining data from multiple sources, handling schema evolution, deduplicating records, and converting data to Parquet format. The pipeline must support incremental processing so only new data is transformed on each run. Which service is BEST suited for this workload?",
+    "options": [
+      {"id": "A", "text": "AWS Lambda with S3 event triggers to process each new file as it arrives", "is_correct": false},
+      {"id": "B", "text": "AWS Glue ETL with job bookmarks enabled for incremental processing", "is_correct": true},
+      {"id": "C", "text": "Amazon EMR with a dedicated Spark cluster running continuously", "is_correct": false},
+      {"id": "D", "text": "Amazon Athena CTAS (CREATE TABLE AS SELECT) queries scheduled with EventBridge", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Glue ETL provides serverless Spark-based processing that handles multi-source joins, DynamicFrames for schema evolution, FindMatches for deduplication, and native Parquet output. Job bookmarks track which data has been processed to support incremental ETL. This is a fully managed solution without infrastructure management.",
+      "why_not_A": "Lambda has a 15-minute execution timeout and 10 GB memory limit that may be insufficient for complex joins and deduplication across large datasets. Lambda processes individual files and cannot efficiently perform joins across multiple data sources in a single invocation.",
+      "why_not_C": "EMR provides full control over Spark but requires cluster management, scaling configuration, and operational overhead. A continuously running cluster is costly when processing runs periodically. Glue provides the same Spark capabilities as a managed, pay-per-use service.",
+      "why_not_D": "Athena CTAS is SQL-based and limited for complex transformations like deduplication with fuzzy matching. It does not provide native incremental processing tracking like Glue job bookmarks. Schema evolution handling is also limited compared to DynamicFrames."
+    },
+    "concept_ids": ["aws-mls-glue-etl-features", "aws-mls-s3-data-lakes"],
+    "tags": ["etl", "glue", "incremental-processing", "feature-engineering"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-004",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "exploratory-data-analysis",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data scientist is building a classification model to predict customer churn. The training dataset has 1 million records with 500 features, many of which are highly correlated. The initial model shows poor generalization with high training accuracy (98%) but low validation accuracy (72%). Which combination of steps is MOST likely to improve the model?",
+    "options": [
+      {"id": "A", "text": "Increase the number of features by creating polynomial interactions and add more training data through data augmentation.", "is_correct": false},
+      {"id": "B", "text": "Apply PCA to reduce dimensionality, remove highly correlated features using correlation matrix analysis, and apply L2 regularization to the model.", "is_correct": true},
+      {"id": "C", "text": "Increase the model complexity by adding more layers or boosting rounds and train for more epochs to improve both training and validation accuracy.", "is_correct": false},
+      {"id": "D", "text": "Switch to a more complex algorithm such as a deep neural network and use the full 500 features to capture all available patterns.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The large gap between training (98%) and validation (72%) accuracy is a classic sign of overfitting. With 500 highly correlated features, the model is memorizing noise rather than learning generalizable patterns. PCA reduces dimensionality by extracting orthogonal components, removing correlated features reduces multicollinearity, and L2 regularization penalizes large weights to prevent overfitting. Together, these address the root cause.",
+      "why_not_A": "Adding more features through polynomial interactions would increase dimensionality and worsen the overfitting problem. The model already has too many features relative to the signal in the data.",
+      "why_not_C": "Increasing model complexity makes overfitting worse, not better. More boosting rounds or epochs would further increase the training accuracy without improving validation accuracy.",
+      "why_not_D": "A more complex algorithm with all 500 features would exacerbate overfitting. Deep neural networks require even more data relative to features and are more prone to overfitting in high-dimensional tabular data than tree-based or linear models."
+    },
+    "concept_ids": ["aws-mls-feature-selection", "aws-mls-model-evaluation"],
+    "tags": ["overfitting", "dimensionality-reduction", "regularization", "pca"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-005",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "exploratory-data-analysis",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data scientist is analyzing a fraud detection dataset where only 0.5% of transactions are fraudulent. After training a classifier, the model achieves 99.5% accuracy. The team is concerned this metric is misleading. Which evaluation approach provides a more meaningful assessment of the model's fraud detection capability?",
+    "options": [
+      {"id": "A", "text": "Use accuracy and true negative rate as the primary metrics since the model correctly identifies 99.5% of all transactions.", "is_correct": false},
+      {"id": "B", "text": "Use precision-recall curve with AUC-PR, F1 score, and recall as primary metrics, and analyze the confusion matrix to verify the model is not simply predicting all transactions as legitimate.", "is_correct": true},
+      {"id": "C", "text": "Increase the dataset size by collecting more non-fraudulent transactions to improve statistical significance of the accuracy metric.", "is_correct": false},
+      {"id": "D", "text": "Use cross-validation with 10 folds to verify the 99.5% accuracy is consistent across different data splits.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "With 0.5% fraud rate, a model predicting all transactions as legitimate achieves 99.5% accuracy without detecting any fraud. Precision-recall metrics focus on the minority class performance. Recall measures what fraction of actual fraud is caught. F1 score balances precision and recall. AUC-PR summarizes performance across thresholds. The confusion matrix reveals if the model has zero true positives for fraud.",
+      "why_not_A": "True negative rate is high by default in imbalanced datasets. Accuracy and true negative rate do not reveal whether the model detects any actual fraud cases. These metrics mask poor minority class performance.",
+      "why_not_C": "Adding more non-fraudulent transactions worsens the class imbalance and does not address the evaluation metric problem. The accuracy metric would remain misleading regardless of dataset size.",
+      "why_not_D": "Cross-validation verifies consistency but does not address the fundamental problem that accuracy is a misleading metric for imbalanced datasets. Consistent 99.5% accuracy across folds simply confirms the model consistently predicts the majority class."
+    },
+    "concept_ids": ["aws-mls-data-distributions", "aws-mls-model-evaluation"],
+    "tags": ["class-imbalance", "evaluation-metrics", "precision-recall", "fraud-detection"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-006",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "exploratory-data-analysis",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A data scientist needs to handle a categorical feature (product_category) with 5,000 unique values in a dataset being prepared for an XGBoost model. One-hot encoding would create 5,000 new binary columns. Which alternative feature encoding approach is MOST appropriate for this high-cardinality categorical feature?",
+    "options": [
+      {"id": "A", "text": "Label encoding that assigns a sequential integer to each category", "is_correct": false},
+      {"id": "B", "text": "Target encoding that replaces each category with the mean of the target variable for that category, with smoothing to reduce overfitting", "is_correct": true},
+      {"id": "C", "text": "Frequency encoding that replaces each category with the count of occurrences in the dataset", "is_correct": false},
+      {"id": "D", "text": "Binary encoding that converts category integers to binary representations, creating log2(5000) columns", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Target encoding maps each category to the mean target value for that category, creating a single informative numeric feature. Smoothing blends the category mean with the global mean to prevent overfitting for rare categories. This preserves the predictive relationship between the category and target while keeping dimensionality at 1 column instead of 5,000.",
+      "why_not_A": "Label encoding assigns arbitrary sequential numbers that imply an ordinal relationship between categories. XGBoost can handle this better than linear models, but the arbitrary ordering can lead to suboptimal splits compared to target encoding which directly captures the category-target relationship.",
+      "why_not_C": "Frequency encoding captures how common each category is but does not capture the relationship between the category and the target variable. Two categories with the same frequency but very different churn rates would be treated identically.",
+      "why_not_D": "Binary encoding creates approximately 13 columns (log2 of 5000) which is better than 5,000 but the resulting binary features have no semantic meaning. The model must learn complex interactions between these bits to reconstruct the original category information."
+    },
+    "concept_ids": ["aws-mls-feature-selection", "aws-mls-xgboost"],
+    "tags": ["feature-encoding", "high-cardinality", "target-encoding", "categorical"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-007",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data scientist trains an XGBoost model on SageMaker to predict loan defaults. The model performs well on training data (AUC: 0.95) but poorly on the holdout test set (AUC: 0.72). The dataset has 50 features and 100,000 samples. Which hyperparameter adjustments are MOST likely to address this issue?",
+    "options": [
+      {"id": "A", "text": "Increase max_depth from 6 to 12 and increase num_round from 200 to 1000 to allow the model to learn more complex patterns.", "is_correct": false},
+      {"id": "B", "text": "Decrease max_depth from 6 to 4, increase min_child_weight, reduce eta (learning rate), and enable early stopping on the validation set.", "is_correct": true},
+      {"id": "C", "text": "Switch the objective from binary:logistic to reg:squarederror and increase the subsample ratio to 1.0 to use all data for each tree.", "is_correct": false},
+      {"id": "D", "text": "Increase alpha (L1 regularization) to 0 and lambda (L2 regularization) to 0 to remove constraints on the model and allow full flexibility.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The gap between training AUC (0.95) and test AUC (0.72) indicates overfitting. Decreasing max_depth limits tree complexity. Increasing min_child_weight requires more samples per leaf, reducing noise fitting. Lower eta with early stopping finds the optimal number of rounds before overfitting occurs. These changes collectively reduce model complexity to improve generalization.",
+      "why_not_A": "Increasing max_depth and num_round both increase model complexity, which would worsen the overfitting problem. Deeper trees memorize training data patterns, and more rounds compound the overfitting.",
+      "why_not_C": "Changing to regression objective for a classification problem is incorrect. Setting subsample to 1.0 removes stochastic sampling which helps prevent overfitting. Both changes would degrade model performance.",
+      "why_not_D": "Setting regularization to 0 removes the penalty on model complexity. Alpha and lambda help prevent overfitting; removing them would make the overfitting worse. Increasing (not decreasing) regularization would help."
+    },
+    "concept_ids": ["aws-mls-xgboost", "aws-mls-hyperparameter-tuning", "aws-mls-model-evaluation"],
+    "tags": ["overfitting", "xgboost", "hyperparameters", "regularization"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-008",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A data scientist needs to build a model to predict house prices based on 15 numeric features including square footage, lot size, and number of rooms. The relationship between features and price is expected to be roughly linear. Training data contains 10,000 records. Which SageMaker built-in algorithm is MOST appropriate?",
+    "options": [
+      {"id": "A", "text": "XGBoost with regression objective (reg:squarederror) for its ability to handle non-linear feature interactions", "is_correct": false},
+      {"id": "B", "text": "SageMaker Linear Learner with regression mode and automatic data normalization", "is_correct": true},
+      {"id": "C", "text": "DeepAR for time-series forecasting of property price trends", "is_correct": false},
+      {"id": "D", "text": "K-Nearest Neighbors (KNN) regression with distance-based feature weighting", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Linear Learner is designed for problems with approximately linear relationships between features and target. With 15 numeric features and 10,000 records, a linear model provides good interpretability, fast training, and sufficient capacity to capture the expected linear relationship. Automatic normalization handles different feature scales without manual preprocessing.",
+      "why_not_A": "XGBoost is powerful but more complex than needed for a roughly linear problem. With only 10,000 records and 15 features, the overhead of gradient boosting is unnecessary, and the model would be harder to interpret than a linear model.",
+      "why_not_C": "DeepAR is a recurrent neural network for time-series forecasting. House price prediction from features is a regression problem, not a time-series forecasting problem. DeepAR expects sequential temporal data.",
+      "why_not_D": "KNN regression can work but scales poorly with dataset size for inference and requires careful tuning of k and distance metrics. It does not leverage the expected linear relationship and requires feature scaling, unlike Linear Learner which handles normalization automatically."
+    },
+    "concept_ids": ["aws-mls-linear-learner", "aws-mls-xgboost"],
+    "tags": ["algorithm-selection", "linear-learner", "regression", "built-in-algorithms"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-009",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A machine learning team needs to train a model on a 500 GB dataset that does not fit in the memory of a single ml.m5.4xlarge instance. The training job fails with an out-of-memory error during data loading. The team wants to minimize costs while completing the training. Which approach resolves this issue?",
+    "options": [
+      {"id": "A", "text": "Switch to an ml.m5.24xlarge instance with 384 GB of memory so the entire dataset fits in memory during training.", "is_correct": false},
+      {"id": "B", "text": "Enable Pipe mode for the training job to stream data directly from S3 to the training algorithm without loading the full dataset into memory.", "is_correct": true},
+      {"id": "C", "text": "Split the dataset into 10 equal parts and train 10 separate models, then use an ensemble for predictions.", "is_correct": false},
+      {"id": "D", "text": "Compress the dataset with gzip to reduce its size below the instance memory limit and use File mode.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pipe mode streams data directly from S3 to the training container as a Linux FIFO pipe. The algorithm processes data in chunks without loading the entire dataset into memory or local disk. This resolves the out-of-memory error without requiring a larger (more expensive) instance. Pipe mode also reduces training start time since there is no data download phase.",
+      "why_not_A": "Upgrading to a 24xlarge instance is significantly more expensive and may still encounter issues with datasets larger than available memory. Pipe mode is a more cost-effective and scalable solution.",
+      "why_not_C": "Training 10 separate models on data subsets means each model only learns from 10% of the data, likely reducing model quality. Ensemble methods add inference complexity and do not address the fundamental data loading issue.",
+      "why_not_D": "Gzip compression reduces storage size but the data must be decompressed in memory during File mode loading. The decompressed data still exceeds memory limits. Additionally, a 500 GB dataset would not compress below typical instance memory limits."
+    },
+    "concept_ids": ["aws-mls-training-jobs", "aws-mls-s3-data-lakes"],
+    "tags": ["pipe-mode", "large-dataset", "out-of-memory", "cost-optimization"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-010",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A data scientist is tuning an XGBoost model with 8 hyperparameters including max_depth, eta, subsample, colsample_bytree, min_child_weight, alpha, lambda, and num_round. The team has budget for 100 training jobs. Which tuning strategy MAXIMIZES the likelihood of finding optimal hyperparameters within this budget?",
+    "options": [
+      {"id": "A", "text": "Run a grid search with 2-3 values per hyperparameter covering the full parameter space.", "is_correct": false},
+      {"id": "B", "text": "Use SageMaker Automatic Model Tuning with Bayesian optimization, set max_parallel_training_jobs to 2, and define reasonable ranges for all 8 hyperparameters.", "is_correct": true},
+      {"id": "C", "text": "Use random search with 100 randomly sampled hyperparameter combinations run in parallel for fastest completion.", "is_correct": false},
+      {"id": "D", "text": "Manually tune hyperparameters one at a time, starting with max_depth, then eta, then the remaining parameters in sequence.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Bayesian optimization uses a probabilistic model of the objective function to intelligently select the next hyperparameter combination to evaluate, focusing on promising regions. With low parallelism (2 jobs), each iteration benefits from more historical data, improving the surrogate model's accuracy. This is the most sample-efficient strategy for a 100-job budget across 8 hyperparameters.",
+      "why_not_A": "Grid search with 8 hyperparameters and 2-3 values each would require 256 to 6,561 combinations. With only 100 jobs, the grid would be too coarse to find optimal values, and grid search wastes evaluations on unproductive corners of the parameter space.",
+      "why_not_C": "Random search is better than grid search in high-dimensional spaces but does not learn from previous evaluations. Running all 100 in parallel provides no sequential learning. Bayesian optimization is more sample-efficient because it guides the search based on results.",
+      "why_not_D": "Tuning one hyperparameter at a time ignores interactions between parameters. For example, the optimal eta depends on max_depth and num_round. Sequential single-parameter tuning finds locally optimal values that may be globally suboptimal."
+    },
+    "concept_ids": ["aws-mls-hyperparameter-tuning", "aws-mls-xgboost"],
+    "tags": ["bayesian-optimization", "hyperparameter-tuning", "sagemaker-tuning", "budget-optimization"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-011",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A machine learning team needs to train a model on a 2 TB dataset and wants to minimize training costs. The training algorithm supports checkpointing. Training is expected to take approximately 8 hours on an ml.p3.8xlarge instance. Which SageMaker training configuration provides the MOST cost savings?",
+    "options": [
+      {"id": "A", "text": "Use a smaller ml.p3.2xlarge instance and accept longer training time to reduce hourly cost.", "is_correct": false},
+      {"id": "B", "text": "Use SageMaker Managed Spot Training on ml.p3.8xlarge instances with checkpointing enabled and a maximum runtime of 24 hours.", "is_correct": true},
+      {"id": "C", "text": "Use SageMaker local mode on a large EC2 Reserved Instance to avoid SageMaker training infrastructure charges.", "is_correct": false},
+      {"id": "D", "text": "Split the dataset into 4 parts and train on 4 ml.p3.2xlarge instances in parallel using data parallelism.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Managed Spot Training uses EC2 Spot Instances at up to 90% discount. Checkpointing saves training state to S3 so if a spot interruption occurs, training resumes from the last checkpoint rather than restarting. Setting a maximum runtime of 24 hours accommodates potential interruptions and restarts. For an 8-hour training job, spot savings significantly exceed any re-computation cost from occasional interruptions.",
+      "why_not_A": "A smaller instance would take proportionally longer, and the total cost (hourly rate times hours) may not decrease significantly. GPU utilization efficiency also drops on smaller instances for some workloads, making total cost similar or higher.",
+      "why_not_C": "SageMaker local mode is for development and testing with small datasets. Running production training on a manually managed EC2 instance removes SageMaker benefits like automatic infrastructure provisioning, monitoring, and artifact management. Reserved Instance commitment also requires long-term planning.",
+      "why_not_D": "Data parallelism with 4 instances costs the same per hour as a single instance of equivalent total capacity. Communication overhead between instances for gradient synchronization may increase total training time and cost compared to a single larger instance."
+    },
+    "concept_ids": ["aws-mls-training-jobs", "aws-mls-hyperparameter-tuning"],
+    "tags": ["spot-training", "cost-optimization", "checkpointing", "training-infrastructure"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-012",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "ml-implementation-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company has a new version of their recommendation model that shows a 5% improvement in offline evaluation metrics. Before rolling it out to all users, they want to validate it with live traffic with minimal risk. The current model serves 10,000 requests per minute from a SageMaker endpoint. Which deployment strategy validates the new model safely?",
+    "options": [
+      {"id": "A", "text": "Deploy the new model to a separate SageMaker endpoint and manually switch DNS to point all traffic to the new endpoint after 24 hours of testing.", "is_correct": false},
+      {"id": "B", "text": "Update the existing endpoint configuration to add the new model as a production variant receiving 10% of traffic while the current model receives 90%. Monitor business metrics and gradually increase the new model's traffic share.", "is_correct": true},
+      {"id": "C", "text": "Replace the existing model on the endpoint with the new model using a rolling deployment and monitor for errors using CloudWatch.", "is_correct": false},
+      {"id": "D", "text": "Deploy the new model using SageMaker Batch Transform on a sample of recent requests and compare the results with the current model's predictions.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Production variants enable A/B testing on a single endpoint by routing a configurable percentage of traffic to each model version. Starting at 10% limits blast radius if the new model performs poorly in production. Gradual traffic increase with metric monitoring provides statistical confidence in the improvement before full rollout. SageMaker handles request routing and provides per-variant CloudWatch metrics.",
+      "why_not_A": "A separate endpoint with DNS switching is an all-or-nothing approach after 24 hours. This does not provide gradual validation and a DNS switch sends 100% of traffic to the untested endpoint at once, risking full production impact if the model underperforms.",
+      "why_not_C": "Rolling deployment replaces the current model entirely. If the new model has unexpected production issues (latency, edge cases, business metric degradation), all users are affected. This does not allow comparison between models on live traffic.",
+      "why_not_D": "Batch Transform on historical requests provides offline evaluation, which the team has already done. It does not validate real-time serving behavior, latency, or the impact on live business metrics like click-through rates."
+    },
+    "concept_ids": ["aws-mls-sagemaker-endpoints", "aws-mls-model-monitor"],
+    "tags": ["a-b-testing", "production-variants", "canary-deployment", "model-validation"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-013",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "ml-implementation-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A deployed fraud detection model has been in production for 6 months. The data science team suspects the model's accuracy has degraded because customer spending patterns have changed since the model was trained. Which SageMaker capability detects this degradation and what type of monitoring should be configured?",
+    "options": [
+      {"id": "A", "text": "Configure SageMaker Model Monitor with data quality monitoring to detect statistical drift in input features compared to the training baseline. Set up CloudWatch alarms for drift violations.", "is_correct": true},
+      {"id": "B", "text": "Configure SageMaker Debugger to analyze the model's internal weights and detect when weight distributions shift from their trained values.", "is_correct": false},
+      {"id": "C", "text": "Create a CloudWatch dashboard with endpoint invocation metrics and set alarms when the number of invocations drops, indicating users are losing trust in predictions.", "is_correct": false},
+      {"id": "D", "text": "Schedule weekly SageMaker Batch Transform jobs on recent data and compare predictions with the original model's baseline predictions.", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "SageMaker Model Monitor data quality monitoring continuously compares the statistical properties of incoming inference data against a baseline derived from training data. When customer spending patterns change, features like transaction amounts, frequency, and categories will show statistical drift. CloudWatch alarms provide automated alerting when drift exceeds configured thresholds, enabling proactive retraining.",
+      "why_not_B": "SageMaker Debugger analyzes training jobs, not deployed models. It captures tensors during training to detect issues like vanishing gradients. It cannot monitor a deployed endpoint for production data drift.",
+      "why_not_C": "Invocation volume is not a reliable indicator of model accuracy degradation. Users may continue using the model even as accuracy declines. This metric monitors usage, not prediction quality.",
+      "why_not_D": "Batch Transform on recent data provides predictions but without ground truth labels, there is no way to assess accuracy. Comparing predictions between model versions does not determine which is correct. Model Monitor provides automated, continuous drift detection without manual batch processes."
+    },
+    "concept_ids": ["aws-mls-model-monitor", "aws-mls-sagemaker-endpoints"],
+    "tags": ["model-drift", "data-quality", "monitoring", "concept-drift"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-014",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "ml-implementation-operations",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A company needs to automate their ML workflow: when new training data arrives in S3, the system should automatically preprocess the data, train the model, evaluate it against a minimum AUC threshold of 0.85, register the model if it passes, and deploy it to a staging endpoint. Which architecture achieves this end-to-end automation?",
+    "options": [
+      {"id": "A", "text": "Use S3 event notifications to trigger a Lambda function that sequentially calls SageMaker APIs for each step: Processing, Training, CreateModel, and CreateEndpoint.", "is_correct": false},
+      {"id": "B", "text": "Create a SageMaker Pipeline with Processing, Training, Evaluation, Condition (AUC >= 0.85), RegisterModel, and CreateEndpoint steps. Trigger the pipeline from an S3 event via EventBridge and Lambda.", "is_correct": true},
+      {"id": "C", "text": "Use AWS Step Functions with SageMaker integration to orchestrate the workflow. Trigger the state machine from an S3 event notification.", "is_correct": false},
+      {"id": "D", "text": "Deploy an Apache Airflow DAG on Amazon MWAA that polls S3 for new data and runs each ML step using SageMaker operators.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SageMaker Pipelines is purpose-built for ML workflow orchestration with native support for Processing, Training, Evaluation, Condition, RegisterModel, and deployment steps. The Condition step evaluates the AUC metric against the threshold and branches to either register/deploy or stop. EventBridge with Lambda provides reliable event-driven triggering from S3. Model Registry stores the approved model with lineage tracking.",
+      "why_not_A": "Sequential Lambda calls lack workflow orchestration, error handling, conditional logic, and retries. Lambda's 15-minute timeout is insufficient for long-running training jobs. This approach does not provide the AUC threshold check or model registry integration.",
+      "why_not_C": "Step Functions with SageMaker integration is a valid alternative but requires more configuration for ML-specific features like model registry, experiment tracking, and lineage. SageMaker Pipelines provides tighter integration with the SageMaker ecosystem.",
+      "why_not_D": "MWAA with Airflow adds infrastructure management overhead. Polling S3 is less responsive than event-driven triggering. Airflow is a general-purpose orchestrator without native SageMaker model registry and lineage integration."
+    },
+    "concept_ids": ["aws-mls-sagemaker-pipelines", "aws-mls-model-evaluation", "aws-mls-sagemaker-endpoints"],
+    "tags": ["mlops", "pipelines", "automation", "model-registry", "ci-cd"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-mls-015",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A data scientist is building a classification model and needs to optimize for two competing objectives: minimizing false positives (innocent transactions flagged as fraud) AND minimizing false negatives (actual fraud missed by the model). The business has determined that missing a fraudulent transaction (false negative) is 5 times more costly than incorrectly flagging a legitimate transaction (false positive). How should the model be optimized and evaluated?",
+    "options": [
+      {"id": "A", "text": "Optimize for accuracy and set the classification threshold to 0.5. Use the confusion matrix to report results.", "is_correct": false},
+      {"id": "B", "text": "Optimize for AUC-ROC during training. Then select the classification threshold that minimizes total cost using the cost-weighted formula: Total Cost = (5 x FN) + (1 x FP), and report precision, recall, and F-beta with beta=2.24 to reflect the cost ratio.", "is_correct": true},
+      {"id": "C", "text": "Train the model to maximize precision to ensure that when fraud is predicted, it is always correct. Set the classification threshold high (0.9) to reduce false positives.", "is_correct": false},
+      {"id": "D", "text": "Train the model to maximize recall to catch all fraud cases. Set the classification threshold low (0.1) to ensure no fraud is missed.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AUC-ROC provides a threshold-independent measure of model quality during training. After training, selecting the threshold that minimizes the business cost function directly optimizes for the stated business requirement. F-beta score with beta = sqrt(5) approximately 2.24 weights recall higher than precision by the square root of the cost ratio, providing a single metric that reflects the 5:1 cost asymmetry. This balances both competing objectives using business context.",
+      "why_not_A": "Accuracy treats all errors equally and does not account for the 5:1 cost difference. A threshold of 0.5 is arbitrary and does not optimize for business costs. The model might minimize accuracy loss by missing expensive fraud cases.",
+      "why_not_C": "Maximizing precision with a high threshold minimizes false positives but dramatically increases false negatives (missed fraud). Since missed fraud costs 5x more, this approach would increase total business cost despite reducing false positives.",
+      "why_not_D": "Maximizing recall with a very low threshold catches most fraud but generates excessive false positives, overwhelming the fraud investigation team. While recall focuses on the more expensive error type, ignoring precision entirely creates unsustainable operational costs from false alerts."
+    },
+    "concept_ids": ["aws-mls-model-evaluation", "aws-mls-data-distributions"],
+    "tags": ["cost-sensitive", "threshold-optimization", "f-beta", "precision-recall-tradeoff"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

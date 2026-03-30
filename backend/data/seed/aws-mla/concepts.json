@@ -1,0 +1,402 @@
+[
+  {
+    "id": "aws-mla-feature-engineering",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "data-preparation-for-ml",
+    "topic_id": "data-preparation",
+    "name": "Feature Engineering",
+    "description": "Techniques for transforming raw data into meaningful features that improve machine learning model performance",
+    "exam_weight": 0.0750,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Feature engineering includes normalization, encoding categorical variables, handling missing values, and creating derived features",
+      "One-hot encoding converts categorical variables into binary vectors; label encoding assigns integer values",
+      "Feature scaling methods include min-max normalization (0-1 range) and standardization (zero mean, unit variance)",
+      "Feature importance analysis identifies which features contribute most to model predictions",
+      "AWS Glue DataBrew provides visual data preparation with 250+ built-in transformations"
+    ],
+    "common_misconceptions": [
+      "All features should be included in the model (irrelevant features add noise and increase training time)",
+      "One-hot encoding is always better than label encoding (ordinal features should use label encoding to preserve order)"
+    ],
+    "aws_services": ["Amazon SageMaker Data Wrangler", "AWS Glue DataBrew", "Amazon SageMaker Processing"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-feature-store", "transfer_weight": 0.35},
+      {"concept_id": "aws-mla-data-pipelines", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-mla-data-pipelines",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "data-preparation-for-ml",
+    "topic_id": "data-preparation",
+    "name": "Data Pipelines for ML",
+    "description": "Building automated, scalable data ingestion and transformation pipelines that prepare data for model training and inference",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SageMaker Processing jobs run data preprocessing scripts on managed compute clusters",
+      "AWS Glue ETL jobs transform data at scale using Spark-based processing",
+      "Amazon Kinesis Data Streams and Firehose handle real-time data ingestion for streaming ML pipelines",
+      "SageMaker Pipelines orchestrate end-to-end ML workflows including data processing steps",
+      "Data validation checks should be automated to catch schema drift and data quality issues"
+    ],
+    "common_misconceptions": [
+      "Data pipelines only need to run once (production ML requires continuous data processing for retraining and inference)",
+      "SageMaker can only process data stored in S3 (it supports multiple data sources via processing jobs and containers)"
+    ],
+    "aws_services": ["Amazon SageMaker Processing", "AWS Glue", "Amazon Kinesis", "Amazon SageMaker Pipelines"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-feature-engineering", "transfer_weight": 0.25},
+      {"concept_id": "aws-mla-sagemaker-pipelines", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-mla-data-wrangler",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "data-preparation-for-ml",
+    "topic_id": "data-preparation",
+    "name": "SageMaker Data Wrangler",
+    "description": "Visual data preparation tool in SageMaker Studio for exploring, transforming, and analyzing data with low-code workflows",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Provides a visual interface for data exploration with built-in statistical summaries and visualizations",
+      "Supports importing data from S3, Athena, Redshift, Lake Formation, and other data sources",
+      "Offers 300+ built-in data transformations for encoding, imputation, scaling, and feature creation",
+      "Data flows can be exported to SageMaker Pipelines, Processing jobs, or Feature Store",
+      "Quick Model feature provides rapid model training to evaluate feature quality"
+    ],
+    "common_misconceptions": [
+      "Data Wrangler is only for small datasets (it can process large datasets by running transformations on distributed compute)",
+      "Data Wrangler replaces custom preprocessing code (it is for exploration and prototyping; production pipelines often need custom code)"
+    ],
+    "aws_services": ["Amazon SageMaker Data Wrangler", "Amazon SageMaker Studio", "Amazon S3", "Amazon Athena"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-feature-engineering", "transfer_weight": 0.3},
+      {"concept_id": "aws-mla-feature-store", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-mla-feature-store",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "data-preparation-for-ml",
+    "topic_id": "data-preparation",
+    "name": "SageMaker Feature Store",
+    "description": "Centralized repository for storing, sharing, and managing ML features with both online (low-latency) and offline (batch) access patterns",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Online store provides single-digit millisecond feature retrieval for real-time inference",
+      "Offline store persists features in S3 in Parquet format for batch training and analysis",
+      "Feature groups define the schema and organize related features together",
+      "Supports feature versioning, data lineage tracking, and feature reuse across teams",
+      "Features can be ingested via PutRecord API (real-time) or batch ingestion from S3"
+    ],
+    "common_misconceptions": [
+      "Feature Store only works with SageMaker models (features can be used by any ML framework or application)",
+      "Online and offline stores are separate systems (they can be synchronized so the same features serve both use cases)"
+    ],
+    "aws_services": ["Amazon SageMaker Feature Store", "Amazon S3", "AWS Glue"],
+    "prerequisites": ["aws-mla-feature-engineering"],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-feature-engineering", "transfer_weight": 0.35},
+      {"concept_id": "aws-mla-data-wrangler", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-mla-training-jobs",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "ml-model-development",
+    "topic_id": "model-development",
+    "name": "SageMaker Training Jobs",
+    "description": "Running model training on managed infrastructure using SageMaker training jobs with configurable compute, storage, and networking",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Training jobs provision compute instances, download training data from S3, run the training algorithm, and upload model artifacts to S3",
+      "Supports both built-in algorithms and custom training containers (bring-your-own-container)",
+      "Spot training instances can reduce training costs by up to 90% with managed spot interruption handling",
+      "Hyperparameter tuning jobs (HPO) automatically search for optimal hyperparameters using Bayesian optimization",
+      "Training metrics are logged to CloudWatch for monitoring training progress"
+    ],
+    "common_misconceptions": [
+      "Training jobs require a specific ML framework (SageMaker supports any framework via custom Docker containers)",
+      "Spot interruptions always require restarting training from scratch (checkpointing enables resuming from the last saved state)"
+    ],
+    "aws_services": ["Amazon SageMaker", "Amazon S3", "Amazon CloudWatch", "Amazon ECR"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-built-in-algorithms", "transfer_weight": 0.35},
+      {"concept_id": "aws-mla-distributed-training", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-mla-built-in-algorithms",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "ml-model-development",
+    "topic_id": "model-development",
+    "name": "SageMaker Built-In Algorithms",
+    "description": "Pre-built, optimized ML algorithms provided by SageMaker for common use cases including classification, regression, clustering, and NLP",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "XGBoost: gradient boosted trees for tabular classification and regression, the most widely used built-in algorithm",
+      "Linear Learner: efficient linear model for large-scale classification and regression",
+      "BlazingText: optimized Word2Vec and text classification at scale",
+      "Image Classification and Object Detection: built-in computer vision algorithms",
+      "Built-in algorithms are optimized for distributed training and GPU utilization on SageMaker infrastructure"
+    ],
+    "common_misconceptions": [
+      "Built-in algorithms are only for simple problems (XGBoost and deep learning algorithms handle complex tasks at scale)",
+      "You must use built-in algorithms on SageMaker (custom frameworks like PyTorch and TensorFlow are fully supported)"
+    ],
+    "aws_services": ["Amazon SageMaker"],
+    "prerequisites": ["aws-mla-training-jobs"],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-autopilot", "transfer_weight": 0.3},
+      {"concept_id": "aws-mla-training-jobs", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-mla-autopilot",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "ml-model-development",
+    "topic_id": "model-development",
+    "name": "SageMaker Autopilot",
+    "description": "Automated machine learning (AutoML) service that automatically explores data, selects algorithms, tunes hyperparameters, and generates candidate models",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Automatically analyzes tabular data, selects feature preprocessing and algorithms, and tunes hyperparameters",
+      "Generates multiple candidate models ranked by a target metric (accuracy, F1, RMSE, etc.)",
+      "Provides full visibility into the generated code: feature engineering notebooks and model training notebooks",
+      "Supports ensemble mode (best accuracy) and HPO mode (single algorithm tuning)",
+      "Deploys the best model directly to a SageMaker endpoint"
+    ],
+    "common_misconceptions": [
+      "Autopilot is a black box with no explainability (it generates transparent, editable notebooks showing every step)",
+      "Autopilot only works with CSV data (it also supports Parquet format)"
+    ],
+    "aws_services": ["Amazon SageMaker Autopilot", "Amazon SageMaker"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-built-in-algorithms", "transfer_weight": 0.3},
+      {"concept_id": "aws-mla-training-jobs", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-mla-distributed-training",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "ml-model-development",
+    "topic_id": "model-development",
+    "name": "Distributed Training",
+    "description": "Techniques for training ML models across multiple GPUs and instances to handle large models and datasets that exceed single-machine capacity",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Data parallelism splits the training dataset across multiple GPUs, each processing a subset with the full model",
+      "Model parallelism splits the model itself across GPUs when the model is too large for a single GPU",
+      "SageMaker Distributed Training Library provides optimized implementations of both data and model parallelism",
+      "Pipeline parallelism splits the model across stages, with micro-batches flowing through the pipeline",
+      "Efficient communication between GPUs (AllReduce, Ring-AllReduce) is critical for distributed training performance"
+    ],
+    "common_misconceptions": [
+      "Data parallelism and model parallelism cannot be combined (they are often used together for very large models)",
+      "Doubling the number of GPUs halves training time (communication overhead limits linear scaling)"
+    ],
+    "aws_services": ["Amazon SageMaker", "Amazon EC2 P4d/P5 Instances", "Amazon EFA"],
+    "prerequisites": ["aws-mla-training-jobs"],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-training-jobs", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-mla-sagemaker-endpoints",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "deployment-orchestration-ml-workflows",
+    "topic_id": "deployment-orchestration",
+    "name": "SageMaker Endpoints",
+    "description": "Deploying trained models as managed real-time inference endpoints with auto-scaling, A/B testing, and various deployment strategies",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Real-time endpoints provide synchronous inference with low latency for online predictions",
+      "Serverless endpoints automatically scale to zero and provision compute on demand, ideal for intermittent traffic",
+      "Auto-scaling policies adjust instance count based on CloudWatch metrics like InvocationsPerInstance",
+      "Blue/green deployments enable zero-downtime model updates by shifting traffic between endpoint variants",
+      "Shadow testing sends duplicate traffic to a new model variant without affecting production responses"
+    ],
+    "common_misconceptions": [
+      "All endpoints require provisioned instances running 24/7 (serverless endpoints scale to zero when idle)",
+      "You must deploy one model per endpoint (multi-model and multi-container endpoints host multiple models)"
+    ],
+    "aws_services": ["Amazon SageMaker", "Amazon CloudWatch", "AWS Auto Scaling"],
+    "prerequisites": ["aws-mla-training-jobs"],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-multi-model-endpoints", "transfer_weight": 0.4},
+      {"concept_id": "aws-mla-sagemaker-pipelines", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mla-multi-model-endpoints",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "deployment-orchestration-ml-workflows",
+    "topic_id": "deployment-orchestration",
+    "name": "Multi-Model and Multi-Container Endpoints",
+    "description": "Hosting multiple models on a single endpoint to reduce costs and simplify management for applications serving many models",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Multi-model endpoints (MME) host thousands of models on a single endpoint, loading them dynamically from S3",
+      "Models are loaded into memory on demand and unloaded when not in use (LRU caching)",
+      "Multi-container endpoints run multiple containers (different frameworks/models) behind a single endpoint",
+      "MME is ideal for scenarios with many models but low per-model traffic (e.g., per-customer models)",
+      "Inference pipelines chain multiple containers for sequential preprocessing and inference"
+    ],
+    "common_misconceptions": [
+      "Each model needs its own dedicated endpoint (MME can host thousands of models on one endpoint)",
+      "Multi-model endpoints have the same latency as single-model endpoints (cold loading from S3 adds latency for infrequently used models)"
+    ],
+    "aws_services": ["Amazon SageMaker"],
+    "prerequisites": ["aws-mla-sagemaker-endpoints"],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-sagemaker-endpoints", "transfer_weight": 0.4}
+    ]
+  },
+  {
+    "id": "aws-mla-sagemaker-pipelines",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "deployment-orchestration-ml-workflows",
+    "topic_id": "deployment-orchestration",
+    "name": "SageMaker Pipelines and Step Functions for ML",
+    "description": "Orchestrating end-to-end ML workflows using SageMaker Pipelines for model building and Step Functions for broader application integration",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SageMaker Pipelines defines ML workflows as a DAG with steps for processing, training, evaluation, and deployment",
+      "Pipeline steps include Processing, Training, Tuning, Transform, Model, Condition, and Lambda steps",
+      "Pipeline parameters allow runtime configuration without changing the pipeline definition",
+      "Step Functions provides broader orchestration including non-SageMaker steps (Glue, Lambda, ECS)",
+      "SageMaker Model Registry stores model versions with approval statuses for CI/CD deployment"
+    ],
+    "common_misconceptions": [
+      "SageMaker Pipelines and Step Functions serve the same purpose (Pipelines is ML-specific; Step Functions handles broader application workflows)",
+      "Pipelines must run all steps every time (conditional steps can skip stages based on evaluation metrics)"
+    ],
+    "aws_services": ["Amazon SageMaker Pipelines", "AWS Step Functions", "Amazon SageMaker Model Registry"],
+    "prerequisites": ["aws-mla-training-jobs"],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-sagemaker-endpoints", "transfer_weight": 0.2},
+      {"concept_id": "aws-mla-data-pipelines", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-mla-step-functions-ml",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "deployment-orchestration-ml-workflows",
+    "topic_id": "deployment-orchestration",
+    "name": "Step Functions for ML Workflows",
+    "description": "Using AWS Step Functions to orchestrate complex ML workflows that span multiple AWS services beyond SageMaker",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Step Functions has native SageMaker integrations for training, transform, and endpoint operations",
+      "Supports error handling with retry and catch blocks for resilient ML pipelines",
+      "Parallel state enables concurrent execution of multiple model training jobs",
+      "Map state iterates over a dataset to process items in parallel (e.g., batch processing)",
+      "Integrates with 200+ AWS services for end-to-end automation including Glue, Lambda, and SNS"
+    ],
+    "common_misconceptions": [
+      "Step Functions is only for simple linear workflows (it supports complex branching, parallelism, and iteration)",
+      "Step Functions replaces SageMaker Pipelines (they complement each other for different orchestration needs)"
+    ],
+    "aws_services": ["AWS Step Functions", "Amazon SageMaker", "AWS Lambda", "AWS Glue"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-sagemaker-pipelines", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-mla-model-monitor",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "ml-solution-monitoring-maintenance-security",
+    "topic_id": "monitoring-security",
+    "name": "SageMaker Model Monitor",
+    "description": "Continuously monitoring deployed ML models for data quality, model quality, bias drift, and feature attribution drift",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Data Quality monitoring detects deviations in input data statistics (missing values, type changes, distribution shifts)",
+      "Model Quality monitoring tracks prediction accuracy metrics against ground truth labels",
+      "Bias Drift monitoring detects changes in bias metrics over time using SageMaker Clarify",
+      "Feature Attribution Drift monitoring detects changes in feature importance relative to a baseline",
+      "Monitoring schedules run on a configurable cadence (hourly, daily) and generate violation reports"
+    ],
+    "common_misconceptions": [
+      "Model Monitor only checks data quality (it monitors four aspects: data quality, model quality, bias, and feature attribution)",
+      "Model Monitor automatically retrains the model when drift is detected (it alerts; retraining must be triggered separately)"
+    ],
+    "aws_services": ["Amazon SageMaker Model Monitor", "Amazon SageMaker Clarify", "Amazon CloudWatch"],
+    "prerequisites": ["aws-mla-sagemaker-endpoints"],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-data-drift", "transfer_weight": 0.4},
+      {"concept_id": "aws-mla-sagemaker-endpoints", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mla-data-drift",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "ml-solution-monitoring-maintenance-security",
+    "topic_id": "monitoring-security",
+    "name": "Data Drift Detection",
+    "description": "Identifying when the statistical properties of production data shift from the training data distribution, causing model performance degradation",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Data drift occurs when the distribution of input features changes over time compared to training data",
+      "Concept drift occurs when the relationship between inputs and outputs changes (the target concept evolves)",
+      "Statistical tests (KS test, chi-squared test) quantify the difference between training and production distributions",
+      "Baselines are created from training data statistics and used as reference for drift detection",
+      "CloudWatch alarms can trigger automated retraining pipelines when drift exceeds configurable thresholds"
+    ],
+    "common_misconceptions": [
+      "Data drift and concept drift are the same thing (data drift is about input distribution changes; concept drift is about the target relationship changing)",
+      "A model that performed well during testing will maintain performance indefinitely (all models degrade over time as data distributions shift)"
+    ],
+    "aws_services": ["Amazon SageMaker Model Monitor", "Amazon CloudWatch", "Amazon SageMaker Pipelines"],
+    "prerequisites": ["aws-mla-model-monitor"],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-model-monitor", "transfer_weight": 0.4}
+    ]
+  },
+  {
+    "id": "aws-mla-security-access",
+    "exam_id": "aws-mla-c01",
+    "domain_id": "ml-solution-monitoring-maintenance-security",
+    "topic_id": "monitoring-security",
+    "name": "SageMaker Security and Access Controls",
+    "description": "Securing ML workloads on SageMaker using IAM roles, VPC configurations, encryption, and network isolation",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SageMaker execution roles define IAM permissions for training jobs, endpoints, and notebooks",
+      "VPC mode runs training jobs and endpoints within a private VPC with no internet access",
+      "Inter-container traffic encryption protects data during distributed training",
+      "S3 bucket policies and KMS keys control access to training data and model artifacts",
+      "SageMaker notebooks support network isolation and can be restricted to VPC-only access"
+    ],
+    "common_misconceptions": [
+      "SageMaker workloads automatically run in a VPC (by default they run in a SageMaker-managed network; VPC configuration is optional)",
+      "KMS encryption is enabled by default for all SageMaker resources (encryption at rest must be explicitly configured with KMS for some resources)"
+    ],
+    "aws_services": ["Amazon SageMaker", "IAM", "VPC", "AWS KMS", "Amazon S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mla-model-monitor", "transfer_weight": 0.15}
+    ]
+  }
+]

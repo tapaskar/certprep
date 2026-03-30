@@ -1,0 +1,458 @@
+[
+  {
+    "id": "aws-soa-cloudwatch-metrics",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "monitoring-logging-remediation",
+    "topic_id": "monitoring",
+    "name": "CloudWatch Metrics and Alarms",
+    "description": "Monitoring AWS resources with CloudWatch metrics, custom metrics, and composite alarms",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Default metrics collected at 5-minute intervals; detailed monitoring at 1-minute intervals",
+      "Custom metrics support high-resolution (1-second) publishing",
+      "Composite alarms combine multiple alarms with AND/OR logic",
+      "Metric math enables calculations across multiple metrics",
+      "Alarm states: OK, ALARM, INSUFFICIENT_DATA"
+    ],
+    "common_misconceptions": [
+      "EC2 memory and disk metrics are collected by default (they require the CloudWatch agent)",
+      "Detailed monitoring is free (it incurs additional charges)"
+    ],
+    "aws_services": ["CloudWatch", "EC2", "SNS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-cloudwatch-dashboards", "transfer_weight": 0.35},
+      {"concept_id": "aws-soa-eventbridge", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-soa-cloudwatch-dashboards",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "monitoring-logging-remediation",
+    "topic_id": "monitoring",
+    "name": "CloudWatch Dashboards and Logs",
+    "description": "Creating operational dashboards and analyzing log data with CloudWatch Logs Insights",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Dashboards support cross-account and cross-region widgets",
+      "CloudWatch Logs Insights provides SQL-like query language",
+      "Log groups have configurable retention periods (1 day to 10 years or never expire)",
+      "Metric filters extract metric data from log events",
+      "Subscription filters stream logs to Lambda, Kinesis, or Firehose"
+    ],
+    "common_misconceptions": [
+      "CloudWatch Logs are retained indefinitely by default (default is never expire, but best practice is to set retention)",
+      "Dashboards are limited to a single account (they support cross-account)"
+    ],
+    "aws_services": ["CloudWatch", "CloudWatch Logs", "CloudWatch Logs Insights"],
+    "prerequisites": ["aws-soa-cloudwatch-metrics"],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-cloudwatch-metrics", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-soa-cloudtrail",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "monitoring-logging-remediation",
+    "topic_id": "logging",
+    "name": "CloudTrail",
+    "description": "API activity logging for governance, compliance, and security auditing",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Records API calls as events in JSON format",
+      "Management events logged by default; data events require explicit configuration",
+      "Organization trail captures events across all accounts",
+      "Log file integrity validation using SHA-256 hashing",
+      "Events delivered to S3 with optional SNS notification"
+    ],
+    "common_misconceptions": [
+      "CloudTrail logs data events (S3 object-level, Lambda invocations) by default (it does not)",
+      "CloudTrail is the same as CloudWatch Logs (CloudTrail is for API auditing, CloudWatch Logs is for application/system logs)"
+    ],
+    "aws_services": ["CloudTrail", "S3", "SNS", "CloudWatch Logs"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-cloudwatch-metrics", "transfer_weight": 0.2},
+      {"concept_id": "aws-soa-config-rules", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-soa-eventbridge",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "monitoring-logging-remediation",
+    "topic_id": "event-management",
+    "name": "EventBridge",
+    "description": "Serverless event bus for building event-driven architectures and automated responses",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Rules match incoming events and route to targets",
+      "Supports over 200 AWS service event sources",
+      "Scheduled rules replace CloudWatch Events cron/rate expressions",
+      "Event patterns support content-based filtering",
+      "Cross-account and cross-region event routing supported"
+    ],
+    "common_misconceptions": [
+      "EventBridge and CloudWatch Events are different services (EventBridge is the evolution of CloudWatch Events)",
+      "EventBridge only works with AWS services (it supports SaaS partners and custom applications)"
+    ],
+    "aws_services": ["EventBridge", "Lambda", "SNS", "SQS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-cloudwatch-metrics", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-soa-backup-strategies",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "reliability-business-continuity",
+    "topic_id": "backup-recovery",
+    "name": "AWS Backup and Recovery Strategies",
+    "description": "Centralized backup management and disaster recovery planning across AWS services",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "AWS Backup provides centralized, policy-based backup across services",
+      "Backup plans define schedule, retention, and lifecycle rules",
+      "Cross-region and cross-account backup copying supported",
+      "Backup Vault Lock enforces WORM (write-once-read-many) for compliance",
+      "Supports EBS, RDS, DynamoDB, EFS, FSx, EC2, and S3"
+    ],
+    "common_misconceptions": [
+      "AWS Backup replaces service-native snapshots (it orchestrates them, using native snapshot mechanisms)",
+      "Backup Vault Lock can be removed after being set (compliance mode cannot be removed)"
+    ],
+    "aws_services": ["AWS Backup", "EBS", "RDS", "DynamoDB"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-rds-ha", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-soa-rds-ha",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "reliability-business-continuity",
+    "topic_id": "high-availability",
+    "name": "RDS Multi-AZ and Read Replicas",
+    "description": "High availability and read scaling for RDS databases",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Multi-AZ deploys a synchronous standby in a different AZ for automatic failover",
+      "Failover typically completes in 60-120 seconds",
+      "Read replicas use asynchronous replication for read scaling",
+      "Read replicas can be promoted to standalone instances",
+      "Multi-AZ does not improve read performance; use read replicas for that"
+    ],
+    "common_misconceptions": [
+      "Multi-AZ provides read scaling (it is for HA only, the standby is not readable)",
+      "Read replicas provide automatic failover (they require manual promotion)"
+    ],
+    "aws_services": ["RDS", "Aurora"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-backup-strategies", "transfer_weight": 0.3},
+      {"concept_id": "aws-soa-route53-health", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-soa-route53-health",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "reliability-business-continuity",
+    "topic_id": "dns-failover",
+    "name": "Route 53 Health Checks and Failover",
+    "description": "DNS-level health monitoring and automated failover routing",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Health checks monitor endpoint health, other health checks, or CloudWatch alarms",
+      "Failover routing policy routes traffic to a standby when primary is unhealthy",
+      "Calculated health checks combine results of multiple child health checks",
+      "Health check intervals: standard (30 seconds) or fast (10 seconds)",
+      "String matching health checks verify response body content"
+    ],
+    "common_misconceptions": [
+      "Route 53 health checks can monitor private endpoints directly (they check from public internet; use CloudWatch alarm-based checks for private resources)",
+      "Failover happens instantly (DNS TTL affects propagation time)"
+    ],
+    "aws_services": ["Route 53", "CloudWatch"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-route53-routing", "transfer_weight": 0.35},
+      {"concept_id": "aws-soa-elb-types", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-soa-cloudformation",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "deployment-provisioning-automation",
+    "topic_id": "infrastructure-as-code",
+    "name": "CloudFormation Stacks and Operations",
+    "description": "Infrastructure as code provisioning with stack management and troubleshooting",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Stack creation rollback on failure is enabled by default",
+      "Change sets preview modifications before execution",
+      "Stack policies protect specific resources from unintended updates",
+      "Drift detection identifies out-of-band resource changes",
+      "DeletionPolicy: Retain, Snapshot, or Delete controls resource behavior on stack deletion"
+    ],
+    "common_misconceptions": [
+      "CloudFormation automatically detects drift (drift detection must be manually initiated)",
+      "Deleting a stack always deletes all resources (DeletionPolicy: Retain preserves resources)"
+    ],
+    "aws_services": ["CloudFormation", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-systems-manager", "transfer_weight": 0.25},
+      {"concept_id": "aws-soa-elastic-beanstalk", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-soa-systems-manager",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "deployment-provisioning-automation",
+    "topic_id": "operations-management",
+    "name": "AWS Systems Manager",
+    "description": "Operational management for EC2 instances and on-premises servers",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SSM Agent enables remote management without SSH/RDP",
+      "Run Command executes commands across multiple instances",
+      "Patch Manager automates OS and application patching",
+      "Parameter Store provides hierarchical configuration and secrets storage",
+      "Session Manager provides auditable shell access without opening inbound ports"
+    ],
+    "common_misconceptions": [
+      "Systems Manager requires inbound SSH ports (Session Manager uses outbound HTTPS only)",
+      "Parameter Store and Secrets Manager are the same (Parameter Store is free for standard parameters; Secrets Manager supports automatic rotation)"
+    ],
+    "aws_services": ["Systems Manager", "EC2", "IAM"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-cloudformation", "transfer_weight": 0.25},
+      {"concept_id": "aws-soa-patch-management", "transfer_weight": 0.4}
+    ]
+  },
+  {
+    "id": "aws-soa-elastic-beanstalk",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "deployment-provisioning-automation",
+    "topic_id": "application-deployment",
+    "name": "Elastic Beanstalk Deployments",
+    "description": "Managed application deployment with multiple deployment strategies",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "All at once: fastest, causes downtime",
+      "Rolling: deploys in batches, reduced capacity during deployment",
+      "Rolling with additional batch: maintains full capacity",
+      "Immutable: deploys to new instances, safe rollback",
+      "Blue/green: uses separate environment with DNS swap via Route 53"
+    ],
+    "common_misconceptions": [
+      "Blue/green is a built-in Beanstalk deployment policy (it requires manual environment cloning and DNS swap)",
+      "Immutable deployments reuse existing instances (they launch entirely new instances)"
+    ],
+    "aws_services": ["Elastic Beanstalk", "EC2", "ELB", "Auto Scaling"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-cloudformation", "transfer_weight": 0.2},
+      {"concept_id": "aws-soa-auto-scaling", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-soa-iam-config",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "security-compliance",
+    "topic_id": "identity-access",
+    "name": "IAM Policies and Access Management",
+    "description": "Managing IAM policies, roles, and access for operational security",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Policy evaluation: explicit deny overrides any allow",
+      "IAM Access Analyzer identifies resources shared with external entities",
+      "Credential Report lists all IAM users and credential status",
+      "IAM policy simulator tests policy effects before deployment",
+      "Service-linked roles are predefined by AWS services"
+    ],
+    "common_misconceptions": [
+      "An explicit allow overrides an explicit deny (deny always wins)",
+      "IAM Access Analyzer only checks IAM policies (it also checks S3, KMS, SQS, Lambda, and Secrets Manager resource policies)"
+    ],
+    "aws_services": ["IAM", "IAM Access Analyzer", "Organizations"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-config-rules", "transfer_weight": 0.25},
+      {"concept_id": "aws-soa-patch-management", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-soa-config-rules",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "security-compliance",
+    "topic_id": "compliance-monitoring",
+    "name": "AWS Config Rules and Remediation",
+    "description": "Continuous compliance monitoring with managed and custom Config rules",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Config records resource configurations and changes over time",
+      "Managed rules cover common compliance checks (e.g., encrypted EBS, public S3)",
+      "Custom rules use Lambda functions for organization-specific checks",
+      "Automatic remediation via SSM Automation documents",
+      "Conformance packs bundle multiple rules for compliance frameworks"
+    ],
+    "common_misconceptions": [
+      "AWS Config prevents non-compliant changes (it detects and can remediate but does not prevent)",
+      "Config rules evaluate only on schedule (they can be triggered by configuration changes or on a schedule)"
+    ],
+    "aws_services": ["Config", "Lambda", "Systems Manager", "SNS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-cloudtrail", "transfer_weight": 0.3},
+      {"concept_id": "aws-soa-iam-config", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-soa-patch-management",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "security-compliance",
+    "topic_id": "vulnerability-management",
+    "name": "Patch Management and Inspector",
+    "description": "Automated patching workflows and vulnerability assessment",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SSM Patch Manager uses patch baselines to define approved patches",
+      "Maintenance windows schedule patching during off-peak hours",
+      "Patch compliance reports show instance patch status",
+      "Amazon Inspector scans EC2 instances and container images for vulnerabilities",
+      "Inspector integrates with EventBridge for automated remediation workflows"
+    ],
+    "common_misconceptions": [
+      "Patch Manager automatically patches all instances (it requires patch baselines and maintenance windows to be configured)",
+      "Inspector is the same as GuardDuty (Inspector finds vulnerabilities; GuardDuty detects threats)"
+    ],
+    "aws_services": ["Systems Manager Patch Manager", "Inspector", "EventBridge"],
+    "prerequisites": ["aws-soa-systems-manager"],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-systems-manager", "transfer_weight": 0.4},
+      {"concept_id": "aws-soa-config-rules", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-soa-elb-types",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "networking-content-delivery",
+    "topic_id": "load-balancing",
+    "name": "Elastic Load Balancer Types",
+    "description": "Selecting and configuring ALB, NLB, and GWLB for different use cases",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "ALB: Layer 7, HTTP/HTTPS, path/host-based routing, WebSocket support",
+      "NLB: Layer 4, TCP/UDP/TLS, ultra-low latency, static IP per AZ",
+      "GWLB: Layer 3, transparent network gateway for third-party appliances",
+      "ALB supports weighted target groups for blue/green deployments",
+      "Cross-zone load balancing is enabled by default for ALB, optional for NLB"
+    ],
+    "common_misconceptions": [
+      "NLB supports path-based routing (only ALB does, NLB operates at Layer 4)",
+      "ALB can provide a static IP address (ALB uses dynamic IPs; use NLB or Global Accelerator for static IPs)"
+    ],
+    "aws_services": ["ALB", "NLB", "GWLB", "EC2"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-route53-routing", "transfer_weight": 0.2},
+      {"concept_id": "aws-soa-auto-scaling", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-soa-route53-routing",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "networking-content-delivery",
+    "topic_id": "dns-routing",
+    "name": "Route 53 Routing Policies",
+    "description": "DNS routing strategies for traffic management and high availability",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Simple: single resource, no health checks",
+      "Weighted: distribute traffic by percentage across resources",
+      "Latency-based: route to the lowest-latency region",
+      "Failover: active-passive with health check integration",
+      "Geolocation: route based on user geographic location",
+      "Multivalue answer: return multiple healthy records (up to 8)"
+    ],
+    "common_misconceptions": [
+      "Geolocation and latency-based routing are the same (geolocation routes by location, latency routes by measured latency)",
+      "Multivalue answer is a replacement for a load balancer (it provides client-side DNS-level distribution, not true load balancing)"
+    ],
+    "aws_services": ["Route 53"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-route53-health", "transfer_weight": 0.35},
+      {"concept_id": "aws-soa-elb-types", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-soa-auto-scaling",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "networking-content-delivery",
+    "topic_id": "scaling",
+    "name": "Auto Scaling Policies",
+    "description": "EC2 Auto Scaling group configuration and scaling policy types",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Target tracking: maintains a specific metric value (e.g., 50% CPU)",
+      "Step scaling: adjusts capacity in steps based on alarm thresholds",
+      "Scheduled scaling: adjusts capacity at specific times",
+      "Predictive scaling: uses ML to forecast and pre-scale",
+      "Cooldown periods prevent rapid scale-in/scale-out oscillation"
+    ],
+    "common_misconceptions": [
+      "Auto Scaling only scales out (it also scales in to reduce costs)",
+      "Target tracking and step scaling should be used together on the same metric (this causes conflicts)"
+    ],
+    "aws_services": ["Auto Scaling", "EC2", "CloudWatch", "ELB"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-elb-types", "transfer_weight": 0.3},
+      {"concept_id": "aws-soa-trusted-advisor", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-soa-trusted-advisor",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "cost-performance-optimization",
+    "topic_id": "optimization",
+    "name": "Trusted Advisor and Cost Optimization",
+    "description": "Using Trusted Advisor and Compute Optimizer for cost and performance recommendations",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Trusted Advisor checks: cost optimization, performance, security, fault tolerance, service limits",
+      "Basic/Developer support: 7 core checks (S3 permissions, MFA on root, etc.)",
+      "Business/Enterprise support: full set of checks with API access",
+      "Compute Optimizer recommends optimal EC2, EBS, Lambda, and ECS configurations",
+      "Compute Optimizer requires at least 30 hours of metrics to generate recommendations"
+    ],
+    "common_misconceptions": [
+      "All Trusted Advisor checks are available on all support plans (most require Business or Enterprise support)",
+      "Compute Optimizer and Trusted Advisor provide the same recommendations (Compute Optimizer is ML-based and more granular for compute resources)"
+    ],
+    "aws_services": ["Trusted Advisor", "Compute Optimizer", "Cost Explorer"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-soa-auto-scaling", "transfer_weight": 0.15}
+    ]
+  }
+]

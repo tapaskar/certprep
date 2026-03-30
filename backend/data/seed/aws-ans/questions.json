@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-ans-001",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A global enterprise has 200 VPCs across 6 AWS regions that need full mesh connectivity. They also require network segmentation so that production, development, and shared services workloads are isolated. Traffic between production and development must be blocked, but both segments must access shared services. Which architecture provides this connectivity with the LEAST operational complexity?",
+    "options": [
+      {"id": "A", "text": "Deploy a Transit Gateway in each region with separate route tables for production, development, and shared services. Establish TGW peering between all regions with static routes for cross-region connectivity.", "is_correct": false},
+      {"id": "B", "text": "Deploy AWS Cloud WAN with a core network policy defining production, development, and shared-services segments. Configure segment actions to allow production-to-shared and development-to-shared routes while blocking production-to-development.", "is_correct": true},
+      {"id": "C", "text": "Create VPC peering connections between all VPCs that need connectivity and use security groups to enforce segmentation between production and development workloads.", "is_correct": false},
+      {"id": "D", "text": "Deploy a Transit Gateway in each region with a single route table and use Network Firewall stateful rules in each region to block production-to-development traffic.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud WAN manages global connectivity across regions through a single network policy document. Segments provide isolation equivalent to TGW route tables but orchestrated globally. Segment actions define which segments can share routes, blocking production-to-development while allowing both to access shared services. This eliminates the operational burden of managing TGW peering and static routes across 6 regions.",
+      "why_not_A": "TGW peering requires static routes and must be configured between every pair of regions. Managing static routes across 6 regions with 3 segments creates significant operational complexity compared to Cloud WAN's centralized policy.",
+      "why_not_C": "VPC peering does not scale for 200 VPCs; the number of peering connections would grow quadratically. VPC peering also does not provide native network segmentation and relies on security groups which are not a network-layer isolation mechanism.",
+      "why_not_D": "A single route table with Network Firewall does not provide network segmentation. All VPCs would have routes to each other, and the firewall must inspect all inter-VPC traffic, adding latency, cost, and a single point of failure."
+    },
+    "concept_ids": ["aws-ans-cloud-wan", "aws-ans-transit-gateway-advanced", "aws-ans-multi-vpc-design"],
+    "tags": ["global-connectivity", "network-segmentation", "cloud-wan", "multi-region"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-002",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A company has a centralized shared services VPC that hosts internal APIs used by 50 consumer VPCs across multiple accounts. The shared services team wants to expose these APIs without allowing broad network access to the shared VPC. Consumer VPCs have overlapping CIDR ranges. Which solution enables access to the internal APIs while maintaining network isolation?",
+    "options": [
+      {"id": "A", "text": "Create VPC peering connections from each consumer VPC to the shared services VPC and use route tables to control access to specific API subnets.", "is_correct": false},
+      {"id": "B", "text": "Deploy a Transit Gateway and attach all VPCs. Use TGW route tables to allow only API subnet prefixes to be propagated to consumer VPCs.", "is_correct": false},
+      {"id": "C", "text": "Deploy the APIs behind a Network Load Balancer in the shared services VPC. Create a VPC endpoint service via PrivateLink and have each consumer VPC create an interface endpoint to access the service.", "is_correct": true},
+      {"id": "D", "text": "Deploy the APIs in a public subnet with an internet-facing ALB and restrict access using WAF IP-based rules for each consumer VPC's NAT Gateway IP.", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "PrivateLink creates a unidirectional connection from consumer to provider without requiring peering, routing changes, or non-overlapping CIDRs. Each consumer creates an interface endpoint in their VPC, which appears as an ENI with a private IP from their own CIDR. The shared services VPC is never exposed beyond the NLB target. This works with overlapping CIDRs and scales to many consumers.",
+      "why_not_A": "VPC peering cannot be established between VPCs with overlapping CIDR ranges. Even without overlap, 50 peering connections create significant management overhead and peering provides broad network access rather than service-specific isolation.",
+      "why_not_B": "Transit Gateway also cannot route traffic between VPCs with overlapping CIDR ranges. Overlapping prefixes would cause ambiguous routing in the TGW route table.",
+      "why_not_D": "Exposing internal APIs over the public internet introduces unnecessary security risk. WAF IP-based rules do not provide the same level of network isolation as private connectivity and NAT Gateway IPs can change."
+    },
+    "concept_ids": ["aws-ans-privatelink-architectures", "aws-ans-multi-vpc-design"],
+    "tags": ["privatelink", "shared-services", "overlapping-cidr", "service-exposure"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-003",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company has migrated workloads to AWS but still runs Active Directory and internal DNS on-premises. AWS workloads need to resolve on-premises DNS names such as internal.corp.example.com, and on-premises servers need to resolve private hosted zone records in AWS such as api.aws.example.com. Which architecture enables bidirectional DNS resolution?",
+    "options": [
+      {"id": "A", "text": "Create a Route 53 Resolver outbound endpoint in the VPC with forwarding rules for corp.example.com to on-premises DNS servers. Create a Route 53 Resolver inbound endpoint and configure on-premises DNS to forward aws.example.com queries to the inbound endpoint IP addresses.", "is_correct": true},
+      {"id": "B", "text": "Configure the VPC DHCP options set to point to the on-premises DNS servers for all DNS resolution. Create a Route 53 public hosted zone for aws.example.com so on-premises servers can resolve it.", "is_correct": false},
+      {"id": "C", "text": "Deploy a pair of EC2 instances running BIND as DNS forwarders in the VPC. Configure them to forward corp.example.com queries to on-premises and have on-premises DNS forward aws.example.com queries to these instances.", "is_correct": false},
+      {"id": "D", "text": "Enable DNS hostnames and DNS resolution in the VPC settings and create a private hosted zone. Configure on-premises DNS with a conditional forwarder pointing to the VPC CIDR+2 address.", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Route 53 Resolver outbound endpoints forward specific DNS domains from VPC to on-premises DNS servers using forwarding rules. Inbound endpoints provide IP addresses that on-premises DNS servers can use as forwarders to resolve AWS private hosted zone records. This is the AWS-recommended pattern for bidirectional hybrid DNS.",
+      "why_not_B": "Using on-premises DNS as the VPC DNS resolver via DHCP options bypasses Route 53 private hosted zones, which require the default VPC DNS resolver. A public hosted zone exposes internal records to the internet.",
+      "why_not_C": "Self-managed BIND instances achieve the same outcome but add operational overhead for patching, scaling, and high availability. Route 53 Resolver endpoints are a managed, highly available alternative.",
+      "why_not_D": "The VPC CIDR+2 DNS resolver is only accessible from within the VPC. On-premises servers cannot reach this address across Direct Connect or VPN. Inbound endpoints are required to provide accessible IP addresses."
+    },
+    "concept_ids": ["aws-ans-hybrid-dns", "aws-ans-direct-connect-lag"],
+    "tags": ["hybrid-dns", "route53-resolver", "bidirectional", "on-premises"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-004",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-implementation",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A financial institution requires maximum resiliency for their AWS Direct Connect connectivity with at least 20 Gbps aggregate bandwidth. They need to connect 30 VPCs across 3 regions to their on-premises data center through a single Direct Connect Gateway. Which implementation meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Provision two 10 Gbps dedicated connections at the same DX location, bundle them in a LAG, create a transit VIF to a Direct Connect Gateway, and associate the gateway with a TGW in each region.", "is_correct": false},
+      {"id": "B", "text": "Provision two 10 Gbps dedicated connections at two separate DX locations, create a transit VIF on each connection to the same Direct Connect Gateway, and associate the gateway with a TGW in each region.", "is_correct": true},
+      {"id": "C", "text": "Provision four 10 Gbps dedicated connections at one DX location, bundle them into a LAG, create a private VIF to a VGW in each VPC across the 3 regions.", "is_correct": false},
+      {"id": "D", "text": "Provision two 10 Gbps dedicated connections at two DX locations, create a private VIF on each connection to the Direct Connect Gateway, and associate the gateway with VGWs in each VPC.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Two connections at separate DX locations provide maximum resiliency by eliminating single-location failure. Transit VIFs connect to a Direct Connect Gateway which can be associated with TGWs in multiple regions, providing access to all 30 VPCs through the regional TGWs. Each 10 Gbps connection provides failover capacity and together deliver 20 Gbps aggregate.",
+      "why_not_A": "A LAG at a single DX location does not provide maximum resiliency. If the location experiences an outage, all connectivity is lost. Maximum resiliency requires two separate locations.",
+      "why_not_C": "LAG at a single location lacks resiliency. Private VIFs connect to VGWs which attach to individual VPCs. With 30 VPCs, this would require 30 private VIFs which exceeds the per-connection limit and does not scale.",
+      "why_not_D": "Private VIFs to VGWs would require one VIF per VPC (30 VIFs), which exceeds the 50 VIF limit per connection and creates massive management overhead. Transit VIFs to TGWs solve this by providing hub connectivity to all VPCs via TGW."
+    },
+    "concept_ids": ["aws-ans-direct-connect-lag", "aws-ans-transit-gateway-advanced"],
+    "tags": ["direct-connect", "resiliency", "transit-vif", "multi-region"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-005",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-implementation",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A company uses two Direct Connect connections at different locations for redundancy. They want inbound traffic from AWS to prefer the primary connection at Location A during normal operations, but fail over to Location B if the primary fails. Outbound traffic from on-premises to AWS should also prefer Location A. Which BGP configuration achieves this traffic engineering?",
+    "options": [
+      {"id": "A", "text": "Advertise more specific prefixes from Location A and aggregate prefixes from Location B so AWS prefers the longer prefix match at Location A.", "is_correct": false},
+      {"id": "B", "text": "Use AS path prepending on the BGP session at Location B to make the path appear longer for inbound traffic, and set local preference higher on the on-premises router at Location A for outbound traffic.", "is_correct": true},
+      {"id": "C", "text": "Set BGP MED values lower on Location A advertisements to influence AWS route selection for inbound traffic, and use local preference on on-premises routers for outbound.", "is_correct": false},
+      {"id": "D", "text": "Apply BGP community tag 7224:8100 on Location A to limit route scope to the local region and use no community tag on Location B for global reach.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AS path prepending on Location B makes that path appear longer, so AWS BGP route selection prefers the shorter path via Location A for inbound (AWS-to-on-premises) traffic. Local preference is a customer-side BGP attribute that controls outbound (on-premises-to-AWS) routing and is set higher on Location A's router. This combination controls both traffic directions.",
+      "why_not_A": "Advertising different prefix lengths creates an asymmetric routing design that is fragile. If the more-specific route at Location A is withdrawn, traffic instantly shifts. This approach also reduces the ability to aggregate routes and may exceed the 100-prefix BGP advertisement limit.",
+      "why_not_C": "AWS does not honor MED values from customer BGP advertisements for Direct Connect. MED is used by AWS to signal preference to customers, not the reverse. AS path prepending is the correct mechanism to influence AWS inbound routing decisions.",
+      "why_not_D": "BGP community tags control the geographic scope of route advertisements, not path preference. They determine where AWS advertises your routes, not which path AWS prefers when multiple paths exist to the same prefix."
+    },
+    "concept_ids": ["aws-ans-bgp-communities", "aws-ans-direct-connect-lag"],
+    "tags": ["bgp", "traffic-engineering", "as-path-prepending", "local-preference"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-006",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-implementation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company needs to connect their on-premises data center to 15 VPCs via VPN as a backup path for their Direct Connect connection. They require more than 1.25 Gbps of aggregate VPN throughput when Direct Connect fails. Which architecture provides this?",
+    "options": [
+      {"id": "A", "text": "Create 15 site-to-site VPN connections, one to each VPC's virtual private gateway, and use BGP for failover from Direct Connect.", "is_correct": false},
+      {"id": "B", "text": "Create a Transit Gateway, attach all 15 VPCs, and create multiple VPN connections to the TGW with ECMP enabled to aggregate throughput across tunnels.", "is_correct": true},
+      {"id": "C", "text": "Create a single accelerated site-to-site VPN connection to a Transit Gateway and enable jumbo frames to increase the per-tunnel throughput beyond 1.25 Gbps.", "is_correct": false},
+      {"id": "D", "text": "Deploy a software VPN on EC2 instances in each VPC with auto-scaling to handle traffic when Direct Connect fails.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TGW with VPN attachments supports ECMP which distributes traffic across multiple VPN tunnels. By creating multiple VPN connections (each with two tunnels), aggregate throughput scales linearly. All 15 VPCs connect through the TGW, simplifying the architecture. BGP on the VPN connections enables automatic failover from Direct Connect.",
+      "why_not_A": "Individual VPN connections to VGWs in 15 VPCs creates management complexity. VGW-based VPN does not support ECMP, so each VPN is limited to 1.25 Gbps per tunnel with only active/passive failover between the two tunnels.",
+      "why_not_C": "A single VPN connection cannot exceed 1.25 Gbps per tunnel regardless of acceleration or jumbo frames. Acceleration improves latency and jitter by using the AWS backbone but does not increase per-tunnel bandwidth. Jumbo frames are not supported on VPN connections.",
+      "why_not_D": "Self-managed VPN on EC2 adds significant operational overhead for configuration, patching, and scaling. It does not integrate with TGW routing and requires custom failover automation."
+    },
+    "concept_ids": ["aws-ans-vpn-with-tgw", "aws-ans-transit-gateway-advanced"],
+    "tags": ["vpn", "ecmp", "tgw", "failover", "aggregate-throughput"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-007",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-implementation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is deploying a new application that must support both IPv4 and IPv6 clients. The application runs on EC2 instances in private subnets behind an ALB. IPv6 clients from the internet need access, and the EC2 instances must be able to initiate outbound IPv6 connections to external APIs but must not be directly reachable from the internet. Which configuration achieves this?",
+    "options": [
+      {"id": "A", "text": "Enable dual-stack on the VPC and subnets. Deploy a dualstack internet-facing ALB. Place instances in private subnets with a NAT Gateway for IPv4 and IPv6 outbound.", "is_correct": false},
+      {"id": "B", "text": "Enable dual-stack on the VPC and subnets. Deploy a dualstack internet-facing ALB. Place instances in private subnets with a NAT Gateway for IPv4 outbound and an egress-only internet gateway for IPv6 outbound.", "is_correct": true},
+      {"id": "C", "text": "Enable IPv6-only on the VPC. Deploy an IPv6-only internet-facing ALB. Place instances in private subnets with a NAT64 gateway for outbound connectivity to IPv4 APIs.", "is_correct": false},
+      {"id": "D", "text": "Enable dual-stack on the VPC and subnets. Deploy a dualstack internet-facing ALB. Place instances in public subnets and use security groups to block inbound IPv6 traffic from the internet.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A dualstack ALB accepts both IPv4 and IPv6 client traffic. Private subnets need a NAT Gateway for IPv4 outbound internet access and an egress-only internet gateway for IPv6 outbound. The egress-only internet gateway allows instances to initiate IPv6 connections but blocks inbound IPv6 traffic from the internet, matching the security requirement.",
+      "why_not_A": "NAT Gateway does not support IPv6. It is IPv4-only. IPv6 outbound requires an egress-only internet gateway for private subnets.",
+      "why_not_C": "IPv6-only would break connectivity with IPv4 clients. The requirement states both IPv4 and IPv6 clients need access. Additionally, NAT64 adds complexity and does not work natively with all AWS services.",
+      "why_not_D": "Placing instances in public subnets with IPv6 addresses makes them directly reachable from the internet. Security groups alone are insufficient because they do not prevent network reconnaissance and the instances have public addresses."
+    },
+    "concept_ids": ["aws-ans-ipv6-dual-stack", "aws-ans-multi-vpc-design"],
+    "tags": ["ipv6", "dual-stack", "egress-only-igw", "alb"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-008",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-management-operation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A network engineer needs to troubleshoot intermittent connectivity failures between an EC2 instance in a private subnet and an RDS database in another subnet of the same VPC. VPC Flow Logs show ACCEPT entries for traffic in both directions. The application still reports connection timeouts. Which tool provides the MOST useful diagnostic information for this issue?",
+    "options": [
+      {"id": "A", "text": "Use VPC Reachability Analyzer to test the path between the EC2 instance and the RDS endpoint to identify blocking configuration.", "is_correct": false},
+      {"id": "B", "text": "Enable Traffic Mirroring on the EC2 instance ENI and analyze the mirrored packets to identify TCP retransmissions, RST packets, or connection state issues.", "is_correct": true},
+      {"id": "C", "text": "Review CloudWatch metrics for the RDS instance to identify if the database is reaching connection limits or CPU saturation.", "is_correct": false},
+      {"id": "D", "text": "Use Network Manager route analysis to check for conflicting routes between the two subnets.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Since flow logs show ACCEPT entries, the network configuration (security groups, NACLs, route tables) is correct. Intermittent timeouts with accepted traffic suggest packet-level issues like TCP retransmissions, connection resets, or MTU problems. Traffic Mirroring captures full packets for deep analysis, revealing the actual failure mechanism that metadata-only flow logs cannot show.",
+      "why_not_A": "Reachability Analyzer performs static configuration analysis. Since flow logs already show ACCEPT, the configuration is correct. Reachability Analyzer would confirm connectivity is possible but cannot diagnose intermittent packet-level issues.",
+      "why_not_C": "CloudWatch RDS metrics can identify database-side resource exhaustion, which is a valid check. However, the question asks for network diagnostic information, and the intermittent nature suggests a network-level issue rather than consistent resource saturation.",
+      "why_not_D": "Network Manager route analysis is for Transit Gateway and global network routes. Within a single VPC, local route tables handle intra-VPC traffic directly, and Network Manager does not analyze VPC-level routing."
+    },
+    "concept_ids": ["aws-ans-traffic-mirroring", "aws-ans-flow-logs-analysis", "aws-ans-reachability-analyzer"],
+    "tags": ["troubleshooting", "traffic-mirroring", "packet-analysis", "connectivity"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-009",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-management-operation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company runs 20 VPCs connected via a Transit Gateway. The network team needs to identify which VPC is generating unexpected traffic to a specific external IP address. VPC Flow Logs are enabled at the VPC level for all VPCs and stored in S3. Which approach identifies the source VPC with the LEAST effort?",
+    "options": [
+      {"id": "A", "text": "Create separate Athena tables for each VPC's flow logs and run queries against each table to find traffic matching the destination IP.", "is_correct": false},
+      {"id": "B", "text": "Query all flow logs with a single Athena query using partition projection, filtering on the destination IP and grouping by the vpc-id field available in v3+ custom log format.", "is_correct": true},
+      {"id": "C", "text": "Enable CloudWatch Contributor Insights on each VPC's flow log group and search for the destination IP across all contributor reports.", "is_correct": false},
+      {"id": "D", "text": "Use Network Manager route analysis to trace which VPC route table has a route to the external IP address.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Flow Logs v3+ custom format includes the vpc-id field. With all logs stored in S3, a single Athena query with partition projection can scan across all VPCs, filter by destination IP, and group results by vpc-id to identify the source. Partition projection auto-generates partition metadata without requiring manual partition management.",
+      "why_not_A": "Creating separate Athena tables for 20 VPCs and querying each one individually is high effort. A unified query approach using partition projection is far more efficient.",
+      "why_not_C": "CloudWatch Contributor Insights analyzes log patterns for top contributors but requires flow logs to be sent to CloudWatch Logs. Searching across 20 separate log groups manually is not the least-effort approach.",
+      "why_not_D": "Network Manager route analysis identifies route configurations, not actual traffic flows. Multiple VPCs may have routes to the external IP via the internet gateway or NAT gateway, but route analysis cannot show which VPC is generating the traffic."
+    },
+    "concept_ids": ["aws-ans-flow-logs-analysis", "aws-ans-reachability-analyzer"],
+    "tags": ["flow-logs", "athena", "traffic-analysis", "vpc-identification"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-010",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-security-compliance-governance",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A company has a centralized inspection VPC connected to a Transit Gateway. All internet-bound traffic from 30 spoke VPCs must be inspected by AWS Network Firewall before reaching the internet. The Network Firewall must perform TLS inspection on HTTPS traffic to detect command-and-control callbacks. Which deployment architecture achieves this?",
+    "options": [
+      {"id": "A", "text": "Deploy Network Firewall in each spoke VPC with TLS inspection enabled. Configure each VPC's route table to send internet-bound traffic through the local firewall endpoint before reaching the internet gateway.", "is_correct": false},
+      {"id": "B", "text": "Deploy Network Firewall in the inspection VPC with TLS inspection using ACM certificates. Configure TGW route tables to route spoke VPC internet-bound traffic to the inspection VPC. Configure the inspection VPC route table to send traffic through the firewall endpoints before the NAT Gateway and internet gateway.", "is_correct": true},
+      {"id": "C", "text": "Deploy AWS WAF on a centralized ALB in the inspection VPC with managed rule groups for malware detection. Route all spoke traffic through the ALB using TGW routing.", "is_correct": false},
+      {"id": "D", "text": "Deploy Network Firewall in the inspection VPC with domain-list rules for known C2 domains. Route spoke traffic through the firewall without TLS inspection and rely on DNS-based filtering.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A centralized inspection VPC with Network Firewall provides a single point of inspection for all 30 spoke VPCs. TGW route tables direct internet-bound traffic from spokes to the inspection VPC. Network Firewall with TLS inspection uses ACM-issued certificates to decrypt, inspect, and re-encrypt HTTPS traffic, enabling detection of C2 callbacks in encrypted streams. The traffic flow is: spoke VPC -> TGW -> firewall endpoint -> NAT Gateway -> internet gateway.",
+      "why_not_A": "Deploying Network Firewall in each of the 30 spoke VPCs creates massive operational overhead and cost. Centralized inspection is the standard architecture for multi-VPC environments using TGW.",
+      "why_not_C": "WAF operates at Layer 7 HTTP/HTTPS on ALB and cannot inspect arbitrary internet-bound traffic from VPCs. It is designed for inbound web application protection, not outbound traffic inspection for C2 detection.",
+      "why_not_D": "DNS-based filtering only blocks known domain names. Sophisticated C2 infrastructure uses IP-based communication, domain fronting, and encrypted payloads that bypass DNS filtering. TLS inspection is required to detect C2 patterns within encrypted traffic."
+    },
+    "concept_ids": ["aws-ans-network-firewall-rules", "aws-ans-transit-gateway-advanced"],
+    "tags": ["tls-inspection", "centralized-inspection", "c2-detection", "network-firewall"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-011",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-security-compliance-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An e-commerce company experiences a Layer 7 DDoS attack targeting their CloudFront distribution with HTTP flood requests that mimic legitimate traffic patterns. Their WAF rate-based rule is blocking some attack traffic but also impacting legitimate users behind shared corporate proxies. Which combination of actions BEST mitigates the attack while minimizing impact on legitimate users?",
+    "options": [
+      {"id": "A", "text": "Increase the WAF rate-based rule threshold to avoid blocking corporate proxies and add geographic restrictions to block countries not in the customer base.", "is_correct": false},
+      {"id": "B", "text": "Enable Shield Advanced on the CloudFront distribution with proactive engagement and health-based detection. Add WAF scope-down statements to the rate-based rule that target specific attack URI patterns while excluding corporate proxy IPs via an IP set allow rule.", "is_correct": true},
+      {"id": "C", "text": "Remove the rate-based rule entirely and rely on CloudFront's built-in DDoS protection to absorb the HTTP flood traffic at the edge.", "is_correct": false},
+      {"id": "D", "text": "Switch from CloudFront to an ALB and deploy Network Firewall in front of it with Suricata rules to detect and block the HTTP flood patterns.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Shield Advanced with proactive engagement allows the DDoS Response Team to assist during attacks and health-based detection improves sensitivity. Scope-down statements on the rate-based rule target the attack by narrowing the rate limit to specific URI patterns used in the flood, rather than counting all requests per IP. An IP set allow rule with higher priority exempts known corporate proxy IPs from the rate limit.",
+      "why_not_A": "Increasing the rate limit weakens protection against the actual attack. Geographic restrictions are too coarse and would block legitimate international customers while sophisticated attackers use distributed global botnets.",
+      "why_not_C": "CloudFront provides Shield Standard Layer 3/4 protection by default, but it does not mitigate Layer 7 HTTP floods. WAF is required for application-layer DDoS mitigation.",
+      "why_not_D": "Moving away from CloudFront removes edge caching and global distribution benefits. Network Firewall is not designed for HTTP-layer attacks and cannot be placed in front of an ALB in the same way as WAF."
+    },
+    "concept_ids": ["aws-ans-ddos-shield-advanced", "aws-ans-waf-rate-limiting"],
+    "tags": ["ddos", "shield-advanced", "waf", "scope-down", "layer-7"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-012",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-security-compliance-governance",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A regulated company must enforce that all inter-VPC traffic across 50 VPCs passes through a centralized AWS Network Firewall for stateful inspection. A developer accidentally creates a VPC peering connection between two spoke VPCs, bypassing the inspection VPC. Which solution prevents this bypass from occurring in the future?",
+    "options": [
+      {"id": "A", "text": "Use AWS Config rules to detect VPC peering connections and automatically delete them via SSM Automation remediation.", "is_correct": false},
+      {"id": "B", "text": "Apply an SCP across the organization that denies ec2:CreateVpcPeeringConnection and ec2:AcceptVpcPeeringConnection actions for all member accounts.", "is_correct": true},
+      {"id": "C", "text": "Configure the Transit Gateway to deny route propagation from any VPC that has an active peering connection.", "is_correct": false},
+      {"id": "D", "text": "Use Network Manager to monitor for new VPC peering connections and alert the security team via SNS for manual remediation.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SCPs are preventive controls that block API actions before they execute. Denying both CreateVpcPeeringConnection and AcceptVpcPeeringConnection prevents any member account from establishing direct peering that would bypass the centralized inspection VPC. This is the strongest enforcement mechanism available.",
+      "why_not_A": "AWS Config with auto-remediation is a detective control. There is a window between peering creation and remediation during which uninspected traffic could flow. Preventive controls are superior for compliance-critical requirements.",
+      "why_not_C": "Transit Gateway route propagation is independent of VPC peering. TGW cannot detect or respond to peering connections in spoke VPCs. Peered VPCs route directly without involving the TGW.",
+      "why_not_D": "Manual remediation via alerts introduces human delay and risk. A developer could send uninspected traffic through the peering connection before the security team responds. Preventive controls eliminate this risk."
+    },
+    "concept_ids": ["aws-ans-network-firewall-rules", "aws-ans-transit-gateway-advanced"],
+    "tags": ["scp", "preventive-controls", "inspection-bypass", "compliance"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-013",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company operates a Transit Gateway with 150 VPC attachments. They need to add a new shared services VPC that must be accessible from all existing VPCs, but the existing VPCs should not be able to communicate with each other through the shared services VPC. How should the TGW route tables be configured?",
+    "options": [
+      {"id": "A", "text": "Create a single route table, associate all VPC attachments including the shared services VPC, and enable route propagation from all attachments.", "is_correct": false},
+      {"id": "B", "text": "Create two route tables: a spoke route table associated with all 150 VPC attachments that only propagates routes from the shared services VPC, and a shared-services route table associated with the shared services VPC that propagates routes from all spoke VPCs.", "is_correct": true},
+      {"id": "C", "text": "Create 150 individual route tables, one per spoke VPC, each containing only a static route to the shared services VPC CIDR.", "is_correct": false},
+      {"id": "D", "text": "Use a single route table with blackhole routes for all spoke-to-spoke CIDR combinations to block inter-spoke communication.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The two-route-table pattern provides hub-and-spoke isolation. The spoke route table only has routes to the shared services VPC (via propagation from its attachment), preventing spoke-to-spoke communication. The shared services route table has routes to all spokes (via propagation from all spoke attachments), enabling the shared services VPC to reach any spoke. This is the standard TGW hub-and-spoke pattern.",
+      "why_not_A": "A single route table with propagation from all attachments creates a full mesh where every VPC can reach every other VPC. This directly violates the isolation requirement.",
+      "why_not_C": "Creating 150 individual route tables is technically possible but operationally impractical. It exceeds typical TGW route table limits and creates massive management overhead. The two-route-table pattern achieves the same isolation with minimal configuration.",
+      "why_not_D": "Creating blackhole routes for all spoke-to-spoke CIDR combinations does not scale. With 150 VPCs, the number of blackhole routes would be enormous and each new VPC would require adding blackhole routes for all existing VPCs."
+    },
+    "concept_ids": ["aws-ans-transit-gateway-advanced", "aws-ans-multi-vpc-design"],
+    "tags": ["tgw", "route-tables", "hub-and-spoke", "network-isolation"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-014",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-management-operation",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A security team suspects that an EC2 instance in a production VPC is communicating with a known command-and-control server. VPC Flow Logs confirm outbound connections to the suspicious IP, but the team needs to capture and analyze the actual packet contents to understand what data is being exfiltrated. The investigation must not disrupt the running instance. Which approach captures the required data?",
+    "options": [
+      {"id": "A", "text": "Increase VPC Flow Logs to 1-minute aggregation interval with all available v5 fields to capture detailed connection metadata.", "is_correct": false},
+      {"id": "B", "text": "Create a Traffic Mirroring session on the instance's ENI with a filter targeting the C2 IP address. Mirror the traffic to an NLB fronting a fleet of packet analysis instances running tcpdump and Wireshark.", "is_correct": true},
+      {"id": "C", "text": "Enable AWS Network Firewall with alert-mode Suricata rules for the C2 IP and analyze the alert logs for payload information.", "is_correct": false},
+      {"id": "D", "text": "Snapshot the instance's EBS volume, launch a new instance from the snapshot, and run packet capture tools on the new instance to reproduce the traffic.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Traffic Mirroring copies actual packets from the source ENI to a target for analysis without affecting the source instance. Filtering by the C2 IP reduces the data volume to only relevant traffic. The mirrored packets include full headers and payloads, enabling analysts to see exactly what data is being sent. Using an NLB target provides scalability and high availability for the analysis fleet.",
+      "why_not_A": "VPC Flow Logs capture metadata (IPs, ports, bytes, packets) but never capture packet contents or payloads. They cannot reveal what data is being exfiltrated regardless of the aggregation interval or field selection.",
+      "why_not_C": "Network Firewall alert rules can detect matching traffic and log alert metadata, but Suricata alerts do not capture full packet payloads by default. Additionally, deploying Network Firewall and modifying route tables to inspect traffic from a single instance adds complexity and may disrupt traffic.",
+      "why_not_D": "Creating a snapshot and launching a new instance does not reproduce the malware's network behavior. The C2 communication depends on the compromised instance's state, running processes, and network context which cannot be reliably reproduced on a clean instance."
+    },
+    "concept_ids": ["aws-ans-traffic-mirroring", "aws-ans-flow-logs-analysis"],
+    "tags": ["forensics", "traffic-mirroring", "exfiltration", "packet-capture"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ans-015",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-security-compliance-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A multi-account organization needs to enforce consistent Network Firewall policies across all member accounts. When new VPCs are created in any account, the firewall rules must be automatically applied. The security team in the central account should manage all firewall policies. Which service achieves this centralized management?",
+    "options": [
+      {"id": "A", "text": "Deploy Network Firewall in each account using AWS CloudFormation StackSets and manage rule updates by updating the stack set.", "is_correct": false},
+      {"id": "B", "text": "Use AWS Firewall Manager with Network Firewall policies to automatically deploy and enforce firewall rules across all member accounts, including auto-remediation for new VPCs.", "is_correct": true},
+      {"id": "C", "text": "Use AWS Config organizational rules to detect VPCs without Network Firewall and trigger Lambda functions to deploy firewall resources.", "is_correct": false},
+      {"id": "D", "text": "Share Network Firewall rule groups across accounts using AWS RAM and require each account to create their own firewall referencing the shared rules.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Firewall Manager is purpose-built for centralized security policy management across an organization. Network Firewall policies in Firewall Manager automatically deploy firewall resources to member account VPCs, including newly created ones. The security team manages policies centrally, and auto-remediation ensures compliance without manual intervention in each account.",
+      "why_not_A": "CloudFormation StackSets can deploy resources across accounts but do not automatically apply to new VPCs created after deployment. Manual stack set updates or custom automation would be needed for new VPCs.",
+      "why_not_C": "Config rules with Lambda remediation is a detective approach with a delay between VPC creation and firewall deployment. Firewall Manager provides native auto-remediation without custom Lambda code.",
+      "why_not_D": "Sharing rule groups via RAM enables reuse but requires each account to manually create and configure their own firewall instances. This does not provide automatic enforcement or centralized management of the deployment itself."
+    },
+    "concept_ids": ["aws-ans-network-firewall-rules", "aws-ans-waf-rate-limiting"],
+    "tags": ["firewall-manager", "centralized-management", "multi-account", "auto-remediation"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  }
+]

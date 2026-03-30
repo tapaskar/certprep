@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-dea-001",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company ingests clickstream data at 50,000 events per second. Each event is 1 KB. The data must be stored in S3 in Parquet format for downstream analytics with Athena. The solution should minimize operational overhead and cost. Which architecture should the data engineer use?",
+    "options": [
+      {"id": "A", "text": "Kinesis Data Streams with a KCL consumer application that converts records to Parquet and writes to S3", "is_correct": false},
+      {"id": "B", "text": "Kinesis Data Firehose with record format conversion enabled to output Parquet directly to S3", "is_correct": true},
+      {"id": "C", "text": "Amazon MSK with a Kafka Connect S3 sink connector writing JSON, followed by a Glue ETL job to convert to Parquet", "is_correct": false},
+      {"id": "D", "text": "Kinesis Data Streams feeding a Lambda function that batches records and writes Parquet files to S3", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Kinesis Data Firehose natively supports record format conversion to Parquet using a Glue Data Catalog table definition. It is fully managed, handles buffering, compression, and delivery to S3 with no consumer code to maintain.",
+      "why_not_A": "KCL consumers require provisioning and managing EC2 instances or containers, writing Parquet conversion code, and handling checkpointing. This adds significant operational overhead compared to Firehose.",
+      "why_not_C": "Using MSK with a two-step pipeline (JSON to S3 then Glue ETL to Parquet) adds latency and complexity. Firehose handles the conversion inline during delivery.",
+      "why_not_D": "Lambda has a 15-minute timeout and 6 MB payload limit per invocation. At 50,000 events/second, managing batching and Parquet file generation in Lambda is fragile and difficult to scale."
+    },
+    "concept_ids": ["aws-dea-kinesis-firehose", "aws-dea-kinesis-streams"],
+    "tags": ["streaming", "parquet", "format-conversion", "firehose"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-002",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A data team must choose between Kinesis Data Streams and Amazon MSK for a new streaming pipeline. The existing application code uses Apache Kafka consumer APIs, and the team wants to minimize code changes during migration. Which factor MOST strongly favors choosing Amazon MSK?",
+    "options": [
+      {"id": "A", "text": "MSK supports higher throughput per shard than Kinesis Data Streams", "is_correct": false},
+      {"id": "B", "text": "MSK is fully serverless and requires no capacity planning", "is_correct": false},
+      {"id": "C", "text": "MSK supports native Kafka APIs, allowing the existing consumer code to work without modification", "is_correct": true},
+      {"id": "D", "text": "MSK provides built-in record format conversion to Parquet and ORC", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon MSK is a managed Apache Kafka service that supports native Kafka APIs. Existing Kafka consumer and producer code can connect to MSK with only a broker endpoint change, eliminating the need to rewrite application logic.",
+      "why_not_A": "MSK uses partitions, not shards. Throughput comparisons depend on partition count and instance type. This is not the strongest migration consideration.",
+      "why_not_B": "MSK Serverless exists but standard MSK requires choosing broker instance types and storage. This statement is an oversimplification and not the primary migration factor.",
+      "why_not_D": "MSK does not provide built-in format conversion. That capability belongs to Kinesis Data Firehose. MSK delivers raw records as produced."
+    },
+    "concept_ids": ["aws-dea-msk", "aws-dea-kinesis-streams"],
+    "tags": ["streaming", "kafka", "migration", "api-compatibility"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-003",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company needs to migrate a 5 TB Oracle database to Amazon Aurora PostgreSQL with minimal downtime. The source database uses Oracle-specific stored procedures and data types. Which combination of AWS services should the data engineer use?",
+    "options": [
+      {"id": "A", "text": "AWS DMS for full load migration only, then manually rewrite and deploy stored procedures on Aurora", "is_correct": false},
+      {"id": "B", "text": "AWS SCT to convert the schema and stored procedures, then AWS DMS with full load plus CDC for data migration with minimal downtime", "is_correct": true},
+      {"id": "C", "text": "AWS DMS with CDC only, relying on DMS to automatically convert Oracle data types and procedures", "is_correct": false},
+      {"id": "D", "text": "Export the Oracle database using pg_dump and import into Aurora PostgreSQL using pg_restore", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SCT handles the heterogeneous schema conversion, translating Oracle-specific data types and stored procedures to PostgreSQL equivalents. DMS with full load plus CDC migrates the data and then continuously replicates changes, enabling a minimal-downtime cutover.",
+      "why_not_A": "Full load only requires stopping writes to the source database during migration, which means downtime. CDC is needed for minimal downtime. SCT should handle procedure conversion rather than manual rewrites.",
+      "why_not_C": "DMS does not automatically convert stored procedures or complex Oracle-specific data types. SCT is required for schema conversion in heterogeneous migrations. CDC only mode does not migrate existing data.",
+      "why_not_D": "pg_dump and pg_restore are PostgreSQL-native tools and cannot read an Oracle database. This approach is invalid for heterogeneous migrations."
+    },
+    "concept_ids": ["aws-dea-dms"],
+    "tags": ["database-migration", "heterogeneous", "oracle", "aurora", "cdc"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-004",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "Which feature of AWS Glue ETL prevents reprocessing of data that has already been handled in previous job runs?",
+    "options": [
+      {"id": "A", "text": "Glue Crawlers", "is_correct": false},
+      {"id": "B", "text": "DynamicFrames", "is_correct": false},
+      {"id": "C", "text": "Job bookmarks", "is_correct": true},
+      {"id": "D", "text": "Glue Data Catalog", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Glue job bookmarks track which data has been processed in previous runs by persisting state information. On subsequent runs, the job only processes new or unprocessed data, avoiding costly reprocessing.",
+      "why_not_A": "Glue Crawlers discover and catalog data schemas. They do not track which data has been processed by ETL jobs.",
+      "why_not_B": "DynamicFrames are Glue's data abstraction that extends Spark DataFrames with schema flexibility. They handle data transformation, not deduplication of processing.",
+      "why_not_D": "The Glue Data Catalog is a centralized metastore for table definitions and schemas. It does not track ETL job processing state."
+    },
+    "concept_ids": ["aws-dea-glue-etl"],
+    "tags": ["glue", "job-bookmarks", "incremental-processing"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-005",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer needs to process streaming records from Kinesis Data Streams. Each record must be enriched by looking up a reference table in DynamoDB before being written to S3. The pipeline must guarantee that each record is processed exactly once. Which consumer approach is MOST appropriate?",
+    "options": [
+      {"id": "A", "text": "Kinesis Data Firehose with a Lambda transformation function that queries DynamoDB", "is_correct": false},
+      {"id": "B", "text": "Lambda function triggered by Kinesis Data Streams with a DynamoDB lookup and idempotent writes to S3", "is_correct": true},
+      {"id": "C", "text": "Kinesis Data Analytics SQL application that joins the stream with the DynamoDB table", "is_correct": false},
+      {"id": "D", "text": "Enhanced fan-out consumer writing directly to S3 with a separate Glue job for enrichment", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Lambda integrates natively with Kinesis Data Streams as an event source. The function can perform DynamoDB lookups for enrichment and write enriched records to S3. With checkpointing and idempotent writes, exactly-once processing semantics can be achieved.",
+      "why_not_A": "Firehose Lambda transformations are designed for lightweight record transformations, not external lookups. Firehose also provides at-least-once delivery, and external calls in the transform function can cause timeout issues at high throughput.",
+      "why_not_C": "Kinesis Data Analytics SQL cannot directly join a stream with a DynamoDB table. It supports reference data from S3, not DynamoDB.",
+      "why_not_D": "Separating enrichment into a downstream Glue job adds latency and complexity. The enrichment would not happen in real time, and coordinating between the consumer and the batch job is operationally heavy."
+    },
+    "concept_ids": ["aws-dea-kinesis-streams", "aws-dea-dynamodb-analytics"],
+    "tags": ["streaming", "enrichment", "lambda", "dynamodb", "exactly-once"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-006",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data lake on S3 contains 10 TB of log data stored as uncompressed CSV files. Athena queries scanning this data are slow and expensive. The data engineer wants to reduce both query cost and execution time without changing the schema. Which two actions will provide the MOST improvement?",
+    "options": [
+      {"id": "A", "text": "Convert the data to Parquet format and partition by date using Hive-style partitioning", "is_correct": true},
+      {"id": "B", "text": "Enable S3 Transfer Acceleration and increase the Athena query concurrency limit", "is_correct": false},
+      {"id": "C", "text": "Move the data to S3 Glacier and use Glacier Select for queries", "is_correct": false},
+      {"id": "D", "text": "Create an S3 Inventory report and use it to optimize bucket structure", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Parquet is a columnar format that enables Athena to read only the columns needed, reducing data scanned. Hive-style partitioning by date allows Athena to skip entire partitions that don't match the query's WHERE clause. Together, these can reduce data scanned by 90% or more.",
+      "why_not_B": "S3 Transfer Acceleration speeds up uploads to S3, not queries. Increasing Athena concurrency does not reduce the data scanned per query or the cost.",
+      "why_not_C": "Glacier is for archival storage with retrieval latency of minutes to hours. Glacier Select supports limited query operations but is not designed for interactive analytics.",
+      "why_not_D": "S3 Inventory lists objects in a bucket for auditing purposes. It does not optimize query performance or reduce data scan costs."
+    },
+    "concept_ids": ["aws-dea-s3-data-lake", "aws-dea-athena"],
+    "tags": ["data-lake", "parquet", "partitioning", "query-optimization"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-007",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company runs complex analytical queries that join large fact tables with dimension tables and require sub-second response times for dashboards. The queries run repeatedly throughout the day. Which service is MOST appropriate?",
+    "options": [
+      {"id": "A", "text": "Amazon Athena with query results caching", "is_correct": false},
+      {"id": "B", "text": "Amazon Redshift with materialized views and distribution key optimization", "is_correct": true},
+      {"id": "C", "text": "Amazon DynamoDB with global secondary indexes", "is_correct": false},
+      {"id": "D", "text": "Amazon RDS PostgreSQL with read replicas", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Redshift is a columnar data warehouse optimized for complex analytical queries with joins. Distribution keys co-locate joined data to minimize data movement. Materialized views precompute results for repeated queries, enabling sub-second dashboard responses.",
+      "why_not_A": "Athena is serverless and pay-per-query, ideal for ad-hoc queries. For repeated complex joins requiring sub-second response, Athena's query execution time is typically higher than Redshift with materialized views.",
+      "why_not_C": "DynamoDB is a NoSQL key-value store optimized for single-digit millisecond lookups by key. It does not support complex SQL joins across tables.",
+      "why_not_D": "RDS PostgreSQL is a row-based OLTP database. It is not optimized for analytical workloads with large table scans and complex aggregations at the scale described."
+    },
+    "concept_ids": ["aws-dea-redshift", "aws-dea-athena"],
+    "tags": ["data-warehouse", "materialized-views", "analytical-queries", "performance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-008",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company stores transactional data in DynamoDB. The analytics team needs to run daily aggregate queries on this data without impacting the production table's read capacity. The solution should also retain historical data for trend analysis over 12 months. Which approach is MOST cost-effective?",
+    "options": [
+      {"id": "A", "text": "Enable DynamoDB Streams and use a Lambda function to write each change to a Redshift cluster for analytics", "is_correct": false},
+      {"id": "B", "text": "Perform a DynamoDB table scan each night using a Glue ETL job to copy data into S3 for Athena queries", "is_correct": false},
+      {"id": "C", "text": "Use DynamoDB export to S3 on a daily schedule, then query the exported data with Athena", "is_correct": true},
+      {"id": "D", "text": "Create a DynamoDB global secondary index optimized for the analytical query patterns", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "DynamoDB export to S3 performs a full table export without consuming any read capacity units from the production table. Exported data in S3 can be queried by Athena at low cost. Historical exports accumulate over 12 months for trend analysis.",
+      "why_not_A": "Streaming every change to Redshift adds a continuously running Redshift cluster cost. For daily aggregate queries, this is over-provisioned and expensive compared to S3 plus Athena.",
+      "why_not_B": "A DynamoDB table scan consumes significant read capacity from the production table, which the requirement explicitly prohibits. This would also increase costs during scan operations.",
+      "why_not_D": "GSIs consume additional write and read capacity on the production table. They are designed for alternative access patterns, not for complex aggregate analytical queries."
+    },
+    "concept_ids": ["aws-dea-dynamodb-analytics", "aws-dea-athena"],
+    "tags": ["dynamodb", "export", "analytics", "cost-optimization"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-009",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "Which Amazon Athena feature allows querying data stored in external relational databases like RDS and on-premises PostgreSQL without moving the data into S3?",
+    "options": [
+      {"id": "A", "text": "CTAS (Create Table As Select)", "is_correct": false},
+      {"id": "B", "text": "Athena federated queries using Lambda connectors", "is_correct": true},
+      {"id": "C", "text": "Athena workgroups with cross-account access", "is_correct": false},
+      {"id": "D", "text": "Glue Data Catalog with JDBC crawlers", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Athena federated queries use Lambda-based data source connectors to execute queries against external data sources such as RDS, DynamoDB, Redshift, and on-premises databases. The data does not need to be copied into S3.",
+      "why_not_A": "CTAS creates new tables in S3 from query results. It does not connect to external databases; it operates on data already cataloged in Athena.",
+      "why_not_C": "Workgroups control query access, cost allocation, and settings within Athena. They do not provide connectivity to external relational databases.",
+      "why_not_D": "Glue JDBC crawlers catalog schema metadata from JDBC sources into the Data Catalog, but they do not enable Athena to query those sources directly. The data would still need to be loaded."
+    },
+    "concept_ids": ["aws-dea-athena"],
+    "tags": ["athena", "federated-queries", "lambda-connectors"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-010",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer must implement fine-grained access control so that the marketing team can only see the customer_name and purchase_amount columns, while the finance team can see all columns including credit_card_number. Both teams query the same data lake table using Athena. Which service provides this capability with the LEAST operational overhead?",
+    "options": [
+      {"id": "A", "text": "Create separate S3 buckets for each team with different subsets of columns", "is_correct": false},
+      {"id": "B", "text": "Use IAM policies with S3 object-level permissions to restrict column access", "is_correct": false},
+      {"id": "C", "text": "AWS Lake Formation with column-level security and LF-Tags for permission management", "is_correct": true},
+      {"id": "D", "text": "Create separate Glue Data Catalog tables with different column definitions for each team", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Lake Formation provides native column-level and row-level security for data lake tables. LF-Tags enable scalable permission management by tagging columns with sensitivity levels and granting access based on tags. Both Athena and Redshift Spectrum enforce these permissions.",
+      "why_not_A": "Duplicating data across buckets with different column subsets wastes storage, creates data consistency challenges, and requires custom ETL pipelines to maintain the copies.",
+      "why_not_B": "IAM policies operate at the S3 object level (files), not at the column level within those files. You cannot restrict access to specific columns within a Parquet file using IAM alone.",
+      "why_not_D": "Maintaining separate catalog tables requires managing multiple ETL jobs and ensuring schema consistency. This adds operational overhead and does not scale as the number of teams grows."
+    },
+    "concept_ids": ["aws-dea-lake-formation", "aws-dea-athena"],
+    "tags": ["lake-formation", "column-security", "lf-tags", "access-control"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-011",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-operations-support",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A data engineering team needs to orchestrate a multi-step data pipeline that includes a Glue ETL job, an Athena CTAS query, and an SNS notification upon completion. The team has no existing Apache Airflow expertise. Which orchestration service should they choose?",
+    "options": [
+      {"id": "A", "text": "Amazon MWAA with a DAG that defines the three steps", "is_correct": false},
+      {"id": "B", "text": "AWS Step Functions with direct SDK integrations for Glue, Athena, and SNS", "is_correct": true},
+      {"id": "C", "text": "EventBridge Scheduler triggering each service independently on a time-based schedule", "is_correct": false},
+      {"id": "D", "text": "A Lambda function that calls each service sequentially with error handling", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Step Functions provides direct SDK integrations with Glue, Athena, and SNS, requiring no custom code. The visual workflow editor makes it easy to define sequential steps with error handling. No Airflow expertise is needed.",
+      "why_not_A": "MWAA requires knowledge of Apache Airflow DAG authoring in Python. Since the team has no Airflow expertise, the learning curve adds unnecessary overhead for a straightforward three-step pipeline.",
+      "why_not_C": "EventBridge Scheduler triggers services on time-based schedules but does not coordinate dependencies between steps. If the Glue job finishes early or late, the Athena query would not be synchronized.",
+      "why_not_D": "A single Lambda function orchestrating multiple long-running services risks hitting the 15-minute timeout. Managing retries, error handling, and state within Lambda code is more complex than Step Functions."
+    },
+    "concept_ids": ["aws-dea-step-functions", "aws-dea-mwaa"],
+    "tags": ["orchestration", "step-functions", "serverless", "pipeline"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-012",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-operations-support",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "Which AWS service provides a visual, no-code interface for cleaning and normalizing data with built-in data profiling capabilities?",
+    "options": [
+      {"id": "A", "text": "AWS Glue ETL", "is_correct": false},
+      {"id": "B", "text": "AWS Glue DataBrew", "is_correct": true},
+      {"id": "C", "text": "Amazon Athena", "is_correct": false},
+      {"id": "D", "text": "AWS Step Functions", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Glue DataBrew provides a visual interface with 250+ built-in transformations for data cleaning and normalization. Its data profiling feature generates statistics on data quality, including null counts, distributions, and outliers, without writing any code.",
+      "why_not_A": "Glue ETL requires writing PySpark or Scala code for data transformations. While it can be used through a visual editor, it is designed for programmatic ETL, not visual data preparation.",
+      "why_not_C": "Athena is a SQL query engine for analyzing data in S3. It does not provide visual data cleaning or profiling capabilities.",
+      "why_not_D": "Step Functions is a workflow orchestration service. It coordinates multi-step processes but does not perform data cleaning or profiling."
+    },
+    "concept_ids": ["aws-dea-glue-databrew"],
+    "tags": ["databrew", "data-preparation", "no-code", "profiling"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-013",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer needs to schedule a Glue ETL job to run every day at 6 AM UTC. If the job fails, it should be retried up to 3 times before sending a failure notification to an SNS topic. Which service provides the scheduling and retry behavior with the LEAST custom code?",
+    "options": [
+      {"id": "A", "text": "Amazon EventBridge Scheduler with a cron expression, retry policy, and dead-letter queue connected to SNS", "is_correct": true},
+      {"id": "B", "text": "CloudWatch Events rule on a cron schedule with a Lambda function that manages retries", "is_correct": false},
+      {"id": "C", "text": "Glue Workflows with a time-based trigger and manual retry logic in the ETL script", "is_correct": false},
+      {"id": "D", "text": "A Step Functions state machine with a Wait state and retry in the Glue step, triggered by cron", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "EventBridge Scheduler supports cron expressions for scheduling, built-in retry policies with configurable maximum attempts, and dead-letter queues for failed invocations. Connecting the DLQ to SNS handles failure notifications without custom code.",
+      "why_not_B": "CloudWatch Events rules do not have built-in retry policies. Building retry logic in a Lambda function requires custom code for tracking attempt counts and managing state.",
+      "why_not_C": "Glue Workflows support triggers and job orchestration but retry logic within the ETL script itself is not a clean separation of concerns. Workflow-level retries are limited compared to EventBridge Scheduler.",
+      "why_not_D": "Step Functions with retry is a valid approach but adds more infrastructure (the state machine definition) compared to EventBridge Scheduler's built-in retry policy for a single job invocation."
+    },
+    "concept_ids": ["aws-dea-eventbridge-scheduling", "aws-dea-glue-etl"],
+    "tags": ["scheduling", "eventbridge", "retry", "automation"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-014",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A healthcare company stores patient data in S3 and queries it with Athena. Regulatory requirements mandate that encryption keys must be customer-managed, key usage must be auditable, and keys must be rotated annually. Which encryption approach meets ALL of these requirements?",
+    "options": [
+      {"id": "A", "text": "SSE-S3 with Amazon-managed keys", "is_correct": false},
+      {"id": "B", "text": "SSE-KMS with a customer-managed KMS key and automatic annual key rotation enabled", "is_correct": true},
+      {"id": "C", "text": "SSE-C with customer-provided encryption keys stored in Secrets Manager", "is_correct": false},
+      {"id": "D", "text": "Client-side encryption using the AWS Encryption SDK before uploading to S3", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SSE-KMS with a customer-managed key provides full key management control. KMS key policies control access. CloudTrail logs every Encrypt and Decrypt API call for audit. Automatic key rotation can be enabled on an annual schedule.",
+      "why_not_A": "SSE-S3 uses Amazon-managed keys that customers cannot control or audit. There is no visibility into key usage, and rotation is managed entirely by AWS without customer control.",
+      "why_not_C": "SSE-C requires the customer to provide the encryption key with every request. AWS does not store the key, so audit logging of key usage is the customer's responsibility. Managing key rotation and distribution is operationally complex.",
+      "why_not_D": "Client-side encryption meets the encryption requirements but adds complexity to the application. Athena cannot directly query client-side encrypted data without the application first decrypting it."
+    },
+    "concept_ids": ["aws-dea-s3-encryption"],
+    "tags": ["encryption", "kms", "compliance", "audit", "key-rotation"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dea-015",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data engineer is configuring an Amazon Redshift cluster that processes sensitive financial data. The security team requires that all COPY and UNLOAD operations between Redshift and S3 travel through the VPC and not over the public internet. Which Redshift feature must be enabled?",
+    "options": [
+      {"id": "A", "text": "Redshift Spectrum with a VPC endpoint for S3", "is_correct": false},
+      {"id": "B", "text": "Enhanced VPC routing on the Redshift cluster", "is_correct": true},
+      {"id": "C", "text": "SSL enforcement on the Redshift cluster parameter group", "is_correct": false},
+      {"id": "D", "text": "Column-level access control with GRANT statements on sensitive columns", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Enhanced VPC routing forces all COPY and UNLOAD traffic between Redshift and S3 (and other AWS services) to travel through the VPC. This allows the traffic to be routed through VPC endpoints, NAT gateways, or VPN connections instead of the public internet.",
+      "why_not_A": "Redshift Spectrum queries data in S3 but is a query feature, not a network routing feature. A VPC endpoint for S3 helps, but without enhanced VPC routing enabled, COPY/UNLOAD traffic may still traverse the public internet.",
+      "why_not_C": "SSL enforcement encrypts data in transit but does not control the network path. Traffic could still traverse the public internet even with SSL enabled.",
+      "why_not_D": "Column-level access control restricts which users can query specific columns. It is an authorization control, not a network routing feature."
+    },
+    "concept_ids": ["aws-dea-redshift-security", "aws-dea-redshift"],
+    "tags": ["redshift", "enhanced-vpc-routing", "network-security", "compliance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  }
+]

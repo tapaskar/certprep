@@ -1,0 +1,404 @@
+[
+  {
+    "id": "aws-ans-transit-gateway-advanced",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "topic_id": "network-design",
+    "name": "Transit Gateway Advanced Architectures",
+    "description": "Designing multi-VPC and multi-region connectivity using Transit Gateway with route tables, peering, and Connect attachments",
+    "exam_weight": 0.0750,
+    "difficulty_tier": 5,
+    "key_facts": [
+      "TGW supports up to 5,000 attachments and 10,000 routes per route table",
+      "TGW peering enables inter-region connectivity without VPN overlays and supports static routes only",
+      "Multiple route tables enable network segmentation by associating attachments with specific domains (shared services, production, dev)",
+      "TGW Connect attachments support GRE tunneling for SD-WAN and third-party appliance integration with higher bandwidth than VPN",
+      "Appliance mode ensures symmetric routing for stateful inspection appliances attached to the TGW"
+    ],
+    "common_misconceptions": [
+      "TGW peering supports dynamic routing (it only supports static routes between peered TGWs)",
+      "TGW automatically routes between all attached VPCs (route table associations and propagations must be configured explicitly)"
+    ],
+    "aws_services": ["Transit Gateway", "VPC", "Direct Connect", "Cloud WAN"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-cloud-wan", "transfer_weight": 0.35},
+      {"concept_id": "aws-ans-multi-vpc-design", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-ans-cloud-wan",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "topic_id": "network-design",
+    "name": "AWS Cloud WAN",
+    "description": "Building and managing global wide-area networks with Cloud WAN core network policies and segment-based routing",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 5,
+    "key_facts": [
+      "Cloud WAN uses a core network policy document (JSON) to define segments, attachment policies, and peering",
+      "Segments provide network isolation similar to TGW route table segmentation but managed as a global construct",
+      "Supports VPC, VPN, Direct Connect gateway, and TGW Connect attachments",
+      "Core network edges are deployed per-region and act as regional routers within the global mesh",
+      "Route sharing between segments requires explicit segment actions in the network policy"
+    ],
+    "common_misconceptions": [
+      "Cloud WAN replaces Transit Gateway (TGW remains the underlying construct; Cloud WAN orchestrates across regions and TGWs)",
+      "Cloud WAN segments automatically allow communication between each other (segments are isolated by default and require explicit sharing)"
+    ],
+    "aws_services": ["Cloud WAN", "Transit Gateway", "Direct Connect", "VPN"],
+    "prerequisites": ["aws-ans-transit-gateway-advanced"],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-transit-gateway-advanced", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-ans-privatelink-architectures",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "topic_id": "network-design",
+    "name": "PrivateLink and VPC Endpoint Architectures",
+    "description": "Designing private connectivity to AWS services and customer-hosted services using interface endpoints, gateway endpoints, and PrivateLink",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Interface endpoints create ENIs in the VPC subnets and support private DNS to override public service endpoints",
+      "Gateway endpoints for S3 and DynamoDB route traffic via route table entries without ENIs and are free of charge",
+      "PrivateLink allows exposing services to other VPCs or accounts via Network Load Balancer without VPC peering",
+      "Endpoint policies restrict which principals and resources can be accessed through the endpoint",
+      "Interface endpoints support security groups for fine-grained access control at the network level"
+    ],
+    "common_misconceptions": [
+      "Gateway endpoints work with all AWS services (only S3 and DynamoDB support gateway endpoints; other services use interface endpoints)",
+      "PrivateLink requires VPC peering between provider and consumer (PrivateLink is specifically designed to avoid peering)"
+    ],
+    "aws_services": ["VPC Endpoints", "PrivateLink", "NLB", "Route 53"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-multi-vpc-design", "transfer_weight": 0.25},
+      {"concept_id": "aws-ans-hybrid-dns", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-ans-multi-vpc-design",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "topic_id": "network-design",
+    "name": "Multi-VPC and Multi-Account Network Design",
+    "description": "Designing scalable multi-VPC topologies including shared services VPCs, CIDR planning, and cross-account networking patterns",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "VPC peering is non-transitive and best suited for a small number of VPC-to-VPC connections",
+      "Shared services VPC pattern centralizes DNS, endpoints, and NAT for cost optimization",
+      "Secondary CIDR blocks can be added to VPCs for address space expansion without re-architecting",
+      "AWS RAM shares subnets, TGWs, and other resources across accounts within an Organization",
+      "IP address planning must avoid overlapping CIDRs when peering or connecting to on-premises networks"
+    ],
+    "common_misconceptions": [
+      "VPC peering supports transitive routing (traffic cannot transit through a peered VPC to reach a third VPC)",
+      "Each VPC can only have one CIDR block (VPCs support multiple secondary CIDR blocks for expansion)"
+    ],
+    "aws_services": ["VPC", "RAM", "Transit Gateway", "Organizations"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-transit-gateway-advanced", "transfer_weight": 0.3},
+      {"concept_id": "aws-ans-privatelink-architectures", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-ans-hybrid-dns",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-design",
+    "topic_id": "network-design",
+    "name": "Hybrid DNS with Route 53 Resolver",
+    "description": "Configuring bidirectional DNS resolution between AWS VPCs and on-premises networks using Route 53 Resolver endpoints",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Inbound endpoints allow on-premises DNS servers to resolve AWS private hosted zone records",
+      "Outbound endpoints allow VPC resources to forward DNS queries to on-premises DNS servers via Resolver rules",
+      "Resolver rules can be shared across accounts using AWS RAM for consistent DNS resolution",
+      "Route 53 Resolver DNS Firewall filters outbound DNS queries to block malicious or unauthorized domains",
+      "Private hosted zones must be associated with VPCs where resolution is needed and support cross-account association"
+    ],
+    "common_misconceptions": [
+      "On-premises servers can resolve private hosted zones without Resolver inbound endpoints (the VPC DNS resolver at .2 is not accessible from on-premises without inbound endpoints)",
+      "Resolver rules automatically apply to all VPCs (rules must be associated with each VPC or shared via RAM)"
+    ],
+    "aws_services": ["Route 53", "Route 53 Resolver", "Direct Connect", "VPN", "RAM"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-privatelink-architectures", "transfer_weight": 0.2},
+      {"concept_id": "aws-ans-direct-connect-lag", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-ans-direct-connect-lag",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-implementation",
+    "topic_id": "network-implementation",
+    "name": "Direct Connect with LAG and Resiliency",
+    "description": "Implementing Direct Connect with Link Aggregation Groups, connection resiliency patterns, and virtual interface types",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 5,
+    "key_facts": [
+      "LAG bundles up to 4 connections at the same speed and location using LACP for aggregate bandwidth",
+      "Private VIF connects to a VPC via VGW or Direct Connect Gateway; public VIF accesses AWS public services",
+      "Transit VIF connects to a Transit Gateway via Direct Connect Gateway for multi-VPC access",
+      "Maximum resiliency requires connections at two separate DX locations with redundant routers",
+      "Hosted connections are provisioned by partners at sub-1Gbps speeds; dedicated connections are 1, 10, or 100 Gbps"
+    ],
+    "common_misconceptions": [
+      "LAG connections can be different speeds (all connections in a LAG must have the same bandwidth)",
+      "A single Direct Connect location provides high availability (single location is a single point of failure; maximum resiliency requires two locations)"
+    ],
+    "aws_services": ["Direct Connect", "Direct Connect Gateway", "Transit Gateway", "VPN"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-bgp-communities", "transfer_weight": 0.35},
+      {"concept_id": "aws-ans-vpn-with-tgw", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-ans-bgp-communities",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-implementation",
+    "topic_id": "network-implementation",
+    "name": "BGP Routing and Community Tags",
+    "description": "Configuring BGP route advertisements, AS path prepending, and community tags for traffic engineering over Direct Connect and VPN",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 5,
+    "key_facts": [
+      "BGP community tags control route scope: 7224:8100 limits to local region, 7224:8200 to continent, no tag is global",
+      "AS path prepending influences inbound traffic by making a path appear longer and less preferred",
+      "Local preference (MED) is used by AWS to influence outbound traffic from AWS to on-premises",
+      "Direct Connect BGP advertises up to 100 prefixes per session; exceeding this can cause session reset",
+      "Longest prefix match takes priority over AS path length in BGP route selection"
+    ],
+    "common_misconceptions": [
+      "AS path prepending controls outbound traffic from AWS (it influences inbound traffic to your network; AWS uses local preference for its outbound)",
+      "BGP community tags on public VIFs limit which regions can reach your network (communities control where AWS advertises your routes, not which regions can send traffic)"
+    ],
+    "aws_services": ["Direct Connect", "VPN", "Transit Gateway"],
+    "prerequisites": ["aws-ans-direct-connect-lag"],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-direct-connect-lag", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-ans-vpn-with-tgw",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-implementation",
+    "topic_id": "network-implementation",
+    "name": "Site-to-Site VPN with Transit Gateway",
+    "description": "Implementing scalable VPN architectures using Transit Gateway VPN attachments with ECMP, acceleration, and failover patterns",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "TGW VPN attachments support ECMP across multiple VPN tunnels for aggregate throughput up to 50 Gbps",
+      "Each VPN connection provides two tunnels for redundancy across different AZs on the AWS side",
+      "Accelerated VPN uses AWS Global Accelerator to route traffic over the AWS backbone for improved performance",
+      "VPN as backup for Direct Connect provides automatic failover when configured with lower BGP preference",
+      "TGW supports multiple customer gateways for path diversity and increased throughput"
+    ],
+    "common_misconceptions": [
+      "A single VPN tunnel provides 1.25 Gbps per direction consistently (throughput varies and the 1.25 Gbps is a maximum; ECMP with multiple VPNs is needed for higher throughput)",
+      "VPN failover from Direct Connect is instant (BGP convergence time and health check intervals determine failover speed)"
+    ],
+    "aws_services": ["VPN", "Transit Gateway", "Global Accelerator", "Direct Connect"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-direct-connect-lag", "transfer_weight": 0.25},
+      {"concept_id": "aws-ans-transit-gateway-advanced", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-ans-ipv6-dual-stack",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-implementation",
+    "topic_id": "network-implementation",
+    "name": "IPv6 and Dual-Stack Networking",
+    "description": "Implementing IPv6 connectivity in VPCs with dual-stack configurations, egress-only internet gateways, and IPv6 CIDR planning",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "VPCs support dual-stack with both IPv4 and IPv6 CIDR blocks; IPv6 CIDRs are /56 from Amazon or BYOIP",
+      "Egress-only internet gateway provides outbound-only IPv6 internet access similar to NAT Gateway for IPv4",
+      "Security groups support IPv6 rules; NACLs require separate rules for IPv6 traffic",
+      "IPv6 addresses in a VPC are globally unique and publicly routable unless restricted by security groups and NACLs",
+      "Not all AWS services support IPv6; ALB, NLB, and CloudFront support dual-stack but some older services do not"
+    ],
+    "common_misconceptions": [
+      "NAT Gateway supports IPv6 (NAT Gateway is IPv4 only; use egress-only internet gateway for IPv6 outbound access)",
+      "Enabling IPv6 on a VPC automatically enables it on all existing instances (existing instances must have IPv6 addresses assigned separately)"
+    ],
+    "aws_services": ["VPC", "Egress-Only Internet Gateway", "ALB", "CloudFront", "Route 53"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-multi-vpc-design", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-ans-flow-logs-analysis",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-management-operation",
+    "topic_id": "network-management",
+    "name": "VPC Flow Logs Advanced Analysis",
+    "description": "Configuring, querying, and analyzing VPC Flow Logs for network troubleshooting, security monitoring, and cost optimization",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Custom log format with version 5 fields includes vpc-id, subnet-id, instance-id, pkt-srcaddr, pkt-dstaddr, and traffic path",
+      "Flow logs can be queried with Athena using partition projection for cost-effective analysis at scale",
+      "Traffic path field identifies whether traffic routes through NAT gateway, TGW, VPC peering, or internet gateway",
+      "Logs do not capture DNS, DHCP, Amazon metadata, NTP, or Windows licensing traffic",
+      "Maximum aggregation interval is 10 minutes; 1-minute intervals provide more granular data at higher cost"
+    ],
+    "common_misconceptions": [
+      "Flow logs capture packet payloads (they capture metadata only including IPs, ports, protocol, and action)",
+      "Rejected traffic in flow logs always means a security group denied it (NACLs also reject traffic; the log shows the action but not which layer denied it)"
+    ],
+    "aws_services": ["VPC Flow Logs", "Athena", "S3", "CloudWatch Logs", "Kinesis Data Firehose"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-reachability-analyzer", "transfer_weight": 0.25},
+      {"concept_id": "aws-ans-traffic-mirroring", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-ans-reachability-analyzer",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-management-operation",
+    "topic_id": "network-management",
+    "name": "VPC Reachability Analyzer and Network Manager",
+    "description": "Using Reachability Analyzer for path analysis and Network Manager for global network visibility and monitoring",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Reachability Analyzer tests network path feasibility between two endpoints without sending actual packets",
+      "Identifies blocking components in the path such as security groups, NACLs, route tables, and missing peering",
+      "Network Manager provides a centralized dashboard for Transit Gateway, VPN, and Direct Connect health",
+      "Network Manager supports route analysis to identify overlapping or conflicting routes across TGW route tables",
+      "CloudWatch integration enables alerts on network topology changes and connectivity events"
+    ],
+    "common_misconceptions": [
+      "Reachability Analyzer sends actual traffic to test connectivity (it performs static configuration analysis without generating network traffic)",
+      "Network Manager manages VPC-level resources like subnets and ENIs (it focuses on global network infrastructure: TGW, VPN, DX, and Cloud WAN)"
+    ],
+    "aws_services": ["VPC Reachability Analyzer", "Network Manager", "Transit Gateway", "CloudWatch"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-flow-logs-analysis", "transfer_weight": 0.25},
+      {"concept_id": "aws-ans-transit-gateway-advanced", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-ans-traffic-mirroring",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-management-operation",
+    "topic_id": "network-management",
+    "name": "VPC Traffic Mirroring",
+    "description": "Configuring traffic mirroring sessions to capture and inspect full packet data from ENIs for deep analysis and intrusion detection",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Mirrors inbound and outbound traffic from an ENI to a target ENI, NLB, or Gateway Load Balancer endpoint",
+      "Filter rules select which traffic to mirror based on protocol, port range, and direction to reduce data volume",
+      "Mirrored traffic uses VXLAN encapsulation and can be sent to IDS/IPS tools like Suricata or Zeek",
+      "Supported on Nitro-based instance types only; not all instance families support traffic mirroring",
+      "Mirror sessions have a maximum of 3 per ENI source and do not impact the performance of mirrored traffic"
+    ],
+    "common_misconceptions": [
+      "Traffic mirroring works on all EC2 instance types (only Nitro-based instances support traffic mirroring)",
+      "Traffic mirroring blocks malicious traffic inline (it is passive capture only; use Network Firewall for inline inspection)"
+    ],
+    "aws_services": ["VPC Traffic Mirroring", "NLB", "Gateway Load Balancer", "EC2"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-flow-logs-analysis", "transfer_weight": 0.2},
+      {"concept_id": "aws-ans-network-firewall-rules", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-ans-network-firewall-rules",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-security-compliance-governance",
+    "topic_id": "network-security",
+    "name": "AWS Network Firewall Rules and Deployment",
+    "description": "Designing Network Firewall rule groups, deployment architectures, and inspection patterns for VPC traffic control",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 5,
+    "key_facts": [
+      "Stateless rules evaluate each packet independently and process in priority order with pass, drop, or forward-to-stateful actions",
+      "Stateful rules use 5-tuple, domain list, or Suricata-compatible rule formats for connection-aware inspection",
+      "Centralized deployment model routes traffic through an inspection VPC using TGW for multi-VPC coverage",
+      "Distributed deployment places Network Firewall in each VPC for per-VPC inspection without TGW dependency",
+      "TLS inspection decrypts and re-encrypts HTTPS traffic using ACM certificates for encrypted traffic analysis"
+    ],
+    "common_misconceptions": [
+      "Network Firewall can be deployed without modifying VPC route tables (route tables must direct traffic to the firewall endpoint for inspection)",
+      "Stateful rules process before stateless rules (stateless rules evaluate first; matching traffic is then forwarded to stateful engine)"
+    ],
+    "aws_services": ["Network Firewall", "Firewall Manager", "Transit Gateway", "ACM", "VPC"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-waf-rate-limiting", "transfer_weight": 0.2},
+      {"concept_id": "aws-ans-ddos-shield-advanced", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-ans-waf-rate-limiting",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-security-compliance-governance",
+    "topic_id": "network-security",
+    "name": "WAF Advanced Rules and Rate Limiting",
+    "description": "Configuring AWS WAF web ACLs with rate-based rules, custom request inspection, and managed rule group strategies",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Rate-based rules block IPs exceeding a configurable threshold (100-20M) within a 5-minute evaluation window",
+      "Scope-down statements narrow rate-based rules to specific URI paths, headers, or query strings",
+      "Web ACL capacity units (WCU) limit rule complexity; maximum 5,000 WCU per web ACL",
+      "Managed rule groups from AWS and Marketplace provide pre-built protections for OWASP Top 10 and bot control",
+      "Custom response bodies return specific HTTP status codes and content when requests are blocked"
+    ],
+    "common_misconceptions": [
+      "WAF rate-based rules evaluate per-second (they aggregate requests over a 5-minute window before blocking)",
+      "WAF can protect any AWS resource (it only attaches to CloudFront, ALB, API Gateway, AppSync, and Cognito user pools)"
+    ],
+    "aws_services": ["WAF", "CloudFront", "ALB", "API Gateway", "Firewall Manager"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-ddos-shield-advanced", "transfer_weight": 0.3},
+      {"concept_id": "aws-ans-network-firewall-rules", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-ans-ddos-shield-advanced",
+    "exam_id": "aws-ans-c01",
+    "domain_id": "network-security-compliance-governance",
+    "topic_id": "network-security",
+    "name": "DDoS Mitigation with Shield Advanced and TLS Patterns",
+    "description": "Implementing DDoS protection strategies with Shield Advanced, SRT engagement, and TLS termination patterns for secure connectivity",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Shield Advanced protects EC2, ELB, CloudFront, Global Accelerator, and Route 53 resources with cost protection and DRT access",
+      "Shield Response Team (SRT) can create WAF rules on your behalf during active DDoS attacks when proactive engagement is enabled",
+      "Health-based detection uses Route 53 health checks to improve DDoS detection sensitivity and reduce false positives",
+      "TLS termination at CloudFront or ALB offloads encryption processing and enables WAF inspection of decrypted traffic",
+      "End-to-end encryption patterns use ACM certificates on ALB with backend TLS to the origin for compliance requirements"
+    ],
+    "common_misconceptions": [
+      "Shield Standard provides DDoS Response Team access (only Shield Advanced includes SRT access and cost protection)",
+      "Shield Advanced automatically blocks all DDoS attacks without configuration (proactive engagement and health checks must be configured for optimal protection)"
+    ],
+    "aws_services": ["Shield", "WAF", "CloudFront", "Route 53", "ALB", "Global Accelerator", "ACM"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-ans-waf-rate-limiting", "transfer_weight": 0.3},
+      {"concept_id": "aws-ans-network-firewall-rules", "transfer_weight": 0.15}
+    ]
+  }
+]

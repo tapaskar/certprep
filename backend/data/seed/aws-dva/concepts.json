@@ -1,0 +1,434 @@
+[
+  {
+    "id": "aws-dva-lambda",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "topic_id": "compute",
+    "name": "Lambda Development",
+    "description": "Serverless function development including handlers, event sources, and execution environment",
+    "exam_weight": 0.0750,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Handler function receives event object and context object",
+      "Max execution timeout: 15 minutes, max memory: 10 GB",
+      "Environment variables for configuration (encrypted with KMS)",
+      "Layers for sharing code and libraries across functions",
+      "Concurrency limit: 1000 per region by default, reserved concurrency per function"
+    ],
+    "common_misconceptions": [
+      "Lambda functions maintain state between invocations (each invocation may use a new or reused execution environment)",
+      "Increasing memory only increases RAM (it also proportionally increases CPU and network bandwidth)"
+    ],
+    "aws_services": ["Lambda", "CloudWatch"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-api-gateway", "transfer_weight": 0.3},
+      {"concept_id": "aws-dva-sqs-sns", "transfer_weight": 0.25},
+      {"concept_id": "aws-dva-step-functions", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dva-api-gateway",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "topic_id": "api",
+    "name": "API Gateway",
+    "description": "Managed API service for creating REST, HTTP, and WebSocket APIs",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "REST API: full-featured with caching, request validation, WAF integration",
+      "HTTP API: lower cost, lower latency, simpler feature set",
+      "Stages allow deploying different versions (dev, staging, prod)",
+      "Stage variables act as environment variables for each stage",
+      "Usage plans and API keys for throttling and metering third-party access"
+    ],
+    "common_misconceptions": [
+      "REST API and HTTP API are the same (HTTP API is cheaper but lacks some REST API features like caching and request validation)",
+      "API Gateway has no request limits (default throttle is 10,000 requests per second with 5,000 burst)"
+    ],
+    "aws_services": ["API Gateway", "Lambda", "Cognito"],
+    "prerequisites": ["aws-dva-lambda"],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-lambda", "transfer_weight": 0.3},
+      {"concept_id": "aws-dva-cognito", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dva-dynamodb-dev",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "topic_id": "database",
+    "name": "DynamoDB for Developers",
+    "description": "DynamoDB data modeling, queries, and SDK usage for application development",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Partition key (hash key) determines data distribution; sort key enables range queries",
+      "Query operation retrieves items by partition key; Scan reads the entire table",
+      "Global Secondary Index (GSI): different partition and sort key, eventually consistent",
+      "Local Secondary Index (LSI): same partition key, different sort key, must be created at table creation",
+      "Conditional writes prevent race conditions (optimistic locking with version numbers)"
+    ],
+    "common_misconceptions": [
+      "Scan is efficient for large tables (Scan reads every item and is expensive; use Query with proper key design)",
+      "GSIs can be strongly consistent (GSIs only support eventually consistent reads)"
+    ],
+    "aws_services": ["DynamoDB"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-lambda", "transfer_weight": 0.2},
+      {"concept_id": "aws-dva-sqs-sns", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-dva-sqs-sns",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "topic_id": "messaging",
+    "name": "SQS and SNS",
+    "description": "Message queuing and publish/subscribe notification services for decoupled architectures",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "SQS Standard: at-least-once delivery, best-effort ordering, unlimited throughput",
+      "SQS FIFO: exactly-once processing, guaranteed ordering, 3000 msg/s with batching",
+      "Visibility timeout prevents other consumers from processing a message while it is being processed",
+      "Dead-letter queues capture messages that fail processing after maxReceiveCount",
+      "SNS supports fan-out to multiple SQS queues, Lambda, HTTP, email, and SMS"
+    ],
+    "common_misconceptions": [
+      "SQS guarantees message ordering by default (only FIFO queues guarantee ordering; Standard queues use best-effort)",
+      "SNS stores messages for later delivery (SNS delivers immediately; if subscriber is down, the message is lost unless using SQS)"
+    ],
+    "aws_services": ["SQS", "SNS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-lambda", "transfer_weight": 0.25},
+      {"concept_id": "aws-dva-step-functions", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dva-step-functions",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "topic_id": "orchestration",
+    "name": "Step Functions and X-Ray",
+    "description": "Serverless workflow orchestration and distributed tracing",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Standard workflows: long-running (up to 1 year), exactly-once execution",
+      "Express workflows: short-duration (up to 5 minutes), at-least-once, higher throughput",
+      "State types: Task, Choice, Parallel, Wait, Map, Pass, Succeed, Fail",
+      "X-Ray provides end-to-end tracing of requests across distributed services",
+      "X-Ray daemon collects trace segments and sends them to the X-Ray service"
+    ],
+    "common_misconceptions": [
+      "Standard and Express workflows have the same pricing model (Standard charges per state transition, Express charges per execution duration)",
+      "X-Ray traces every request by default (sampling rules control what percentage of requests are traced)"
+    ],
+    "aws_services": ["Step Functions", "X-Ray"],
+    "prerequisites": ["aws-dva-lambda"],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-lambda", "transfer_weight": 0.2},
+      {"concept_id": "aws-dva-sqs-sns", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dva-cognito",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "security",
+    "topic_id": "authentication",
+    "name": "Amazon Cognito",
+    "description": "User authentication and authorization for web and mobile applications",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "User Pools: user directory for sign-up, sign-in, and token management (JWT tokens)",
+      "Identity Pools: provide temporary AWS credentials for accessing AWS services directly",
+      "User Pools return ID token, access token, and refresh token",
+      "Supports federation with social providers (Google, Facebook, Apple) and SAML/OIDC",
+      "User Pools can trigger Lambda functions at various authentication stages"
+    ],
+    "common_misconceptions": [
+      "User Pools and Identity Pools do the same thing (User Pools authenticate, Identity Pools authorize AWS access)",
+      "Cognito tokens last indefinitely (ID and access tokens expire after 1 hour by default; refresh tokens are configurable)"
+    ],
+    "aws_services": ["Cognito", "Lambda", "API Gateway"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-iam-developers", "transfer_weight": 0.3},
+      {"concept_id": "aws-dva-api-gateway", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dva-iam-developers",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "security",
+    "topic_id": "access-control",
+    "name": "IAM for Developers",
+    "description": "IAM roles, policies, and STS for application-level access control",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "EC2 instance profiles provide temporary credentials to applications running on EC2",
+      "STS AssumeRole provides temporary credentials for cross-account access",
+      "Policy conditions: aws:SourceIp, aws:RequestedRegion, aws:PrincipalTag",
+      "IAM policy simulator tests policies before deploying them",
+      "Never embed access keys in code; use IAM roles and environment variables"
+    ],
+    "common_misconceptions": [
+      "Access keys in environment variables are the best practice (IAM roles via instance profiles or ECS task roles are preferred)",
+      "STS temporary credentials never expire (they have a configurable duration, default 1 hour)"
+    ],
+    "aws_services": ["IAM", "STS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-cognito", "transfer_weight": 0.3},
+      {"concept_id": "aws-dva-kms-secrets", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dva-kms-secrets",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "security",
+    "topic_id": "data-protection",
+    "name": "KMS and Secrets Manager",
+    "description": "Encryption key management and secure secrets storage for applications",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "KMS Encrypt API: encrypt up to 4 KB of data directly",
+      "Envelope encryption: use GenerateDataKey to get a plaintext and encrypted data key for larger data",
+      "Secrets Manager stores and automatically rotates database credentials and API keys",
+      "Secrets Manager uses Lambda functions for automatic secret rotation",
+      "SSM Parameter Store: free for standard parameters, supports SecureString (KMS-encrypted)"
+    ],
+    "common_misconceptions": [
+      "KMS can encrypt large files directly (KMS Encrypt only handles up to 4 KB; use envelope encryption for larger data)",
+      "Parameter Store and Secrets Manager are interchangeable (Secrets Manager supports automatic rotation and cross-account access, Parameter Store does not)"
+    ],
+    "aws_services": ["KMS", "Secrets Manager", "SSM Parameter Store"],
+    "prerequisites": ["aws-dva-iam-developers"],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-iam-developers", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dva-sts",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "security",
+    "topic_id": "federation",
+    "name": "STS and Federation",
+    "description": "Security Token Service for temporary credentials and identity federation",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "AssumeRole: assume a role in the same or different account",
+      "AssumeRoleWithWebIdentity: exchange web identity token (Google, Facebook) for AWS credentials",
+      "AssumeRoleWithSAML: exchange SAML assertion for AWS credentials (enterprise SSO)",
+      "GetSessionToken: MFA-protected API access for IAM users",
+      "Temporary credentials include AccessKeyId, SecretAccessKey, and SessionToken"
+    ],
+    "common_misconceptions": [
+      "AssumeRoleWithWebIdentity is the recommended way for mobile apps (use Cognito Identity Pools instead, which calls STS behind the scenes)",
+      "STS is a regional service that must be explicitly enabled (STS is global by default, with optional regional endpoints)"
+    ],
+    "aws_services": ["STS", "IAM", "Cognito"],
+    "prerequisites": ["aws-dva-iam-developers"],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-cognito", "transfer_weight": 0.3},
+      {"concept_id": "aws-dva-iam-developers", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dva-codepipeline",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "deployment",
+    "topic_id": "ci-cd",
+    "name": "CodePipeline and CI/CD",
+    "description": "Continuous integration and delivery pipeline service",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "CodeCommit: managed Git repository (source stage)",
+      "CodeBuild: managed build service, uses buildspec.yml for build instructions",
+      "CodeDeploy: automated deployment to EC2, Lambda, and ECS",
+      "CodePipeline: orchestrates the stages (source, build, test, deploy)",
+      "Artifacts are passed between stages via S3 buckets"
+    ],
+    "common_misconceptions": [
+      "CodePipeline can only deploy to AWS services (CodeDeploy can deploy to on-premises servers too)",
+      "CodeBuild runs indefinitely (default timeout is 60 minutes, max is 8 hours)"
+    ],
+    "aws_services": ["CodePipeline", "CodeCommit", "CodeBuild", "CodeDeploy"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-codedeploy", "transfer_weight": 0.35},
+      {"concept_id": "aws-dva-cloudformation-sam", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dva-codedeploy",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "deployment",
+    "topic_id": "deployment-strategies",
+    "name": "CodeDeploy Strategies",
+    "description": "Deployment strategies for EC2, Lambda, and ECS using CodeDeploy",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "EC2/On-premises: In-place (rolling) and Blue/Green deployment types",
+      "Lambda: Canary, Linear, and AllAtOnce traffic shifting strategies",
+      "appspec.yml defines deployment actions (hooks, files, permissions)",
+      "EC2 hooks order: BeforeInstall, AfterInstall, ApplicationStart, ValidateService",
+      "Automatic rollback on deployment failure or CloudWatch alarm triggers"
+    ],
+    "common_misconceptions": [
+      "In-place deployment on EC2 creates new instances (it updates existing instances; Blue/Green creates new ones)",
+      "Lambda Blue/Green deployment replaces the function code (it uses aliases to shift traffic between versions)"
+    ],
+    "aws_services": ["CodeDeploy", "Lambda", "EC2", "ECS"],
+    "prerequisites": ["aws-dva-codepipeline"],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-codepipeline", "transfer_weight": 0.35},
+      {"concept_id": "aws-dva-elastic-beanstalk", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dva-cloudformation-sam",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "deployment",
+    "topic_id": "infrastructure-as-code",
+    "name": "CloudFormation and SAM",
+    "description": "Infrastructure as Code templates and serverless application framework",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "CloudFormation templates define resources in JSON or YAML",
+      "Key sections: Parameters, Resources (required), Outputs, Mappings, Conditions",
+      "Intrinsic functions: !Ref, !GetAtt, !Sub, !Join, Fn::ImportValue for cross-stack references",
+      "SAM is a CloudFormation extension for serverless (AWS::Serverless::Function, API, SimpleTable)",
+      "sam build, sam local invoke for local testing, sam deploy for deployment"
+    ],
+    "common_misconceptions": [
+      "SAM replaces CloudFormation (SAM extends CloudFormation and is transformed to CloudFormation at deployment)",
+      "CloudFormation stacks can be updated without risk (updates can fail or cause resource replacement; use change sets to preview)"
+    ],
+    "aws_services": ["CloudFormation", "SAM"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-codepipeline", "transfer_weight": 0.2},
+      {"concept_id": "aws-dva-elastic-beanstalk", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dva-elastic-beanstalk",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "deployment",
+    "topic_id": "platform-services",
+    "name": "Elastic Beanstalk",
+    "description": "PaaS for deploying web applications with managed infrastructure",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Supports Java, .NET, Python, Node.js, Go, Ruby, PHP, Docker",
+      "Deployment policies: All at once, Rolling, Rolling with additional batch, Immutable, Traffic splitting",
+      "Immutable deployment creates new instances in a new ASG for zero-downtime deployments",
+      "Environment configuration via .ebextensions/ YAML files in the application bundle",
+      "Worker tier processes background tasks from SQS queues"
+    ],
+    "common_misconceptions": [
+      "Elastic Beanstalk is only for simple applications (it supports complex multi-tier architectures with customization)",
+      "You lose control of underlying resources (you retain full access to EC2 instances, load balancers, and RDS created by Beanstalk)"
+    ],
+    "aws_services": ["Elastic Beanstalk", "EC2", "ELB", "RDS"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-codedeploy", "transfer_weight": 0.2},
+      {"concept_id": "aws-dva-cloudformation-sam", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dva-cloudwatch-logs",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "troubleshooting-optimization",
+    "topic_id": "monitoring",
+    "name": "CloudWatch Logs and Metrics",
+    "description": "Application monitoring, log aggregation, and custom metrics for troubleshooting",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "CloudWatch Logs collects logs from Lambda, EC2 (via agent), ECS, API Gateway, and more",
+      "Log groups organize logs by source; log streams represent individual instances or invocations",
+      "Metric filters extract custom metrics from log data (e.g., count error occurrences)",
+      "CloudWatch Alarms trigger actions based on metric thresholds (SNS, Auto Scaling, EC2 actions)",
+      "Custom metrics: use PutMetricData API to publish application-specific metrics"
+    ],
+    "common_misconceptions": [
+      "EC2 instances send logs to CloudWatch automatically (you must install and configure the CloudWatch agent)",
+      "CloudWatch metrics have 1-second granularity by default (standard resolution is 1 minute; high resolution is 1 second at extra cost)"
+    ],
+    "aws_services": ["CloudWatch", "CloudWatch Logs"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-xray-debugging", "transfer_weight": 0.35},
+      {"concept_id": "aws-dva-lambda-debugging", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dva-xray-debugging",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "troubleshooting-optimization",
+    "topic_id": "tracing",
+    "name": "X-Ray Tracing and Debugging",
+    "description": "Distributed tracing for analyzing and debugging microservices architectures",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "X-Ray SDK instruments code to capture trace data (segments and subsegments)",
+      "Annotations are indexed key-value pairs for filtering traces",
+      "Metadata is non-indexed data for additional context in traces",
+      "Service map visualizes the architecture and latency of each component",
+      "Sampling rules control which requests are traced to manage cost"
+    ],
+    "common_misconceptions": [
+      "Metadata and annotations serve the same purpose (annotations are indexed for search/filter, metadata is not)",
+      "X-Ray traces every request (sampling rules determine which requests are traced; default is 1 per second plus 5% of additional requests)"
+    ],
+    "aws_services": ["X-Ray", "Lambda", "API Gateway", "ECS"],
+    "prerequisites": ["aws-dva-cloudwatch-logs"],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-cloudwatch-logs", "transfer_weight": 0.35},
+      {"concept_id": "aws-dva-lambda-debugging", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dva-lambda-debugging",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "troubleshooting-optimization",
+    "topic_id": "lambda-troubleshooting",
+    "name": "Lambda Debugging and Errors",
+    "description": "Common Lambda errors, debugging techniques, and performance optimization",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Timeout errors: function exceeds configured timeout (check downstream service latency)",
+      "Out of memory: function exceeds allocated memory (increase memory allocation)",
+      "Throttling (429): concurrent execution limit reached; use reserved concurrency",
+      "Cold starts: initial invocation latency; mitigate with provisioned concurrency",
+      "Lambda Destinations route async invocation results to SQS, SNS, Lambda, or EventBridge"
+    ],
+    "common_misconceptions": [
+      "Cold starts affect all invocations equally (only the first invocation or after idle period experiences cold starts)",
+      "Provisioned concurrency eliminates all latency (it removes cold start latency but not function execution time)"
+    ],
+    "aws_services": ["Lambda", "CloudWatch", "X-Ray"],
+    "prerequisites": ["aws-dva-lambda", "aws-dva-cloudwatch-logs"],
+    "lateral_relations": [
+      {"concept_id": "aws-dva-cloudwatch-logs", "transfer_weight": 0.3},
+      {"concept_id": "aws-dva-xray-debugging", "transfer_weight": 0.3}
+    ]
+  }
+]

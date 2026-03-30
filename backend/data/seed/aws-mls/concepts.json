@@ -1,0 +1,407 @@
+[
+  {
+    "id": "aws-mls-s3-data-lakes",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "data-engineering",
+    "topic_id": "data-engineering",
+    "name": "S3 Data Lakes for Machine Learning",
+    "description": "Designing S3-based data lake architectures for storing, organizing, and accessing ML training data at scale",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "S3 supports Parquet, ORC, and CSV formats; columnar formats like Parquet reduce I/O for feature-heavy ML datasets",
+      "S3 Select and Glacier Select enable querying subsets of data without downloading entire objects",
+      "Lake Formation provides fine-grained column and row-level access control for data governance",
+      "Partitioning data by date, category, or other dimensions optimizes query performance and SageMaker data access",
+      "S3 Lifecycle policies automatically tier infrequently accessed training data to lower-cost storage classes"
+    ],
+    "common_misconceptions": [
+      "CSV is the best format for ML training data (Parquet provides better compression and columnar access for large feature sets)",
+      "All S3 storage classes have the same retrieval latency (Glacier and Deep Archive have retrieval delays unsuitable for active training)"
+    ],
+    "aws_services": ["S3", "Lake Formation", "Athena", "Glue Data Catalog"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-glue-etl-features", "transfer_weight": 0.3},
+      {"concept_id": "aws-mls-sagemaker-notebooks", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-mls-glue-etl-features",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "data-engineering",
+    "topic_id": "data-engineering",
+    "name": "AWS Glue ETL for Feature Engineering",
+    "description": "Using AWS Glue for extract, transform, and load operations to prepare and engineer features for ML models",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Glue crawlers automatically infer schema from S3, RDS, and other data sources and populate the Data Catalog",
+      "Glue ETL jobs run Apache Spark for distributed data transformation at scale with built-in ML transforms like FindMatches",
+      "DynamicFrames provide schema flexibility for semi-structured data without requiring a fixed schema upfront",
+      "Glue DataBrew provides visual data preparation for cleaning, normalizing, and transforming data without code",
+      "Job bookmarks track processed data to support incremental ETL and avoid reprocessing"
+    ],
+    "common_misconceptions": [
+      "Glue ETL is only for batch processing (Glue also supports streaming ETL with micro-batches from Kinesis and Kafka)",
+      "Glue requires a fixed schema before processing (DynamicFrames handle schema evolution and semi-structured data)"
+    ],
+    "aws_services": ["Glue", "Glue Data Catalog", "S3", "Glue DataBrew"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-s3-data-lakes", "transfer_weight": 0.3},
+      {"concept_id": "aws-mls-kinesis-streaming", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-kinesis-streaming",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "data-engineering",
+    "topic_id": "data-engineering",
+    "name": "Kinesis for Streaming ML Data",
+    "description": "Ingesting and processing real-time streaming data with Kinesis for online ML inference and feature computation",
+    "exam_weight": 0.0350,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Kinesis Data Streams provides real-time data ingestion with configurable shard-based throughput (1 MB/s write, 2 MB/s read per shard)",
+      "Kinesis Data Firehose delivers data to S3, Redshift, or OpenSearch with optional Lambda transformations for near-real-time loading",
+      "Kinesis Data Analytics uses Apache Flink for real-time feature computation and anomaly detection on streaming data",
+      "Random Cut Forest algorithm in Kinesis Data Analytics detects anomalies in streaming time-series data",
+      "Enhanced fan-out provides dedicated throughput per consumer for low-latency stream processing"
+    ],
+    "common_misconceptions": [
+      "Kinesis Data Firehose and Kinesis Data Streams are the same service (Streams provides real-time ingestion with custom consumers; Firehose provides managed delivery to destinations)",
+      "Kinesis retains data indefinitely (default retention is 24 hours, extendable up to 365 days with additional cost)"
+    ],
+    "aws_services": ["Kinesis Data Streams", "Kinesis Data Firehose", "Kinesis Data Analytics", "Lambda"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-glue-etl-features", "transfer_weight": 0.2},
+      {"concept_id": "aws-mls-sagemaker-endpoints", "transfer_weight": 0.15}
+    ]
+  },
+  {
+    "id": "aws-mls-sagemaker-notebooks",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "exploratory-data-analysis",
+    "topic_id": "exploratory-analysis",
+    "name": "SageMaker Notebooks and Data Exploration",
+    "description": "Using SageMaker notebook instances and Studio for interactive data exploration, visualization, and analysis",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SageMaker Studio provides an integrated IDE with notebooks, experiments, model registry, and debugger in a single interface",
+      "Notebook instances support direct access to S3 data and integration with Glue Data Catalog for schema discovery",
+      "SageMaker Data Wrangler provides a visual interface for data exploration, transformation, and feature engineering",
+      "Lifecycle configurations automate notebook instance setup tasks like installing libraries and mounting EFS volumes",
+      "SageMaker Processing jobs run data analysis workloads on managed infrastructure separate from notebook instances"
+    ],
+    "common_misconceptions": [
+      "Notebooks should be used for production training (notebooks are for exploration; use SageMaker Training jobs or Pipelines for production workloads)",
+      "SageMaker Studio and notebook instances are the same (Studio is a full IDE with additional features; notebook instances are standalone Jupyter servers)"
+    ],
+    "aws_services": ["SageMaker Studio", "SageMaker Notebooks", "SageMaker Data Wrangler", "SageMaker Processing"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-feature-selection", "transfer_weight": 0.25},
+      {"concept_id": "aws-mls-data-distributions", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-feature-selection",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "exploratory-data-analysis",
+    "topic_id": "exploratory-analysis",
+    "name": "Feature Selection and Engineering Techniques",
+    "description": "Methods for selecting, creating, and transforming features to improve ML model performance",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Principal Component Analysis (PCA) reduces dimensionality by projecting features onto orthogonal components that capture maximum variance",
+      "Feature importance from tree-based models (XGBoost, Random Forest) ranks features by their contribution to predictions",
+      "One-hot encoding converts categorical variables to binary vectors; target encoding maps categories to target statistics for high-cardinality features",
+      "Handling missing values with imputation (mean, median, mode, or KNN-based) preserves training data volume versus dropping rows",
+      "Feature scaling (standardization, min-max normalization) is critical for distance-based algorithms but not required for tree-based models"
+    ],
+    "common_misconceptions": [
+      "More features always improve model accuracy (too many features can cause overfitting and the curse of dimensionality)",
+      "Tree-based models require feature scaling (decision trees and gradient boosting are invariant to monotonic transformations of features)"
+    ],
+    "aws_services": ["SageMaker Processing", "SageMaker Data Wrangler", "Glue DataBrew"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-data-distributions", "transfer_weight": 0.25},
+      {"concept_id": "aws-mls-xgboost", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-data-distributions",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "exploratory-data-analysis",
+    "topic_id": "exploratory-analysis",
+    "name": "Data Distributions and Visualization",
+    "description": "Analyzing data distributions, detecting outliers, understanding class imbalance, and creating visualizations for ML insights",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Histograms and box plots reveal distribution shape, central tendency, spread, and outliers in feature data",
+      "Class imbalance in classification problems can be addressed with SMOTE oversampling, undersampling, or weighted loss functions",
+      "Correlation matrices identify multicollinearity between features that may cause instability in linear models",
+      "Scatter plots and pair plots visualize relationships between features and the target variable",
+      "Amazon SageMaker Clarify detects bias in training data and provides pre-training and post-training bias metrics"
+    ],
+    "common_misconceptions": [
+      "Class imbalance can always be fixed by oversampling the minority class (oversampling can lead to overfitting; a combination of techniques and appropriate evaluation metrics is better)",
+      "Outliers should always be removed (outliers may represent valid edge cases that the model should learn; domain knowledge determines the appropriate treatment)"
+    ],
+    "aws_services": ["SageMaker Clarify", "SageMaker Studio", "QuickSight"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-feature-selection", "transfer_weight": 0.25},
+      {"concept_id": "aws-mls-model-evaluation", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-visualization-quicksight",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "exploratory-data-analysis",
+    "topic_id": "exploratory-analysis",
+    "name": "Data Visualization and QuickSight for ML",
+    "description": "Using visualization tools and Amazon QuickSight to communicate ML data insights and model results",
+    "exam_weight": 0.0350,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "QuickSight ML Insights provides anomaly detection, forecasting, and auto-narrative capabilities built into dashboards",
+      "SPICE engine in QuickSight provides in-memory query acceleration for large datasets with automatic refresh",
+      "Confusion matrices visualize classification model performance showing true positives, false positives, true negatives, and false negatives",
+      "ROC curves plot the trade-off between true positive rate and false positive rate across classification thresholds",
+      "Residual plots for regression models reveal non-linear patterns that the model fails to capture"
+    ],
+    "common_misconceptions": [
+      "QuickSight replaces SageMaker for ML (QuickSight provides embedded ML insights for business users but does not replace full ML model development)",
+      "A single metric like accuracy is sufficient to evaluate model performance (accuracy is misleading for imbalanced datasets; use precision, recall, F1, and AUC together)"
+    ],
+    "aws_services": ["QuickSight", "SageMaker Studio", "Athena"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-data-distributions", "transfer_weight": 0.2},
+      {"concept_id": "aws-mls-model-evaluation", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-xgboost",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "topic_id": "modeling",
+    "name": "XGBoost on SageMaker",
+    "description": "Training and tuning XGBoost gradient boosted tree models using SageMaker's built-in algorithm for classification and regression",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "XGBoost supports classification (binary:logistic, multi:softmax) and regression (reg:squarederror, reg:linear) objectives",
+      "Key hyperparameters: max_depth controls tree complexity, eta (learning rate) controls step size, num_round sets boosting iterations",
+      "Regularization parameters alpha (L1) and lambda (L2) prevent overfitting by penalizing model complexity",
+      "SageMaker XGBoost accepts CSV and libsvm input formats; data must be numeric with the target in the first column for CSV",
+      "Distributed training across multiple instances is supported for large datasets via data parallelism"
+    ],
+    "common_misconceptions": [
+      "XGBoost requires feature scaling (tree-based models split on feature values and are invariant to monotonic scaling)",
+      "Increasing num_round always improves performance (too many rounds causes overfitting; early stopping should be used to find the optimal number)"
+    ],
+    "aws_services": ["SageMaker Training", "SageMaker Built-in Algorithms"],
+    "prerequisites": ["aws-mls-feature-selection"],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-linear-learner", "transfer_weight": 0.25},
+      {"concept_id": "aws-mls-hyperparameter-tuning", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-mls-linear-learner",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "topic_id": "modeling",
+    "name": "Linear Learner and Built-in Algorithms",
+    "description": "Using SageMaker Linear Learner for linear classification and regression, and understanding when to apply various built-in algorithms",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Linear Learner supports binary classification, multiclass classification, and regression with automatic model tuning",
+      "Requires numeric features and benefits from feature scaling; can normalize data automatically during training",
+      "Supports L1 and L2 regularization to prevent overfitting and encourage sparse feature selection",
+      "Input format is recordIO-protobuf for best performance or CSV; training data must be shuffled",
+      "SageMaker also provides built-in algorithms for KNN, factorization machines, random cut forest, and image classification"
+    ],
+    "common_misconceptions": [
+      "Linear Learner can only do regression (it supports binary classification, multiclass classification, and regression)",
+      "Built-in algorithms cannot compete with custom deep learning models (for tabular data with clear feature engineering, built-in algorithms often outperform complex models)"
+    ],
+    "aws_services": ["SageMaker Training", "SageMaker Built-in Algorithms"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-xgboost", "transfer_weight": 0.25},
+      {"concept_id": "aws-mls-model-evaluation", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-training-jobs",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "topic_id": "modeling",
+    "name": "SageMaker Training Jobs and Infrastructure",
+    "description": "Configuring and optimizing SageMaker training jobs including instance selection, distributed training, and managed spot training",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Training jobs provision compute instances, download data from S3, run the training algorithm, and save model artifacts back to S3",
+      "Pipe mode streams data directly from S3 to the training container, reducing startup time and disk requirements versus File mode",
+      "Managed spot training uses EC2 Spot Instances for up to 90% cost savings with automatic checkpointing for fault tolerance",
+      "SageMaker Debugger captures training metrics and tensors in real-time to detect issues like vanishing gradients and overfitting",
+      "Distributed training strategies include data parallelism (split data across instances) and model parallelism (split model across GPUs)"
+    ],
+    "common_misconceptions": [
+      "Larger instance types always train faster (training speed depends on data loading, algorithm parallelization, and GPU utilization; I/O can be the bottleneck)",
+      "Managed spot training will always complete (spot instances can be interrupted; checkpointing is essential for fault tolerance)"
+    ],
+    "aws_services": ["SageMaker Training", "S3", "EC2", "SageMaker Debugger"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-hyperparameter-tuning", "transfer_weight": 0.3},
+      {"concept_id": "aws-mls-xgboost", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-hyperparameter-tuning",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "topic_id": "modeling",
+    "name": "Hyperparameter Tuning and Optimization",
+    "description": "Using SageMaker Automatic Model Tuning to find optimal hyperparameters through Bayesian optimization, random search, and grid search strategies",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Bayesian optimization uses previous training results to guide the search for optimal hyperparameters more efficiently than random search",
+      "Objective metric defines what the tuning job optimizes (e.g., minimize validation:rmse or maximize validation:auc)",
+      "Warm start allows a new tuning job to build upon results from previous tuning jobs to converge faster",
+      "Hyperparameter ranges can be continuous, integer, or categorical; each type uses different search strategies",
+      "Maximum parallel training jobs trades off between speed and Bayesian optimization effectiveness (fewer parallel jobs = better optimization)"
+    ],
+    "common_misconceptions": [
+      "Random search is always inferior to Bayesian optimization (random search can be more effective in very high-dimensional hyperparameter spaces or with limited budget)",
+      "More tuning job iterations always lead to better results (diminishing returns occur; the objective metric improvements plateau after sufficient exploration)"
+    ],
+    "aws_services": ["SageMaker Automatic Model Tuning", "SageMaker Training", "CloudWatch"],
+    "prerequisites": ["aws-mls-training-jobs"],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-training-jobs", "transfer_weight": 0.3},
+      {"concept_id": "aws-mls-model-evaluation", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-mls-model-evaluation",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "modeling",
+    "topic_id": "modeling",
+    "name": "Model Evaluation Metrics and Validation",
+    "description": "Evaluating ML model performance using appropriate metrics, cross-validation, and understanding bias-variance trade-offs",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "AUC-ROC measures overall classification performance independent of threshold; values above 0.8 indicate good discrimination",
+      "Precision measures the fraction of positive predictions that are actually positive; important when false positives are costly",
+      "Recall (sensitivity) measures the fraction of actual positives correctly identified; important when false negatives are costly",
+      "RMSE and MAE evaluate regression models; RMSE penalizes large errors more heavily than MAE",
+      "K-fold cross-validation reduces overfitting risk by training on different data splits and averaging performance metrics"
+    ],
+    "common_misconceptions": [
+      "High training accuracy means the model will generalize well (large gap between training and validation accuracy indicates overfitting)",
+      "Accuracy is the best metric for all classification problems (for imbalanced datasets, precision, recall, F1, and AUC are more informative)"
+    ],
+    "aws_services": ["SageMaker Training", "SageMaker Clarify", "SageMaker Experiments"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-hyperparameter-tuning", "transfer_weight": 0.25},
+      {"concept_id": "aws-mls-model-monitor", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-sagemaker-endpoints",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "ml-implementation-operations",
+    "topic_id": "ml-operations",
+    "name": "SageMaker Endpoints and Deployment Patterns",
+    "description": "Deploying ML models to SageMaker real-time endpoints, batch transform, and serverless inference with A/B testing strategies",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Real-time endpoints provide persistent HTTPS endpoints for synchronous inference with auto-scaling based on invocations or CPU",
+      "Production variants enable A/B testing by routing traffic percentages to different model versions on the same endpoint",
+      "Batch Transform processes large datasets offline without maintaining a persistent endpoint, ideal for periodic bulk predictions",
+      "Serverless inference automatically scales to zero when idle, eliminating costs during periods of no traffic",
+      "Multi-model endpoints host multiple models on a single endpoint instance, dynamically loading models from S3 on demand"
+    ],
+    "common_misconceptions": [
+      "Real-time endpoints are the only deployment option (SageMaker offers batch transform, serverless inference, and asynchronous inference for different use cases)",
+      "A/B testing requires separate endpoints (production variants on a single endpoint can split traffic between model versions)"
+    ],
+    "aws_services": ["SageMaker Endpoints", "SageMaker Batch Transform", "SageMaker Serverless Inference", "Auto Scaling"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-model-monitor", "transfer_weight": 0.3},
+      {"concept_id": "aws-mls-sagemaker-pipelines", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-mls-model-monitor",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "ml-implementation-operations",
+    "topic_id": "ml-operations",
+    "name": "SageMaker Model Monitor",
+    "description": "Monitoring deployed ML models for data quality drift, model quality degradation, bias drift, and feature attribution changes",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Data quality monitoring detects schema violations and statistical drift in input features compared to a baseline",
+      "Model quality monitoring tracks prediction accuracy by comparing predictions with ground truth labels",
+      "Bias drift monitoring uses SageMaker Clarify to detect changes in bias metrics over time on deployed models",
+      "Feature attribution drift monitors SHAP values to detect when feature importance changes compared to training baseline",
+      "Monitoring schedules run on configurable intervals and publish results to S3 with CloudWatch alerts for violations"
+    ],
+    "common_misconceptions": [
+      "Model Monitor automatically retrains models when drift is detected (it alerts on drift; retraining requires a separate automated pipeline)",
+      "Data quality drift always means model performance has degraded (data distribution changes may not affect predictions if the model is robust to those specific changes)"
+    ],
+    "aws_services": ["SageMaker Model Monitor", "SageMaker Clarify", "CloudWatch", "S3"],
+    "prerequisites": ["aws-mls-sagemaker-endpoints"],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-sagemaker-endpoints", "transfer_weight": 0.3},
+      {"concept_id": "aws-mls-sagemaker-pipelines", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-mls-sagemaker-pipelines",
+    "exam_id": "aws-mls-c01",
+    "domain_id": "ml-implementation-operations",
+    "topic_id": "ml-operations",
+    "name": "SageMaker Pipelines and MLOps",
+    "description": "Building automated ML workflows with SageMaker Pipelines, Model Registry, and CI/CD patterns for production ML systems",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "SageMaker Pipelines defines ML workflows as DAGs with steps for processing, training, evaluation, and deployment",
+      "Model Registry stores model versions with approval status, metadata, and lineage for governed model promotion",
+      "Condition steps enable automated decision-making in pipelines (e.g., deploy only if accuracy exceeds a threshold)",
+      "Pipeline parameters allow reuse of the same pipeline definition with different hyperparameters or data sources",
+      "Integration with CodePipeline and CodeBuild enables CI/CD automation for model retraining and deployment"
+    ],
+    "common_misconceptions": [
+      "SageMaker Pipelines replaces CI/CD tools like CodePipeline (Pipelines handles ML workflow orchestration; CI/CD tools handle code deployment and are complementary)",
+      "Models in the Model Registry are automatically deployed to production (models must be approved and a deployment step must be triggered)"
+    ],
+    "aws_services": ["SageMaker Pipelines", "SageMaker Model Registry", "CodePipeline", "CodeBuild", "EventBridge"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-mls-model-monitor", "transfer_weight": 0.25},
+      {"concept_id": "aws-mls-sagemaker-endpoints", "transfer_weight": 0.2}
+    ]
+  }
+]

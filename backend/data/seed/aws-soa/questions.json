@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-soa-mon-001",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "monitoring-logging-remediation",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "A SysOps administrator notices that CloudWatch is not displaying memory utilization metrics for a fleet of EC2 instances running Amazon Linux 2. CPU utilization and network metrics appear normally. What is the MOST likely cause?",
+    "options": [
+      {"id": "A", "text": "The instances are using the wrong instance type that does not support memory metrics", "is_correct": false},
+      {"id": "B", "text": "The CloudWatch agent is not installed or configured on the instances", "is_correct": true},
+      {"id": "C", "text": "Detailed monitoring has not been enabled for the instances", "is_correct": false},
+      {"id": "D", "text": "The IAM role attached to the instances does not have CloudWatch permissions", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Memory and disk metrics are not collected by the EC2 hypervisor by default. The CloudWatch agent must be installed and configured on the instances to publish these OS-level metrics. CPU and network metrics come from the hypervisor and appear without the agent.",
+      "why_not_A": "Memory metrics are not instance-type dependent. No EC2 instance type publishes memory metrics by default.",
+      "why_not_C": "Detailed monitoring changes the metric reporting interval from 5 minutes to 1 minute. It does not add memory metrics.",
+      "why_not_D": "If IAM permissions were missing, no custom metrics would be published, but the default hypervisor metrics (CPU, network) would still appear, which matches the scenario. However, the root cause is the agent not being installed at all."
+    },
+    "concept_ids": ["aws-soa-cloudwatch-metrics"],
+    "tags": ["cloudwatch", "monitoring", "ec2", "troubleshooting"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-mon-002",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to be alerted when BOTH CPU utilization exceeds 80% AND available memory drops below 500 MB on their production EC2 instances. How should the SysOps administrator configure this?",
+    "options": [
+      {"id": "A", "text": "Create a single CloudWatch alarm using metric math to combine CPU and memory metrics", "is_correct": false},
+      {"id": "B", "text": "Create two separate alarms and use a composite alarm with an AND rule", "is_correct": true},
+      {"id": "C", "text": "Create an EventBridge rule that monitors both metrics simultaneously", "is_correct": false},
+      {"id": "D", "text": "Create a CloudWatch Logs Insights query that evaluates both conditions", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Composite alarms combine multiple alarms using AND/OR logic. By creating individual alarms for CPU > 80% and memory < 500 MB, then combining them with a composite alarm using AND, the alert only fires when both conditions are true simultaneously.",
+      "why_not_A": "Metric math can combine metrics for visualization, but a single alarm cannot evaluate two independent threshold conditions with AND logic. Composite alarms are designed for this purpose.",
+      "why_not_C": "EventBridge rules react to events, not continuous metric thresholds. It cannot monitor metric values and evaluate compound conditions.",
+      "why_not_D": "CloudWatch Logs Insights queries log data, not real-time metrics. It is not designed for threshold-based alerting."
+    },
+    "concept_ids": ["aws-soa-cloudwatch-metrics", "aws-soa-eventbridge"],
+    "tags": ["cloudwatch", "composite-alarm", "monitoring"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-mon-003",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A security team wants to track all API calls that modify security groups across all AWS accounts in their organization. The logs must be stored centrally in a dedicated security account's S3 bucket. Which approach should the SysOps administrator implement?",
+    "options": [
+      {"id": "A", "text": "Enable VPC Flow Logs in each account and send them to the central S3 bucket", "is_correct": false},
+      {"id": "B", "text": "Create an organization trail in CloudTrail that delivers logs to the security account's S3 bucket", "is_correct": true},
+      {"id": "C", "text": "Configure CloudWatch Logs in each account with cross-account log sharing to the security account", "is_correct": false},
+      {"id": "D", "text": "Use AWS Config rules to monitor security group changes and aggregate findings centrally", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An organization trail in CloudTrail automatically captures management events (including security group modifications) across all accounts in the organization and delivers them to a single S3 bucket. This is the simplest and most comprehensive approach.",
+      "why_not_A": "VPC Flow Logs capture network traffic metadata, not API calls. They would not show who modified a security group or what changes were made.",
+      "why_not_C": "CloudWatch Logs cross-account sharing requires per-account setup and does not natively capture API calls. This approach has high operational overhead.",
+      "why_not_D": "AWS Config can detect security group changes but is designed for compliance evaluation, not comprehensive API audit logging. It also requires per-account setup."
+    },
+    "concept_ids": ["aws-soa-cloudtrail"],
+    "tags": ["cloudtrail", "security", "multi-account", "auditing"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-rel-001",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company runs a critical application on an RDS MySQL Multi-AZ deployment. During a planned maintenance window, the primary database must be patched. What happens to the application during this process?",
+    "options": [
+      {"id": "A", "text": "The application experiences downtime equal to the patching duration since the primary is unavailable", "is_correct": false},
+      {"id": "B", "text": "RDS applies the patch to the standby first, promotes it, then patches the old primary, resulting in a brief failover", "is_correct": true},
+      {"id": "C", "text": "RDS creates a new replica, patches it, and switches traffic using Route 53 DNS", "is_correct": false},
+      {"id": "D", "text": "The patch is applied in-place to both primary and standby simultaneously with zero downtime", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a Multi-AZ deployment, RDS patches the standby first, promotes it to primary (causing a brief failover of 60-120 seconds), then patches the old primary which becomes the new standby. This minimizes downtime.",
+      "why_not_A": "Multi-AZ was designed specifically to avoid extended downtime during maintenance. The standby-first patching approach limits disruption to the failover duration.",
+      "why_not_C": "RDS Multi-AZ uses a synchronous standby, not a new replica. Route 53 is not involved in RDS failover; it uses an endpoint DNS name that is automatically updated.",
+      "why_not_D": "Simultaneous patching would risk both instances being unavailable. The sequential approach with failover ensures at least one instance is always running."
+    },
+    "concept_ids": ["aws-soa-rds-ha"],
+    "tags": ["rds", "multi-az", "maintenance", "failover"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-rel-002",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "reliability-business-continuity",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "A Route 53 failover routing policy is configured with a primary record pointing to an ALB in us-east-1 and a secondary record pointing to an ALB in us-west-2. The primary ALB is healthy, but some users report being routed to the secondary. What is the MOST likely cause?",
+    "options": [
+      {"id": "A", "text": "The Route 53 health check is using a fast interval that causes false positives", "is_correct": false},
+      {"id": "B", "text": "The DNS TTL has not expired in the users' local DNS resolvers from a previous failover event", "is_correct": true},
+      {"id": "C", "text": "Cross-region load balancing is interfering with the failover routing policy", "is_correct": false},
+      {"id": "D", "text": "The secondary record was configured as an alias record instead of a CNAME record", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "If a previous failover occurred, client DNS resolvers may have cached the secondary record's IP address. Until the TTL expires, these resolvers continue directing traffic to the secondary. This is the most common cause of stale failover routing.",
+      "why_not_A": "A fast health check interval (10 seconds) provides quicker detection but does not cause false positives. Health checks require multiple consecutive failures before marking unhealthy.",
+      "why_not_C": "Cross-region load balancing is not a Route 53 concept. Route 53 does not load balance across regions in failover mode; it routes all traffic to the primary when healthy.",
+      "why_not_D": "Alias vs CNAME does not affect failover behavior. Both record types work correctly with failover routing policies."
+    },
+    "concept_ids": ["aws-soa-route53-health", "aws-soa-route53-routing"],
+    "tags": ["route53", "failover", "dns", "troubleshooting"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-dep-001",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A SysOps administrator needs to update a CloudFormation stack that includes an RDS instance. The update will change the instance class from db.m5.large to db.m5.xlarge. Before applying, the administrator wants to verify exactly what changes will occur. What should they do?",
+    "options": [
+      {"id": "A", "text": "Run drift detection on the stack to see the current state", "is_correct": false},
+      {"id": "B", "text": "Create a change set to preview the proposed modifications before execution", "is_correct": true},
+      {"id": "C", "text": "Use the stack policy to simulate the update without applying it", "is_correct": false},
+      {"id": "D", "text": "Deploy the update to a new stack and compare the resources manually", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Change sets show exactly what resources will be added, modified, or replaced before making any changes. This allows safe review of the update impact, including whether the RDS instance will be replaced (causing data loss) or modified in-place.",
+      "why_not_A": "Drift detection shows differences between the current stack template and the actual resource configurations. It does not preview what a proposed update would change.",
+      "why_not_C": "Stack policies protect resources from being updated or deleted, but they do not simulate updates. They are guardrails, not preview tools.",
+      "why_not_D": "Creating a new stack duplicates infrastructure and costs. Change sets provide the same preview capability without provisioning anything."
+    },
+    "concept_ids": ["aws-soa-cloudformation"],
+    "tags": ["cloudformation", "change-sets", "deployment"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-dep-002",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to execute a shell script on 500 EC2 instances to update a configuration file. The instances are spread across multiple VPCs and do not have SSH access enabled. All instances have the SSM Agent installed with proper IAM roles. What is the MOST efficient approach?",
+    "options": [
+      {"id": "A", "text": "Use AWS Systems Manager Run Command to execute the script across all instances using resource groups", "is_correct": true},
+      {"id": "B", "text": "Create a custom AMI with the updated configuration and relaunch all 500 instances", "is_correct": false},
+      {"id": "C", "text": "Use AWS Systems Manager Session Manager to connect to each instance and run the script manually", "is_correct": false},
+      {"id": "D", "text": "Create a CloudFormation stack update to modify the instances' user data scripts", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Run Command executes commands across multiple instances simultaneously using instance tags or resource groups. It does not require SSH access, works across VPCs, and provides centralized output and error handling. This is the most efficient approach for 500 instances.",
+      "why_not_B": "Creating a new AMI and relaunching 500 instances is extremely disruptive and time-consuming. It would cause downtime and require reattaching EBS volumes, EIPs, and other configurations.",
+      "why_not_C": "Session Manager provides interactive shell access to individual instances. Connecting to 500 instances one by one is impractical and does not scale.",
+      "why_not_D": "User data scripts only run at instance launch (unless explicitly configured otherwise). Changing user data does not re-execute the script on running instances."
+    },
+    "concept_ids": ["aws-soa-systems-manager"],
+    "tags": ["systems-manager", "run-command", "automation"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-dep-003",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "deployment-provisioning-automation",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A development team wants to deploy an application update to Elastic Beanstalk with zero downtime and the ability to quickly roll back if issues are detected. Which deployment policy should they use?",
+    "options": [
+      {"id": "A", "text": "All at once", "is_correct": false},
+      {"id": "B", "text": "Rolling", "is_correct": false},
+      {"id": "C", "text": "Immutable", "is_correct": true},
+      {"id": "D", "text": "Rolling with additional batch", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Immutable deployment launches new instances with the updated version in a temporary Auto Scaling group. Once healthy, they replace the old instances. Rollback is fast because the old instances are still running during verification. Zero downtime is maintained throughout.",
+      "why_not_A": "All at once deploys to all existing instances simultaneously, causing downtime during the deployment. Rollback requires redeploying the previous version.",
+      "why_not_B": "Rolling deploys in batches to existing instances, reducing capacity during deployment. If a batch fails, some instances run the old version and some the new, requiring manual intervention.",
+      "why_not_D": "Rolling with additional batch maintains full capacity by launching extra instances, but it still updates existing instances in batches. Rollback is slower than immutable because instances must be redeployed."
+    },
+    "concept_ids": ["aws-soa-elastic-beanstalk"],
+    "tags": ["elastic-beanstalk", "deployment", "zero-downtime"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-sec-001",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company must ensure that all EBS volumes are encrypted at rest across all AWS accounts in their organization. They want to detect non-compliant volumes and automatically encrypt them. Which combination of services achieves this?",
+    "options": [
+      {"id": "A", "text": "AWS Config rule to detect unencrypted volumes with an SSM Automation remediation to create encrypted copies", "is_correct": true},
+      {"id": "B", "text": "CloudTrail with an EventBridge rule to intercept CreateVolume API calls and reject unencrypted volumes", "is_correct": false},
+      {"id": "C", "text": "IAM policy that denies ec2:CreateVolume without the Encrypted parameter", "is_correct": false},
+      {"id": "D", "text": "Amazon Inspector to scan for unencrypted volumes and send alerts via SNS", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "AWS Config's managed rule 'encrypted-volumes' detects unencrypted EBS volumes. Automatic remediation using SSM Automation documents can create encrypted snapshots and new encrypted volumes to replace non-compliant ones. This provides both detection and remediation.",
+      "why_not_B": "EventBridge can react to CloudTrail events but cannot reject API calls. By the time the event is processed, the unencrypted volume already exists. This is detective, not preventive.",
+      "why_not_C": "An IAM policy or SCP can prevent creation of unencrypted volumes going forward, but it does not detect or remediate existing unencrypted volumes.",
+      "why_not_D": "Amazon Inspector scans for software vulnerabilities and network exposure, not EBS encryption status."
+    },
+    "concept_ids": ["aws-soa-config-rules", "aws-soa-systems-manager"],
+    "tags": ["config", "encryption", "remediation", "compliance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-sec-002",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "security-compliance",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "A SysOps administrator is troubleshooting why SSM Patch Manager is not patching a group of EC2 instances. The instances have the SSM Agent installed and can be seen in the Systems Manager console. The maintenance window is configured correctly and has run, but patch compliance shows no data. What should the administrator check FIRST?",
+    "options": [
+      {"id": "A", "text": "Verify that the instances' security groups allow outbound HTTPS traffic to the SSM endpoints", "is_correct": false},
+      {"id": "B", "text": "Verify that the instances are registered as targets in the maintenance window and have the correct patch baseline assigned", "is_correct": true},
+      {"id": "C", "text": "Verify that the instances have the latest version of the SSM Agent installed", "is_correct": false},
+      {"id": "D", "text": "Verify that the maintenance window IAM service role has permission to patch EC2 instances", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "If instances appear in the Systems Manager console but show no patch compliance data after a maintenance window run, the most likely issue is that the instances are not registered as targets for that maintenance window, or the correct patch baseline is not associated. This is the most common configuration gap.",
+      "why_not_A": "If instances are visible in the Systems Manager console, they already have network connectivity to SSM endpoints. Outbound HTTPS is working.",
+      "why_not_C": "If instances appear in the console, the SSM Agent is functional. While older versions may have bugs, this is not the first thing to check.",
+      "why_not_D": "IAM role issues would cause the maintenance window task itself to fail with an error, not silently produce no results."
+    },
+    "concept_ids": ["aws-soa-patch-management", "aws-soa-systems-manager"],
+    "tags": ["patch-manager", "troubleshooting", "maintenance-window"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-net-001",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "networking-content-delivery",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A company needs a load balancer that provides static IP addresses per Availability Zone and handles millions of TCP requests per second with ultra-low latency. Which load balancer type should they choose?",
+    "options": [
+      {"id": "A", "text": "Application Load Balancer (ALB)", "is_correct": false},
+      {"id": "B", "text": "Network Load Balancer (NLB)", "is_correct": true},
+      {"id": "C", "text": "Gateway Load Balancer (GWLB)", "is_correct": false},
+      {"id": "D", "text": "Classic Load Balancer (CLB)", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Network Load Balancer operates at Layer 4, provides one static IP per AZ (or can use Elastic IPs), handles millions of requests per second, and delivers ultra-low latency. It is purpose-built for high-performance TCP/UDP traffic.",
+      "why_not_A": "ALB operates at Layer 7 and uses dynamic IP addresses. While it supports HTTP/HTTPS traffic well, it cannot provide static IPs per AZ and has higher latency than NLB.",
+      "why_not_C": "GWLB operates at Layer 3 and is designed for deploying and managing third-party virtual appliances, not general application load balancing.",
+      "why_not_D": "Classic Load Balancer is a legacy option that supports both Layer 4 and Layer 7 but lacks static IPs, has lower performance limits, and is not recommended for new deployments."
+    },
+    "concept_ids": ["aws-soa-elb-types"],
+    "tags": ["elb", "nlb", "networking", "comparison"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-net-002",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A global application serves users from US, Europe, and Asia. The SysOps administrator wants to route users to the region that provides the best performance, while using a health check to fail over to another region if the primary becomes unavailable. Which Route 53 configuration should be used?",
+    "options": [
+      {"id": "A", "text": "Weighted routing with equal weights across all regions", "is_correct": false},
+      {"id": "B", "text": "Geolocation routing with a default record as fallback", "is_correct": false},
+      {"id": "C", "text": "Latency-based routing with health checks enabled on all records", "is_correct": true},
+      {"id": "D", "text": "Multivalue answer routing with health checks on all records", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Latency-based routing measures the latency between the user and each AWS region, routing to the lowest-latency region. With health checks enabled, if the selected region becomes unhealthy, Route 53 automatically routes to the next-best latency region.",
+      "why_not_A": "Weighted routing distributes traffic by percentage regardless of user location. Equal weights would send users to random regions, potentially increasing latency.",
+      "why_not_B": "Geolocation routing is based on the user's geographic location, not actual network latency. A user near a US-EU border might be routed to a geographically closer but higher-latency region.",
+      "why_not_D": "Multivalue answer routing returns multiple IP addresses and lets the client choose. It does not optimize for latency and is primarily used for simple DNS-level distribution."
+    },
+    "concept_ids": ["aws-soa-route53-routing", "aws-soa-route53-health"],
+    "tags": ["route53", "latency-routing", "global", "failover"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-net-003",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "networking-content-delivery",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "An Auto Scaling group is configured with a target tracking scaling policy to maintain average CPU utilization at 50%. The SysOps administrator notices that the group repeatedly scales out and scales in every few minutes, causing application instability. What is the MOST likely cause and solution?",
+    "options": [
+      {"id": "A", "text": "The target value is too low; increase the target CPU utilization to 80%", "is_correct": false},
+      {"id": "B", "text": "The cooldown period is too short; increase the cooldown period to prevent rapid scaling oscillation", "is_correct": true},
+      {"id": "C", "text": "The minimum capacity is too low; increase the minimum number of instances in the group", "is_correct": false},
+      {"id": "D", "text": "The health check grace period is too long; reduce it so unhealthy instances are replaced faster", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Rapid scale-out followed by immediate scale-in (thrashing) typically occurs when the cooldown period is too short. New instances reduce average CPU below 50%, triggering scale-in. Removing instances increases CPU above 50%, triggering scale-out. A longer cooldown period allows metrics to stabilize before the next scaling action.",
+      "why_not_A": "While a higher target might reduce scaling frequency, it does not address the root cause of oscillation. The application may genuinely need to maintain 50% CPU utilization.",
+      "why_not_C": "Increasing minimum capacity adds a fixed cost and does not solve the oscillation problem. The group could still thrash above the minimum.",
+      "why_not_D": "Health check grace period affects how long before health checks start on new instances. It is unrelated to scaling policy oscillation."
+    },
+    "concept_ids": ["aws-soa-auto-scaling", "aws-soa-cloudwatch-metrics"],
+    "tags": ["auto-scaling", "troubleshooting", "scaling-policy", "cooldown"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-cost-001",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "cost-performance-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A SysOps administrator wants to identify EC2 instances that are over-provisioned and could be downsized to reduce costs. The solution should provide specific right-sizing recommendations based on actual usage patterns. Which AWS service should they use?",
+    "options": [
+      {"id": "A", "text": "AWS Trusted Advisor cost optimization checks", "is_correct": false},
+      {"id": "B", "text": "AWS Compute Optimizer", "is_correct": true},
+      {"id": "C", "text": "AWS Cost Explorer right-sizing recommendations", "is_correct": false},
+      {"id": "D", "text": "Amazon CloudWatch metrics with manual analysis", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Compute Optimizer uses machine learning to analyze historical utilization metrics and provides specific instance type recommendations for right-sizing. It considers CPU, memory, network, and storage usage patterns over at least 30 hours to generate optimal recommendations.",
+      "why_not_A": "Trusted Advisor provides general cost optimization checks like identifying idle instances, but it does not offer the granular, ML-based right-sizing recommendations that Compute Optimizer provides.",
+      "why_not_C": "Cost Explorer offers basic right-sizing recommendations, but Compute Optimizer provides more detailed, ML-based analysis with projected performance impact.",
+      "why_not_D": "CloudWatch provides raw metrics, but manual analysis at scale is time-consuming and error-prone. Compute Optimizer automates this analysis with ML."
+    },
+    "concept_ids": ["aws-soa-trusted-advisor"],
+    "tags": ["cost-optimization", "right-sizing", "compute-optimizer"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-soa-cost-002",
+    "exam_id": "aws-soa-c02",
+    "domain_id": "cost-performance-optimization",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company has a Business support plan and wants to use AWS Trusted Advisor to monitor their infrastructure. Which categories of checks are available to them? (Select the description that is accurate.)",
+    "options": [
+      {"id": "A", "text": "Only the 7 core security checks available to all support plans", "is_correct": false},
+      {"id": "B", "text": "The full set of checks across all five categories: cost optimization, performance, security, fault tolerance, and service limits", "is_correct": true},
+      {"id": "C", "text": "Security and service limit checks only; cost optimization requires Enterprise support", "is_correct": false},
+      {"id": "D", "text": "All checks except fault tolerance, which requires Enterprise support", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Business and Enterprise support plans unlock the full set of Trusted Advisor checks across all five categories, plus programmatic API access. This includes cost optimization, performance, security, fault tolerance, and service limits.",
+      "why_not_A": "The 7 core checks are the baseline available with Basic and Developer support plans. Business support unlocks significantly more.",
+      "why_not_C": "Cost optimization checks are available with Business support, not limited to Enterprise. All five categories are fully available.",
+      "why_not_D": "Fault tolerance checks are included with Business support. There is no category that requires Enterprise support exclusively."
+    },
+    "concept_ids": ["aws-soa-trusted-advisor"],
+    "tags": ["trusted-advisor", "support-plans", "cost-optimization"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

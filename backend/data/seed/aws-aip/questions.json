@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-aip-api-001",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "foundation-model-integration-data-management-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is building a chatbot that must work with multiple foundation models on Amazon Bedrock. The application should be able to switch between Claude, Titan, and Llama models without changing the request/response handling code. Which API approach should the developer use?",
+    "options": [
+      {"id": "A", "text": "Use the InvokeModel API with model-specific request payloads and implement adapters for each model", "is_correct": false},
+      {"id": "B", "text": "Use the Converse API which provides a unified request and response format across all supported models", "is_correct": true},
+      {"id": "C", "text": "Use the InvokeModel API with a single generic payload format that all models accept", "is_correct": false},
+      {"id": "D", "text": "Deploy each model on separate SageMaker endpoints with a unified wrapper service", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Converse API provides a standardized request and response format that works consistently across different Bedrock models. It abstracts away model-specific payload differences, allowing developers to switch models by changing only the model ID parameter.",
+      "why_not_A": "While InvokeModel works, it requires model-specific request formatting. Each model provider has its own payload structure, so the developer would need to maintain separate adapters for each model, increasing code complexity.",
+      "why_not_C": "InvokeModel does not accept a generic payload format. Each model requires its own specific request structure (e.g., Anthropic's messages format differs from Amazon Titan's inputText format).",
+      "why_not_D": "Deploying on SageMaker is unnecessary overhead when Bedrock already provides managed access to these models. It adds infrastructure management complexity without solving the unified API problem."
+    },
+    "concept_ids": ["aws-aip-bedrock-api"],
+    "tags": ["bedrock-api", "converse-api", "multi-model"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-api-002",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "foundation-model-integration-data-management-compliance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A developer is building a real-time coding assistant that displays suggestions as they are generated. Users report that the application feels slow because they wait several seconds before seeing any output. Which implementation change would MOST improve the perceived responsiveness?",
+    "options": [
+      {"id": "A", "text": "Switch to a larger model for higher quality responses that feel worth waiting for", "is_correct": false},
+      {"id": "B", "text": "Use InvokeModelWithResponseStream to display tokens as they are generated", "is_correct": true},
+      {"id": "C", "text": "Add a loading animation to improve the user experience during wait times", "is_correct": false},
+      {"id": "D", "text": "Pre-compute responses for common coding questions and cache them in DynamoDB", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "InvokeModelWithResponseStream returns tokens as they are generated via server-sent events. This dramatically reduces time-to-first-token (TTFT) from the user's perspective, as they see output begin immediately rather than waiting for the full response to complete.",
+      "why_not_A": "A larger model would increase latency, making the problem worse. Larger models take longer to generate each token and have higher TTFT.",
+      "why_not_C": "A loading animation does not reduce actual wait time or perceived responsiveness of the AI output. Users still see no useful content until the full response arrives.",
+      "why_not_D": "Pre-computed responses would only work for exact matches. Coding assistance queries are highly variable and context-dependent, resulting in very low cache hit rates."
+    },
+    "concept_ids": ["aws-aip-streaming-responses", "aws-aip-latency-optimization"],
+    "tags": ["streaming", "latency", "user-experience"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-api-003",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "foundation-model-integration-data-management-compliance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is building a semantic search system for their product catalog. They need to convert product descriptions into vector representations and find the most similar products to a user's search query. Which combination of AWS services should the developer use?",
+    "options": [
+      {"id": "A", "text": "Amazon Comprehend for keyword extraction and Amazon DynamoDB for storing search results", "is_correct": false},
+      {"id": "B", "text": "Amazon Titan Embeddings on Bedrock for vector generation and Amazon OpenSearch Serverless for vector search", "is_correct": true},
+      {"id": "C", "text": "Amazon Kendra for enterprise search and Amazon S3 for document storage", "is_correct": false},
+      {"id": "D", "text": "Amazon Rekognition for product image analysis and Amazon ElastiCache for search caching", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon Titan Embeddings generates dense vector representations of text that capture semantic meaning. Amazon OpenSearch Serverless with its vector search capability (k-NN) can store these embeddings and perform fast similarity searches using cosine similarity or L2 distance.",
+      "why_not_A": "Comprehend extracts keywords, not semantic vectors. Keyword-based search misses semantically similar but lexically different product descriptions. DynamoDB is not optimized for vector similarity search.",
+      "why_not_C": "Kendra is a managed search service but does not provide raw embedding generation or the flexibility to build custom semantic search pipelines. It is a higher-level service that may not suit custom product catalog search requirements.",
+      "why_not_D": "Rekognition analyzes images, not text descriptions. ElastiCache is a general-purpose cache and does not support vector similarity search operations."
+    },
+    "concept_ids": ["aws-aip-embeddings"],
+    "tags": ["embeddings", "vector-search", "semantic-search"],
+    "estimated_time_seconds": 105,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-impl-001",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "implementation-integration",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A developer is building a RAG application using Amazon Bedrock Knowledge Bases. The source documents are long technical manuals stored in S3. Users report that retrieved context often includes irrelevant information, reducing answer quality. Which Knowledge Base configuration change would MOST likely improve retrieval quality?",
+    "options": [
+      {"id": "A", "text": "Increase the maximum number of retrieved chunks from 3 to 20", "is_correct": false},
+      {"id": "B", "text": "Switch from fixed-size chunking to semantic chunking and adjust chunk overlap", "is_correct": true},
+      {"id": "C", "text": "Replace the embedding model with a larger general-purpose language model", "is_correct": false},
+      {"id": "D", "text": "Convert all documents to plain text format before ingestion", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Semantic chunking splits documents at natural topic boundaries rather than arbitrary character counts. This produces more coherent chunks where each chunk contains a complete thought or section. For long technical manuals, this significantly improves retrieval precision by ensuring retrieved chunks are topically focused and relevant.",
+      "why_not_A": "Retrieving more chunks increases the chance of including irrelevant information and adds noise to the context. The problem is retrieval precision, not recall. More chunks would likely make the problem worse and increase token costs.",
+      "why_not_C": "Embedding models and language models serve different purposes. A larger LLM is not an embedding model. The issue is chunking strategy, not embedding quality.",
+      "why_not_D": "Converting to plain text might lose useful structural information like headers and sections that help with chunking and retrieval. This does not address the core chunking issue."
+    },
+    "concept_ids": ["aws-aip-rag-knowledge-bases", "aws-aip-embeddings"],
+    "tags": ["rag", "knowledge-bases", "chunking", "retrieval-quality"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-impl-002",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "implementation-integration",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A developer is building a Bedrock Agent that helps employees manage their expense reports. The agent needs to look up expense policies, create new expense entries in an internal API, and query the status of submitted reports. Which architecture correctly implements this agent?",
+    "options": [
+      {"id": "A", "text": "Create a single action group with one Lambda function that handles all three operations based on the request body", "is_correct": false},
+      {"id": "B", "text": "Define action groups with OpenAPI schemas for expense operations, connect a Knowledge Base for policy documents, and implement Lambda functions for API integration", "is_correct": true},
+      {"id": "C", "text": "Use three separate Bedrock agents, one for each task, coordinated by a Step Functions workflow", "is_correct": false},
+      {"id": "D", "text": "Fine-tune a foundation model on expense data and deploy it with hard-coded API calls in the application layer", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "This architecture correctly separates concerns: Knowledge Bases handle policy document retrieval (read-only information lookup), while action groups with OpenAPI schemas define the expense API operations (create entries, query status). Lambda functions execute the actual API calls. The agent's foundation model orchestrates between retrieval and action based on the user's request.",
+      "why_not_A": "A single Lambda function for all operations reduces the agent's ability to reason about different actions independently. OpenAPI schemas help the agent understand what each operation does and what parameters are required.",
+      "why_not_C": "Three separate agents add unnecessary complexity. A single agent with multiple action groups and a Knowledge Base can handle all three tasks by reasoning about which action to take. Step Functions orchestration bypasses the agent's built-in planning capability.",
+      "why_not_D": "Fine-tuning embeds static knowledge into model weights and cannot interact with live APIs. Hard-coded API calls in the application layer bypass the agent's dynamic reasoning and planning capabilities."
+    },
+    "concept_ids": ["aws-aip-agents", "aws-aip-rag-knowledge-bases"],
+    "tags": ["agents", "action-groups", "knowledge-bases", "architecture"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-impl-003",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "implementation-integration",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A developer needs to configure Amazon Bedrock Guardrails to prevent a customer service chatbot from discussing competitor products. Which guardrail configuration is MOST appropriate?",
+    "options": [
+      {"id": "A", "text": "Configure a content filter with HIGH sensitivity for the misconduct category", "is_correct": false},
+      {"id": "B", "text": "Create a denied topic policy with a natural language description of competitor-related topics", "is_correct": true},
+      {"id": "C", "text": "Add each competitor name to the word filter blocklist", "is_correct": false},
+      {"id": "D", "text": "Implement a PII filter to block company name entities", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Denied topic policies accept natural language descriptions of topics to block (e.g., 'Discussions about competing products, services, or companies including comparisons and recommendations'). The model uses this semantic understanding to identify and block competitor-related conversations even when specific competitor names are not mentioned.",
+      "why_not_A": "Content filters for misconduct are designed to detect illegal or unethical content, not business policy restrictions. Discussing competitors is not misconduct.",
+      "why_not_C": "A word filter blocklist would only catch exact name matches and would miss indirect references, comparisons, or discussions about competitors without using their names. It is brittle and easy to circumvent.",
+      "why_not_D": "PII filters detect personal information like SSN and email addresses. Company names are not PII, and this filter would not understand the context of competitor discussions."
+    },
+    "concept_ids": ["aws-aip-guardrails-impl", "aws-aip-content-filtering"],
+    "tags": ["guardrails", "denied-topics", "content-policy"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-safety-001",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "ai-safety-security-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A healthcare company's AI chatbot must never reveal patient Social Security numbers or medical record numbers in responses, even if this information exists in the knowledge base. The company also needs to log when PII is detected for compliance auditing. Which implementation should the developer use?",
+    "options": [
+      {"id": "A", "text": "Pre-process all knowledge base documents to remove PII before ingestion", "is_correct": false},
+      {"id": "B", "text": "Configure Bedrock Guardrails PII filters to ANONYMIZE SSN and custom regex filters for medical record numbers, with CloudWatch logging enabled", "is_correct": true},
+      {"id": "C", "text": "Add instructions to the system prompt telling the model to never output PII", "is_correct": false},
+      {"id": "D", "text": "Use Amazon Macie to scan all model responses before returning them to users", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Bedrock Guardrails provides both built-in PII detection for standard types like SSN and custom regex-based filters for domain-specific identifiers like medical record numbers. Setting the action to ANONYMIZE replaces detected PII with placeholder tags. Guardrails automatically log interventions to CloudWatch for compliance auditing.",
+      "why_not_A": "Removing PII from documents before ingestion would eliminate the information entirely, which may be needed for the chatbot to discuss patient cases in general terms. It also does not protect against the model generating PII from its training data.",
+      "why_not_C": "System prompt instructions are not enforceable guardrails. Models can still output PII despite instructions, especially if PII appears in retrieved knowledge base content. This approach is insufficient for compliance requirements.",
+      "why_not_D": "Macie is designed for scanning S3 objects for sensitive data, not for real-time response filtering. It operates asynchronously and cannot intercept model responses before they reach users."
+    },
+    "concept_ids": ["aws-aip-pii-detection", "aws-aip-guardrails-impl"],
+    "tags": ["pii", "healthcare", "compliance", "guardrails"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-safety-002",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "ai-safety-security-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company has launched a generative AI customer support assistant. Before expanding to additional markets, the safety team wants to systematically identify potential failure modes including jailbreak vulnerabilities, biased responses, and policy violations. Which approach is MOST comprehensive?",
+    "options": [
+      {"id": "A", "text": "Monitor production logs for user complaints about AI responses", "is_correct": false},
+      {"id": "B", "text": "Run Bedrock Model Evaluation with built-in toxicity metrics on the test dataset", "is_correct": false},
+      {"id": "C", "text": "Conduct red teaming exercises with adversarial prompts, combined with automated evaluation using Bedrock Model Evaluation for safety metrics", "is_correct": true},
+      {"id": "D", "text": "Ask the foundation model provider for their safety test results", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Combining red teaming (manual adversarial testing by security experts) with automated evaluation provides the most comprehensive safety assessment. Red teaming discovers novel attack vectors and edge cases that automated tests miss, while Bedrock Model Evaluation systematically measures toxicity, accuracy, and other safety metrics across large test sets.",
+      "why_not_A": "Monitoring production complaints is reactive, not proactive. Waiting for users to discover and report problems means harmful outputs have already reached customers. This should complement, not replace, pre-launch testing.",
+      "why_not_B": "Automated evaluation alone misses creative adversarial attacks and context-dependent failures that human red teamers can identify. It is necessary but not sufficient for comprehensive safety assessment.",
+      "why_not_D": "Provider safety tests evaluate the base model, not the specific application with its custom prompts, knowledge bases, and guardrails. Application-level safety testing is the developer's responsibility."
+    },
+    "concept_ids": ["aws-aip-red-teaming", "aws-aip-responsible-ai-metrics"],
+    "tags": ["red-teaming", "safety", "model-evaluation"],
+    "estimated_time_seconds": 105,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-safety-003",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "ai-safety-security-governance",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "Which metric is MOST appropriate for evaluating whether a RAG application's responses are factually supported by the retrieved source documents?",
+    "options": [
+      {"id": "A", "text": "BLEU score comparing output to the original query", "is_correct": false},
+      {"id": "B", "text": "Toxicity score measuring harmful content probability", "is_correct": false},
+      {"id": "C", "text": "Groundedness score measuring alignment between response and retrieved context", "is_correct": true},
+      {"id": "D", "text": "Perplexity score measuring the model's confidence in its output", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Groundedness metrics specifically evaluate whether the claims in a model's response are supported by the retrieved source documents. This directly measures whether the RAG system is faithfully using its retrieved context rather than hallucinating information.",
+      "why_not_A": "BLEU scores measure n-gram overlap between generated text and reference text. Comparing output to the query measures how well the response echoes the question, not whether it is factually grounded in sources.",
+      "why_not_B": "Toxicity scores measure harmful content but do not assess factual accuracy or whether the response is supported by retrieved documents.",
+      "why_not_D": "Perplexity measures how well a language model predicts a sequence of tokens. Low perplexity indicates fluent text but says nothing about whether the content is factually supported by source documents."
+    },
+    "concept_ids": ["aws-aip-responsible-ai-metrics", "aws-aip-rag-knowledge-bases"],
+    "tags": ["metrics", "groundedness", "rag", "evaluation"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-opt-001",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "operational-efficiency-optimization",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company's generative AI application processes 500,000 requests per day using Claude on Amazon Bedrock. Most requests include the same 2,000-token system prompt with company policies and formatting instructions. The monthly Bedrock costs are significantly over budget. Which optimization would provide the GREATEST cost reduction?",
+    "options": [
+      {"id": "A", "text": "Switch to a smaller model for all requests regardless of complexity", "is_correct": false},
+      {"id": "B", "text": "Enable prompt caching to avoid reprocessing the repeated system prompt tokens on each request", "is_correct": true},
+      {"id": "C", "text": "Reduce the max_tokens parameter in all requests to limit output length", "is_correct": false},
+      {"id": "D", "text": "Move all processing to batch inference mode with 24-hour turnaround", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "With 500,000 daily requests each including 2,000 system prompt tokens, the company is paying to process 1 billion redundant input tokens per day. Prompt caching caches the static system prompt prefix so subsequent requests pay significantly reduced rates for cached tokens, potentially cutting input token costs by up to 90% for the cached portion.",
+      "why_not_A": "Switching to a smaller model for all requests would reduce quality on complex queries. A better approach is model routing (smaller model for simple, larger for complex). This does not address the core issue of redundant system prompt processing.",
+      "why_not_C": "Reducing max_tokens limits output length but does not address the input token costs from the repeated 2,000-token system prompt, which is the largest cost driver at this scale.",
+      "why_not_D": "Batch mode offers cost savings but requires 24-hour turnaround, which is unacceptable for most interactive applications. This fundamentally changes the application's real-time nature."
+    },
+    "concept_ids": ["aws-aip-token-optimization", "aws-aip-caching-batching"],
+    "tags": ["cost-optimization", "prompt-caching", "tokens"],
+    "estimated_time_seconds": 105,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-opt-002",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "operational-efficiency-optimization",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A developer wants to reduce latency for a generative AI application that serves global users. The application uses Amazon Bedrock with on-demand pricing. Which approach would MOST effectively reduce latency?",
+    "options": [
+      {"id": "A", "text": "Increase the max_tokens parameter to allow the model to generate longer responses faster", "is_correct": false},
+      {"id": "B", "text": "Use Provisioned Throughput to eliminate variable queue wait times and ensure consistent performance", "is_correct": true},
+      {"id": "C", "text": "Add Amazon CloudFront in front of the API to cache model responses at edge locations", "is_correct": false},
+      {"id": "D", "text": "Switch to batch inference for processing requests in bulk", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Provisioned Throughput reserves dedicated model capacity, eliminating variable queue wait times that occur with on-demand pricing during high-traffic periods. This provides consistent, predictable latency for the application regardless of overall Bedrock traffic.",
+      "why_not_A": "Increasing max_tokens allows longer outputs but does not reduce latency. In fact, generating more tokens increases response time. The max_tokens parameter is a limit, not an accelerator.",
+      "why_not_C": "CloudFront caches static content at edge locations, but generative AI responses are dynamic and unique to each query. Cache hit rates would be near zero, providing no latency benefit.",
+      "why_not_D": "Batch inference is asynchronous and designed for offline processing. It increases latency significantly rather than reducing it."
+    },
+    "concept_ids": ["aws-aip-latency-optimization", "aws-aip-caching-batching"],
+    "tags": ["latency", "provisioned-throughput", "performance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-test-001",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "testing-validation-troubleshooting",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A developer has updated the system prompt for a production generative AI application to improve response formatting. After deployment, some users report that answers to technical questions have become less accurate. Which testing practice should the developer have followed to prevent this regression?",
+    "options": [
+      {"id": "A", "text": "Run load testing to ensure the application can handle production traffic volumes", "is_correct": false},
+      {"id": "B", "text": "Maintain a regression test suite with input-output pairs for critical scenarios and run it before each prompt change", "is_correct": true},
+      {"id": "C", "text": "Have a single team member manually review 10 sample responses before deployment", "is_correct": false},
+      {"id": "D", "text": "Monitor the application's error rate in CloudWatch after deployment", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A regression test suite with predefined input-output pairs for critical technical questions would have caught the accuracy degradation before deployment. Running this suite before every prompt change ensures that formatting improvements do not inadvertently harm response quality in other areas.",
+      "why_not_A": "Load testing validates performance under traffic but does not evaluate response quality or accuracy. The regression is a quality issue, not a performance issue.",
+      "why_not_C": "Manual review of 10 samples is insufficient for catching regressions across the full range of question types. It is statistically insignificant and biased toward the reviewer's chosen examples.",
+      "why_not_D": "Monitoring error rates after deployment is reactive. The regression would have already impacted users. This should be a complement to pre-deployment testing, not a replacement."
+    },
+    "concept_ids": ["aws-aip-prompt-testing"],
+    "tags": ["regression-testing", "prompt-management", "quality-assurance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-test-002",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "testing-validation-troubleshooting",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A company wants to determine whether switching from Claude 3 Sonnet to Claude 3 Haiku would maintain acceptable quality for their customer service chatbot while reducing costs. The chatbot handles 50,000 daily conversations across 12 product categories. Which evaluation approach provides the MOST reliable comparison?",
+    "options": [
+      {"id": "A", "text": "Compare the models' published benchmark scores from Anthropic's documentation", "is_correct": false},
+      {"id": "B", "text": "Have a product manager test both models with 20 manually selected queries", "is_correct": false},
+      {"id": "C", "text": "Use Bedrock Model Evaluation with a representative dataset covering all 12 product categories, measuring quality metrics, then run an A/B test on live traffic to validate", "is_correct": true},
+      {"id": "D", "text": "Switch to Haiku completely and monitor customer satisfaction scores for one month", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Bedrock Model Evaluation provides automated, consistent evaluation across a large representative dataset covering all product categories. Following up with A/B testing on live traffic validates that offline evaluation results translate to real-world performance. This two-stage approach provides statistically significant data for the decision.",
+      "why_not_A": "Published benchmarks evaluate general model capabilities, not performance on this specific customer service use case. Task-specific evaluation is essential for migration decisions.",
+      "why_not_B": "Twenty manually selected queries are statistically insignificant for a chatbot handling 50,000 daily conversations across 12 categories. This sample is too small and likely biased toward the tester's expectations.",
+      "why_not_D": "Switching completely without evaluation risks degrading service quality for all customers. If Haiku performs poorly on certain categories, the company would discover this only after affecting real customers for a month."
+    },
+    "concept_ids": ["aws-aip-prompt-testing", "aws-aip-responsible-ai-metrics"],
+    "tags": ["model-evaluation", "a-b-testing", "migration", "cost-optimization"],
+    "estimated_time_seconds": 135,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-impl-004",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "implementation-integration",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A developer is building a generative AI application using LangChain with Amazon Bedrock. The application needs to maintain conversation context across multiple user interactions within a session, but context should be limited to avoid exceeding token limits. Which LangChain memory type is MOST appropriate?",
+    "options": [
+      {"id": "A", "text": "ConversationBufferMemory that stores the complete conversation history", "is_correct": false},
+      {"id": "B", "text": "ConversationSummaryBufferMemory that summarizes older messages while keeping recent ones in full", "is_correct": true},
+      {"id": "C", "text": "No memory — pass the entire conversation in the system prompt each time", "is_correct": false},
+      {"id": "D", "text": "ConversationBufferWindowMemory with a window of the last 2 messages", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ConversationSummaryBufferMemory provides the best balance between context retention and token efficiency. It keeps recent messages in full detail while summarizing older messages into a compressed format. This prevents the context from growing unboundedly while preserving important information from the entire conversation.",
+      "why_not_A": "ConversationBufferMemory stores every message in full, which will eventually exceed token limits in long conversations. This is the exact problem the question asks to solve.",
+      "why_not_C": "Passing the entire conversation in the system prompt is equivalent to buffer memory and will exceed token limits. It also conflates conversation history with system instructions.",
+      "why_not_D": "A window of only 2 messages discards most conversation context, causing the chatbot to lose track of earlier parts of the conversation. This is too aggressive for maintaining meaningful context."
+    },
+    "concept_ids": ["aws-aip-langchain-frameworks", "aws-aip-token-optimization"],
+    "tags": ["langchain", "memory", "context-management", "token-limits"],
+    "estimated_time_seconds": 105,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-aip-safety-004",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "ai-safety-security-governance",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A developer wants to apply Bedrock Guardrails to an application that uses a self-hosted open-source model outside of Bedrock. Is this possible, and if so, how?",
+    "options": [
+      {"id": "A", "text": "No, Guardrails only work with models hosted on Amazon Bedrock", "is_correct": false},
+      {"id": "B", "text": "Yes, by using the ApplyGuardrail API to evaluate text content independent of model invocation", "is_correct": true},
+      {"id": "C", "text": "Yes, by deploying the guardrail as a Lambda layer alongside the self-hosted model", "is_correct": false},
+      {"id": "D", "text": "No, the developer must migrate the model to Bedrock first to use Guardrails", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The ApplyGuardrail API allows developers to evaluate any text content against Bedrock Guardrail policies, independent of which model generated the text. This means guardrails can be applied to outputs from self-hosted models, third-party APIs, or any text source.",
+      "why_not_A": "This is incorrect. While guardrails are natively integrated with Bedrock model invocation, the ApplyGuardrail API extends guardrail functionality to any text content regardless of its source.",
+      "why_not_C": "Guardrails are not distributed as Lambda layers. They are a managed Bedrock service accessed via API. The developer calls the ApplyGuardrail API endpoint, not a local library.",
+      "why_not_D": "Migration to Bedrock is not required. The ApplyGuardrail API specifically enables using Bedrock Guardrails with external models and applications."
+    },
+    "concept_ids": ["aws-aip-guardrails-impl", "aws-aip-content-filtering"],
+    "tags": ["guardrails", "apply-guardrail-api", "external-models"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

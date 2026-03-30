@@ -1,0 +1,407 @@
+[
+  {
+    "id": "aws-aip-bedrock-api",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "foundation-model-integration-data-management-compliance",
+    "topic_id": "fm-integration",
+    "name": "Bedrock API and Model Invocation",
+    "description": "Using the Amazon Bedrock InvokeModel and Converse APIs to programmatically interact with foundation models, including request formatting and response handling",
+    "exam_weight": 0.0750,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "InvokeModel API accepts model-specific request payloads and returns model-specific responses",
+      "Converse API provides a unified interface across models with standardized request/response formats",
+      "Model IDs follow the format provider.model-name:version (e.g., anthropic.claude-3-sonnet-20240229-v1:0)",
+      "Request parameters include max_tokens, temperature, top_p, top_k, and stop_sequences",
+      "Bedrock supports cross-region inference for higher throughput and availability"
+    ],
+    "common_misconceptions": [
+      "All Bedrock models use the same request format (each model has its own payload structure unless using Converse API)",
+      "InvokeModel is synchronous only (InvokeModelWithResponseStream provides streaming responses)"
+    ],
+    "aws_services": ["Amazon Bedrock", "AWS SDK", "IAM"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-streaming-responses", "transfer_weight": 0.35},
+      {"concept_id": "aws-aip-embeddings", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-aip-streaming-responses",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "foundation-model-integration-data-management-compliance",
+    "topic_id": "fm-integration",
+    "name": "Streaming Responses and Multi-Modal Models",
+    "description": "Implementing streaming inference for real-time token-by-token output and working with models that accept multiple input modalities",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "InvokeModelWithResponseStream returns tokens as they are generated for lower time-to-first-token",
+      "Streaming uses server-sent events (SSE) or chunked transfer encoding",
+      "Multi-modal models accept text, images, and documents as input in a single request",
+      "Images are passed as base64-encoded strings or S3 URIs in the request payload",
+      "The Converse API simplifies multi-modal input across different model providers"
+    ],
+    "common_misconceptions": [
+      "Streaming produces different outputs than non-streaming (the final output is identical)",
+      "All Bedrock models support multi-modal input (only specific models like Claude 3 and Titan support images)"
+    ],
+    "aws_services": ["Amazon Bedrock", "Amazon API Gateway", "AWS Lambda"],
+    "prerequisites": ["aws-aip-bedrock-api"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-bedrock-api", "transfer_weight": 0.35},
+      {"concept_id": "aws-aip-latency-optimization", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-aip-embeddings",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "foundation-model-integration-data-management-compliance",
+    "topic_id": "fm-integration",
+    "name": "Embeddings and Vector Search",
+    "description": "Generating vector embeddings from text and using vector databases for semantic similarity search in RAG and recommendation systems",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Embeddings convert text into dense numerical vectors that capture semantic meaning",
+      "Amazon Titan Embeddings and Cohere Embed models are available on Bedrock for embedding generation",
+      "Vector databases (OpenSearch Serverless, Aurora PostgreSQL with pgvector, Pinecone) store and search embeddings",
+      "Cosine similarity and L2 distance are common metrics for finding similar embeddings",
+      "Embedding dimensions affect accuracy and storage: higher dimensions capture more nuance but cost more"
+    ],
+    "common_misconceptions": [
+      "Embeddings preserve the original text (they are numerical representations that cannot be reversed to exact text)",
+      "Any embedding model works with any vector database equally well (dimension compatibility and normalization matter)"
+    ],
+    "aws_services": ["Amazon Bedrock", "Amazon OpenSearch Serverless", "Amazon Aurora PostgreSQL", "Amazon Titan Embeddings"],
+    "prerequisites": ["aws-aip-bedrock-api"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-rag-knowledge-bases", "transfer_weight": 0.4},
+      {"concept_id": "aws-aip-bedrock-api", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-aip-rag-knowledge-bases",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "implementation-integration",
+    "topic_id": "implementation",
+    "name": "RAG with Bedrock Knowledge Bases",
+    "description": "Implementing Retrieval Augmented Generation using Amazon Bedrock Knowledge Bases to ground model responses in enterprise data",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Knowledge Bases automatically ingest, chunk, embed, and index documents from S3 data sources",
+      "Supports multiple chunking strategies: fixed-size, semantic, and hierarchical chunking",
+      "RetrieveAndGenerate API combines retrieval and generation in a single call",
+      "Retrieve API returns source chunks with relevance scores for custom RAG pipelines",
+      "Supports document formats including PDF, TXT, HTML, Markdown, CSV, DOC, and XLS"
+    ],
+    "common_misconceptions": [
+      "Knowledge Bases require manual embedding generation (the service handles embedding automatically)",
+      "RAG eliminates all hallucinations (it reduces them but the model can still generate inaccurate information)"
+    ],
+    "aws_services": ["Amazon Bedrock Knowledge Bases", "Amazon S3", "Amazon OpenSearch Serverless", "Amazon Aurora PostgreSQL"],
+    "prerequisites": ["aws-aip-embeddings"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-agents", "transfer_weight": 0.3},
+      {"concept_id": "aws-aip-embeddings", "transfer_weight": 0.4}
+    ]
+  },
+  {
+    "id": "aws-aip-agents",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "implementation-integration",
+    "topic_id": "implementation",
+    "name": "Bedrock Agents and Action Groups",
+    "description": "Building autonomous AI agents that can plan multi-step tasks, invoke external APIs, and execute business workflows using Amazon Bedrock Agents",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Agents use foundation models to break down user requests into a sequence of steps",
+      "Action groups define API operations the agent can invoke, specified via OpenAPI schemas",
+      "Agents can query Knowledge Bases for information and call Lambda functions for custom logic",
+      "The agent orchestrates between reasoning, retrieving information, and taking actions",
+      "Session attributes maintain state across turns in multi-turn agent conversations"
+    ],
+    "common_misconceptions": [
+      "Agents execute code directly (they invoke pre-defined Lambda functions through action groups)",
+      "Agents always follow a fixed workflow (they dynamically plan and adjust steps based on the model's reasoning)"
+    ],
+    "aws_services": ["Amazon Bedrock Agents", "AWS Lambda", "Amazon Bedrock Knowledge Bases"],
+    "prerequisites": ["aws-aip-bedrock-api", "aws-aip-rag-knowledge-bases"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-rag-knowledge-bases", "transfer_weight": 0.3},
+      {"concept_id": "aws-aip-guardrails-impl", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-aip-guardrails-impl",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "implementation-integration",
+    "topic_id": "implementation",
+    "name": "Guardrails Implementation",
+    "description": "Implementing and configuring Amazon Bedrock Guardrails for content filtering, topic blocking, PII handling, and contextual grounding checks",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Guardrails can be applied via the ApplyGuardrail API or integrated directly into Converse/InvokeModel calls",
+      "Content filters have configurable strength levels (NONE, LOW, MEDIUM, HIGH) for categories like hate, violence, and sexual content",
+      "Denied topic policies use natural language descriptions to block specific conversation topics",
+      "PII filters can BLOCK or ANONYMIZE sensitive data types like SSN, email, phone number, and credit card",
+      "Contextual grounding checks detect hallucination by comparing responses against provided source material"
+    ],
+    "common_misconceptions": [
+      "Guardrails only filter model outputs (they can filter both user inputs and model outputs)",
+      "Guardrails are model-specific (they work across all Bedrock models and even external models via ApplyGuardrail API)"
+    ],
+    "aws_services": ["Amazon Bedrock Guardrails", "Amazon Bedrock"],
+    "prerequisites": ["aws-aip-bedrock-api"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-content-filtering", "transfer_weight": 0.4},
+      {"concept_id": "aws-aip-pii-detection", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "aws-aip-langchain-frameworks",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "implementation-integration",
+    "topic_id": "implementation",
+    "name": "LangChain and Orchestration Frameworks",
+    "description": "Using LangChain and other orchestration frameworks to build complex generative AI applications with chains, memory, and tool integration",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "LangChain provides abstractions for chains, agents, memory, and retrieval integration",
+      "LangChain's Bedrock integration allows using Bedrock models as LLM providers in chains",
+      "Chains compose multiple steps: retrieval, prompt formatting, model invocation, and output parsing",
+      "Memory modules maintain conversation history across interactions (buffer, summary, vector store backed)",
+      "LangChain agents can use tools defined as Python functions or API wrappers"
+    ],
+    "common_misconceptions": [
+      "LangChain is required to use Bedrock (Bedrock has its own native APIs and agents)",
+      "LangChain handles deployment and scaling (it is an orchestration library; deployment requires separate infrastructure)"
+    ],
+    "aws_services": ["Amazon Bedrock", "AWS Lambda", "Amazon ECS"],
+    "prerequisites": ["aws-aip-bedrock-api"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-agents", "transfer_weight": 0.25},
+      {"concept_id": "aws-aip-rag-knowledge-bases", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-aip-content-filtering",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "ai-safety-security-governance",
+    "topic_id": "ai-safety",
+    "name": "Content Filtering and Safety Controls",
+    "description": "Implementing multi-layered content safety including toxicity detection, topic restrictions, and word filters to prevent harmful AI outputs",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Content filters evaluate text across categories: hate, insults, sexual, violence, misconduct, and prompt attacks",
+      "Word filters block specific words, phrases, or regex patterns in both inputs and outputs",
+      "Managed word lists provide pre-built profanity filters across multiple languages",
+      "Prompt attack detection identifies and blocks jailbreak and prompt injection attempts",
+      "Filter actions can block the request entirely or provide a canned response"
+    ],
+    "common_misconceptions": [
+      "Content filtering catches all harmful outputs (sophisticated adversarial prompts may still bypass filters)",
+      "Stricter filters are always better (overly strict filters cause false positives and degrade user experience)"
+    ],
+    "aws_services": ["Amazon Bedrock Guardrails", "Amazon Comprehend"],
+    "prerequisites": ["aws-aip-guardrails-impl"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-guardrails-impl", "transfer_weight": 0.4},
+      {"concept_id": "aws-aip-red-teaming", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-aip-pii-detection",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "ai-safety-security-governance",
+    "topic_id": "ai-safety",
+    "name": "PII Detection and Data Protection",
+    "description": "Detecting and handling personally identifiable information in AI application inputs and outputs using automated redaction and masking",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Bedrock Guardrails PII filters detect 30+ PII types including SSN, credit card, email, and phone numbers",
+      "PII handling actions: BLOCK rejects the entire request, ANONYMIZE replaces PII with placeholder tags",
+      "Amazon Comprehend also provides PII detection and redaction as a standalone NLP service",
+      "Regex-based sensitive information filters can detect custom patterns like internal IDs or account numbers",
+      "PII filtering should be applied to both user inputs and model outputs"
+    ],
+    "common_misconceptions": [
+      "PII detection catches all sensitive data formats globally (it works best with standard formats and may miss region-specific patterns)",
+      "Anonymized data can be de-anonymized from the model's response (properly anonymized PII is replaced with generic tags)"
+    ],
+    "aws_services": ["Amazon Bedrock Guardrails", "Amazon Comprehend", "Amazon Macie"],
+    "prerequisites": ["aws-aip-guardrails-impl"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-content-filtering", "transfer_weight": 0.3},
+      {"concept_id": "aws-aip-responsible-ai-metrics", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-aip-red-teaming",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "ai-safety-security-governance",
+    "topic_id": "ai-safety",
+    "name": "Red Teaming and Model Evaluation",
+    "description": "Systematically testing AI applications for vulnerabilities, biases, and failure modes through adversarial testing and automated evaluation",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Red teaming probes AI systems for harmful outputs, jailbreaks, prompt injections, and policy violations",
+      "Amazon Bedrock Model Evaluation supports automatic evaluation using built-in and custom metrics",
+      "Evaluation metrics include accuracy, robustness, toxicity, and task-specific performance measures",
+      "Human evaluation workflows complement automated metrics for subjective quality assessment",
+      "Regular red teaming should be performed after model updates, prompt changes, and guardrail modifications"
+    ],
+    "common_misconceptions": [
+      "Red teaming is a one-time pre-launch activity (it should be continuous throughout the application lifecycle)",
+      "Automated evaluation replaces human red teaming (both are needed for comprehensive safety assessment)"
+    ],
+    "aws_services": ["Amazon Bedrock Model Evaluation", "Amazon SageMaker Clarify"],
+    "prerequisites": ["aws-aip-content-filtering"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-responsible-ai-metrics", "transfer_weight": 0.35},
+      {"concept_id": "aws-aip-prompt-testing", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-aip-responsible-ai-metrics",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "ai-safety-security-governance",
+    "topic_id": "ai-safety",
+    "name": "Responsible AI Metrics and Governance",
+    "description": "Measuring and monitoring AI application safety, fairness, and quality using quantitative metrics and governance frameworks",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "ROUGE and BLEU scores measure text quality by comparing model output to reference text",
+      "BERTScore uses embeddings to measure semantic similarity between generated and reference text",
+      "Toxicity scores measure the probability of harmful content in model outputs",
+      "Groundedness metrics evaluate whether responses are supported by retrieved context",
+      "CloudWatch metrics and alarms can monitor guardrail intervention rates in production"
+    ],
+    "common_misconceptions": [
+      "High ROUGE scores always indicate good quality (they measure overlap, not factual correctness or coherence)",
+      "A single metric is sufficient to evaluate a generative AI application (multiple metrics across safety, quality, and relevance are needed)"
+    ],
+    "aws_services": ["Amazon Bedrock Model Evaluation", "Amazon CloudWatch", "Amazon Bedrock Guardrails"],
+    "prerequisites": ["aws-aip-red-teaming"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-red-teaming", "transfer_weight": 0.35},
+      {"concept_id": "aws-aip-prompt-testing", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-aip-token-optimization",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "operational-efficiency-optimization",
+    "topic_id": "optimization",
+    "name": "Token Optimization and Cost Management",
+    "description": "Strategies for minimizing token usage and managing costs in generative AI applications, including prompt compression and model selection",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Bedrock pricing is per input and output token; reducing token count directly reduces cost",
+      "Prompt optimization techniques include removing unnecessary context, using concise instructions, and limiting output length",
+      "Smaller models (e.g., Haiku vs Sonnet) offer lower per-token costs for simpler tasks",
+      "Provisioned Throughput provides consistent performance at a fixed hourly rate for high-volume workloads",
+      "Batch inference processes large datasets at up to 50% lower cost than on-demand pricing"
+    ],
+    "common_misconceptions": [
+      "Longer prompts always produce better results (concise, well-structured prompts often outperform verbose ones)",
+      "Provisioned Throughput is always more cost-effective (it only saves money above a certain usage threshold)"
+    ],
+    "aws_services": ["Amazon Bedrock", "AWS Cost Explorer", "Amazon CloudWatch"],
+    "prerequisites": ["aws-aip-bedrock-api"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-caching-batching", "transfer_weight": 0.35},
+      {"concept_id": "aws-aip-latency-optimization", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-aip-caching-batching",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "operational-efficiency-optimization",
+    "topic_id": "optimization",
+    "name": "Caching, Batching, and Performance Optimization",
+    "description": "Implementing caching strategies and batch processing to improve performance and reduce costs in production generative AI applications",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Prompt caching reduces cost and latency for repeated prompt prefixes (system prompts, few-shot examples)",
+      "Semantic caching stores responses for semantically similar queries using embedding-based matching",
+      "Bedrock batch inference processes jobs asynchronously from S3 input files at reduced cost",
+      "ElastiCache or DynamoDB can cache frequent query-response pairs to avoid redundant model invocations",
+      "Response streaming reduces perceived latency by showing tokens as they are generated"
+    ],
+    "common_misconceptions": [
+      "Caching works well for all generative AI use cases (highly personalized or creative tasks have low cache hit rates)",
+      "Batch inference provides real-time results (it is asynchronous and designed for offline processing)"
+    ],
+    "aws_services": ["Amazon Bedrock", "Amazon ElastiCache", "Amazon DynamoDB", "Amazon S3"],
+    "prerequisites": ["aws-aip-token-optimization"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-token-optimization", "transfer_weight": 0.35},
+      {"concept_id": "aws-aip-latency-optimization", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-aip-latency-optimization",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "operational-efficiency-optimization",
+    "topic_id": "optimization",
+    "name": "Latency Optimization",
+    "description": "Techniques for reducing end-to-end latency in generative AI applications including model selection, architecture patterns, and infrastructure optimization",
+    "exam_weight": 0.0350,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Time-to-first-token (TTFT) and tokens-per-second (TPS) are key latency metrics for generative AI",
+      "Smaller models have lower latency; use model routing to direct simple queries to faster models",
+      "Provisioned Throughput eliminates cold start and provides consistent low-latency responses",
+      "Reducing input prompt length directly reduces processing time and TTFT",
+      "Cross-region inference distributes load and can reduce latency for global applications"
+    ],
+    "common_misconceptions": [
+      "Latency depends only on model size (network latency, prompt length, and output length all contribute significantly)",
+      "Provisioned Throughput always provides lower latency than on-demand (it provides consistent latency, not necessarily lower latency)"
+    ],
+    "aws_services": ["Amazon Bedrock", "Amazon CloudFront", "AWS Global Accelerator"],
+    "prerequisites": ["aws-aip-bedrock-api"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-caching-batching", "transfer_weight": 0.3},
+      {"concept_id": "aws-aip-streaming-responses", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-aip-prompt-testing",
+    "exam_id": "aws-aip-c01",
+    "domain_id": "testing-validation-troubleshooting",
+    "topic_id": "testing-validation",
+    "name": "Prompt Testing and Regression Testing",
+    "description": "Systematically testing prompt effectiveness, validating model behavior, and preventing regressions when prompts or models change",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Prompt test suites contain input-output pairs that define expected behavior for critical scenarios",
+      "A/B testing compares different prompts or models on live traffic to measure performance differences",
+      "Regression testing ensures prompt changes do not degrade performance on previously passing test cases",
+      "Bedrock Prompt Management stores and versions prompts for reproducibility and rollback",
+      "Evaluation datasets should cover edge cases, adversarial inputs, and representative production queries"
+    ],
+    "common_misconceptions": [
+      "Prompt testing only needs to happen during initial development (prompts should be re-tested when models are updated or new edge cases are discovered)",
+      "Manual spot-checking is sufficient for prompt validation (systematic automated testing with metrics is needed for production reliability)"
+    ],
+    "aws_services": ["Amazon Bedrock", "Amazon Bedrock Model Evaluation", "Amazon CloudWatch"],
+    "prerequisites": ["aws-aip-bedrock-api"],
+    "lateral_relations": [
+      {"concept_id": "aws-aip-red-teaming", "transfer_weight": 0.3},
+      {"concept_id": "aws-aip-responsible-ai-metrics", "transfer_weight": 0.25}
+    ]
+  }
+]

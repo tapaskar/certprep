@@ -1,0 +1,430 @@
+[
+  {
+    "id": "aws-dea-kinesis-streams",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "topic_id": "streaming-ingestion",
+    "name": "Kinesis Data Streams",
+    "description": "Real-time data streaming service for collecting and processing large streams of records",
+    "exam_weight": 0.0800,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Data retained for 24 hours by default, up to 365 days",
+      "Shards determine throughput: 1 MB/s write, 2 MB/s read per shard",
+      "Partition key determines shard placement for ordering guarantees",
+      "Enhanced fan-out provides dedicated 2 MB/s per consumer per shard",
+      "On-demand capacity mode automatically manages shard count"
+    ],
+    "common_misconceptions": [
+      "Kinesis Data Streams automatically scales shards (on-demand mode does, but provisioned mode requires manual shard splitting/merging)",
+      "Data is deleted after being read (data persists for the retention period regardless of consumption)"
+    ],
+    "aws_services": ["Kinesis Data Streams", "Lambda", "KCL"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-kinesis-firehose", "transfer_weight": 0.4},
+      {"concept_id": "aws-dea-msk", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dea-kinesis-firehose",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "topic_id": "streaming-delivery",
+    "name": "Kinesis Data Firehose",
+    "description": "Fully managed service for delivering streaming data to destinations like S3, Redshift, and OpenSearch",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Near-real-time delivery (60 seconds minimum buffer interval)",
+      "Built-in data transformation using Lambda functions",
+      "Automatic format conversion to Parquet or ORC",
+      "Supports compression (Gzip, Snappy, Zip) before delivery",
+      "Destinations: S3, Redshift, OpenSearch, HTTP endpoints, Splunk"
+    ],
+    "common_misconceptions": [
+      "Firehose provides real-time delivery (it is near-real-time with minimum 60-second buffering)",
+      "Firehose stores data like Kinesis Data Streams (Firehose is a delivery mechanism, not a storage service)"
+    ],
+    "aws_services": ["Kinesis Data Firehose", "S3", "Redshift", "Lambda"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-kinesis-streams", "transfer_weight": 0.4},
+      {"concept_id": "aws-dea-glue-etl", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dea-glue-etl",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "topic_id": "batch-etl",
+    "name": "AWS Glue ETL",
+    "description": "Serverless ETL service with automatic schema discovery and code generation",
+    "exam_weight": 0.0900,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Glue Crawlers automatically discover schema and populate the Data Catalog",
+      "DynamicFrames extend Spark DataFrames with schema flexibility",
+      "Job bookmarks track processed data to avoid reprocessing",
+      "Supports Python (PySpark) and Scala for ETL scripts",
+      "Glue Data Catalog serves as a centralized Hive-compatible metastore"
+    ],
+    "common_misconceptions": [
+      "Glue crawlers only work with S3 (they support JDBC sources, DynamoDB, and more)",
+      "Glue ETL jobs must be auto-generated (you can write fully custom PySpark/Scala scripts)"
+    ],
+    "aws_services": ["Glue", "Glue Data Catalog", "S3", "Redshift"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-glue-databrew", "transfer_weight": 0.3},
+      {"concept_id": "aws-dea-athena", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dea-dms",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "topic_id": "database-migration",
+    "name": "Database Migration Service",
+    "description": "Migrating databases to AWS with minimal downtime using continuous replication",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Supports homogeneous and heterogeneous database migrations",
+      "Change Data Capture (CDC) enables continuous replication for minimal downtime",
+      "Schema Conversion Tool (SCT) converts schemas for heterogeneous migrations",
+      "Can replicate data to S3 as a target for data lake ingestion",
+      "Task types: full load, CDC only, or full load + CDC"
+    ],
+    "common_misconceptions": [
+      "DMS converts database schemas automatically (SCT handles schema conversion separately)",
+      "DMS only supports relational databases (it can replicate to S3, Kinesis, Redshift, and DynamoDB)"
+    ],
+    "aws_services": ["DMS", "SCT", "RDS", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-glue-etl", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dea-msk",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-ingestion-transformation",
+    "topic_id": "streaming-ingestion",
+    "name": "Amazon MSK",
+    "description": "Fully managed Apache Kafka service for streaming data pipelines",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "MSK Serverless automatically provisions and scales Kafka clusters",
+      "MSK Connect deploys managed Kafka Connect connectors for data integration",
+      "Supports Apache Kafka APIs for seamless migration from self-managed Kafka",
+      "Multi-AZ deployment with automatic broker replacement",
+      "Tiered storage moves older data to cost-effective storage automatically"
+    ],
+    "common_misconceptions": [
+      "MSK and Kinesis Data Streams are interchangeable (MSK uses Kafka APIs; Kinesis uses AWS APIs — different ecosystems)",
+      "MSK Serverless eliminates all Kafka management (topic configuration and consumer group management still required)"
+    ],
+    "aws_services": ["MSK", "MSK Connect", "Lambda", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-kinesis-streams", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dea-s3-data-lake",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "topic_id": "data-lake",
+    "name": "S3 Data Lake Architecture",
+    "description": "Designing data lake storage tiers with partitioning and file format optimization",
+    "exam_weight": 0.0750,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Landing/raw zone stores data in original format for traceability",
+      "Curated/processed zone stores cleansed, partitioned data in columnar formats",
+      "Hive-style partitioning (s3://bucket/year=2024/month=01/) reduces query scan",
+      "Parquet and ORC columnar formats optimize analytical query performance",
+      "S3 Select and Glacier Select push filtering down to the storage layer"
+    ],
+    "common_misconceptions": [
+      "CSV is acceptable for analytical workloads in a data lake (Parquet/ORC provide significantly better performance and cost efficiency)",
+      "More partitions always improve performance (over-partitioning creates many small files, degrading query performance)"
+    ],
+    "aws_services": ["S3", "Lake Formation", "Glue Data Catalog"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-lake-formation", "transfer_weight": 0.35},
+      {"concept_id": "aws-dea-athena", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dea-redshift",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "topic_id": "data-warehouse",
+    "name": "Amazon Redshift",
+    "description": "Cloud data warehouse with columnar storage and massively parallel processing",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Columnar storage with automatic compression encoding",
+      "Distribution styles: AUTO, EVEN, KEY, ALL for optimizing joins",
+      "Sort keys optimize range-restricted queries and zone map effectiveness",
+      "Redshift Spectrum queries S3 data directly without loading",
+      "Concurrency scaling adds temporary clusters during demand spikes",
+      "Materialized views for precomputed query results"
+    ],
+    "common_misconceptions": [
+      "Redshift Spectrum replaces Athena (Spectrum requires a Redshift cluster; Athena is fully serverless)",
+      "Redshift automatically chooses the best distribution style (AUTO is default but manual tuning may be needed for complex queries)"
+    ],
+    "aws_services": ["Redshift", "Redshift Spectrum", "S3", "Glue Data Catalog"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-athena", "transfer_weight": 0.25},
+      {"concept_id": "aws-dea-s3-data-lake", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dea-dynamodb-analytics",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "topic_id": "nosql-analytics",
+    "name": "DynamoDB for Analytics",
+    "description": "Using DynamoDB exports and streams for analytical workloads",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "DynamoDB export to S3 enables full table exports without impacting read capacity",
+      "Exports are in DynamoDB JSON or Amazon Ion format",
+      "DynamoDB Streams capture item-level changes for CDC pipelines",
+      "Kinesis Data Streams adapter provides alternative CDC with longer retention",
+      "Zero-ETL integration with Redshift enables direct analytical queries"
+    ],
+    "common_misconceptions": [
+      "DynamoDB table scans are efficient for analytics (full scans consume read capacity; exports to S3 are preferred)",
+      "DynamoDB Streams and Kinesis Data Streams are the same (DynamoDB Streams has 24-hour retention; Kinesis adapter offers up to 365 days)"
+    ],
+    "aws_services": ["DynamoDB", "DynamoDB Streams", "S3", "Kinesis Data Streams"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-s3-data-lake", "transfer_weight": 0.2},
+      {"concept_id": "aws-dea-kinesis-streams", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "aws-dea-athena",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "topic_id": "query-engine",
+    "name": "Amazon Athena",
+    "description": "Serverless interactive query service for analyzing data in S3 using SQL",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Pay-per-query based on data scanned (charged per TB scanned)",
+      "Uses Glue Data Catalog as metastore for table definitions",
+      "Partitioning and columnar formats (Parquet/ORC) reduce costs and improve performance",
+      "Federated queries connect to external data sources via Lambda connectors",
+      "CTAS (Create Table As Select) converts data to optimized formats"
+    ],
+    "common_misconceptions": [
+      "Athena is a replacement for Redshift (Athena is for ad-hoc queries; Redshift is for complex, repeated analytical workloads)",
+      "Athena charges are fixed per query (charges are based on data scanned, so optimization reduces costs)"
+    ],
+    "aws_services": ["Athena", "S3", "Glue Data Catalog", "Lambda"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-s3-data-lake", "transfer_weight": 0.3},
+      {"concept_id": "aws-dea-redshift", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dea-lake-formation",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-store-management",
+    "topic_id": "data-governance",
+    "name": "Lake Formation",
+    "description": "Centralized data lake governance with fine-grained access control",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Column-level and row-level security for data lake tables",
+      "Tag-based access control (LF-Tags) for scalable permission management",
+      "Data sharing across accounts without copying data",
+      "Governed tables support ACID transactions on S3 data",
+      "Integrates with Athena, Redshift Spectrum, and Glue for enforcement"
+    ],
+    "common_misconceptions": [
+      "Lake Formation replaces IAM for S3 access (both Lake Formation and IAM policies must allow access)",
+      "Lake Formation only works with Athena (it integrates with Redshift Spectrum, Glue, and EMR)"
+    ],
+    "aws_services": ["Lake Formation", "Glue Data Catalog", "S3", "Athena"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-s3-data-lake", "transfer_weight": 0.35},
+      {"concept_id": "aws-dea-s3-encryption", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dea-glue-databrew",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-operations-support",
+    "topic_id": "data-preparation",
+    "name": "Glue DataBrew",
+    "description": "Visual data preparation tool for cleaning and normalizing data without writing code",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "250+ built-in transformations for data cleaning and normalization",
+      "Data profiling generates statistics on data quality (null counts, distributions, outliers)",
+      "Recipe-based transformations are reusable and version-controlled",
+      "Connects to S3, Redshift, RDS, and Glue Data Catalog",
+      "Visual interface enables non-developers to prepare data"
+    ],
+    "common_misconceptions": [
+      "DataBrew replaces Glue ETL (DataBrew is for visual data preparation; Glue ETL is for complex programmatic transformations)",
+      "DataBrew modifies source data in place (it creates new output datasets, leaving source data unchanged)"
+    ],
+    "aws_services": ["Glue DataBrew", "S3", "Glue Data Catalog"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-glue-etl", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dea-step-functions",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-operations-support",
+    "topic_id": "orchestration",
+    "name": "Step Functions for Data Pipelines",
+    "description": "Orchestrating multi-step data processing workflows with visual state machines",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Standard workflows: up to 1-year execution, exactly-once execution",
+      "Express workflows: up to 5-minute execution, at-least-once, high-volume",
+      "Direct SDK integrations with Glue, Athena, EMR, and 200+ AWS services",
+      "Error handling with Catch and Retry for resilient pipelines",
+      "Parallel state runs multiple branches concurrently"
+    ],
+    "common_misconceptions": [
+      "Step Functions can only invoke Lambda (it integrates directly with 200+ AWS services via SDK integrations)",
+      "Standard and Express workflows have the same pricing model (Standard charges per state transition; Express charges per execution and duration)"
+    ],
+    "aws_services": ["Step Functions", "Lambda", "Glue", "Athena", "EMR"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-mwaa", "transfer_weight": 0.3},
+      {"concept_id": "aws-dea-eventbridge-scheduling", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dea-mwaa",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-operations-support",
+    "topic_id": "orchestration",
+    "name": "MWAA (Amazon Managed Airflow)",
+    "description": "Managed Apache Airflow for complex data pipeline orchestration with DAGs",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Directed Acyclic Graphs (DAGs) define pipeline dependencies and scheduling",
+      "Supports existing Airflow plugins and operators without modification",
+      "Auto-scaling workers based on queue depth",
+      "Runs in a customer VPC for network isolation",
+      "DAG files stored in S3 and automatically synced"
+    ],
+    "common_misconceptions": [
+      "MWAA and Step Functions are interchangeable (MWAA is better for complex DAG dependencies and existing Airflow codebases; Step Functions is better for AWS-native serverless workflows)",
+      "MWAA requires managing Airflow infrastructure (AWS handles provisioning, patching, and scaling)"
+    ],
+    "aws_services": ["MWAA", "S3", "Glue", "EMR", "Redshift"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-step-functions", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dea-eventbridge-scheduling",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-operations-support",
+    "topic_id": "scheduling",
+    "name": "EventBridge Scheduler",
+    "description": "Scheduling data pipeline executions with cron and rate expressions",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "One-time or recurring schedules with cron or rate expressions",
+      "Built-in retry policies with configurable maximum retry attempts",
+      "Dead-letter queues for failed invocations",
+      "Supports time zones for regional scheduling requirements",
+      "Targets include Step Functions, Lambda, Glue, and ECS tasks"
+    ],
+    "common_misconceptions": [
+      "EventBridge Scheduler and EventBridge rules are the same (Scheduler is optimized for time-based scheduling with millions of schedules; rules are for event pattern matching)",
+      "Cron expressions in EventBridge use the same 5-field format as Linux cron (EventBridge uses 6 fields with an optional year)"
+    ],
+    "aws_services": ["EventBridge Scheduler", "Lambda", "Step Functions", "Glue"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-step-functions", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "aws-dea-s3-encryption",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-security-governance",
+    "topic_id": "encryption",
+    "name": "Data Encryption and KMS",
+    "description": "Encryption at rest and in transit for data lake and warehouse workloads",
+    "exam_weight": 0.0650,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "SSE-S3: Amazon-managed keys, default encryption for S3",
+      "SSE-KMS: Customer-managed KMS keys with audit trail via CloudTrail",
+      "SSE-C: Customer-provided keys, AWS does not store the key",
+      "KMS key policies control who can use keys for encryption/decryption",
+      "Redshift uses AES-256 encryption with KMS or HSM-managed keys"
+    ],
+    "common_misconceptions": [
+      "SSE-S3 and SSE-KMS provide the same level of control (SSE-KMS provides key rotation control, key policies, and CloudTrail audit logging)",
+      "Enabling S3 default encryption encrypts existing objects (it only encrypts new objects; existing objects must be re-uploaded)"
+    ],
+    "aws_services": ["S3", "KMS", "Redshift", "CloudTrail"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-lake-formation", "transfer_weight": 0.25},
+      {"concept_id": "aws-dea-redshift-security", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "aws-dea-redshift-security",
+    "exam_id": "aws-dea-c01",
+    "domain_id": "data-security-governance",
+    "topic_id": "warehouse-security",
+    "name": "Redshift Security",
+    "description": "Securing Redshift clusters with network isolation, encryption, and access control",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Deployed in a VPC with security groups controlling network access",
+      "Enhanced VPC routing forces all COPY/UNLOAD traffic through the VPC",
+      "Row-level security (RLS) restricts data visibility per user or role",
+      "Column-level access control using GRANT/REVOKE on specific columns",
+      "Audit logging captures connection, user activity, and query logs to S3"
+    ],
+    "common_misconceptions": [
+      "Redshift is publicly accessible by default (clusters are private by default; public access must be explicitly enabled)",
+      "Enhanced VPC routing is enabled by default (it must be explicitly enabled to force traffic through VPC endpoints)"
+    ],
+    "aws_services": ["Redshift", "VPC", "KMS", "S3"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "aws-dea-s3-encryption", "transfer_weight": 0.3},
+      {"concept_id": "aws-dea-lake-formation", "transfer_weight": 0.2}
+    ]
+  }
+]

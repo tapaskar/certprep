@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-saa-001",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-secure-architectures",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company stores sensitive customer data in Amazon S3. They need to ensure all objects are encrypted at rest using keys they manage, with the ability to audit key usage. Which encryption approach meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Enable SSE-S3 default encryption on the bucket", "is_correct": false},
+      {"id": "B", "text": "Enable SSE-KMS with a customer managed key and enable CloudTrail logging", "is_correct": true},
+      {"id": "C", "text": "Enable SSE-C and provide encryption keys with each API request", "is_correct": false},
+      {"id": "D", "text": "Use client-side encryption with keys stored in AWS Secrets Manager", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SSE-KMS with a customer managed key gives the company full control over the encryption key, including rotation policies and access controls via key policies. CloudTrail logs all KMS API calls, providing the required audit trail of key usage.",
+      "why_not_A": "SSE-S3 uses AWS managed keys that the customer cannot control or audit. There is no visibility into individual key usage.",
+      "why_not_C": "SSE-C requires the customer to provide and manage encryption keys with every S3 API call, creating significant operational overhead. AWS does not store these keys, making auditing more difficult.",
+      "why_not_D": "Client-side encryption works but adds application complexity. The question specifically asks about encryption at rest with managed keys, which SSE-KMS handles natively."
+    },
+    "concept_ids": ["aws-saa-kms-encryption", "aws-saa-cloudtrail"],
+    "tags": ["encryption", "s3", "kms", "compliance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-002",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-secure-architectures",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A web application running on EC2 instances behind an Application Load Balancer is experiencing SQL injection and cross-site scripting attacks. Which combination of services should the solutions architect use to protect the application at the LOWEST cost?",
+    "options": [
+      {"id": "A", "text": "AWS Shield Advanced and Security Groups", "is_correct": false},
+      {"id": "B", "text": "AWS WAF on the ALB with managed rule groups", "is_correct": true},
+      {"id": "C", "text": "Network ACLs with deny rules for known malicious IPs", "is_correct": false},
+      {"id": "D", "text": "AWS Shield Advanced with AWS Firewall Manager", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS WAF is specifically designed to protect against Layer 7 web exploits like SQL injection and XSS. Deploying WAF on the ALB with AWS managed rule groups provides immediate protection with minimal configuration and cost.",
+      "why_not_A": "Shield Advanced protects against DDoS attacks (Layer 3/4), not SQL injection or XSS (Layer 7). It is also significantly more expensive at $3,000/month.",
+      "why_not_C": "NACLs operate at Layer 3/4 and cannot inspect HTTP request content. They cannot detect or block SQL injection or XSS attacks.",
+      "why_not_D": "Shield Advanced is designed for DDoS protection, not application-layer attacks. Firewall Manager manages rules across accounts but does not add Layer 7 protection."
+    },
+    "concept_ids": ["aws-saa-waf-shield", "aws-saa-security-groups-nacls"],
+    "tags": ["waf", "security", "web-attacks", "alb"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-003",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-secure-architectures",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "Which statement correctly describes the difference between Security Groups and Network ACLs?",
+    "options": [
+      {"id": "A", "text": "Security Groups are stateless and NACLs are stateful", "is_correct": false},
+      {"id": "B", "text": "Security Groups operate at the subnet level while NACLs operate at the instance level", "is_correct": false},
+      {"id": "C", "text": "Security Groups are stateful with allow rules only, while NACLs are stateless with allow and deny rules", "is_correct": true},
+      {"id": "D", "text": "Security Groups and NACLs both support deny rules", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Security Groups are stateful (return traffic auto-allowed) and only support allow rules. NACLs are stateless (return traffic must be explicitly allowed) and support both allow and deny rules evaluated in order.",
+      "why_not_A": "This is reversed. Security Groups are stateful and NACLs are stateless.",
+      "why_not_B": "This is also reversed. Security Groups operate at the instance (ENI) level. NACLs operate at the subnet level.",
+      "why_not_D": "Security Groups do not support deny rules. They only have allow rules. NACLs support both."
+    },
+    "concept_ids": ["aws-saa-security-groups-nacls"],
+    "tags": ["security-groups", "nacls", "comparison"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-004",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company runs a critical web application. They need the application to automatically recover from an AZ failure with minimal downtime. The application uses an RDS MySQL database. Which architecture achieves this?",
+    "options": [
+      {"id": "A", "text": "Deploy EC2 instances in a single AZ with automated snapshots and RDS with Read Replicas", "is_correct": false},
+      {"id": "B", "text": "Deploy EC2 instances across multiple AZs with an ALB, Auto Scaling, and RDS Multi-AZ", "is_correct": true},
+      {"id": "C", "text": "Deploy EC2 instances in a single AZ with an NLB and RDS Multi-AZ", "is_correct": false},
+      {"id": "D", "text": "Deploy EC2 instances across multiple Regions with Route 53 failover and RDS cross-region replicas", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "EC2 instances in multiple AZs behind an ALB with Auto Scaling ensures the application tier survives an AZ failure. RDS Multi-AZ provides automatic database failover to the standby in another AZ. This is the standard HA pattern.",
+      "why_not_A": "A single AZ deployment cannot survive an AZ failure. Read Replicas do not provide automatic failover in standard RDS.",
+      "why_not_C": "EC2 in a single AZ is a single point of failure. Even with RDS Multi-AZ, the application tier would be down if that AZ fails.",
+      "why_not_D": "Multi-region deployment is overkill for AZ failure recovery. It adds complexity and cost beyond what is needed. AZ failure is handled by Multi-AZ within a single region."
+    },
+    "concept_ids": ["aws-saa-multi-az-ha", "aws-saa-auto-scaling", "aws-saa-elb", "aws-saa-rds-multi-az"],
+    "tags": ["high-availability", "multi-az", "auto-scaling", "rds"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-005",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company needs to distribute traffic across instances in two AWS Regions and automatically fail over if one region becomes unhealthy. Which service should they use?",
+    "options": [
+      {"id": "A", "text": "Application Load Balancer with cross-region targets", "is_correct": false},
+      {"id": "B", "text": "Network Load Balancer with multi-region support", "is_correct": false},
+      {"id": "C", "text": "Route 53 with failover routing policy and health checks", "is_correct": true},
+      {"id": "D", "text": "AWS Global Accelerator with endpoint groups", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Route 53 failover routing policy with health checks provides active-passive cross-region failover. When the primary region fails health checks, Route 53 automatically routes traffic to the secondary region.",
+      "why_not_A": "ALB is a regional service. It cannot distribute traffic across regions.",
+      "why_not_B": "NLB is also a regional service and does not support cross-region load balancing.",
+      "why_not_D": "Global Accelerator provides cross-region traffic management but is more suited for active-active scenarios with automatic failover based on health. While it could work, Route 53 failover is the standard answer for active-passive regional failover."
+    },
+    "concept_ids": ["aws-saa-route53-failover", "aws-saa-multi-az-ha"],
+    "tags": ["route53", "failover", "multi-region", "disaster-recovery"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-006",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company needs to replicate S3 objects from a bucket in us-east-1 to a bucket in eu-west-1 for disaster recovery. Existing objects in the source bucket must also be replicated. Which configuration is required?",
+    "options": [
+      {"id": "A", "text": "Enable Cross-Region Replication (CRR). All existing and new objects will be automatically replicated.", "is_correct": false},
+      {"id": "B", "text": "Enable CRR with versioning on both buckets. Use S3 Batch Replication for existing objects.", "is_correct": true},
+      {"id": "C", "text": "Create an S3 lifecycle rule to copy objects to the destination bucket in eu-west-1", "is_correct": false},
+      {"id": "D", "text": "Use AWS DataSync to continuously synchronize the two buckets across regions", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "CRR requires versioning on both source and destination buckets. CRR only replicates new objects added after the rule is enabled. S3 Batch Replication is required to replicate objects that existed before CRR was configured.",
+      "why_not_A": "CRR does not replicate existing objects. Only new objects uploaded after the replication rule is created are replicated. Versioning must also be explicitly enabled.",
+      "why_not_C": "S3 lifecycle rules transition objects between storage classes or expire them. They cannot copy objects to another bucket or region.",
+      "why_not_D": "DataSync can transfer data between storage systems but is not designed for continuous S3-to-S3 replication. CRR is the native and recommended solution."
+    },
+    "concept_ids": ["aws-saa-s3-replication"],
+    "tags": ["s3", "replication", "cross-region", "disaster-recovery"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-007",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company hosts a static website on S3. Users around the world report high latency when accessing the site. How should the solutions architect improve global performance?",
+    "options": [
+      {"id": "A", "text": "Enable S3 Transfer Acceleration on the bucket", "is_correct": false},
+      {"id": "B", "text": "Create an S3 bucket in each region and use Route 53 latency-based routing", "is_correct": false},
+      {"id": "C", "text": "Place a CloudFront distribution in front of the S3 bucket with Origin Access Control", "is_correct": true},
+      {"id": "D", "text": "Enable cross-region replication to buckets in multiple regions", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "CloudFront caches the static website content at 400+ Edge Locations worldwide, serving content from the location nearest to each user. Origin Access Control ensures users access content only through CloudFront, not directly from S3.",
+      "why_not_A": "S3 Transfer Acceleration improves upload speeds to S3, not download/serving performance for website visitors.",
+      "why_not_B": "Maintaining identical buckets across multiple regions adds operational overhead and cost. CloudFront achieves the same result with a single origin bucket.",
+      "why_not_D": "Cross-region replication copies data but does not provide a content delivery mechanism. Users would still need to know which regional bucket to access."
+    },
+    "concept_ids": ["aws-saa-cloudfront"],
+    "tags": ["cloudfront", "static-website", "performance", "s3"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-008",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "An application reads the same database queries repeatedly, and the database is becoming a bottleneck. The data changes infrequently. Which solution would improve read performance with the LEAST application changes?",
+    "options": [
+      {"id": "A", "text": "Add RDS Read Replicas and update the application to use a reader endpoint", "is_correct": false},
+      {"id": "B", "text": "Deploy an ElastiCache Redis cluster with a lazy loading caching strategy", "is_correct": true},
+      {"id": "C", "text": "Migrate the database to DynamoDB with DAX", "is_correct": false},
+      {"id": "D", "text": "Upgrade the RDS instance to a larger instance type", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ElastiCache with lazy loading caches query results on read misses. Subsequent identical reads are served from cache at microsecond latency. Since data changes infrequently, the cache hit rate will be high. This requires minimal application changes.",
+      "why_not_A": "Read Replicas help distribute read traffic but still hit the database for every query. They also require application changes to direct reads to replicas.",
+      "why_not_C": "Migrating from RDS to DynamoDB is a significant architectural change requiring a different data model. This is not least application changes.",
+      "why_not_D": "Scaling up the instance is a short-term fix that does not address the fundamental issue of repeated identical queries. It is also more expensive than caching."
+    },
+    "concept_ids": ["aws-saa-elasticache", "aws-saa-rds-multi-az"],
+    "tags": ["elasticache", "caching", "read-performance", "redis"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-009",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company needs a database for an e-commerce application that stores product catalogs with unpredictable traffic patterns. The data model is key-value based. Which database solution is MOST appropriate?",
+    "options": [
+      {"id": "A", "text": "Amazon RDS MySQL with Auto Scaling storage", "is_correct": false},
+      {"id": "B", "text": "Amazon Aurora Serverless v2", "is_correct": false},
+      {"id": "C", "text": "Amazon DynamoDB with on-demand capacity mode", "is_correct": true},
+      {"id": "D", "text": "Amazon ElastiCache for Redis", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "DynamoDB is purpose-built for key-value workloads with single-digit millisecond latency. On-demand capacity mode automatically handles unpredictable traffic without capacity planning, scaling instantly to accommodate spikes.",
+      "why_not_A": "RDS MySQL is a relational database optimized for structured data with joins. It is not ideal for key-value access patterns and does not scale compute automatically.",
+      "why_not_B": "Aurora Serverless v2 scales compute automatically but is a relational database. Key-value workloads do not benefit from relational features and DynamoDB is more cost-effective for this pattern.",
+      "why_not_D": "ElastiCache is an in-memory cache, not a durable primary database. It complements databases but should not be the sole data store for a product catalog."
+    },
+    "concept_ids": ["aws-saa-dynamodb", "aws-saa-aurora"],
+    "tags": ["dynamodb", "key-value", "on-demand", "database-selection"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-010",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A company needs to choose an EBS volume type for a production database requiring 20,000 sustained IOPS. Which volume type should they select?",
+    "options": [
+      {"id": "A", "text": "gp3 (General Purpose SSD)", "is_correct": false},
+      {"id": "B", "text": "io2 Block Express (Provisioned IOPS SSD)", "is_correct": true},
+      {"id": "C", "text": "st1 (Throughput Optimized HDD)", "is_correct": false},
+      {"id": "D", "text": "sc1 (Cold HDD)", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "io2 Block Express provides provisioned IOPS up to 256,000 with 99.999% durability. For a production database requiring 20,000 sustained IOPS, provisioned IOPS SSD guarantees consistent performance.",
+      "why_not_A": "gp3 supports up to 16,000 IOPS, which does not meet the 20,000 IOPS requirement.",
+      "why_not_C": "st1 is an HDD volume type optimized for sequential throughput, not random IOPS. It supports a maximum of 500 IOPS.",
+      "why_not_D": "sc1 is the lowest-cost HDD designed for infrequently accessed data. It supports only 250 IOPS maximum."
+    },
+    "concept_ids": ["aws-saa-ebs-volume-types"],
+    "tags": ["ebs", "iops", "storage", "database"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-011",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-high-performing-architectures",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Multiple EC2 instances in different Availability Zones need to access the same shared file system for a content management application. Which storage service should the solutions architect use?",
+    "options": [
+      {"id": "A", "text": "Amazon EBS Multi-Attach", "is_correct": false},
+      {"id": "B", "text": "Amazon S3", "is_correct": false},
+      {"id": "C", "text": "Amazon EFS", "is_correct": true},
+      {"id": "D", "text": "Instance store volumes", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon EFS provides a fully managed NFS file system that can be mounted concurrently by multiple EC2 instances across different AZs. It automatically scales capacity and is ideal for shared file access patterns.",
+      "why_not_A": "EBS Multi-Attach is limited to io1/io2 volumes and only supports attaching to instances within the same AZ. It also requires a cluster-aware file system.",
+      "why_not_B": "S3 is object storage accessed via HTTP APIs, not a POSIX-compliant file system. It cannot be mounted as a shared file system without additional software.",
+      "why_not_D": "Instance store volumes are ephemeral and local to a single EC2 instance. They cannot be shared across instances or AZs."
+    },
+    "concept_ids": ["aws-saa-efs", "aws-saa-ebs-volume-types"],
+    "tags": ["efs", "shared-storage", "multi-az", "file-system"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-012",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-cost-optimized-architectures",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company runs a web application on EC2 instances 24/7. Traffic is predictable and steady with a base load that does not change. They want to reduce compute costs by at least 40%. Which pricing approach should they use?",
+    "options": [
+      {"id": "A", "text": "Purchase Spot Instances for the entire fleet", "is_correct": false},
+      {"id": "B", "text": "Purchase Compute Savings Plans for a 1-year term with no upfront payment", "is_correct": false},
+      {"id": "C", "text": "Purchase EC2 Instance Savings Plans for a 1-year term with all upfront payment", "is_correct": true},
+      {"id": "D", "text": "Use On-Demand instances with Auto Scaling to optimize usage", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "EC2 Instance Savings Plans for a specific instance family provide up to 72% savings with all upfront payment. Since the workload is 24/7, predictable, and production, a 1-year commitment with all upfront payment maximizes savings well beyond the 40% target.",
+      "why_not_A": "Spot Instances can be interrupted with 2-minute notice. A 24/7 production web application cannot tolerate interruptions.",
+      "why_not_B": "Compute Savings Plans with no upfront payment provide a smaller discount (around 20-30%), which may not meet the 40% savings target.",
+      "why_not_D": "On-Demand instances provide no discount. Auto Scaling reduces capacity when traffic drops, but the question states traffic is steady, so there is nothing to scale down."
+    },
+    "concept_ids": ["aws-saa-reserved-instances", "aws-saa-spot-instances"],
+    "tags": ["savings-plans", "cost-optimization", "pricing"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-013",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-cost-optimized-architectures",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A media company stores video files in S3 Standard. Videos are frequently accessed in the first 30 days, rarely accessed for the next 60 days, and almost never accessed after 90 days. They must be retrievable within minutes when needed. How should the architect optimize storage costs?",
+    "options": [
+      {"id": "A", "text": "Create lifecycle rules to transition to S3 Standard-IA after 30 days and S3 Glacier Flexible Retrieval after 90 days", "is_correct": false},
+      {"id": "B", "text": "Create lifecycle rules to transition to S3 Standard-IA after 30 days and S3 Glacier Instant Retrieval after 90 days", "is_correct": true},
+      {"id": "C", "text": "Use S3 Intelligent-Tiering for all objects", "is_correct": false},
+      {"id": "D", "text": "Create lifecycle rules to transition to S3 One Zone-IA after 30 days and delete after 90 days", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Standard-IA is appropriate for the 30-90 day period when access is infrequent. Glacier Instant Retrieval provides millisecond access (meeting the minutes requirement) at the lowest cost for data that is almost never accessed. This matches the access pattern perfectly.",
+      "why_not_A": "Glacier Flexible Retrieval takes minutes to hours for expedited retrieval and up to 12 hours for standard retrieval. This does not guarantee retrieval within minutes for all requests.",
+      "why_not_C": "Intelligent-Tiering works but has a per-object monitoring fee. For a predictable access pattern with known time-based transitions, explicit lifecycle rules are more cost-effective.",
+      "why_not_D": "Deleting objects after 90 days conflicts with the requirement that they must be retrievable. One Zone-IA also reduces durability by storing in only one AZ."
+    },
+    "concept_ids": ["aws-saa-s3-lifecycle"],
+    "tags": ["s3", "lifecycle", "storage-classes", "cost-optimization"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-014",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-cost-optimized-architectures",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company wants to identify underutilized EC2 instances and receive recommendations for right-sizing. Which AWS service provides this capability?",
+    "options": [
+      {"id": "A", "text": "AWS Cost Explorer", "is_correct": false},
+      {"id": "B", "text": "AWS Budgets", "is_correct": false},
+      {"id": "C", "text": "AWS Compute Optimizer", "is_correct": true},
+      {"id": "D", "text": "AWS Trusted Advisor", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "AWS Compute Optimizer analyzes the configuration and utilization metrics of your AWS resources (EC2, Auto Scaling, EBS, Lambda) and provides specific right-sizing recommendations to reduce costs and improve performance.",
+      "why_not_A": "Cost Explorer visualizes and analyzes spending trends but does not provide instance-level right-sizing recommendations with specific instance type suggestions.",
+      "why_not_B": "AWS Budgets sets spending alerts and forecasts. It does not analyze resource utilization or provide right-sizing recommendations.",
+      "why_not_D": "Trusted Advisor provides general recommendations including identifying idle resources, but Compute Optimizer provides more detailed, ML-driven right-sizing recommendations with specific instance type suggestions."
+    },
+    "concept_ids": ["aws-saa-right-sizing"],
+    "tags": ["compute-optimizer", "right-sizing", "cost-optimization"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-saa-015",
+    "exam_id": "aws-saa-c03",
+    "domain_id": "design-resilient-architectures",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is designing an Auto Scaling strategy for their web application. The application has predictable traffic peaks every weekday at 9 AM and needs to handle sudden unexpected spikes. Which combination of scaling policies provides the BEST user experience?",
+    "options": [
+      {"id": "A", "text": "Simple scaling with CloudWatch CPU alarms", "is_correct": false},
+      {"id": "B", "text": "Scheduled scaling for 9 AM peaks combined with target tracking for unexpected spikes", "is_correct": true},
+      {"id": "C", "text": "Step scaling with multiple CloudWatch alarms at different thresholds", "is_correct": false},
+      {"id": "D", "text": "Manual scaling before 9 AM and target tracking for the rest of the day", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Scheduled scaling pre-provisions capacity for the known 9 AM peak, ensuring instances are ready before traffic arrives. Target tracking scaling automatically adjusts capacity for unexpected spikes by maintaining a target metric (e.g., 50% CPU). This combination handles both predictable and unpredictable patterns.",
+      "why_not_A": "Simple scaling adds or removes a fixed number of instances and has a cooldown period. It reacts slowly to sudden spikes and does not pre-provision for known peaks.",
+      "why_not_C": "Step scaling responds to different alarm thresholds but is still reactive. It does not pre-provision capacity for known peaks, causing a delay in scaling during the 9 AM surge.",
+      "why_not_D": "Manual scaling requires human intervention and is error-prone. It does not scale automatically and adds operational overhead."
+    },
+    "concept_ids": ["aws-saa-auto-scaling", "aws-saa-elb"],
+    "tags": ["auto-scaling", "scaling-policies", "scheduled-scaling", "target-tracking"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  }
+]

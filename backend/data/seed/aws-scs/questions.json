@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-scs-001",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "threat-detection-incident-response",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A security engineer notices that Amazon GuardDuty has generated a high-severity finding indicating unauthorized API calls from an IAM user. The finding suggests credentials may be compromised. What combination of steps should the engineer take FIRST to contain the incident while preserving forensic evidence?",
+    "options": [
+      {"id": "A", "text": "Delete the IAM user immediately and create a new user with the same permissions", "is_correct": false},
+      {"id": "B", "text": "Attach a deny-all IAM policy to the user, revoke active sessions by setting a permissions boundary, and review CloudTrail logs for the scope of activity", "is_correct": true},
+      {"id": "C", "text": "Disable GuardDuty to stop the alerts and manually investigate the CloudTrail logs", "is_correct": false},
+      {"id": "D", "text": "Rotate the user's access keys and wait for GuardDuty to clear the finding automatically", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Attaching a deny-all policy immediately blocks further access without deleting evidence. Revoking active sessions ensures existing tokens are invalidated. CloudTrail review determines the blast radius. This follows AWS incident response best practices for credential compromise.",
+      "why_not_A": "Deleting the user destroys forensic evidence including policy attachments, access key metadata, and group memberships needed for investigation.",
+      "why_not_C": "Disabling GuardDuty removes threat visibility and does nothing to contain the compromise. This actively harms the security posture.",
+      "why_not_D": "Rotating keys alone does not invalidate existing temporary credentials from STS. The attacker may already have assumed roles or generated session tokens."
+    },
+    "concept_ids": ["aws-scs-guardduty-findings", "aws-scs-cross-account-iam"],
+    "tags": ["incident-response", "credential-compromise", "containment"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-002",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "threat-detection-incident-response",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company uses AWS Security Hub with AWS Organizations for centralized security monitoring across 50 accounts. The security team needs to automatically remediate Security Hub findings when an S3 bucket is made public. The remediation must work across all accounts. Which solution achieves this with the LEAST operational overhead?",
+    "options": [
+      {"id": "A", "text": "Create a custom Security Hub action that triggers a Lambda function in each member account to remove public access", "is_correct": false},
+      {"id": "B", "text": "Deploy an EventBridge rule in the Security Hub delegated administrator account that triggers a cross-account Lambda function using an IAM role in each member account to block public access", "is_correct": true},
+      {"id": "C", "text": "Use AWS Config auto-remediation with an SSM document in each account to remove the public access configuration", "is_correct": false},
+      {"id": "D", "text": "Enable S3 Block Public Access at the organization level using an SCP and manually fix existing public buckets", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Security Hub findings from all member accounts flow to the delegated administrator. An EventBridge rule there can trigger a single Lambda that assumes a cross-account role to remediate in any member account. This is centralized with minimal operational overhead.",
+      "why_not_A": "Custom actions require manual triggering by an analyst. They are not automatic. Additionally, deploying Lambda functions in each account is higher overhead than a centralized approach.",
+      "why_not_C": "AWS Config auto-remediation is effective but must be configured in each of the 50 accounts individually. This has higher operational overhead than a centralized Security Hub approach.",
+      "why_not_D": "SCPs restrict API calls but cannot retroactively fix existing misconfigurations. S3 Block Public Access at the account level is preventive but does not remediate already-public buckets, and it is not an SCP feature."
+    },
+    "concept_ids": ["aws-scs-security-hub", "aws-scs-config-rules"],
+    "tags": ["automated-remediation", "multi-account", "s3-security"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-003",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "security-logging-monitoring",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company must ensure that CloudTrail logs cannot be tampered with by any user, including administrators. The logs must be retained for 7 years and be queryable for investigations. Which combination of configurations meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Enable CloudTrail with S3 delivery, turn on log file integrity validation, use an S3 bucket with Object Lock in compliance mode, and use Athena for queries", "is_correct": true},
+      {"id": "B", "text": "Enable CloudTrail with CloudWatch Logs delivery, use a CloudWatch log group with a 7-year retention policy, and use CloudWatch Logs Insights for queries", "is_correct": false},
+      {"id": "C", "text": "Enable CloudTrail with S3 delivery, enable versioning on the S3 bucket, restrict delete access via bucket policy, and use S3 Select for queries", "is_correct": false},
+      {"id": "D", "text": "Enable CloudTrail Lake with a 7-year retention period and use CloudTrail Lake SQL queries for investigations", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "S3 Object Lock in compliance mode prevents any user, including the root account, from deleting or overwriting objects for the retention period. Log file integrity validation detects tampering via SHA-256 digest files. Athena provides SQL-based queries over S3. This combination ensures immutability and queryability.",
+      "why_not_B": "CloudWatch Logs retention does not provide tamper-proof storage. Administrators with sufficient permissions can delete log groups or modify retention settings.",
+      "why_not_C": "Versioning with a bucket policy can be circumvented by users with sufficient IAM permissions. Only Object Lock in compliance mode is truly immutable, even against the root account.",
+      "why_not_D": "CloudTrail Lake supports up to 7 years of retention and provides SQL queries, but it does not provide the same level of immutability as S3 Object Lock in compliance mode. It is a valid option but does not guarantee tamper-proof storage at the same level."
+    },
+    "concept_ids": ["aws-scs-cloudtrail", "aws-scs-s3-encryption"],
+    "tags": ["log-integrity", "compliance", "immutable-storage"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-004",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "security-logging-monitoring",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "A security team configured VPC Flow Logs to capture all traffic in a production VPC and send logs to an S3 bucket. When analyzing the logs, they notice that DNS queries to Amazon-provided DNS servers are not appearing in the flow logs. What is the MOST likely explanation?",
+    "options": [
+      {"id": "A", "text": "The flow logs are configured with a custom format that excludes DNS traffic fields", "is_correct": false},
+      {"id": "B", "text": "VPC Flow Logs do not capture traffic to the Amazon DNS server running on the reserved IP address in the VPC", "is_correct": true},
+      {"id": "C", "text": "DNS queries use UDP which is not captured by VPC Flow Logs", "is_correct": false},
+      {"id": "D", "text": "The S3 bucket policy is blocking the flow log delivery for DNS traffic records", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Flow Logs explicitly do not capture traffic to the Amazon-provided DNS server at the VPC+2 address (e.g., 10.0.0.2 for a 10.0.0.0/16 VPC). This is a documented limitation. To log DNS queries, use Route 53 Resolver Query Logging.",
+      "why_not_A": "Custom format fields control which metadata is included per record but cannot cause entire traffic flows to be excluded from capture.",
+      "why_not_C": "VPC Flow Logs capture both TCP and UDP traffic. The protocol is not the issue.",
+      "why_not_D": "S3 bucket policies affect delivery of the log files, not selective filtering of specific traffic types within those files."
+    },
+    "concept_ids": ["aws-scs-vpc-flow-logs"],
+    "tags": ["troubleshooting", "flow-logs", "dns", "vpc"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-005",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "infrastructure-security",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company hosts a public-facing web application behind an Application Load Balancer. They experience frequent Layer 7 attacks including SQL injection and cross-site scripting. They also need to rate-limit requests from individual IP addresses that exceed 2,000 requests per 5 minutes. Which solution provides the MOST comprehensive protection?",
+    "options": [
+      {"id": "A", "text": "Deploy AWS Network Firewall in front of the ALB with Suricata rules for SQL injection and XSS detection", "is_correct": false},
+      {"id": "B", "text": "Configure AWS WAF on the ALB with AWS Managed Rules for SQL injection and XSS, and add a rate-based rule with a threshold of 2,000", "is_correct": true},
+      {"id": "C", "text": "Enable AWS Shield Advanced on the ALB and configure automatic DDoS response for application layer attacks", "is_correct": false},
+      {"id": "D", "text": "Use a security group on the ALB to block known malicious IP ranges and configure CloudWatch alarms for unusual traffic patterns", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS WAF integrates directly with ALB and provides managed rule groups specifically for SQL injection (SQLi) and cross-site scripting (XSS). Rate-based rules block IPs exceeding the defined threshold within a 5-minute window. This directly addresses all requirements.",
+      "why_not_A": "Network Firewall operates at the VPC level for east-west and north-south traffic. While it supports Suricata rules, it is not designed for HTTP-layer attacks on an ALB. WAF is the appropriate service for Layer 7 web application protection.",
+      "why_not_C": "Shield Advanced protects against DDoS attacks and can create WAF rules automatically during attacks, but it does not provide the granular SQL injection, XSS, or custom rate-limiting rules needed here.",
+      "why_not_D": "Security groups cannot inspect request content for SQL injection or XSS patterns. They operate at Layer 3/4 only. CloudWatch alarms detect but do not block attacks."
+    },
+    "concept_ids": ["aws-scs-waf-shield", "aws-scs-network-firewall"],
+    "tags": ["waf", "layer-7", "rate-limiting", "sql-injection"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-006",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "infrastructure-security",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A company needs to inspect all east-west traffic between application tiers in a VPC for threats and log suspicious patterns. They require deep packet inspection with Suricata-compatible rules and must inspect traffic between the web tier and application tier subnets. Which architecture achieves this?",
+    "options": [
+      {"id": "A", "text": "Deploy AWS WAF on an internal ALB between the tiers and create custom rules for traffic inspection", "is_correct": false},
+      {"id": "B", "text": "Configure VPC Traffic Mirroring to send copies of traffic to a fleet of EC2 instances running Suricata for analysis", "is_correct": false},
+      {"id": "C", "text": "Deploy AWS Network Firewall in a firewall subnet and update route tables so inter-tier traffic routes through the firewall endpoints", "is_correct": true},
+      {"id": "D", "text": "Enable VPC Flow Logs with Traffic Mirroring and use Amazon Detective to analyze traffic patterns between tiers", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Network Firewall deployed in a dedicated firewall subnet with route table modifications forces inter-subnet traffic through the firewall endpoints. It natively supports Suricata-compatible IPS rules for deep packet inspection. This provides inline inspection and can block threats, not just detect them.",
+      "why_not_A": "WAF is designed for HTTP/HTTPS traffic on ALBs, CloudFront, and API Gateway. It cannot inspect arbitrary east-west traffic between application tiers and does not support Suricata rules.",
+      "why_not_B": "Traffic Mirroring sends copies of traffic for analysis but does not provide inline blocking capability. It is passive monitoring, not active inspection. Managing a self-hosted Suricata fleet adds operational overhead.",
+      "why_not_D": "VPC Flow Logs capture metadata only, not packet contents. Detective analyzes historical patterns for investigation. Neither provides real-time deep packet inspection or threat blocking."
+    },
+    "concept_ids": ["aws-scs-network-firewall", "aws-scs-security-groups-best-practices"],
+    "tags": ["deep-packet-inspection", "east-west-traffic", "suricata", "network-firewall"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-007",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "identity-access-management",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A large enterprise is migrating to AWS and needs to provide 5,000 developers with access to multiple AWS accounts. Developers should only access resources tagged with their team name. The identity provider is Active Directory. Which architecture provides scalable access with the LEAST policy management overhead?",
+    "options": [
+      {"id": "A", "text": "Create individual IAM users in each account mapped to AD users with team-specific IAM policies attached to each user", "is_correct": false},
+      {"id": "B", "text": "Configure IAM Identity Center with AD integration, define permission sets using ABAC with team-name tags passed as session tags from SAML assertions", "is_correct": true},
+      {"id": "C", "text": "Set up SAML federation directly with each account, create one IAM role per team in each account with resource-level permissions", "is_correct": false},
+      {"id": "D", "text": "Use AWS Directory Service for Microsoft AD with domain-joined EC2 instances and Windows-based access controls", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "IAM Identity Center provides centralized management of workforce access to multiple accounts. ABAC with session tags from SAML assertions allows a single permission set that grants access based on matching team-name tags. When a new team or resource is created, no policy changes are needed as long as tags are consistent.",
+      "why_not_A": "Creating IAM users per account does not scale for 5,000 developers across multiple accounts. This creates massive policy management overhead and violates the principle of centralized identity.",
+      "why_not_C": "Direct SAML federation requires configuring identity providers and roles in each account separately. Creating team-specific roles in each account scales linearly with teams times accounts.",
+      "why_not_D": "AWS Directory Service with domain-joined instances provides Windows authentication but does not solve the problem of managing access to AWS resources across accounts with tag-based controls."
+    },
+    "concept_ids": ["aws-scs-abac-federation", "aws-scs-cross-account-iam"],
+    "tags": ["abac", "identity-center", "saml", "session-tags", "scalable-access"],
+    "estimated_time_seconds": 150,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-008",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "identity-access-management",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "A developer in Account A tries to access an S3 bucket in Account B by assuming a cross-account role. The role trust policy in Account B allows Account A, and the developer has sts:AssumeRole permission. However, the developer receives an AccessDenied error when calling s3:GetObject after assuming the role. The S3 bucket policy does not have any explicit deny statements. What is the MOST likely cause?",
+    "options": [
+      {"id": "A", "text": "The developer did not pass an External ID when assuming the role", "is_correct": false},
+      {"id": "B", "text": "The IAM policy attached to the role in Account B does not grant s3:GetObject permission on the target bucket", "is_correct": true},
+      {"id": "C", "text": "Cross-account S3 access requires a VPC endpoint and the accounts are not connected via VPC peering", "is_correct": false},
+      {"id": "D", "text": "The developer's original IAM policy in Account A must also grant s3:GetObject permission on the bucket in Account B", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "When assuming a cross-account role, the effective permissions come from the policies attached to the assumed role in the target account, not the caller's original permissions. If the role in Account B does not have s3:GetObject, the call will be denied regardless of other configurations.",
+      "why_not_A": "External ID is only required if the trust policy specifies an sts:ExternalId condition. It is used to prevent confused deputy attacks with third parties but is not a universal requirement for cross-account access.",
+      "why_not_C": "Cross-account S3 access does not require VPC peering or VPC endpoints. S3 is a public service accessible via IAM permissions and bucket policies.",
+      "why_not_D": "When a role is assumed, the caller temporarily gives up their original permissions and operates with the assumed role's permissions. The original Account A policies are not evaluated for actions taken under the assumed role."
+    },
+    "concept_ids": ["aws-scs-cross-account-iam"],
+    "tags": ["troubleshooting", "cross-account", "iam", "s3"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-009",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "data-protection",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A healthcare company must encrypt all data at rest in Amazon S3 using keys that the company manages. They must be able to audit all key usage and disable keys immediately if a security incident occurs. Which encryption approach meets these requirements?",
+    "options": [
+      {"id": "A", "text": "SSE-S3 with default Amazon S3-managed encryption keys", "is_correct": false},
+      {"id": "B", "text": "SSE-KMS with a customer managed key (CMK) and CloudTrail logging of KMS API calls", "is_correct": true},
+      {"id": "C", "text": "SSE-C with customer-provided encryption keys supplied in each API request", "is_correct": false},
+      {"id": "D", "text": "Client-side encryption using the AWS Encryption SDK before uploading to S3", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SSE-KMS with a customer managed key gives the company full control over key policies, the ability to disable or delete keys immediately, and automatic CloudTrail logging of every Encrypt, Decrypt, and GenerateDataKey call. This provides both control and auditability.",
+      "why_not_A": "SSE-S3 uses Amazon-managed keys that the customer cannot control, audit individually, or disable. There is no visibility into key usage.",
+      "why_not_C": "SSE-C requires the customer to manage and transmit keys with every request, creating operational complexity. There is no centralized key management or automatic audit trail through AWS.",
+      "why_not_D": "Client-side encryption provides control over keys but does not natively integrate with CloudTrail for key usage auditing unless used with KMS for the key management component."
+    },
+    "concept_ids": ["aws-scs-kms-key-management", "aws-scs-s3-encryption"],
+    "tags": ["encryption", "kms", "compliance", "audit"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-010",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "data-protection",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "A developer creates a KMS customer managed key and grants Encrypt and Decrypt permissions to an application role via an IAM policy. However, the application receives an AccessDenied error when calling kms:Decrypt. The key policy only contains the default statement allowing the root account to manage the key. What is the MOST likely cause?",
+    "options": [
+      {"id": "A", "text": "The IAM policy must use the key ARN, not the key alias, in the Resource field", "is_correct": false},
+      {"id": "B", "text": "The default key policy does not include a statement that enables IAM policies to control access to the key", "is_correct": false},
+      {"id": "C", "text": "The KMS key is in a different region than the application making the Decrypt call", "is_correct": false},
+      {"id": "D", "text": "The key policy allows the root account full access, which implicitly enables IAM policies. The application role likely lacks kms:Decrypt in its identity-based policy for this specific key ARN", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "KMS key policies are the primary access control mechanism. The default key policy created via the AWS Console includes a statement enabling IAM policies ('Enable IAM User Permissions' statement allowing kms:* to the account root). However, if the key was created via API or the key policy was modified to only allow the root account specific actions without this enabling statement, IAM policies are not evaluated. The key policy must explicitly delegate authority to IAM.",
+      "why_not_A": "Both key ARN and key alias ARN can be used in IAM policy Resource fields. The alias resolves to the underlying key.",
+      "why_not_C": "While KMS keys are regional, the error would be InvalidKeyId, not AccessDenied, if the key does not exist in the target region.",
+      "why_not_D": "The question states the IAM policy grants Encrypt and Decrypt. The issue is that the key policy does not enable IAM policy evaluation, which is a separate mechanism from granting root access."
+    },
+    "concept_ids": ["aws-scs-kms-key-management"],
+    "tags": ["troubleshooting", "kms", "key-policy", "iam"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-011",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "data-protection",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An application stores database credentials in AWS Secrets Manager. The security team requires that credentials be rotated every 30 days and that the application experience zero downtime during rotation. Which configuration achieves this?",
+    "options": [
+      {"id": "A", "text": "Enable automatic rotation with a 30-day interval using a single-user rotation strategy", "is_correct": false},
+      {"id": "B", "text": "Enable automatic rotation with a 30-day interval using a multi-user (alternating users) rotation strategy", "is_correct": true},
+      {"id": "C", "text": "Create a Lambda function on a 30-day CloudWatch Events schedule to manually update the secret and database credentials", "is_correct": false},
+      {"id": "D", "text": "Store the credentials in Parameter Store with a 30-day expiration policy and use a Lambda function for rotation", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The alternating users (multi-user) rotation strategy creates two database users and rotates between them. While one set of credentials is being rotated, the other remains active. This ensures zero downtime because the application always has a valid set of credentials available.",
+      "why_not_A": "Single-user rotation updates the password in place. There is a brief window during rotation where the old password is invalid and the new one is being set, which can cause connection failures.",
+      "why_not_C": "A custom Lambda function is possible but re-implements what Secrets Manager provides natively with more complexity and without the built-in multi-user rotation pattern that ensures zero downtime.",
+      "why_not_D": "Parameter Store does not have native automatic rotation capabilities. Building rotation manually with Lambda does not provide the same zero-downtime guarantees as the Secrets Manager alternating users strategy."
+    },
+    "concept_ids": ["aws-scs-secrets-manager"],
+    "tags": ["secrets-rotation", "zero-downtime", "rds-credentials"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-012",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "management-security-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An organization with 100 AWS accounts must enforce a policy that prevents member accounts from disabling CloudTrail, deleting CloudTrail trails, or stopping CloudTrail logging. The policy must also prevent member accounts from leaving the AWS Organization. Which approach provides the MOST effective enforcement?",
+    "options": [
+      {"id": "A", "text": "Create AWS Config rules in each account that detect when CloudTrail is modified and trigger automatic remediation via SSM", "is_correct": false},
+      {"id": "B", "text": "Apply an SCP to all OUs that explicitly denies cloudtrail:StopLogging, cloudtrail:DeleteTrail, and organizations:LeaveOrganization actions", "is_correct": true},
+      {"id": "C", "text": "Use IAM permission boundaries on all IAM roles in member accounts to prevent CloudTrail modification", "is_correct": false},
+      {"id": "D", "text": "Enable AWS Control Tower and apply the strongly recommended guardrails for CloudTrail protection", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SCPs are preventive controls that apply to all principals in member accounts. An SCP deny rule cannot be overridden by any IAM policy in the member account. This prevents the actions before they happen, which is more effective than detective controls that react after the fact.",
+      "why_not_A": "Config rules are detective controls that evaluate after actions occur. There is a window between the violation and remediation. If CloudTrail is stopped, events during that window are lost permanently.",
+      "why_not_C": "Permission boundaries must be attached to every IAM entity in every account, which is not scalable for 100 accounts. New IAM entities would need boundaries applied manually or via automation.",
+      "why_not_D": "Control Tower guardrails use SCPs under the hood, so this achieves the same goal. However, implementing Control Tower for 100 existing accounts is a significant migration effort with higher overhead than directly applying an SCP."
+    },
+    "concept_ids": ["aws-scs-scps-governance", "aws-scs-cloudtrail"],
+    "tags": ["scps", "preventive-controls", "cloudtrail-protection", "governance"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-013",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "management-security-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to demonstrate SOC 2 compliance for their AWS workloads. They must continuously collect evidence of their security controls, including CloudTrail logging status, encryption configuration, and access management controls. Which AWS service automates this evidence collection?",
+    "options": [
+      {"id": "A", "text": "AWS Security Hub with the AWS Foundational Security Best Practices standard enabled", "is_correct": false},
+      {"id": "B", "text": "AWS Audit Manager with a SOC 2 framework assessment", "is_correct": true},
+      {"id": "C", "text": "AWS Config with a SOC 2 conformance pack deployed across all accounts", "is_correct": false},
+      {"id": "D", "text": "Amazon Inspector with continuous scanning enabled for compliance violations", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Audit Manager is purpose-built for compliance evidence collection. It provides prebuilt frameworks for SOC 2, PCI DSS, GDPR, and others. It automatically collects evidence from CloudTrail, Config, Security Hub, and other services, mapping them to specific compliance controls.",
+      "why_not_A": "Security Hub evaluates security best practices and aggregates findings but does not provide structured evidence collection mapped to specific compliance frameworks like SOC 2.",
+      "why_not_C": "Config evaluates resource compliance against rules but does not organize evidence into compliance framework assessments with audit-ready reports.",
+      "why_not_D": "Inspector focuses on vulnerability scanning of EC2 instances, container images, and Lambda functions. It does not map findings to compliance frameworks like SOC 2."
+    },
+    "concept_ids": ["aws-scs-scps-governance", "aws-scs-config-rules"],
+    "tags": ["compliance", "soc-2", "audit-manager", "evidence-collection"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-014",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "infrastructure-security",
+    "type": "troubleshooting",
+    "difficulty": 5,
+    "stem": "A company has AWS WAF deployed on their CloudFront distribution with a rate-based rule set to block IPs exceeding 1,000 requests per 5 minutes. During a load test, legitimate traffic from a corporate proxy with a single public IP is being blocked. The company cannot increase the rate limit because it would reduce protection against actual attacks. What is the BEST solution?",
+    "options": [
+      {"id": "A", "text": "Switch from CloudFront to an ALB-based architecture where WAF can inspect the X-Forwarded-For header", "is_correct": false},
+      {"id": "B", "text": "Create a WAF IP set containing the corporate proxy IP and add a separate rule with higher priority that allows traffic from this IP set before the rate-based rule is evaluated", "is_correct": true},
+      {"id": "C", "text": "Increase the rate limit to 10,000 and add a geographic restriction to block non-corporate regions", "is_correct": false},
+      {"id": "D", "text": "Disable the rate-based rule during business hours and enable it only outside of business hours", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "WAF rules are evaluated in priority order. By creating an allow rule with higher priority (lower numeric value) that matches the corporate proxy IP set, legitimate traffic is allowed before the rate-based rule is evaluated. This preserves rate-limiting protection for all other traffic.",
+      "why_not_A": "CloudFront with WAF already supports forwarding the X-Forwarded-For header for rate-based rules, but when traffic comes from a corporate proxy, the true client IPs are behind the proxy. Switching to ALB does not solve the proxy aggregation problem.",
+      "why_not_C": "Increasing the rate limit to 10,000 significantly weakens DDoS protection. Geographic restrictions are too coarse and would not solve the core problem of legitimate high-volume traffic from a known source.",
+      "why_not_D": "Disabling the rate-based rule during business hours leaves the application completely unprotected against attacks during the most active period."
+    },
+    "concept_ids": ["aws-scs-waf-shield"],
+    "tags": ["troubleshooting", "waf", "rate-limiting", "ip-whitelist"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.05,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-scs-015",
+    "exam_id": "aws-scs-c02",
+    "domain_id": "security-logging-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A security team needs to ensure that all new S3 buckets across the organization have encryption enabled and versioning turned on. If a bucket is created without these settings, it should be automatically remediated within minutes. Which solution provides both detection and automatic remediation?",
+    "options": [
+      {"id": "A", "text": "Use an SCP to deny s3:CreateBucket unless encryption and versioning parameters are included in the request", "is_correct": false},
+      {"id": "B", "text": "Deploy AWS Config managed rules for s3-bucket-server-side-encryption-enabled and s3-bucket-versioning-enabled with automatic remediation using SSM Automation documents", "is_correct": true},
+      {"id": "C", "text": "Create a CloudWatch Events rule that triggers on S3 CreateBucket API calls and invokes a Lambda function to check and enable the settings", "is_correct": false},
+      {"id": "D", "text": "Enable Security Hub with the S3 security controls and configure custom actions for remediation", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Config managed rules continuously evaluate S3 bucket configurations. When a non-compliant bucket is detected, automatic remediation via SSM Automation documents can enable encryption and versioning without manual intervention. This provides both detection and remediation within minutes.",
+      "why_not_A": "SCPs cannot enforce specific parameter values in API calls. SCPs can deny or allow actions but cannot require that specific encryption or versioning settings be included in the CreateBucket request.",
+      "why_not_C": "This approach works but requires custom Lambda code for detection and remediation. AWS Config with managed rules and SSM Automation provides the same capability with less custom code and built-in compliance reporting.",
+      "why_not_D": "Security Hub custom actions require manual analyst intervention to trigger. They are not automatic remediation. Security Hub findings can trigger EventBridge for automation, but Config rules with auto-remediation are more direct for this use case."
+    },
+    "concept_ids": ["aws-scs-config-rules", "aws-scs-scps-governance"],
+    "tags": ["auto-remediation", "config-rules", "s3-compliance", "ssm-automation"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

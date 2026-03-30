@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-dva-001",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is building a Lambda function that processes images uploaded to S3. The function occasionally times out when processing large images. The current timeout is set to 30 seconds and memory is 128 MB. What should the developer do to resolve the timeout issue?",
+    "options": [
+      {"id": "A", "text": "Increase the Lambda timeout to the maximum of 15 minutes", "is_correct": false},
+      {"id": "B", "text": "Increase the memory allocation, which also increases CPU and network bandwidth", "is_correct": true},
+      {"id": "C", "text": "Deploy the Lambda function in a VPC for faster network access to S3", "is_correct": false},
+      {"id": "D", "text": "Use provisioned concurrency to prevent cold starts", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Increasing Lambda memory proportionally increases CPU power and network bandwidth. For image processing workloads, more CPU and memory directly reduces processing time. This is more targeted than simply increasing the timeout.",
+      "why_not_A": "Increasing the timeout to 15 minutes would allow the function to complete but does not address the root cause. The function is slow due to insufficient compute resources, not an insufficient time limit.",
+      "why_not_C": "Deploying Lambda in a VPC does not improve S3 access speed. S3 is accessed over the internet or via a VPC endpoint, and VPC placement can actually add cold start latency.",
+      "why_not_D": "Provisioned concurrency eliminates cold start latency but does not help with processing time for large images. The issue is insufficient compute resources, not cold starts."
+    },
+    "concept_ids": ["aws-dva-lambda", "aws-dva-lambda-debugging"],
+    "tags": ["lambda", "timeout", "memory", "performance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-002",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is building a REST API using API Gateway and Lambda. The API needs to support different configurations for development and production environments without creating separate APIs. How should the developer configure this?",
+    "options": [
+      {"id": "A", "text": "Create separate Lambda functions for dev and prod and use different API Gateway resources for each", "is_correct": false},
+      {"id": "B", "text": "Use API Gateway stages with stage variables to point to different Lambda aliases", "is_correct": true},
+      {"id": "C", "text": "Use API Gateway usage plans to separate dev and prod traffic", "is_correct": false},
+      {"id": "D", "text": "Deploy the API in different AWS regions for dev and prod", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "API Gateway stages (e.g., /dev, /prod) represent different environments. Stage variables act as environment variables per stage, which can reference different Lambda function aliases. This provides environment separation within a single API.",
+      "why_not_A": "Creating separate Lambda functions and API resources doubles the management overhead. Stages and aliases provide cleaner separation.",
+      "why_not_C": "Usage plans control throttling and metering for API consumers. They are not designed for environment separation.",
+      "why_not_D": "Deploying in separate regions adds unnecessary complexity and cost. Stages within a single API provide environment separation."
+    },
+    "concept_ids": ["aws-dva-api-gateway", "aws-dva-lambda"],
+    "tags": ["api-gateway", "stages", "stage-variables", "environments"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-003",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer needs to retrieve items from a DynamoDB table using a non-key attribute that is frequently queried. The table has a partition key of userId and a sort key of orderId. Which approach allows efficient queries on the non-key attribute?",
+    "options": [
+      {"id": "A", "text": "Use the Scan operation with a FilterExpression on the attribute", "is_correct": false},
+      {"id": "B", "text": "Create a Global Secondary Index (GSI) with the non-key attribute as the partition key", "is_correct": true},
+      {"id": "C", "text": "Create a Local Secondary Index (LSI) with the non-key attribute as the partition key", "is_correct": false},
+      {"id": "D", "text": "Use the GetItem operation with the non-key attribute as a condition", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A Global Secondary Index allows you to define a different partition key (and optional sort key) from the base table. This enables efficient Query operations on the non-key attribute without scanning the entire table.",
+      "why_not_A": "Scan reads every item in the table and applies the filter afterward. This is expensive and slow for large tables. It does not use an index for the non-key attribute.",
+      "why_not_C": "Local Secondary Indexes must use the same partition key as the base table. They only allow a different sort key. You cannot change the partition key with an LSI.",
+      "why_not_D": "GetItem requires the full primary key (partition key + sort key). It cannot query based on non-key attributes."
+    },
+    "concept_ids": ["aws-dva-dynamodb-dev"],
+    "tags": ["dynamodb", "gsi", "indexes", "queries"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-004",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A developer needs to decouple a web application from a time-consuming backend process. Messages must be processed exactly once and in the order they are sent. Which SQS queue type should the developer use?",
+    "options": [
+      {"id": "A", "text": "SQS Standard queue with visibility timeout", "is_correct": false},
+      {"id": "B", "text": "SQS FIFO queue", "is_correct": true},
+      {"id": "C", "text": "SQS Standard queue with dead-letter queue", "is_correct": false},
+      {"id": "D", "text": "SNS topic with SQS subscription", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SQS FIFO queues guarantee exactly-once processing and strict ordering of messages. The FIFO (First-In-First-Out) queue type ensures messages are processed in the exact order they are sent.",
+      "why_not_A": "Standard queues provide at-least-once delivery and best-effort ordering. They do not guarantee exactly-once processing or strict message ordering.",
+      "why_not_C": "Dead-letter queues handle failed messages but do not affect ordering or exactly-once processing. Standard queues still lack these guarantees.",
+      "why_not_D": "SNS provides fan-out pub/sub but does not guarantee ordering or exactly-once delivery on its own."
+    },
+    "concept_ids": ["aws-dva-sqs-sns"],
+    "tags": ["sqs", "fifo", "ordering", "exactly-once"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-005",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "development-with-aws-services",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A developer is building an order processing system. When an order is placed, it must be validated, payment processed, and inventory updated. If any step fails, the entire transaction must be rolled back. Which AWS service is BEST suited to orchestrate this workflow?",
+    "options": [
+      {"id": "A", "text": "Amazon SQS with multiple queues for each step", "is_correct": false},
+      {"id": "B", "text": "AWS Step Functions with error handling and compensation logic", "is_correct": true},
+      {"id": "C", "text": "Amazon SNS with fanout to Lambda functions for each step", "is_correct": false},
+      {"id": "D", "text": "Amazon EventBridge with rules for each processing step", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Step Functions provides visual workflow orchestration with built-in error handling (Retry and Catch), parallel execution, and the ability to implement compensation logic (saga pattern) for rollback when a step fails.",
+      "why_not_A": "SQS provides message queuing but has no built-in workflow orchestration, error handling across steps, or rollback capabilities. You would need to build all coordination logic in application code.",
+      "why_not_C": "SNS fan-out sends messages to multiple subscribers simultaneously, not sequentially. It does not support step-by-step orchestration with error handling and rollback.",
+      "why_not_D": "EventBridge is an event bus for routing events but does not provide sequential workflow orchestration with built-in retry, catch, and compensation logic."
+    },
+    "concept_ids": ["aws-dva-step-functions", "aws-dva-sqs-sns"],
+    "tags": ["step-functions", "orchestration", "saga-pattern", "error-handling"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-006",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "security",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A mobile application needs to allow users to sign up with email/password and also sign in with their Google account. After authentication, users need to upload files directly to an S3 bucket. Which AWS services should the developer use?",
+    "options": [
+      {"id": "A", "text": "Cognito User Pool for authentication and IAM users for S3 access", "is_correct": false},
+      {"id": "B", "text": "Cognito User Pool for authentication and Cognito Identity Pool for temporary AWS credentials to access S3", "is_correct": true},
+      {"id": "C", "text": "IAM users for each mobile user with embedded access keys", "is_correct": false},
+      {"id": "D", "text": "API Gateway with Lambda authorizer and pre-signed S3 URLs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cognito User Pool handles user sign-up/sign-in with email/password and Google federation. Cognito Identity Pool exchanges the User Pool token for temporary AWS credentials, allowing the mobile app to upload directly to S3 with fine-grained access control.",
+      "why_not_A": "Creating IAM users for each mobile user does not scale and requires managing long-term credentials. This is a security anti-pattern for mobile applications.",
+      "why_not_C": "Embedding access keys in mobile apps is a critical security vulnerability. Keys can be extracted from the app binary. Always use temporary credentials.",
+      "why_not_D": "While this approach works, it requires maintaining a backend (API Gateway + Lambda) to generate pre-signed URLs. Cognito Identity Pool provides a more direct and scalable solution for mobile S3 access."
+    },
+    "concept_ids": ["aws-dva-cognito", "aws-dva-iam-developers"],
+    "tags": ["cognito", "user-pools", "identity-pools", "mobile", "s3-access"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-007",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "security",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer needs to encrypt application data larger than 4 KB before storing it in S3. The encryption keys must be managed by the application. Which KMS approach should the developer use?",
+    "options": [
+      {"id": "A", "text": "Call KMS Encrypt API directly with the data payload", "is_correct": false},
+      {"id": "B", "text": "Use envelope encryption with GenerateDataKey API", "is_correct": true},
+      {"id": "C", "text": "Enable SSE-S3 default encryption on the S3 bucket", "is_correct": false},
+      {"id": "D", "text": "Use SSE-KMS with a customer managed key", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The KMS Encrypt API can only encrypt up to 4 KB of data. For larger data, use envelope encryption: call GenerateDataKey to get a plaintext data key and an encrypted copy. Encrypt the data locally with the plaintext key, then store the encrypted data and encrypted key together.",
+      "why_not_A": "KMS Encrypt API is limited to 4 KB of data. Attempting to encrypt larger data directly will fail.",
+      "why_not_C": "SSE-S3 is server-side encryption managed by AWS. The application does not control the encryption process or keys. The question specifies encryption managed by the application.",
+      "why_not_D": "SSE-KMS is server-side encryption. While using a customer managed key, S3 handles the encryption transparently. The question requires the application to perform the encryption before storing in S3."
+    },
+    "concept_ids": ["aws-dva-kms-secrets"],
+    "tags": ["kms", "envelope-encryption", "data-key", "encryption"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-008",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "security",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A developer needs to store database credentials that should be automatically rotated every 30 days. Which AWS service should they use?",
+    "options": [
+      {"id": "A", "text": "AWS Systems Manager Parameter Store with SecureString", "is_correct": false},
+      {"id": "B", "text": "AWS Secrets Manager", "is_correct": true},
+      {"id": "C", "text": "AWS KMS with customer managed keys", "is_correct": false},
+      {"id": "D", "text": "Environment variables encrypted with KMS", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Secrets Manager is specifically designed for storing and automatically rotating secrets like database credentials. It includes built-in Lambda rotation functions for RDS, Redshift, and DocumentDB.",
+      "why_not_A": "Parameter Store can store encrypted strings but does not support automatic secret rotation. You would need to build custom rotation logic.",
+      "why_not_C": "KMS manages encryption keys, not credentials or secrets. It cannot store database usernames and passwords or handle rotation.",
+      "why_not_D": "Environment variables are static and do not support automatic rotation. They also require redeployment to update credentials."
+    },
+    "concept_ids": ["aws-dva-kms-secrets"],
+    "tags": ["secrets-manager", "rotation", "credentials", "database"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-009",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer wants to deploy a new version of a Lambda function to production with minimal risk. They want to gradually shift traffic from the old version to the new version, starting with 10% of traffic and increasing to 100% over 30 minutes. Which deployment approach should they use?",
+    "options": [
+      {"id": "A", "text": "CodeDeploy with AllAtOnce deployment configuration", "is_correct": false},
+      {"id": "B", "text": "CodeDeploy with Linear10PercentEvery3Minutes deployment configuration", "is_correct": true},
+      {"id": "C", "text": "CodeDeploy with Canary10Percent5Minutes deployment configuration", "is_correct": false},
+      {"id": "D", "text": "Manually update the Lambda function alias to the new version", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Linear10PercentEvery3Minutes shifts 10% of traffic every 3 minutes, gradually increasing from 10% to 100% over 30 minutes. This provides a smooth, controlled rollout with time to detect issues at each increment.",
+      "why_not_A": "AllAtOnce shifts 100% of traffic immediately. This provides no gradual rollout and no opportunity to detect issues before full deployment.",
+      "why_not_C": "Canary10Percent5Minutes shifts 10% initially, then shifts the remaining 90% all at once after 5 minutes. It does not gradually increase traffic over 30 minutes.",
+      "why_not_D": "Manually updating the alias shifts all traffic immediately with no gradual rollout. It also lacks automatic rollback capability."
+    },
+    "concept_ids": ["aws-dva-codedeploy", "aws-dva-lambda"],
+    "tags": ["codedeploy", "lambda", "linear-deployment", "traffic-shifting"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-010",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "deployment",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A developer needs to define a CI/CD pipeline that automatically builds code when changes are pushed to a CodeCommit repository, runs tests, and deploys to Lambda. Which service orchestrates this pipeline?",
+    "options": [
+      {"id": "A", "text": "AWS CodeBuild", "is_correct": false},
+      {"id": "B", "text": "AWS CodeDeploy", "is_correct": false},
+      {"id": "C", "text": "AWS CodePipeline", "is_correct": true},
+      {"id": "D", "text": "AWS CloudFormation", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "CodePipeline is the CI/CD orchestration service that connects source (CodeCommit), build (CodeBuild), test, and deploy (CodeDeploy) stages into an automated pipeline. It triggers automatically on code changes.",
+      "why_not_A": "CodeBuild is a build service that compiles code, runs tests, and produces artifacts. It handles one stage, not the entire pipeline orchestration.",
+      "why_not_B": "CodeDeploy handles the deployment stage only. It deploys applications to EC2, Lambda, or ECS but does not orchestrate the full CI/CD pipeline.",
+      "why_not_D": "CloudFormation is an infrastructure as code service for provisioning AWS resources. It is not a CI/CD pipeline orchestrator, though it can be used as a deploy action within CodePipeline."
+    },
+    "concept_ids": ["aws-dva-codepipeline"],
+    "tags": ["codepipeline", "ci-cd", "automation"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-011",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is creating a serverless application with Lambda functions, an API Gateway, and a DynamoDB table. They want to define all resources in a single template with simplified syntax. Which tool should they use?",
+    "options": [
+      {"id": "A", "text": "AWS CloudFormation with standard resource types", "is_correct": false},
+      {"id": "B", "text": "AWS SAM (Serverless Application Model)", "is_correct": true},
+      {"id": "C", "text": "AWS Elastic Beanstalk with a Docker configuration", "is_correct": false},
+      {"id": "D", "text": "AWS CDK with TypeScript", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS SAM extends CloudFormation with simplified syntax for serverless resources. AWS::Serverless::Function, AWS::Serverless::Api, and AWS::Serverless::SimpleTable reduce boilerplate. SAM CLI provides local testing with sam local invoke.",
+      "why_not_A": "Standard CloudFormation works but requires more verbose resource definitions. SAM simplifies serverless definitions significantly (e.g., a SAM function definition generates the Lambda function, IAM role, and event source mapping).",
+      "why_not_C": "Elastic Beanstalk is a PaaS for deploying web applications and is not designed for serverless architectures with Lambda and DynamoDB.",
+      "why_not_D": "AWS CDK is a valid alternative using programming languages, but SAM is the purpose-built tool for serverless applications with the simplest syntax for this specific use case."
+    },
+    "concept_ids": ["aws-dva-cloudformation-sam", "aws-dva-lambda"],
+    "tags": ["sam", "serverless", "infrastructure-as-code", "cloudformation"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-012",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "deployment",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A developer wants to deploy a web application with zero-downtime updates. The application runs on EC2 instances behind an ALB using Elastic Beanstalk. Which deployment policy should they choose for the SAFEST deployment with no reduction in capacity?",
+    "options": [
+      {"id": "A", "text": "All at once", "is_correct": false},
+      {"id": "B", "text": "Rolling", "is_correct": false},
+      {"id": "C", "text": "Immutable", "is_correct": true},
+      {"id": "D", "text": "Rolling with additional batch", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Immutable deployment launches a completely new set of instances in a new Auto Scaling group with the new version. Once they pass health checks, traffic is switched over. The old instances are terminated. This provides zero downtime with no capacity reduction and easy rollback.",
+      "why_not_A": "All at once deploys to all instances simultaneously, causing downtime during the update. It is the fastest but riskiest deployment policy.",
+      "why_not_B": "Rolling deployment updates instances in batches. During the update, capacity is temporarily reduced because some instances are being updated and are unavailable.",
+      "why_not_D": "Rolling with additional batch adds extra instances to maintain full capacity during rolling updates, but it still updates existing instances in place. Immutable is safer because it uses entirely new instances."
+    },
+    "concept_ids": ["aws-dva-elastic-beanstalk"],
+    "tags": ["elastic-beanstalk", "deployment-policy", "immutable", "zero-downtime"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-013",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "troubleshooting-optimization",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "A developer's Lambda function is returning intermittent errors. The function processes messages from an SQS queue and writes to DynamoDB. CloudWatch Logs show ProvisionedThroughputExceededException errors. What should the developer do to resolve this issue?",
+    "options": [
+      {"id": "A", "text": "Increase the Lambda function memory and timeout", "is_correct": false},
+      {"id": "B", "text": "Switch the DynamoDB table to on-demand capacity mode or increase provisioned WCUs", "is_correct": true},
+      {"id": "C", "text": "Increase the SQS visibility timeout to allow more processing time", "is_correct": false},
+      {"id": "D", "text": "Enable provisioned concurrency on the Lambda function", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ProvisionedThroughputExceededException indicates the DynamoDB table does not have enough write capacity to handle the current request rate. Switching to on-demand mode allows automatic scaling, or increasing provisioned WCUs provides more write throughput.",
+      "why_not_A": "The error is from DynamoDB, not Lambda. Increasing Lambda memory and timeout does not affect DynamoDB throughput capacity.",
+      "why_not_C": "SQS visibility timeout prevents duplicate processing but does not affect DynamoDB write capacity. The error occurs when writing to DynamoDB, not when reading from SQS.",
+      "why_not_D": "Provisioned concurrency addresses Lambda cold start latency, not DynamoDB throughput limits."
+    },
+    "concept_ids": ["aws-dva-lambda-debugging", "aws-dva-dynamodb-dev"],
+    "tags": ["troubleshooting", "dynamodb", "throughput", "lambda"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.10,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-014",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "troubleshooting-optimization",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer needs to identify which downstream service is causing high latency in a microservices architecture. The application uses Lambda, API Gateway, DynamoDB, and SQS. Which AWS service provides a visual map of service dependencies with latency data?",
+    "options": [
+      {"id": "A", "text": "Amazon CloudWatch Metrics", "is_correct": false},
+      {"id": "B", "text": "AWS X-Ray", "is_correct": true},
+      {"id": "C", "text": "Amazon CloudWatch Logs Insights", "is_correct": false},
+      {"id": "D", "text": "AWS CloudTrail", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "X-Ray provides a service map that visualizes the entire microservices architecture with latency data for each service. Trace analysis shows exactly which downstream service is causing delays, making it ideal for diagnosing latency issues.",
+      "why_not_A": "CloudWatch Metrics provides individual service metrics but does not show service dependencies or end-to-end request traces across multiple services.",
+      "why_not_C": "CloudWatch Logs Insights queries log data but does not provide a visual service map or distributed trace analysis across services.",
+      "why_not_D": "CloudTrail logs API calls for governance and auditing, not application-level latency tracing across microservices."
+    },
+    "concept_ids": ["aws-dva-xray-debugging", "aws-dva-cloudwatch-logs"],
+    "tags": ["x-ray", "service-map", "latency", "distributed-tracing"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.15,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dva-015",
+    "exam_id": "aws-dva-c02",
+    "domain_id": "troubleshooting-optimization",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "A developer notices that their API Gateway returns 429 Too Many Requests errors during peak traffic. The backend Lambda function is not reaching its concurrency limit. What is the MOST likely cause and solution?",
+    "options": [
+      {"id": "A", "text": "The Lambda function is throttled. Increase the reserved concurrency for the function.", "is_correct": false},
+      {"id": "B", "text": "The API Gateway account-level throttle limit is reached. Request a limit increase via AWS Support.", "is_correct": true},
+      {"id": "C", "text": "The DynamoDB table is throttled. Switch to on-demand capacity mode.", "is_correct": false},
+      {"id": "D", "text": "The CloudFront distribution is rate-limiting the requests. Increase the rate limit in WAF.", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "API Gateway has a default account-level throttle of 10,000 requests per second with a 5,000 request burst limit. If the API receives more traffic than this, API Gateway itself returns 429 errors before requests reach Lambda. Requesting a limit increase resolves this.",
+      "why_not_A": "The question states the Lambda function is not reaching its concurrency limit. The throttling is happening at the API Gateway level, not at Lambda.",
+      "why_not_C": "DynamoDB throttling would result in 400-series errors from the Lambda function, not 429 errors from API Gateway. The error is returned before the request reaches the backend.",
+      "why_not_D": "The question does not mention CloudFront or WAF in the architecture. The 429 error is coming from API Gateway throttling."
+    },
+    "concept_ids": ["aws-dva-api-gateway", "aws-dva-lambda-debugging"],
+    "tags": ["api-gateway", "throttling", "429", "troubleshooting", "limits"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.08,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  }
+]
