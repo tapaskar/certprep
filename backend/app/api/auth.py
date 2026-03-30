@@ -320,16 +320,31 @@ async def get_me(user: CurrentUser, db: DB):
     from app.models.progress import UserExamEnrollment
     from sqlalchemy import and_
 
-    # Get active enrollment
+    from app.models.exam import Exam
+
+    # Get all active enrollments
     enrollment_result = await db.execute(
-        select(UserExamEnrollment).where(
+        select(UserExamEnrollment, Exam)
+        .join(Exam, UserExamEnrollment.exam_id == Exam.id)
+        .where(
             and_(
                 UserExamEnrollment.user_id == user.id,
                 UserExamEnrollment.is_active,
             )
         )
     )
-    enrollment = enrollment_result.scalar_one_or_none()
+    enrollments = enrollment_result.all()
+
+    enrolled_exams = [
+        {
+            "exam_id": e.exam_id,
+            "exam_name": exam.name,
+            "exam_code": exam.code,
+            "readiness_pct": float(e.overall_readiness_pct),
+            "exam_date": e.exam_date.isoformat() if e.exam_date else None,
+        }
+        for e, exam in enrollments
+    ]
 
     return {
         "id": str(user.id),
@@ -340,7 +355,8 @@ async def get_me(user: CurrentUser, db: DB):
         "plan": user.plan,
         "is_email_verified": user.is_email_verified,
         "is_admin": user.is_admin,
-        "active_exam_id": enrollment.exam_id if enrollment else None,
+        "active_exam_id": enrolled_exams[0]["exam_id"] if enrolled_exams else None,
+        "enrolled_exams": enrolled_exams,
         "created_at": user.created_at.isoformat() if user.created_at else None,
         "last_login_at": user.last_login_at.isoformat() if user.last_login_at else None,
     }

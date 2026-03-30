@@ -172,6 +172,7 @@ class ApiClient {
     is_email_verified: boolean;
     is_admin: boolean;
     active_exam_id: string | null;
+    enrolled_exams: { exam_id: string; exam_name: string; exam_code: string; readiness_pct: number; exam_date: string | null }[];
     created_at: string | null;
     last_login_at: string | null;
   }> {
