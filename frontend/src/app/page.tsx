@@ -117,12 +117,20 @@ export default function LandingPage() {
           AI-powered adaptive learning for all 15 AWS certifications.
           Concept tutorials, practice questions, and hands-on labs — all in one place.
         </p>
-        <Link
-          href="/register"
-          className="mt-10 inline-flex h-12 items-center justify-center rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 text-base font-bold text-white shadow-md shadow-stone-200/60 hover:scale-105 transition-all"
-        >
-          Get Started Free
-        </Link>
+        <div className="mt-10 flex flex-col items-center gap-3">
+          <Link
+            href="/register"
+            className="inline-flex h-12 items-center justify-center rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 text-base font-bold text-white shadow-md shadow-stone-200/60 hover:scale-105 transition-all"
+          >
+            Get Started Free
+          </Link>
+          <Link
+            href="/pricing"
+            className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
+          >
+            View Pricing &rarr;
+          </Link>
+        </div>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-stone-500 sm:gap-6">
           <span>15 Certifications</span>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
