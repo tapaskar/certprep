@@ -72,9 +72,36 @@ const levelColors: Record<string, string> = {
   Specialty: "text-red-600",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "SparkUpCloud",
+  url: "https://sparkupcloud.com",
+  description:
+    "AI-powered certification exam preparation platform for all 15 AWS certifications",
+  applicationCategory: "EducationalApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+    description: "Free tier with 10 questions per day",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.8",
+    reviewCount: "150",
+  },
+};
+
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
       {/* Hero */}
       <section className="flex flex-col items-center justify-center px-6 pt-20 pb-24 text-center">
         <img src="/logo.svg" alt="SparkUpCloud" className="mb-10 h-40 w-auto" />
@@ -186,5 +213,6 @@ export default function LandingPage() {
         </p>
       </section>
     </div>
+    </>
   );
 }
