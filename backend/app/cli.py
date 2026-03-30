@@ -2,6 +2,7 @@
 
 import asyncio
 import sys
+from pathlib import Path
 
 from app.database import get_engine, get_session_factory
 from app.models import Base
@@ -42,6 +43,7 @@ def main() -> None:
         print("  python -m app.cli create-tables")
         print("  python -m app.cli drop-tables")
         print("  python -m app.cli seed [--exam <id>] [--data-dir <path>]")
+        print("  python -m app.cli seed-all")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -62,6 +64,15 @@ def main() -> None:
                 data_dir = args[i + 1]
 
         asyncio.run(seed(exam_id, data_dir))
+    elif command == "seed-all":
+        async def seed_all():
+            for exam_dir in sorted(Path("data/seed").iterdir()):
+                if exam_dir.is_dir() and (exam_dir / "exam.json").exists():
+                    async with get_session_factory()() as db:
+                        counts = await seed_exam(db, data_dir=str(exam_dir))
+                        await db.commit()
+                    print(f"Seeded {exam_dir.name}: {counts}")
+        asyncio.run(seed_all())
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)
