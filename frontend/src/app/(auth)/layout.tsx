@@ -57,8 +57,9 @@ export default function AuthLayout({
       {/* Top nav */}
       <header className="border-b border-stone-200 bg-white">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-          <Link href="/dashboard" className="text-lg font-bold text-stone-900">
-            Cert<span className="text-amber-500">Prep</span>
+          <Link href="/dashboard" className="flex items-center gap-2 text-lg font-bold text-stone-900">
+            <img src="/logo-icon.svg" alt="" className="h-8 w-8" />
+            SparkUp<span className="text-amber-500">Cloud</span>
           </Link>
 
           <nav className="hidden items-center gap-1 sm:flex">

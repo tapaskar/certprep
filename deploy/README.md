@@ -1,4 +1,4 @@
-# CertPrep Deployment Guide — sparkupcloud.com
+# SparkUpCloud Deployment Guide — sparkupcloud.com
 
 **Cost: ~$0.50/month first year (AWS Free Tier), ~$9/month after**
 
@@ -26,7 +26,7 @@ gh repo create prepally --private --push
 ### Via AWS Console:
 1. Go to **EC2 → Launch Instance**
 2. Settings:
-   - **Name**: `certprep-api`
+   - **Name**: `sparkupcloud-api`
    - **AMI**: Amazon Linux 2023
    - **Instance type**: `t3.micro` (free tier eligible)
    - **Key pair**: Create or select existing

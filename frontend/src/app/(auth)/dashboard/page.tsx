@@ -29,7 +29,7 @@ export default function DashboardPage() {
     if (notEnrolled) {
       return (
         <div className="flex h-64 flex-col items-center justify-center gap-4">
-          <h2 className="text-xl font-bold text-stone-900">Welcome to CertPrep!</h2>
+          <h2 className="text-xl font-bold text-stone-900">Welcome to SparkUpCloud!</h2>
           <p className="text-stone-500">Pick an exam to get started.</p>
           <a
             href="/onboarding"

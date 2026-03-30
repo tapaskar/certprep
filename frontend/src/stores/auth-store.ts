@@ -24,21 +24,21 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => {
   // On init: check localStorage for existing token
   if (typeof window !== "undefined") {
-    const savedToken = localStorage.getItem("certprep_token");
+    const savedToken = localStorage.getItem("sparkupcloud_token");
     if (savedToken) {
       api.setToken(savedToken);
     }
   }
 
   return {
-    token: typeof window !== "undefined" ? localStorage.getItem("certprep_token") : null,
+    token: typeof window !== "undefined" ? localStorage.getItem("sparkupcloud_token") : null,
     user: null,
     isAuthenticated: false,
     isLoading: true,
 
     login: async (email: string, password: string) => {
       const data = await api.login(email, password);
-      localStorage.setItem("certprep_token", data.access_token);
+      localStorage.setItem("sparkupcloud_token", data.access_token);
       api.setToken(data.access_token);
       set({
         token: data.access_token,
@@ -53,7 +53,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
 
     logout: () => {
-      localStorage.removeItem("certprep_token");
+      localStorage.removeItem("sparkupcloud_token");
       api.setToken(null);
       set({
         token: null,
@@ -64,7 +64,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
 
     loadUser: async () => {
-      const token = typeof window !== "undefined" ? localStorage.getItem("certprep_token") : null;
+      const token = typeof window !== "undefined" ? localStorage.getItem("sparkupcloud_token") : null;
       if (!token) {
         set({ isLoading: false, isAuthenticated: false });
         return;
@@ -84,7 +84,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
         });
       } catch {
         // Token is invalid or expired
-        localStorage.removeItem("certprep_token");
+        localStorage.removeItem("sparkupcloud_token");
         api.setToken(null);
         set({
           token: null,
@@ -96,7 +96,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
 
     setAuthFromToken: (token: string, user: AuthUser) => {
-      localStorage.setItem("certprep_token", token);
+      localStorage.setItem("sparkupcloud_token", token);
       api.setToken(token);
       set({
         token,

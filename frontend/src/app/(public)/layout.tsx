@@ -9,9 +9,8 @@ export default function PublicLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col items-center bg-stone-100 px-4 py-12">
-      <Link href="/" className="mb-8 text-2xl font-bold">
-        <span className="text-stone-900">Cert</span>
-        <span className="text-amber-500">Prep</span>
+      <Link href="/" className="mb-8 flex flex-col items-center gap-2">
+        <img src="/logo.svg" alt="SparkUpCloud" className="h-20 w-auto" />
       </Link>
       <div className="w-full max-w-md">{children}</div>
     </div>

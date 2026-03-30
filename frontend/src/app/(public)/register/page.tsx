@@ -34,7 +34,7 @@ export default function RegisterPage() {
     try {
       await register(displayName, email, password);
       // Store email in sessionStorage for the verification page
-      sessionStorage.setItem("certprep_verify_email", email);
+      sessionStorage.setItem("sparkupcloud_verify_email", email);
       router.push("/verify-email");
     } catch (err: unknown) {
       const message =

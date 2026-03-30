@@ -1,4 +1,4 @@
-"""CertPrep API — FastAPI application entry point."""
+"""SparkUpCloud API — FastAPI application entry point."""
 
 from contextlib import asynccontextmanager
 

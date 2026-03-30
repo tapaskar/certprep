@@ -1,5 +1,5 @@
 #!/bin/bash
-# CertPrep EC2 Bootstrap Script
+# SparkUpCloud EC2 Bootstrap Script
 # Run this ONCE on a fresh Amazon Linux 2023 t3.micro instance
 # Usage: sudo bash setup-ec2.sh
 
@@ -12,7 +12,7 @@ DB_NAME="certprep"
 APP_DIR="/opt/certprep"
 
 echo "========================================"
-echo "  CertPrep EC2 Setup - $DOMAIN"
+echo "  SparkUpCloud EC2 Setup - $DOMAIN"
 echo "========================================"
 
 # --- 1. System updates ---
@@ -94,7 +94,7 @@ echo "[7/8] Setting up systemd service..."
 cp /opt/certprep/deploy/certprep.service /etc/systemd/system/certprep.service 2>/dev/null || \
 cat > /etc/systemd/system/certprep.service << 'SVCEOF'
 [Unit]
-Description=CertPrep FastAPI Backend
+Description=SparkUpCloud FastAPI Backend
 After=network.target postgresql.service redis6.service
 Wants=postgresql.service redis6.service
 

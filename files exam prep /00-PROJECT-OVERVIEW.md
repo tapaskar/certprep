@@ -1,10 +1,10 @@
-# CertPrep — AI-Powered Exam Preparation Platform
+# SparkUpCloud — AI-Powered Exam Preparation Platform
 
 ## Vision
 Transform how professionals prepare for tough certification exams by combining curated, exam-specific content with AI-driven personalization and behavioral engagement — delivering a materially higher pass rate than self-study or static prep platforms.
 
 ## Product thesis
-Static question banks (Tutorials Dojo, Whizlabs) provide content but no adaptivity. Generic AI tutors (ChatGPT) provide adaptivity but no curated, exam-weighted content. CertPrep combines both: a rigorously curated knowledge graph per exam, overlaid with a Bayesian adaptive learning engine that personalizes every session to the individual learner's gaps.
+Static question banks (Tutorials Dojo, Whizlabs) provide content but no adaptivity. Generic AI tutors (ChatGPT) provide adaptivity but no curated, exam-weighted content. SparkUpCloud combines both: a rigorously curated knowledge graph per exam, overlaid with a Bayesian adaptive learning engine that personalizes every session to the individual learner's gaps.
 
 ## Target market (launch)
 - AWS Solutions Architect Professional (SAP-C02)

@@ -17,7 +17,7 @@ export default function VerifyEmailPage() {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
-    const savedEmail = sessionStorage.getItem("certprep_verify_email");
+    const savedEmail = sessionStorage.getItem("sparkupcloud_verify_email");
     if (savedEmail) {
       setEmail(savedEmail);
     }

@@ -9,7 +9,7 @@ _ENV_FILE = Path(__file__).parent.parent / ".env"
 
 class Settings(BaseSettings):
     # App
-    app_name: str = "CertPrep API"
+    app_name: str = "SparkUpCloud API"
     debug: bool = False
     api_version: str = "v1"
 

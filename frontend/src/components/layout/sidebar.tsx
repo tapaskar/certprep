@@ -33,7 +33,7 @@ export function Sidebar() {
             <GraduationCap className="h-5 w-5" />
           </div>
           <span className="text-lg font-semibold text-foreground opacity-0 transition-opacity duration-200 group-hover/sidebar:opacity-100 whitespace-nowrap">
-            CertPrep
+            SparkUpCloud
           </span>
         </div>
 

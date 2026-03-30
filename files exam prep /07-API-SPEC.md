@@ -1,6 +1,6 @@
 # Layer 7 — API Specification
 
-Base URL: `https://api.certprep.io/v1`
+Base URL: `https://api.sparkupcloud.com/v1`
 Auth: Bearer token (Clerk JWT) in Authorization header
 Content-Type: application/json
 
@@ -393,7 +393,7 @@ Update daily target, session length, nudge time.
 
 ### Connection
 ```
-wss://api.certprep.io/v1/ws/study/{session_id}?token={jwt}
+wss://api.sparkupcloud.com/v1/ws/study/{session_id}?token={jwt}
 ```
 
 ### Message types (server → client)

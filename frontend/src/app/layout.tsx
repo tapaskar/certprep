@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CertPrep",
-  description: "AI-powered certification exam preparation",
+  title: "SparkUpCloud",
+  description: "SparkUpCloud — AI-powered certification exam preparation",
 };
 
 export default function RootLayout({

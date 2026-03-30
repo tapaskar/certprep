@@ -21,7 +21,7 @@ from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
-SENDER = f"CertPrep <{settings.ses_sender_email}>"
+SENDER = f"SparkUpCloud <{settings.ses_sender_email}>"
 
 
 def _send_email(to: str, subject: str, body_html: str, body_text: str) -> bool:
@@ -141,10 +141,10 @@ async def register(body: RegisterRequest, db: DB):
     # Send verification email via SES
     _send_email(
         to=body.email,
-        subject="CertPrep — Verify Your Email",
+        subject="SparkUpCloud — Verify Your Email",
         body_html=f"""
         <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
-            <h2 style="color: #1c1917; margin-bottom: 8px;">Welcome to CertPrep!</h2>
+            <h2 style="color: #1c1917; margin-bottom: 8px;">Welcome to SparkUpCloud!</h2>
             <p style="color: #57534e;">Your verification code is:</p>
             <div style="background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
                 <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #d97706;">{verification_code}</span>
@@ -152,7 +152,7 @@ async def register(body: RegisterRequest, db: DB):
             <p style="color: #78716c; font-size: 14px;">This code expires in 1 hour. If you didn't create an account, ignore this email.</p>
         </div>
         """,
-        body_text=f"Your CertPrep verification code is: {verification_code}. This code expires in 1 hour.",
+        body_text=f"Your SparkUpCloud verification code is: {verification_code}. This code expires in 1 hour.",
     )
 
     return {
@@ -267,18 +267,18 @@ async def forgot_password(body: ForgotPasswordRequest, db: DB):
         reset_url = f"https://sparkupcloud.com/reset-password?token={reset_token}"
         _send_email(
             to=body.email,
-            subject="CertPrep — Reset Your Password",
+            subject="SparkUpCloud — Reset Your Password",
             body_html=f"""
             <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
                 <h2 style="color: #1c1917; margin-bottom: 8px;">Reset Your Password</h2>
-                <p style="color: #57534e;">Click the button below to reset your CertPrep password:</p>
+                <p style="color: #57534e;">Click the button below to reset your SparkUpCloud password:</p>
                 <div style="text-align: center; margin: 24px 0;">
                     <a href="{reset_url}" style="display: inline-block; background: #f59e0b; color: white; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 8px;">Reset Password</a>
                 </div>
                 <p style="color: #78716c; font-size: 14px;">This link expires in 1 hour. If you didn't request this, ignore this email.</p>
             </div>
             """,
-            body_text=f"Reset your CertPrep password: {reset_url}  (expires in 1 hour)",
+            body_text=f"Reset your SparkUpCloud password: {reset_url}  (expires in 1 hour)",
         )
 
     # Always return success to prevent email enumeration

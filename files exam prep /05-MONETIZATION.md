@@ -155,19 +155,19 @@ REFERRAL_PROGRAM = {
     "share_triggers": [
         "pass_mock_exam",              # "I just scored 82% on a mock AWS SA Pro exam!"
         "reach_readiness_milestone",   # "I'm 80% ready for AWS SA Pro!"
-        "pass_real_exam",              # "I passed AWS SA Pro! Studied with CertPrep"
+        "pass_real_exam",              # "I passed AWS SA Pro! Studied with SparkUpCloud"
         "streak_milestone",            # "14-day study streak!"
     ],
     "share_formats": {
         "share_card": {
             "image": "auto_generated_og_image",
-            "text": "I'm preparing for {exam} with CertPrep — {readiness}% ready! Join me: {referral_link}",
+            "text": "I'm preparing for {exam} with SparkUpCloud — {readiness}% ready! Join me: {referral_link}",
             "platforms": ["twitter", "linkedin", "whatsapp", "copy_link"]
         },
         "badge_embed": {
             "format": "svg_badge",
             "usage": "linkedin_profile, github_readme, email_signature",
-            "text": "Studying for {exam} | {readiness}% ready | CertPrep"
+            "text": "Studying for {exam} | {readiness}% ready | SparkUpCloud"
         }
     }
 }
@@ -222,13 +222,13 @@ REFERRAL_ATTRIBUTION = {
 | "Concept explained in 5 min" | 2x/week | Top-of-funnel discovery |
 | "Decision tree walkthrough" | 1x/week | Mid-funnel engagement |
 | "Mock exam question breakdown" | 1x/week | Bottom-funnel conversion |
-| "I passed! My CertPrep journey" | User-generated | Social proof |
+| "I passed! My SparkUpCloud journey" | User-generated | Social proof |
 
 ### Email capture → nurture
 
 ```
 Blog visit → "Get the free SA Pro cheat sheet" → Email capture
-→ Day 0: Deliver cheat sheet + intro to CertPrep
+→ Day 0: Deliver cheat sheet + intro to SparkUpCloud
 → Day 2: "Take the free diagnostic" CTA
 → Day 5: "Your study plan based on diagnostic results"
 → Day 7: "Start your 7-day free trial"
@@ -257,5 +257,5 @@ Blog visit → "Get the free SA Pro cheat sheet" → Email capture
 |------|------|
 | Month 1-6 | Content quality (curated by certified professionals) |
 | Month 6-12 | Data advantage (IRT parameters from user responses) |
-| Year 1-2 | Pass rate reputation ("85% of CertPrep users pass") |
+| Year 1-2 | Pass rate reputation ("85% of SparkUpCloud users pass") |
 | Year 2+ | Network effects (peer comparison, team features, referrals) |
