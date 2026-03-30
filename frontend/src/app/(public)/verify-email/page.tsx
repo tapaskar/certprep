@@ -71,7 +71,7 @@ export default function VerifyEmailPage() {
     try {
       const data = await api.verifyEmail(email, fullCode);
       setSuccess("Email verified successfully!");
-      setAuthFromToken(data.access_token, data.user);
+      setAuthFromToken(data.access_token, { ...data.user, is_admin: false, active_exam_id: null });
       setTimeout(() => router.push("/onboarding"), 1000);
     } catch (err: unknown) {
       const message =

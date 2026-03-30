@@ -170,6 +170,8 @@ class ApiClient {
     timezone: string;
     plan: string;
     is_email_verified: boolean;
+    is_admin: boolean;
+    active_exam_id: string | null;
     created_at: string | null;
     last_login_at: string | null;
   }> {
@@ -205,6 +207,121 @@ class ApiClient {
         diagnostic_id: diagnosticId,
         answers,
       }),
+    });
+  }
+
+  // ── Admin ─────────────────────────────────────────────────────
+
+  async getAdminStats(): Promise<{
+    total_users: number;
+    active_today: number;
+    total_sessions: number;
+    total_answers: number;
+    exams_count: number;
+    concepts_count: number;
+    questions_count: number;
+  }> {
+    return this.request("/admin/stats");
+  }
+
+  async getAdminUsers(
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<{
+    users: Array<{
+      id: string;
+      email: string;
+      display_name: string | null;
+      plan: string;
+      is_email_verified: boolean;
+      is_admin: boolean;
+      created_at: string | null;
+      last_login_at: string | null;
+      enrollments_count: number;
+    }>;
+    total: number;
+    limit: number;
+    offset: number;
+  }> {
+    return this.request(`/admin/users?limit=${limit}&offset=${offset}`);
+  }
+
+  async getAdminUserDetail(userId: string): Promise<{
+    id: string;
+    email: string;
+    display_name: string | null;
+    plan: string;
+    is_email_verified: boolean;
+    is_admin: boolean;
+    created_at: string | null;
+    last_login_at: string | null;
+    enrollments: Array<{
+      id: string;
+      exam_id: string;
+      enrolled_at: string | null;
+      overall_readiness_pct: number;
+      concepts_mastered: number;
+      concepts_total: number;
+      current_streak_days: number;
+      is_active: boolean;
+    }>;
+    recent_sessions: Array<{
+      id: string;
+      exam_id: string;
+      session_type: string;
+      started_at: string | null;
+      ended_at: string | null;
+      questions_answered: number;
+      questions_correct: number;
+      completed: boolean;
+    }>;
+  }> {
+    return this.request(`/admin/users/${userId}`);
+  }
+
+  async toggleUserAdmin(
+    userId: string
+  ): Promise<{ id: string; email: string; is_admin: boolean }> {
+    return this.request(`/admin/users/${userId}/toggle-admin`, {
+      method: "PUT",
+    });
+  }
+
+  async getAdminExams(): Promise<
+    Array<{
+      id: string;
+      name: string;
+      code: string | null;
+      concepts_count: number;
+      questions_count: number;
+      enrolled_users_count: number;
+    }>
+  > {
+    return this.request("/admin/exams");
+  }
+
+  async getAdminQuestions(
+    examId: string
+  ): Promise<
+    Array<{
+      id: string;
+      stem: string;
+      type: string;
+      difficulty: number | null;
+      domain_id: string;
+      review_status: string;
+    }>
+  > {
+    return this.request(`/admin/content/questions?exam_id=${examId}`);
+  }
+
+  async updateQuestionStatus(
+    questionId: string,
+    status: string
+  ): Promise<{ id: string; review_status: string }> {
+    return this.request(`/admin/content/questions/${questionId}/status`, {
+      method: "PUT",
+      body: JSON.stringify({ review_status: status }),
     });
   }
 }

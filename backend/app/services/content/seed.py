@@ -72,9 +72,16 @@ async def seed_exam(db: AsyncSession, data_dir: str) -> dict[str, int]:
             referral_code="DEVTEST",
             password_hash=bcrypt.hash("password123"),
             is_email_verified=True,
+            is_admin=True,
         )
         db.add(dev_user)
         counts["dev_user"] = 1
+
+    # Make tapas admin if exists
+    result = await db.execute(select(User).where(User.email == "tapas.eric@gmail.com"))
+    tapas = result.scalar_one_or_none()
+    if tapas and not tapas.is_admin:
+        tapas.is_admin = True
 
     await db.flush()
     return counts

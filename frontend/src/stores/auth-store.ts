@@ -3,10 +3,12 @@
 import { create } from "zustand";
 import { api } from "@/lib/api";
 
-interface AuthUser {
+export interface AuthUser {
   id: string;
   email: string;
   display_name: string;
+  is_admin: boolean;
+  active_exam_id: string | null;
 }
 
 interface AuthState {
@@ -42,10 +44,11 @@ export const useAuthStore = create<AuthState>((set, get) => {
       api.setToken(data.access_token);
       set({
         token: data.access_token,
-        user: data.user,
+        user: { ...data.user, is_admin: false, active_exam_id: null },
         isAuthenticated: true,
         isLoading: false,
       });
+      // loadUser will be called from the layout to fetch full profile including is_admin
     },
 
     register: async (name: string, email: string, password: string) => {
@@ -78,6 +81,8 @@ export const useAuthStore = create<AuthState>((set, get) => {
             id: me.id,
             email: me.email,
             display_name: me.display_name,
+            is_admin: me.is_admin,
+            active_exam_id: me.active_exam_id ?? null,
           },
           isAuthenticated: true,
           isLoading: false,

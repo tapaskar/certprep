@@ -316,7 +316,21 @@ async def reset_password(body: ResetPasswordRequest, db: DB):
 
 
 @router.get("/me")
-async def get_me(user: CurrentUser):
+async def get_me(user: CurrentUser, db: DB):
+    from app.models.progress import UserExamEnrollment
+    from sqlalchemy import and_
+
+    # Get active enrollment
+    enrollment_result = await db.execute(
+        select(UserExamEnrollment).where(
+            and_(
+                UserExamEnrollment.user_id == user.id,
+                UserExamEnrollment.is_active,
+            )
+        )
+    )
+    enrollment = enrollment_result.scalar_one_or_none()
+
     return {
         "id": str(user.id),
         "email": user.email,
@@ -325,6 +339,8 @@ async def get_me(user: CurrentUser):
         "timezone": user.timezone,
         "plan": user.plan,
         "is_email_verified": user.is_email_verified,
+        "is_admin": user.is_admin,
+        "active_exam_id": enrollment.exam_id if enrollment else None,
         "created_at": user.created_at.isoformat() if user.created_at else None,
         "last_login_at": user.last_login_at.isoformat() if user.last_login_at else None,
     }

@@ -53,6 +53,7 @@ class User(Base, UUIDPrimaryKey, TimestampMixin):
     # Auth fields
     password_hash: Mapped[str | None] = mapped_column(String(255))
     is_email_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     email_verification_code: Mapped[str | None] = mapped_column(String(10))
     email_verification_expires: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     password_reset_token: Mapped[str | None] = mapped_column(String(100))

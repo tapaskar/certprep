@@ -104,3 +104,13 @@ async def get_optional_user(
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
 OptionalUser = Annotated[User | None, Depends(get_optional_user)]
+
+
+async def get_admin_user(user: CurrentUser) -> User:
+    """Require authenticated user with admin privileges."""
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
+
+
+AdminUser = Annotated[User, Depends(get_admin_user)]

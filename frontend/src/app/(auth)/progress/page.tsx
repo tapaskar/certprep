@@ -2,18 +2,19 @@
 
 import { useEffect } from "react";
 import { useProgressStore } from "@/stores/progress-store";
+import { useAuthStore } from "@/stores/auth-store";
 import { ReadinessRadar } from "@/components/progress/readiness-radar";
 import { StatsGrid } from "@/components/progress/stats-grid";
 import { DomainBars } from "@/components/progress/domain-bars";
 
-const EXAM_ID = "aws-sap-c02";
-
 export default function ProgressPage() {
   const { progress, isLoading, error, fetchProgress } = useProgressStore();
+  const user = useAuthStore((s) => s.user);
+  const examId = user?.active_exam_id;
 
   useEffect(() => {
-    fetchProgress(EXAM_ID);
-  }, [fetchProgress]);
+    if (examId) fetchProgress(examId);
+  }, [examId, fetchProgress]);
 
   if (isLoading) {
     return (
@@ -28,7 +29,7 @@ export default function ProgressPage() {
     return (
       <div className="flex h-64 flex-col items-center justify-center gap-4">
         <p className="text-stone-500">{notEnrolled ? "Complete onboarding to see your progress." : error}</p>
-        <a href={notEnrolled ? "/onboarding" : "#"} onClick={notEnrolled ? undefined : () => fetchProgress(EXAM_ID)} className="rounded-lg bg-amber-500 px-4 py-2 text-sm text-white hover:bg-amber-600">
+        <a href={notEnrolled ? "/onboarding" : "#"} onClick={notEnrolled ? undefined : () => fetchProgress(examId!)} className="rounded-lg bg-amber-500 px-4 py-2 text-sm text-white hover:bg-amber-600">
           {notEnrolled ? "Start Onboarding" : "Retry"}
         </a>
       </div>

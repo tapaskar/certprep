@@ -2,19 +2,32 @@
 
 import { useEffect } from "react";
 import { useProgressStore } from "@/stores/progress-store";
+import { useAuthStore } from "@/stores/auth-store";
 import { ReadinessCard } from "@/components/dashboard/readiness-card";
 import { StreakCard } from "@/components/dashboard/streak-card";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { WeakConcepts } from "@/components/dashboard/weak-concepts";
 
-const EXAM_ID = "aws-sap-c02";
-
 export default function DashboardPage() {
   const { progress, isLoading, error, fetchProgress } = useProgressStore();
+  const user = useAuthStore((s) => s.user);
+  const examId = user?.active_exam_id;
 
   useEffect(() => {
-    fetchProgress(EXAM_ID);
-  }, [fetchProgress]);
+    if (examId) fetchProgress(examId);
+  }, [examId, fetchProgress]);
+
+  if (!examId) {
+    return (
+      <div className="flex h-64 flex-col items-center justify-center gap-4">
+        <h2 className="text-xl font-bold text-stone-900">Welcome to SparkUpCloud!</h2>
+        <p className="text-stone-500">Pick an exam to get started.</p>
+        <a href="/onboarding" className="rounded-lg bg-amber-500 px-6 py-3 font-semibold text-white hover:bg-amber-600">
+          Start Onboarding
+        </a>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -45,7 +58,7 @@ export default function DashboardPage() {
         <p className="text-stone-500">Could not load dashboard data.</p>
         <p className="text-sm text-red-600">{error}</p>
         <button
-          onClick={() => fetchProgress(EXAM_ID)}
+          onClick={() => fetchProgress(examId!)}
           className="rounded-lg bg-amber-500 px-4 py-2 text-sm text-white hover:bg-amber-600"
         >
           Retry

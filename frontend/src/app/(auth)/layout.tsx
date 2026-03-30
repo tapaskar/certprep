@@ -3,11 +3,11 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, BookOpen, BarChart3, User, LogOut } from "lucide-react";
+import { LayoutDashboard, BookOpen, BarChart3, User, LogOut, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 
-const navItems = [
+const baseNavItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Study", href: "/study", icon: BookOpen },
   { label: "Progress", href: "/progress", icon: BarChart3 },
@@ -32,6 +32,10 @@ export default function AuthLayout({
       router.push("/login");
     }
   }, [isLoading, isAuthenticated, router]);
+
+  const navItems = user?.is_admin
+    ? [...baseNavItems, { label: "Admin", href: "/admin", icon: Shield }]
+    : baseNavItems;
 
   const handleLogout = () => {
     logout();

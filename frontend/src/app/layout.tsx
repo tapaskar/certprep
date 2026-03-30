@@ -10,6 +10,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "SparkUpCloud",
   description: "SparkUpCloud — AI-powered certification exam preparation",
+  verification: {
+    google: "fMWv6tW3hL13XD0csK9PbORizzh5c9M0L_GXC5YMVSg",
+  },
 };
 
 export default function RootLayout({

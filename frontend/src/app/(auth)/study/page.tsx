@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { useStudyStore } from "@/stores/study-store";
+import { useAuthStore } from "@/stores/auth-store";
 import { SessionPlan } from "@/components/study/session-plan";
 import { ConceptLearn } from "@/components/study/concept-learn";
 import { QuestionCard } from "@/components/study/question-card";
@@ -10,8 +11,6 @@ import { ConfidenceSelector } from "@/components/study/confidence-selector";
 import { AnswerFeedback } from "@/components/study/answer-feedback";
 import { SessionSummary } from "@/components/study/session-summary";
 import { CheatSheet } from "@/components/study/cheat-sheet";
-
-const EXAM_ID = "aws-sap-c02";
 
 export default function StudyPage() {
   return (
@@ -27,7 +26,8 @@ export default function StudyPage() {
 
 function StudyPageInner() {
   const searchParams = useSearchParams();
-  const urlMode = searchParams.get("mode"); // "review", "mock", or null
+  const urlMode = searchParams.get("mode");
+  const examId = useAuthStore((s) => s.user?.active_exam_id);
 
   const {
     phase,
@@ -52,15 +52,15 @@ function StudyPageInner() {
 
   // Auto-start session if URL has ?mode=review or ?mode=mock
   useEffect(() => {
-    if (phase !== "idle" || isLoading) return;
+    if (phase !== "idle" || isLoading || !examId) return;
     if (urlMode === "review") {
       setMode("quick_quiz");
-      createSession(EXAM_ID, 15);
+      createSession(examId, 15);
     } else if (urlMode === "mock") {
       setMode("quick_quiz");
-      createSession(EXAM_ID, 60);
+      createSession(examId, 60);
     }
-  }, [urlMode, phase, isLoading, setMode, createSession]);
+  }, [urlMode, phase, isLoading, examId, setMode, createSession]);
 
   const currentQuestion = questions[currentIndex] || null;
   const totalQuestions = questions.length;
