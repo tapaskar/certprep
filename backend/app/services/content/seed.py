@@ -4,6 +4,7 @@ import json
 from decimal import Decimal
 from pathlib import Path
 
+from passlib.hash import bcrypt
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -66,9 +67,11 @@ async def seed_exam(db: AsyncSession, data_dir: str) -> dict[str, int]:
     if not result.scalar_one_or_none():
         dev_user = User(
             clerk_id="dev_user",
-            email="dev@certprep.local",
+            email="dev@sparkupcloud.com",
             display_name="Dev User",
             referral_code="DEVTEST",
+            password_hash=bcrypt.hash("password123"),
+            is_email_verified=True,
         )
         db.add(dev_user)
         counts["dev_user"] = 1

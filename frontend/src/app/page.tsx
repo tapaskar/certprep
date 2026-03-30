@@ -46,7 +46,7 @@ export default function LandingPage() {
           Stop wasting time on what you already know.
         </p>
         <Link
-          href="/onboarding"
+          href="/register"
           className="mt-10 inline-flex h-12 items-center justify-center rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 text-base font-bold text-white shadow-md shadow-stone-200/60 hover:scale-105 transition-all"
         >
           Get Started Free

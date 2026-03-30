@@ -103,6 +103,79 @@ class ApiClient {
     return this.request(`/progress/${examId}`);
   }
 
+  // ── Auth ───────────────────────────────────────────────────────
+
+  async register(
+    name: string,
+    email: string,
+    password: string
+  ): Promise<{ user_id: string; email: string; message: string }> {
+    return this.request("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ display_name: name, email, password }),
+    });
+  }
+
+  async login(
+    email: string,
+    password: string
+  ): Promise<{
+    access_token: string;
+    token_type: string;
+    user: { id: string; email: string; display_name: string };
+  }> {
+    return this.request("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+  }
+
+  async verifyEmail(
+    email: string,
+    code: string
+  ): Promise<{
+    message: string;
+    access_token: string;
+    token_type: string;
+    user: { id: string; email: string; display_name: string };
+  }> {
+    return this.request("/auth/verify-email", {
+      method: "POST",
+      body: JSON.stringify({ email, code }),
+    });
+  }
+
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    return this.request("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+  }
+
+  async resetPassword(
+    token: string,
+    newPassword: string
+  ): Promise<{ message: string }> {
+    return this.request("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, new_password: newPassword }),
+    });
+  }
+
+  async getMe(): Promise<{
+    id: string;
+    email: string;
+    display_name: string;
+    avatar_url: string | null;
+    timezone: string;
+    plan: string;
+    is_email_verified: boolean;
+    created_at: string | null;
+    last_login_at: string | null;
+  }> {
+    return this.request("/auth/me");
+  }
+
   // ── Onboarding ─────────────────────────────────────────────────
 
   async startOnboarding(data: OnboardingStartRequest): Promise<OnboardingStartResponse> {

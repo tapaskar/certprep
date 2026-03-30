@@ -17,8 +17,12 @@ async def create_tables() -> None:
 
 async def drop_tables() -> None:
     """Drop all database tables."""
+    from sqlalchemy import text
+
     async with get_engine().begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+        # Drop all tables with CASCADE to handle circular FK deps
+        await conn.execute(text("DROP SCHEMA public CASCADE"))
+        await conn.execute(text("CREATE SCHEMA public"))
     print("Tables dropped.")
 
 

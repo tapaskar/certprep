@@ -20,10 +20,19 @@ class Settings(BaseSettings):
     # Redis
     redis_url: str = "redis://localhost:6379/0"
 
-    # Auth (Clerk)
+    # Auth (Clerk - legacy)
     clerk_secret_key: str = ""
     clerk_webhook_secret: str = ""
     clerk_issuer: str = ""
+
+    # JWT
+    jwt_secret_key: str = "certprep-jwt-secret-change-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 1440  # 24 hours
+
+    # Email (AWS SES)
+    ses_sender_email: str = "noreply@sparkupcloud.com"
+    ses_region: str = "us-east-1"
 
     # Stripe
     stripe_secret_key: str = ""

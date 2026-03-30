@@ -1,0 +1,285 @@
+"""Authentication endpoints — register, login, email verification, password reset."""
+
+import logging
+import random
+import string
+import uuid
+from datetime import datetime, timedelta, timezone
+
+from fastapi import APIRouter, HTTPException, status
+from jose import jwt
+from passlib.hash import bcrypt
+from pydantic import BaseModel, EmailStr, field_validator
+from sqlalchemy import select
+
+from app.api.deps import DB, CurrentUser
+from app.config import settings
+
+from app.models.user import User
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+# ── Schemas ──────────────────────────────────────────────────────
+
+class RegisterRequest(BaseModel):
+    email: EmailStr
+    password: str
+    display_name: str
+
+    @field_validator("password")
+    @classmethod
+    def password_min_length(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
+
+    @field_validator("display_name")
+    @classmethod
+    def display_name_not_empty(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Display name is required")
+        return v.strip()
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class VerifyEmailRequest(BaseModel):
+    email: EmailStr
+    code: str
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+    @field_validator("new_password")
+    @classmethod
+    def password_min_length(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters")
+        return v
+
+
+# ── Helpers ──────────────────────────────────────────────────────
+
+def _create_access_token(user_id: str) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(
+        minutes=settings.jwt_access_token_expire_minutes
+    )
+    payload = {"sub": user_id, "exp": expire}
+    return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
+
+
+def _generate_verification_code() -> str:
+    return "".join(random.choices(string.digits, k=6))
+
+
+# ── Endpoints ────────────────────────────────────────────────────
+
+@router.post("/register", status_code=status.HTTP_201_CREATED)
+async def register(body: RegisterRequest, db: DB):
+    # Check if email already taken
+    result = await db.execute(select(User).where(User.email == body.email))
+    if result.scalar_one_or_none():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+        )
+
+    verification_code = _generate_verification_code()
+    password_hash = bcrypt.hash(body.password)
+
+    user = User(
+        clerk_id=f"local_{uuid.uuid4().hex[:16]}",
+        email=body.email,
+        display_name=body.display_name,
+        password_hash=password_hash,
+        is_email_verified=False,
+        email_verification_code=verification_code,
+        email_verification_expires=datetime.now(timezone.utc) + timedelta(hours=1),
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+
+    # Log verification code (wire SES later)
+    logger.info(
+        "Email verification code for %s: %s", body.email, verification_code
+    )
+    print(f"\n{'='*50}")
+    print(f"VERIFICATION CODE for {body.email}: {verification_code}")
+    print(f"{'='*50}\n")
+
+    return {
+        "user_id": str(user.id),
+        "email": user.email,
+        "message": "Verification code sent",
+    }
+
+
+@router.post("/login")
+async def login(body: LoginRequest, db: DB):
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+
+    if not user or not user.password_hash:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+        )
+
+    if not bcrypt.verify(body.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+        )
+
+    if not user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Email not verified. Please check your email for the verification code.",
+        )
+
+    # Update last login
+    user.last_login_at = datetime.now(timezone.utc)
+    await db.commit()
+
+    token = _create_access_token(str(user.id))
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "display_name": user.display_name,
+        },
+    }
+
+
+@router.post("/verify-email")
+async def verify_email(body: VerifyEmailRequest, db: DB):
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+
+    if user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email already verified",
+        )
+
+    if user.email_verification_code != body.code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid verification code",
+        )
+
+    if (
+        user.email_verification_expires
+        and user.email_verification_expires < datetime.now(timezone.utc)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Verification code expired. Please request a new one.",
+        )
+
+    user.is_email_verified = True
+    user.email_verification_code = None
+    user.email_verification_expires = None
+    await db.commit()
+
+    token = _create_access_token(str(user.id))
+
+    return {
+        "message": "Email verified",
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "display_name": user.display_name,
+        },
+    }
+
+
+@router.post("/forgot-password")
+async def forgot_password(body: ForgotPasswordRequest, db: DB):
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+
+    if user:
+        reset_token = uuid.uuid4().hex
+        user.password_reset_token = reset_token
+        user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+        await db.commit()
+
+        # Log the reset link (wire SES later)
+        logger.info("Password reset token for %s: %s", body.email, reset_token)
+        print(f"\n{'='*50}")
+        print(f"PASSWORD RESET TOKEN for {body.email}: {reset_token}")
+        print(f"Reset URL: http://localhost:3000/reset-password?token={reset_token}")
+        print(f"{'='*50}\n")
+
+    # Always return success to prevent email enumeration
+    return {"message": "If that email is registered, a reset link has been sent."}
+
+
+@router.post("/reset-password")
+async def reset_password(body: ResetPasswordRequest, db: DB):
+    result = await db.execute(
+        select(User).where(User.password_reset_token == body.token)
+    )
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token",
+        )
+
+    if (
+        user.password_reset_expires
+        and user.password_reset_expires < datetime.now(timezone.utc)
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Reset token has expired. Please request a new one.",
+        )
+
+    user.password_hash = bcrypt.hash(body.new_password)
+    user.password_reset_token = None
+    user.password_reset_expires = None
+    await db.commit()
+
+    return {"message": "Password reset successful"}
+
+
+@router.get("/me")
+async def get_me(user: CurrentUser):
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "display_name": user.display_name,
+        "avatar_url": user.avatar_url,
+        "timezone": user.timezone,
+        "plan": user.plan,
+        "is_email_verified": user.is_email_verified,
+        "created_at": user.created_at.isoformat() if user.created_at else None,
+        "last_login_at": user.last_login_at.isoformat() if user.last_login_at else None,
+    }
