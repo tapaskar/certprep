@@ -33,7 +33,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
       {/* Hero */}
       <section className="flex flex-col items-center justify-center px-6 pt-20 pb-24 text-center">
-        <img src="/logo.svg" alt="SparkUpCloud" className="mb-8 h-28 w-auto" />
+        <img src="/logo.svg" alt="SparkUpCloud" className="mb-10 h-40 w-auto" />
         <h1 className="max-w-3xl text-5xl font-bold tracking-tight text-stone-900 sm:text-6xl lg:text-7xl">
           Master Your{" "}
           <span className="relative inline-block">
