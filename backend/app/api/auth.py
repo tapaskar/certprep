@@ -6,6 +6,8 @@ import string
 import uuid
 from datetime import datetime, timedelta, timezone
 
+import boto3
+from botocore.exceptions import ClientError
 from fastapi import APIRouter, HTTPException, status
 from jose import jwt
 from passlib.hash import bcrypt
@@ -18,6 +20,30 @@ from app.config import settings
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
+
+SENDER = f"CertPrep <{settings.ses_sender_email}>"
+
+
+def _send_email(to: str, subject: str, body_html: str, body_text: str) -> bool:
+    """Send an email via AWS SES. Returns True on success."""
+    try:
+        ses = boto3.client("ses", region_name=settings.ses_region)
+        ses.send_email(
+            Source=SENDER,
+            Destination={"ToAddresses": [to]},
+            Message={
+                "Subject": {"Data": subject, "Charset": "UTF-8"},
+                "Body": {
+                    "Html": {"Data": body_html, "Charset": "UTF-8"},
+                    "Text": {"Data": body_text, "Charset": "UTF-8"},
+                },
+            },
+        )
+        logger.info("Email sent to %s: %s", to, subject)
+        return True
+    except ClientError as e:
+        logger.error("SES error sending to %s: %s", to, e)
+        return False
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -112,13 +138,22 @@ async def register(body: RegisterRequest, db: DB):
     await db.commit()
     await db.refresh(user)
 
-    # Log verification code (wire SES later)
-    logger.info(
-        "Email verification code for %s: %s", body.email, verification_code
+    # Send verification email via SES
+    _send_email(
+        to=body.email,
+        subject="CertPrep — Verify Your Email",
+        body_html=f"""
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+            <h2 style="color: #1c1917; margin-bottom: 8px;">Welcome to CertPrep!</h2>
+            <p style="color: #57534e;">Your verification code is:</p>
+            <div style="background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
+                <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #d97706;">{verification_code}</span>
+            </div>
+            <p style="color: #78716c; font-size: 14px;">This code expires in 1 hour. If you didn't create an account, ignore this email.</p>
+        </div>
+        """,
+        body_text=f"Your CertPrep verification code is: {verification_code}. This code expires in 1 hour.",
     )
-    print(f"\n{'='*50}")
-    print(f"VERIFICATION CODE for {body.email}: {verification_code}")
-    print(f"{'='*50}\n")
 
     return {
         "user_id": str(user.id),
@@ -229,12 +264,22 @@ async def forgot_password(body: ForgotPasswordRequest, db: DB):
         user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
         await db.commit()
 
-        # Log the reset link (wire SES later)
-        logger.info("Password reset token for %s: %s", body.email, reset_token)
-        print(f"\n{'='*50}")
-        print(f"PASSWORD RESET TOKEN for {body.email}: {reset_token}")
-        print(f"Reset URL: http://localhost:3000/reset-password?token={reset_token}")
-        print(f"{'='*50}\n")
+        reset_url = f"https://sparkupcloud.com/reset-password?token={reset_token}"
+        _send_email(
+            to=body.email,
+            subject="CertPrep — Reset Your Password",
+            body_html=f"""
+            <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
+                <h2 style="color: #1c1917; margin-bottom: 8px;">Reset Your Password</h2>
+                <p style="color: #57534e;">Click the button below to reset your CertPrep password:</p>
+                <div style="text-align: center; margin: 24px 0;">
+                    <a href="{reset_url}" style="display: inline-block; background: #f59e0b; color: white; font-weight: bold; text-decoration: none; padding: 14px 32px; border-radius: 8px;">Reset Password</a>
+                </div>
+                <p style="color: #78716c; font-size: 14px;">This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+            </div>
+            """,
+            body_text=f"Reset your CertPrep password: {reset_url}  (expires in 1 hour)",
+        )
 
     # Always return success to prevent email enumeration
     return {"message": "If that email is registered, a reset link has been sent."}
