@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-pcde-001",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "type": "comparison",
+    "difficulty": 4,
+    "stem": "A global e-commerce platform processes 10,000 financial transactions per second across multiple continents. All transactions must be ACID compliant with global consistency. An account balance deducted in US must be immediately consistent when read in Asia. Which database meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Cloud SQL PostgreSQL with multi-region read replicas", "is_correct": false},
+      {"id": "B", "text": "Cloud Spanner in a multi-region configuration", "is_correct": true},
+      {"id": "C", "text": "Bigtable with multi-cluster replication", "is_correct": false},
+      {"id": "D", "text": "Firestore with strong consistency mode", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Spanner is the only database providing global ACID transactions with external consistency (stronger than serializable). Its multi-region configuration guarantees that a transaction committed in US is immediately consistent in Asia with 99.999% SLA — designed exactly for global financial applications.",
+      "why_not_A": "Cloud SQL multi-region read replicas use asynchronous replication; reads from Asia may see stale data after a US write. This violates the global consistency requirement.",
+      "why_not_C": "Bigtable provides high throughput but no ACID guarantees across multiple rows or regions. It doesn't support financial transaction patterns.",
+      "why_not_D": "Firestore provides strong consistency within a single region; it doesn't offer globally consistent multi-region ACID transactions at Spanner's scale."
+    },
+    "concept_ids": ["pcde-spanner", "pcde-db-selection"],
+    "tags": ["cloud-spanner", "global-consistency", "acid-transactions", "financial"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-002",
+    "exam_id": "gcp-pcde",
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to migrate their on-premises MySQL 8.0 database (1 TB) to Cloud SQL for MySQL with less than 5 minutes of downtime. The database must remain operational during migration. Which approach achieves this?",
+    "options": [
+      {"id": "A", "text": "Export a MySQL dump file, upload to Cloud Storage, import to Cloud SQL — accept the downtime", "is_correct": false},
+      {"id": "B", "text": "Use Database Migration Service with continuous migration using binary log replication", "is_correct": true},
+      {"id": "C", "text": "Create a Cloud SQL instance, stop the source database, use mysqldump, and restore", "is_correct": false},
+      {"id": "D", "text": "Use Transfer Appliance to move the 1 TB MySQL data offline", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DMS continuously replicates MySQL changes using binary log replication. The initial full dump is done while the source is running, then DMS replays binlog events to keep Cloud SQL in sync. The cutover window is seconds (stop writes, wait for replication to catch up, switch connection strings) — well within 5 minutes.",
+      "why_not_A": "A mysqldump + restore of 1 TB requires significant downtime during the dump, upload, and import phases — likely hours, not 5 minutes.",
+      "why_not_C": "Stopping the source database for any duration exceeds the 5-minute downtime requirement. This is a full maintenance window approach.",
+      "why_not_D": "Transfer Appliance is for offline petabyte-scale transfers; it takes days for shipping/processing — not suitable for minimal downtime migration."
+    },
+    "concept_ids": ["pcde-database-migration"],
+    "tags": ["dms", "mysql", "cloud-sql", "minimal-downtime"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-003",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A Bigtable table stores user activity events with row key 'user_id#timestamp'. A Key Visualizer report shows a large hotspot concentrated on rows with timestamps in the last minute. What is the root cause and the fix?",
+    "options": [
+      {"id": "A", "text": "Too many column families; reduce to one column family", "is_correct": false},
+      {"id": "B", "text": "Ascending timestamp suffix causes all recent writes to land on the same tablet; use reverse timestamp", "is_correct": true},
+      {"id": "C", "text": "The user_id prefix is too short; use a longer unique identifier", "is_correct": false},
+      {"id": "D", "text": "The Bigtable cluster has too few nodes; scale up to handle the hotspot", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Bigtable stores rows in lexicographic order. Ascending timestamps (most recent = largest value) cause all current writes to concentrate on the last tablet (the one with the highest row keys), creating a write hotspot. Reverse timestamp (Long.MAX_VALUE - timestamp) makes recent rows sort to the BEGINNING, distributing writes.",
+      "why_not_A": "Column families don't cause write hotspots. The hotspot is in row key space distribution, not schema structure.",
+      "why_not_C": "Longer user_id doesn't fix the timestamp hotspot. The user_id prefix helps distribute users, but if timestamps are ascending, recent events for ALL users still land on the last tablet.",
+      "why_not_D": "Adding nodes increases overall throughput but doesn't fix key-level hotspots — one tablet still handles all recent writes regardless of cluster size."
+    },
+    "concept_ids": ["pcde-bigtable-design"],
+    "tags": ["bigtable", "key-visualizer", "hotspot", "row-key-design"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-004",
+    "exam_id": "gcp-pcde",
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Cloud SQL PostgreSQL instance is in us-central1 (primary with HA standby). The company needs to ensure the database remains accessible if the entire us-central1 region fails, with RPO of 1 hour and RTO of 4 hours. What configuration achieves this?",
+    "options": [
+      {"id": "A", "text": "The HA standby instance in a different zone provides regional failover automatically", "is_correct": false},
+      {"id": "B", "text": "Create a cross-region read replica in us-east1; promote it manually during a regional failure", "is_correct": true},
+      {"id": "C", "text": "Enable Cloud SQL automated backups and restore to a new instance in us-east1 during failure", "is_correct": false},
+      {"id": "D", "text": "Migrate to Cloud Spanner multi-region for automatic regional failover", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A cross-region read replica in us-east1 receives continuous asynchronous replication from the primary. During a regional failure, operators promote the replica to a standalone primary (within hours — meeting RTO of 4 hours). Asynchronous replication means RPO is minutes to hours, but 1 hour RPO is achievable with monitoring.",
+      "why_not_A": "Cloud SQL HA standby is within the same region (different zone). It provides zone-level redundancy but does NOT protect against full regional failures — both primary and standby are in us-central1.",
+      "why_not_C": "Restoring from backup (which runs once daily) could have RPO of up to 24 hours, exceeding the 1-hour RPO requirement. A read replica provides much lower RPO.",
+      "why_not_D": "Migrating to Spanner is a large architectural change. The question asks for a DR configuration of the existing Cloud SQL setup."
+    },
+    "concept_ids": ["pcde-disaster-recovery", "pcde-cloud-sql-ha"],
+    "tags": ["cloud-sql", "cross-region-replica", "disaster-recovery", "rpo-rto"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-005",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A startup is building a mobile app where users can store personal notes. Notes are JSON documents with fields like title, content, tags, and created_at. The team expects 100K users with occasional writes and frequent reads. Which database is most appropriate for the lowest operational overhead?",
+    "options": [
+      {"id": "A", "text": "Cloud SQL PostgreSQL with a JSONB column for note data", "is_correct": false},
+      {"id": "B", "text": "Bigtable with user_id as row key and note fields as column qualifiers", "is_correct": false},
+      {"id": "C", "text": "Firestore in Native mode — serverless document database with automatic scaling and offline sync", "is_correct": true},
+      {"id": "D", "text": "Cloud Spanner with a notes table and ARRAY type for tags", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Firestore is serverless (zero operational overhead), natively supports JSON document model, scales automatically from 0 to millions of users, offers offline sync for mobile apps, and has a Firebase SDK for easy iOS/Android integration. Perfect for a startup mobile app with 100K users.",
+      "why_not_A": "Cloud SQL requires managing an instance (sizing, patching, HA configuration). For a startup, this operational overhead is unnecessary when Firestore provides the same functionality serverlessly.",
+      "why_not_B": "Bigtable is optimized for high-throughput analytics, not mobile document storage. It has no offline sync SDK and requires capacity planning — not appropriate for a startup at this scale.",
+      "why_not_D": "Spanner is designed for high-scale globally consistent ACID workloads. It's expensive and complex for a 100K user startup storing personal notes."
+    },
+    "concept_ids": ["pcde-firestore-design", "pcde-db-selection"],
+    "tags": ["firestore", "mobile-app", "serverless", "document-db"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-006",
+    "exam_id": "gcp-pcde",
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineering team wants to run SQL analytical queries joining Cloud SQL (operational transactions) with BigQuery (historical warehouse data). The Cloud SQL table has 100 million rows. Which BigQuery feature enables this without loading all Cloud SQL data into BigQuery?",
+    "options": [
+      {"id": "A", "text": "BigQuery Data Transfer Service to schedule daily loads from Cloud SQL", "is_correct": false},
+      {"id": "B", "text": "BigQuery federated queries connecting to the Cloud SQL source directly", "is_correct": true},
+      {"id": "C", "text": "Dataflow pipeline to stream Cloud SQL changes to BigQuery continuously", "is_correct": false},
+      {"id": "D", "text": "BigQuery Storage API to read directly from Cloud SQL", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "BigQuery federated queries can connect to Cloud SQL (MySQL, PostgreSQL) and run SQL joins between Cloud SQL tables and BigQuery native tables in a single query without pre-loading the data. This provides the most flexibility for ad-hoc analysis.",
+      "why_not_A": "Daily data transfer loads a full or incremental copy of Cloud SQL data; it introduces up to 24-hour latency and requires maintaining the copy. Federated queries are more flexible for ad-hoc analysis.",
+      "why_not_C": "A Dataflow streaming pipeline is a valid approach for real-time sync but requires ongoing compute costs and engineering effort — more than needed for federated analytical queries.",
+      "why_not_D": "BigQuery Storage API is for reading BigQuery data from external applications; it doesn't connect to Cloud SQL."
+    },
+    "concept_ids": ["pcde-bigquery-analytics"],
+    "tags": ["bigquery", "federated-queries", "cloud-sql", "analytics"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-007",
+    "exam_id": "gcp-pcde",
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Cloud SQL PostgreSQL database serving a production web application is experiencing intermittent slow queries (> 2 seconds) that weren't present last month. What is the most efficient first step to diagnose the root cause?",
+    "options": [
+      {"id": "A", "text": "Increase the Cloud SQL instance to a larger machine type", "is_correct": false},
+      {"id": "B", "text": "Use Cloud SQL Insights to analyze query performance, identify slow queries, and check wait events", "is_correct": true},
+      {"id": "C", "text": "Enable Point-in-Time Recovery to restore the database to last month's state", "is_correct": false},
+      {"id": "D", "text": "Failover to the HA standby instance to test if the primary has hardware issues", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud SQL Insights provides query performance analysis specific to each SQL statement including average latency, execution count, plan details, and wait events (Lock/IO/CPU). Since the issue started recently, looking at slow query patterns and wait events is the diagnostic first step.",
+      "why_not_A": "Increasing machine type without identifying the bottleneck may not fix the issue and increases cost. The bottleneck could be query design (missing index), locking, or a parameter change — not insufficient CPU.",
+      "why_not_C": "PITR would restore data but not fix application performance issues. It's a DR tool, not a diagnostic tool.",
+      "why_not_D": "Failing over to the standby tests hardware but would cause unnecessary downtime. If the issue is a SQL query problem, failover won't help."
+    },
+    "concept_ids": ["pcde-performance-tuning"],
+    "tags": ["cloud-sql-insights", "performance-tuning", "slow-queries"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-008",
+    "exam_id": "gcp-pcde",
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating from Oracle to AlloyDB for PostgreSQL. Their Oracle schema uses Oracle-specific syntax including CONNECT BY for hierarchical queries and TO_DATE functions. What is the most efficient tool for handling the SQL conversion?",
+    "options": [
+      {"id": "A", "text": "Manually rewrite all Oracle SQL to PostgreSQL syntax", "is_correct": false},
+      {"id": "B", "text": "Use Database Migration Service's conversion workspace for Oracle-to-PostgreSQL SQL assessment and translation", "is_correct": true},
+      {"id": "C", "text": "Use Cloud Dataflow to transform Oracle data before loading into AlloyDB", "is_correct": false},
+      {"id": "D", "text": "Use ora2pg tool for schema extraction and then manually tune the output", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DMS conversion workspace provides Oracle to PostgreSQL schema and SQL translation, including Oracle-specific syntax detection. It identifies incompatible SQL patterns and provides automated translation where possible, flagging complex elements (like CONNECT BY) for manual review — the most efficient starting point.",
+      "why_not_A": "Manual rewriting is time-consuming and error-prone. Automated tools should be used first to translate what they can, leaving only complex patterns for manual review.",
+      "why_not_C": "Dataflow handles data transformation/movement, not SQL syntax conversion or schema migration.",
+      "why_not_D": "ora2pg is a valid open-source alternative, but the question asks about GCP-native tools. DMS conversion workspace is the Google-native approach."
+    },
+    "concept_ids": ["pcde-cloudsql-migration-tools"],
+    "tags": ["oracle-migration", "alloydb", "dms", "sql-conversion"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-009",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A Cloud Spanner table stores order records. The primary key is ORDER_ID which is generated as a monotonically increasing integer (1, 2, 3...). What is the primary concern with this design?",
+    "options": [
+      {"id": "A", "text": "Spanner doesn't support integer primary keys", "is_correct": false},
+      {"id": "B", "text": "Sequential integer keys create a write hotspot on the last split, limiting write throughput", "is_correct": true},
+      {"id": "C", "text": "Integer keys cannot be used in WHERE clauses for filtering", "is_correct": false},
+      {"id": "D", "text": "Monotonically increasing keys use more storage than UUID keys", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Spanner distributes data across splits (shards) based on key ordering. All new inserts with monotonically increasing IDs land on the last split (highest key range), creating a write hotspot. This limits write throughput to the capacity of one split instead of distributing writes across all splits.",
+      "why_not_A": "Spanner fully supports integer primary keys. The problem is the sequential pattern, not the type.",
+      "why_not_C": "Integer keys work perfectly in WHERE clauses for filtering and range queries.",
+      "why_not_D": "Storage differences between integer and UUID keys are negligible. The concern is performance (write distribution), not storage."
+    },
+    "concept_ids": ["pcde-spanner"],
+    "tags": ["spanner", "hotspot", "primary-key", "sequential-keys"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-010",
+    "exam_id": "gcp-pcde",
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Cloud SQL instance is at 95% CPU during business hours due to read-heavy analytics queries. Write operations are minimal. What is the most cost-effective solution to reduce primary instance load?",
+    "options": [
+      {"id": "A", "text": "Upgrade the primary instance to a higher machine type with more vCPUs", "is_correct": false},
+      {"id": "B", "text": "Create read replicas and direct analytics queries to the replicas", "is_correct": true},
+      {"id": "C", "text": "Migrate the analytics queries to BigQuery by loading a copy of the data daily", "is_correct": false},
+      {"id": "D", "text": "Enable Cloud SQL automatic storage increase to reduce I/O pressure", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Read replicas receive asynchronous replication from the primary and can serve read queries independently. By directing analytics queries to read replicas, the primary CPU is freed for write operations. This is more cost-effective than scaling the primary (which still needs to handle all reads).",
+      "why_not_A": "Scaling the primary increases cost and still processes all read traffic on one instance. It doesn't distribute the load. A read replica distributes reads to separate instances.",
+      "why_not_C": "Loading data to BigQuery daily adds an hour of staleness to analytics. If analysts can tolerate this delay, it's valid, but it's more complex than adding a read replica.",
+      "why_not_D": "Storage auto-increase adds disk space; it doesn't affect CPU. CPU is at 95%, not disk I/O."
+    },
+    "concept_ids": ["pcde-cloud-sql-ha"],
+    "tags": ["cloud-sql", "read-replica", "read-scaling", "analytics"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-011",
+    "exam_id": "gcp-pcde",
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An application uses Memorystore for Redis for session caching. During a Redis failover (zone failure), sessions are lost and users are logged out. Which Redis configuration prevents this?",
+    "options": [
+      {"id": "A", "text": "Enable persistence (RDB or AOF) on the Basic Tier Redis instance", "is_correct": false},
+      {"id": "B", "text": "Upgrade to Memorystore Standard Tier with high availability across two zones", "is_correct": true},
+      {"id": "C", "text": "Set Redis maxmemory-policy to allkeys-lru to preserve most-used sessions", "is_correct": false},
+      {"id": "D", "text": "Configure application-level session replication between two Redis instances", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Memorystore Standard Tier maintains a replica in a different zone with automatic failover. During a zone failure, Memorystore promotes the replica to primary, typically within 1-2 minutes, preserving session data. Basic Tier is single-node with no replication.",
+      "why_not_A": "Persistence (RDB/AOF) saves data to disk for recovery after a full restart but doesn't help during a live failover — there's still a period of unavailability. Also, Basic Tier supports limited persistence options.",
+      "why_not_C": "LRU eviction policy manages memory capacity; it doesn't provide HA or prevent data loss during a zone failure.",
+      "why_not_D": "Application-level session replication adds complexity and requires maintaining two Redis instances manually. The Standard Tier handles this automatically."
+    },
+    "concept_ids": ["pcde-memorystore"],
+    "tags": ["memorystore", "redis", "high-availability", "session-management"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-012",
+    "exam_id": "gcp-pcde",
+    "domain_id": "deploy-databases",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A team wants to enable developers to connect to Cloud SQL from their laptops securely. The DBA does not want to manage IP allowlists or expose the database to the public internet. What is the recommended approach?",
+    "options": [
+      {"id": "A", "text": "Add the Cloud SQL instance's public IP to a VPC subnet and use internal IPs", "is_correct": false},
+      {"id": "B", "text": "Use Cloud SQL Auth Proxy with IAM authentication on each developer's laptop", "is_correct": true},
+      {"id": "C", "text": "Create a Cloud Interconnect connection from each developer's home network", "is_correct": false},
+      {"id": "D", "text": "Enable SSL on Cloud SQL and distribute client certificates to developers", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud SQL Auth Proxy authenticates using the developer's GCP IAM credentials (gcloud auth), establishes an encrypted tunnel to Cloud SQL, and exposes a local TCP port. No IP allowlists, no public IP management, and no certificate distribution required. Each developer's access is controlled via IAM roles.",
+      "why_not_A": "Cloud SQL public IP remains on the internet; adding it to a subnet doesn't make it private. IP allowlists are still required for security.",
+      "why_not_C": "Cloud Interconnect is for enterprise network-to-network connectivity; it's completely inappropriate for individual developer laptop access.",
+      "why_not_D": "SSL with client certificates requires distributing and managing certificates for each developer, rotating them regularly — the operational overhead the DBA wants to avoid."
+    },
+    "concept_ids": ["pcde-db-security"],
+    "tags": ["cloud-sql-auth-proxy", "developer-access", "iam-authentication"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-013",
+    "exam_id": "gcp-pcde",
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to replicate changes from a production Cloud SQL PostgreSQL instance to BigQuery in near-real-time (within 5 minutes) for analytics. New rows are inserted frequently; some rows are updated. Which solution achieves this with minimal custom code?",
+    "options": [
+      {"id": "A", "text": "Schedule a Cloud Composer DAG to run hourly and load new rows from Cloud SQL to BigQuery", "is_correct": false},
+      {"id": "B", "text": "Configure Datastream to replicate changes from Cloud SQL to BigQuery using CDC", "is_correct": true},
+      {"id": "C", "text": "Use a Cloud Function triggered by Cloud Scheduler every 5 minutes to sync rows", "is_correct": false},
+      {"id": "D", "text": "Enable BigQuery federated queries and connect directly to Cloud SQL", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Datastream is purpose-built for CDC (Change Data Capture) replication from Cloud SQL (MySQL, PostgreSQL) to BigQuery. It captures inserts, updates, and deletes continuously using WAL/binlog, with typical latency under 60 seconds — well within the 5-minute requirement. Minimal custom code needed.",
+      "why_not_A": "Cloud Composer with hourly DAGs provides 1-hour latency at minimum, far exceeding the 5-minute requirement.",
+      "why_not_C": "A Cloud Function checking every 5 minutes with SQL queries to detect changes requires change tracking logic (timestamps, CDC tables), is fragile, and misses delete operations.",
+      "why_not_D": "BigQuery federated queries read from Cloud SQL at query time — they provide current state, not historical changes, and have performance limitations for frequent analytical queries."
+    },
+    "concept_ids": ["pcde-database-migration"],
+    "tags": ["datastream", "cdc", "cloud-sql", "bigquery", "real-time"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-014",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A company runs a PostgreSQL workload requiring 200K transactions per second with complex analytical queries mixed with OLTP. Standard Cloud SQL performance is insufficient. Which Google Cloud database handles both workloads on PostgreSQL?",
+    "options": [
+      {"id": "A", "text": "Cloud SQL with the maximum 96 vCPU machine type", "is_correct": false},
+      {"id": "B", "text": "AlloyDB for PostgreSQL with the columnar engine enabled", "is_correct": true},
+      {"id": "C", "text": "Cloud Spanner with PostgreSQL dialect", "is_correct": false},
+      {"id": "D", "text": "Cloud SQL with read replicas for analytics", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AlloyDB is purpose-built for HTAP (hybrid transactional/analytical processing). Its columnar engine automatically accelerates analytical queries up to 100x while maintaining full PostgreSQL ACID OLTP performance. It handles much higher throughput than Cloud SQL.",
+      "why_not_A": "Even the maximum Cloud SQL machine type is insufficient for 200K TPS. Cloud SQL's architecture has inherent single-node throughput limits.",
+      "why_not_C": "Cloud Spanner PostgreSQL dialect doesn't provide native PostgreSQL compatibility for existing PostgreSQL applications. AlloyDB is fully PostgreSQL-compatible.",
+      "why_not_D": "Read replicas offload read traffic but still have a single primary throughput bottleneck for writes. They also create staleness issues for mixed OLTP+analytics patterns."
+    },
+    "concept_ids": ["pcde-alloydb"],
+    "tags": ["alloydb", "htap", "postgresql", "performance"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcde-015",
+    "exam_id": "gcp-pcde",
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team deploys a new version of their application with a database schema change: adding a NOT NULL column 'status' to the Cloud SQL PostgreSQL 'orders' table. The application expects existing rows to have status = 'pending'. How should this be deployed with zero downtime?",
+    "options": [
+      {"id": "A", "text": "Run ALTER TABLE orders ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pending' during a maintenance window", "is_correct": false},
+      {"id": "B", "text": "Use expand-contract: first ADD COLUMN status VARCHAR(20) DEFAULT 'pending', deploy new code, then add NOT NULL constraint once all rows have values", "is_correct": true},
+      {"id": "C", "text": "Stop the application, run the migration, restart the application", "is_correct": false},
+      {"id": "D", "text": "Create a new table with the column and switch application to use it", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The expand-contract pattern: (1) Add column with DEFAULT (existing rows get 'pending', new code works with the column), (2) deploy new application code that writes status, (3) once all rows have values, add NOT NULL constraint. This avoids locking tables for large migrations and maintains backward compatibility during rollout.",
+      "why_not_A": "Adding NOT NULL without DEFAULT fails if existing rows would violate the constraint. With DEFAULT it works, but on large tables, this locks the table briefly in PostgreSQL. The expand-contract approach is safer for zero-downtime.",
+      "why_not_C": "Stopping the application for a schema change causes downtime — the requirement is zero downtime.",
+      "why_not_D": "Creating a new table requires migrating all data and switching queries — much more complex than the expand-contract migration."
+    },
+    "concept_ids": ["pcde-schema-migration"],
+    "tags": ["schema-migration", "zero-downtime", "expand-contract", "postgresql"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  }
+]

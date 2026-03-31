@@ -1,0 +1,422 @@
+[
+  {
+    "id": "dp300-azure-sql-deployment",
+    "exam_id": "azure-dp300",
+    "domain_id": "plan-implement-data-platform",
+    "topic_id": "sql-deployment",
+    "name": "Azure SQL Deployment Options",
+    "description": "Choosing and deploying the right Azure SQL service for specific requirements including compatibility, scale, and cost.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure SQL Database (single database): PaaS, auto-patching, built-in HA, serverless compute option",
+      "Elastic Pool: multiple databases share resources; cost-effective for variable workloads",
+      "Azure SQL Managed Instance: near 100% SQL Server compatibility, VNet-integrated, cross-database queries",
+      "SQL Server on Azure VMs: full control, any SQL version, OS access required for legacy features",
+      "Hyperscale tier enables databases up to 100TB with fast scale-up and rapid backups"
+    ],
+    "common_misconceptions": [
+      "SQL Managed Instance is not deployed publicly; it requires a dedicated subnet in a VNet",
+      "Serverless SQL Database auto-pauses after inactivity; first request after pause has a cold start delay"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure SQL Managed Instance", "SQL Server on Azure VMs"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "dp300-ha-dr-strategy", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+deployment+options+administrator",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/azure-sql-iaas-vs-paas-what-is-overview"
+  },
+  {
+    "id": "dp300-database-authentication",
+    "exam_id": "azure-dp300",
+    "domain_id": "implement-secure-environment",
+    "topic_id": "db-authentication",
+    "name": "Database Authentication and Authorization",
+    "description": "Implementing secure authentication mechanisms and fine-grained authorization for Azure SQL databases.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure SQL supports SQL authentication and Microsoft Entra ID authentication",
+      "Entra ID authentication is recommended; it supports MFA and eliminates password management",
+      "Logins are server-level principals; users are database-level principals mapped to logins",
+      "Contained database users exist only in the database without server-level login dependency",
+      "Database roles (db_owner, db_reader, db_writer) simplify permission management"
+    ],
+    "common_misconceptions": [
+      "sa login in SQL Database is not available; the server admin account set at creation time is equivalent",
+      "Entra ID admin on SQL server can grant Entra ID authentication; SQL auth can coexist with Entra auth"
+    ],
+    "azure_services": ["Azure SQL Database", "Microsoft Entra ID", "Azure SQL Managed Instance"],
+    "prerequisites": ["dp300-azure-sql-deployment"],
+    "lateral_relations": [
+      {"concept_id": "dp300-data-protection", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+authentication+security",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-overview"
+  },
+  {
+    "id": "dp300-data-protection",
+    "exam_id": "azure-dp300",
+    "domain_id": "implement-secure-environment",
+    "topic_id": "data-encryption",
+    "name": "Data Protection and Encryption",
+    "description": "Protecting data at rest, in transit, and in use using Azure SQL encryption features.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "TDE (Transparent Data Encryption) encrypts database, log, and backup files at rest automatically",
+      "Always Encrypted performs client-side column-level encryption; SQL engine never sees plaintext",
+      "Dynamic Data Masking obfuscates sensitive data in query results without storing masked data",
+      "Row-Level Security (RLS) restricts which rows a user can query using security predicates",
+      "SSL/TLS encryption is enforced for all connections to Azure SQL; TLS 1.2 minimum"
+    ],
+    "common_misconceptions": [
+      "Dynamic Data Masking does not prevent privileged users (db_owner) from seeing real data",
+      "Always Encrypted deterministic encryption supports equality comparisons; randomized encryption does not"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure Key Vault", "Microsoft Purview"],
+    "prerequisites": ["dp300-database-authentication"],
+    "lateral_relations": [
+      {"concept_id": "dp300-database-authentication", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+encryption+TDE+always+encrypted",
+    "official_doc_url": "https://learn.microsoft.com/en-us/sql/relational-databases/security/encryption/transparent-data-encryption"
+  },
+  {
+    "id": "dp300-query-performance",
+    "exam_id": "azure-dp300",
+    "domain_id": "monitor-optimize-resources",
+    "topic_id": "query-performance",
+    "name": "Query Performance Monitoring and Optimization",
+    "description": "Identifying and resolving query performance issues in Azure SQL using DMVs, Query Store, and execution plans.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Query Store captures query text, execution plans, and runtime statistics for performance analysis",
+      "Dynamic Management Views (DMVs) expose real-time server state including blocking, waits, and resource use",
+      "Execution plans show estimated vs actual cost, operator types, and data flow between operators",
+      "Index analysis: missing index DMVs suggest potentially useful indexes; unused index DMVs flag maintenance overhead",
+      "Automatic Tuning in Azure SQL creates and drops indexes based on Query Store insights automatically"
+    ],
+    "common_misconceptions": [
+      "Adding more indexes always improves read performance but increases write overhead and storage",
+      "Estimated execution plans are generated without running the query; actual plans require execution"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure SQL Managed Instance", "Azure Monitor"],
+    "prerequisites": ["dp300-azure-sql-deployment"],
+    "lateral_relations": [
+      {"concept_id": "dp300-resource-monitoring", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+query+performance+azure+sql+query+store",
+    "official_doc_url": "https://learn.microsoft.com/en-us/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store"
+  },
+  {
+    "id": "dp300-resource-monitoring",
+    "exam_id": "azure-dp300",
+    "domain_id": "monitor-optimize-resources",
+    "topic_id": "resource-monitoring",
+    "name": "Azure SQL Resource Monitoring",
+    "description": "Monitoring database resource utilization and health using Azure Monitor, metrics, and intelligent insights.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure SQL Database metrics: CPU percentage, DTU percentage, data IO, log IO, and connection count",
+      "Intelligent Insights detects and diagnoses performance issues using AI pattern recognition",
+      "Azure Monitor diagnostic settings export SQL metrics and logs to Log Analytics or Storage",
+      "Resource Health shows the current and historical availability of the SQL database",
+      "Alerting on CPU or DTU thresholds enables proactive scaling before performance degrades"
+    ],
+    "common_misconceptions": [
+      "DTU model metrics differ from vCore metrics; compare CPU % for both, but DTU bundles compute, IO, and memory",
+      "Intelligent Insights can detect degradations caused by plan regression, increased data volume, or blocking"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure Monitor", "Azure Log Analytics"],
+    "prerequisites": ["dp300-query-performance"],
+    "lateral_relations": [
+      {"concept_id": "dp300-query-performance", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+monitoring+performance",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/monitor-tune-overview"
+  },
+  {
+    "id": "dp300-sql-agent-automation",
+    "exam_id": "azure-dp300",
+    "domain_id": "configure-manage-automation",
+    "topic_id": "sql-agent",
+    "name": "SQL Agent Jobs and Automation",
+    "description": "Automating database maintenance tasks using SQL Agent, Elastic Jobs, and Azure Automation.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SQL Server Agent runs scheduled T-SQL jobs, SSIS packages, and maintenance plans on SQL MI and VMs",
+      "Azure SQL Database does not support SQL Agent; use Elastic Database Jobs for multi-database automation",
+      "Elastic Jobs run T-SQL against a database, elastic pool, or shard map on a schedule or on demand",
+      "Azure Automation Runbooks can execute PowerShell or Python for database management tasks",
+          "Maintenance tasks: index rebuild/reorganize, statistics update, backup verification, consistency checks"
+    ],
+    "common_misconceptions": [
+      "SQL Agent is not available in Azure SQL Database (single database or elastic pool); only in SQL MI",
+      "Elastic Jobs require an Elastic Job Agent resource deployed in Azure in addition to the agent database"
+    ],
+    "azure_services": ["Azure SQL Managed Instance", "Azure Elastic Jobs", "Azure Automation"],
+    "prerequisites": ["dp300-azure-sql-deployment"],
+    "lateral_relations": [
+      {"concept_id": "dp300-resource-monitoring", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+automation+elastic+jobs",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/elastic-jobs-overview"
+  },
+  {
+    "id": "dp300-index-management",
+    "exam_id": "azure-dp300",
+    "domain_id": "configure-manage-automation",
+    "topic_id": "index-management",
+    "name": "Index Management and Maintenance",
+    "description": "Designing, maintaining, and automating index management for optimal query performance in Azure SQL.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Clustered indexes define physical row order; each table can have only one clustered index",
+      "Non-clustered indexes have separate B-tree structures pointing to the base table rows",
+      "Index fragmentation causes read performance degradation; rebuild recreates, reorganize defragments in place",
+      "Covering indexes include non-key columns (INCLUDE) to satisfy queries without key lookups",
+      "Automatic index management in Azure SQL Database creates and drops indexes based on usage patterns"
+    ],
+    "common_misconceptions": [
+      "Rebuilding an index acquires a table lock by default; use ONLINE=ON to allow concurrent DML operations",
+      "Statistics are separate from indexes but equally important for optimal query plan generation"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure SQL Managed Instance"],
+    "prerequisites": ["dp300-query-performance"],
+    "lateral_relations": [
+      {"concept_id": "dp300-query-performance", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+index+management",
+    "official_doc_url": "https://learn.microsoft.com/en-us/sql/relational-databases/indexes/reorganize-and-rebuild-indexes"
+  },
+  {
+    "id": "dp300-ha-dr-strategy",
+    "exam_id": "azure-dp300",
+    "domain_id": "plan-hadr-environment",
+    "topic_id": "hadr",
+    "name": "High Availability and Disaster Recovery for Azure SQL",
+    "description": "Designing and implementing HA/DR solutions for Azure SQL databases to meet RTO and RPO objectives.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Azure SQL Business Critical tier uses Always On availability groups for local HA with readable secondary",
+      "Active Geo-Replication asynchronously replicates a database to up to 4 readable secondaries in other regions",
+      "Auto-Failover Groups provide transparent endpoint DNS name that redirects after failover automatically",
+      "RTO (Recovery Time Objective) is the maximum acceptable downtime; RPO is the maximum acceptable data loss",
+      "Zone-redundant configuration spreads replicas across AZs for protection against datacenter failures"
+    ],
+    "common_misconceptions": [
+      "Auto-failover groups use a single endpoint; applications do not need to change connection strings after failover",
+      "Geo-Replication provides a readable secondary but is not the same as Failover Groups; failover is manual"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure SQL Managed Instance", "Auto-Failover Groups"],
+    "prerequisites": ["dp300-azure-sql-deployment"],
+    "lateral_relations": [
+      {"concept_id": "dp300-backup-restore", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+high+availability+disaster+recovery",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/high-availability-sla-local-zone-redundancy"
+  },
+  {
+    "id": "dp300-backup-restore",
+    "exam_id": "azure-dp300",
+    "domain_id": "plan-hadr-environment",
+    "topic_id": "backup-restore",
+    "name": "Azure SQL Backup and Restore",
+    "description": "Understanding automated backups, Point-in-Time Restore, and long-term retention in Azure SQL.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure SQL Database automatically takes full, differential, and log backups without user configuration",
+      "Point-in-Time Restore (PITR) allows restoring to any point within the backup retention period",
+      "Default PITR retention is 7 days (Basic) to 35 days (other tiers); configurable up to 35 days",
+      "Long-Term Retention (LTR) stores weekly, monthly, and yearly backups up to 10 years in Azure Blob Storage",
+      "Restore always creates a new database; it does not overwrite the existing database"
+    ],
+    "common_misconceptions": [
+      "PITR restores to a new database; the original database is not automatically deleted after restore",
+      "LTR backups are read-only snapshots; they cannot be modified and are charged separately from automated backups"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure SQL Managed Instance", "Azure Blob Storage"],
+    "prerequisites": ["dp300-ha-dr-strategy"],
+    "lateral_relations": [
+      {"concept_id": "dp300-ha-dr-strategy", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+backup+restore+PITR",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/automated-backups-overview"
+  },
+  {
+    "id": "dp300-performance-scaling",
+    "exam_id": "azure-dp300",
+    "domain_id": "monitor-optimize-resources",
+    "topic_id": "scaling",
+    "name": "Azure SQL Performance Scaling and Tiers",
+    "description": "Understanding DTU and vCore purchasing models and scaling options for Azure SQL databases.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "DTU model bundles CPU, memory, and IO in a single metric; simple but less flexible",
+      "vCore model allows independent CPU and memory scaling; supports Azure Hybrid Benefit",
+      "Service tiers: Basic/Standard/Premium (DTU) or General Purpose/Business Critical/Hyperscale (vCore)",
+      "Business Critical tier includes in-memory OLTP and a readable secondary replica at no extra cost",
+      "Vertical scaling (changing service tier) in Azure SQL is online; applications remain connected during scaling"
+    ],
+    "common_misconceptions": [
+      "DTU to vCore migration does not have a direct 1:1 mapping; use Microsoft's DTU to vCore calculator",
+      "Hyperscale databases cannot be downgraded to other service tiers after creation"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure SQL Managed Instance"],
+    "prerequisites": ["dp300-azure-sql-deployment"],
+    "lateral_relations": [
+      {"concept_id": "dp300-resource-monitoring", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+DTU+vCore+scaling",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/service-tiers-dtu"
+  },
+  {
+    "id": "dp300-tsql-administration",
+    "exam_id": "azure-dp300",
+    "domain_id": "perform-administration",
+    "topic_id": "tsql-admin",
+    "name": "T-SQL for Database Administration",
+    "description": "Using T-SQL for common DBA tasks including user management, database maintenance, and performance queries.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "sys.dm_exec_requests shows currently executing queries with wait type, CPU, and blocking info",
+      "sys.dm_os_wait_stats aggregates cumulative wait statistics since last server restart",
+      "DBCC commands perform maintenance: DBCC CHECKDB (integrity), DBCC SHRINKFILE (file size reduction)",
+      "Extended Events (XE) is the lightweight tracing system replacing SQL Profiler for diagnostics",
+      "sp_who2 and sys.dm_exec_sessions show active connections and their states"
+    ],
+    "common_misconceptions": [
+      "DBCC SHRINKFILE should be used sparingly; it causes index fragmentation and should be followed by rebuild",
+      "KILL statement terminates sessions; rollback of the killed session's transaction may take time"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure SQL Managed Instance"],
+    "prerequisites": ["dp300-query-performance"],
+    "lateral_relations": [
+      {"concept_id": "dp300-query-performance", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+T-SQL+database+administration",
+    "official_doc_url": "https://learn.microsoft.com/en-us/sql/relational-databases/system-dynamic-management-views/system-dynamic-management-views"
+  },
+  {
+    "id": "dp300-database-migration",
+    "exam_id": "azure-dp300",
+    "domain_id": "plan-implement-data-platform",
+    "topic_id": "database-migration",
+    "name": "Database Migration to Azure SQL",
+    "description": "Assessing, planning, and executing migrations from on-premises SQL Server to Azure SQL services.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Database Migration Service (DMS) provides online (minimal downtime) and offline migration",
+      "Database Experimentation Assistant (DEA) tests workloads against new SQL versions for compatibility",
+      "SQL Server Migration Assistant (SSMA) migrates non-SQL databases (Oracle, MySQL) to Azure SQL",
+      "Azure Migrate assesses on-premises SQL workloads and recommends the right Azure SQL target",
+          "Online migration uses log shipping; offline migration uses backup and restore with acceptable downtime"
+    ],
+    "common_misconceptions": [
+      "Online DMS migration requires source database to be in full recovery model for change capture",
+      "DMS creates the target database; schema migration using SSDT or DACPAC must be done beforehand"
+    ],
+    "azure_services": ["Azure Database Migration Service", "Azure Migrate", "Azure SQL Database"],
+    "prerequisites": ["dp300-azure-sql-deployment"],
+    "lateral_relations": [
+      {"concept_id": "dp300-azure-sql-deployment", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+database+migration+service",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/dms/dms-overview"
+  },
+  {
+    "id": "dp300-network-security-sql",
+    "exam_id": "azure-dp300",
+    "domain_id": "implement-secure-environment",
+    "topic_id": "sql-network-security",
+    "name": "Azure SQL Network Security",
+    "description": "Restricting network access to Azure SQL databases using firewall rules, private endpoints, and service endpoints.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SQL Database firewall rules allow specific IP addresses or ranges to connect to the server",
+      "Private Endpoint assigns a private IP to SQL Database, eliminating public internet exposure",
+      "Virtual network service endpoints route VNet traffic to SQL over the Azure backbone",
+      "Deny public network access setting blocks all public internet connections to the SQL server",
+      "SQL MI is deployed into a dedicated VNet subnet; no public endpoint exists by default"
+    ],
+    "common_misconceptions": [
+      "'Allow Azure services' firewall rule allows any Azure service IP, not just your tenant's resources",
+      "Private endpoint and service endpoints are not redundant; private endpoints are more secure"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure Private Endpoints", "Azure Virtual Network"],
+    "prerequisites": ["dp300-database-authentication"],
+    "lateral_relations": [
+      {"concept_id": "dp300-data-protection", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+network+security+private+endpoint",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/network-access-controls-overview"
+  },
+  {
+    "id": "dp300-elastic-pools",
+    "exam_id": "azure-dp300",
+    "domain_id": "plan-implement-data-platform",
+    "topic_id": "elastic-pools",
+    "name": "Azure SQL Elastic Pools",
+    "description": "Managing multiple databases in a shared resource pool for cost efficiency and simplified management.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Elastic Pools share eDTU or vCore resources across multiple databases to reduce per-database cost",
+      "Min and max eDTU/vCore per database settings prevent any single database from consuming all pool resources",
+      "Best fit: multiple databases with unpredictable, variable usage patterns that do not all peak simultaneously",
+      "Databases can be moved into and out of elastic pools without downtime",
+      "Elastic pool pricing is based on total pool eDTUs/vCores, not individual database SKUs"
+    ],
+    "common_misconceptions": [
+      "Elastic pools do not isolate databases; a single high-load database can starve others without per-DB limits",
+      "All databases in a pool must be in the same logical server and resource group"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure SQL Elastic Pool"],
+    "prerequisites": ["dp300-azure-sql-deployment"],
+    "lateral_relations": [
+      {"concept_id": "dp300-performance-scaling", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+elastic+pools",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/elastic-pool-overview"
+  },
+  {
+    "id": "dp300-auditing-compliance",
+    "exam_id": "azure-dp300",
+    "domain_id": "implement-secure-environment",
+    "topic_id": "sql-auditing",
+    "name": "Azure SQL Auditing and Compliance",
+    "description": "Implementing SQL auditing and meeting regulatory compliance requirements for Azure SQL databases.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure SQL Auditing tracks database events and writes to an audit log in Storage, Log Analytics, or Event Hubs",
+      "Server-level auditing applies to all databases on the server; database-level auditing applies to one database",
+      "Microsoft Defender for SQL provides vulnerability assessments and threat detection for Azure SQL",
+      "Vulnerability Assessment scans the database for security misconfigurations and poor practices",
+      "Advanced Threat Protection alerts on SQL injection attempts, anomalous access, and unusual data export"
+    ],
+    "common_misconceptions": [
+      "Server-level auditing and database-level auditing can both be active; they write separate audit logs",
+      "Vulnerability Assessment requires a storage account for storing scan results and baselines"
+    ],
+    "azure_services": ["Azure SQL Database", "Microsoft Defender for SQL", "Azure Storage"],
+    "prerequisites": ["dp300-data-protection"],
+    "lateral_relations": [
+      {"concept_id": "dp300-data-protection", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-300+azure+sql+auditing+compliance",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/auditing-overview"
+  }
+]

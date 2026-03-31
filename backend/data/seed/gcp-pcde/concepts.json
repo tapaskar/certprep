@@ -1,0 +1,395 @@
+[
+  {
+    "id": "pcde-cloud-sql-ha",
+    "exam_id": "gcp-pcde",
+    "domain_id": "deploy-databases",
+    "topic_id": "cloud-sql-high-availability",
+    "name": "Cloud SQL High Availability and Replication",
+    "description": "Configuring Cloud SQL high availability with standby instances, read replicas, cross-region replicas, and understanding failover behavior.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud SQL HA uses a regional persistent disk that replicates synchronously to a standby instance in a different zone",
+      "Automatic failover to standby takes 1-2 minutes; DNS is updated to point to the new primary automatically",
+      "Read replicas (same region, cross-region, or external) offload read traffic; cross-region replicas enable regional DR",
+      "Cascaded replicas: a read replica can have its own replica, enabling read distribution across multiple tiers",
+      "Point-in-time recovery (PITR) requires binary logging (MySQL) or WAL archiving (PostgreSQL) stored in Cloud Storage"
+    ],
+    "common_misconceptions": [
+      "HA standby instances serve read traffic — the standby is in hot standby mode and does not serve queries; use read replicas for scaling reads",
+      "Cross-region replica provides zero data loss — asynchronous replication means some data loss (RPO > 0) is possible during regional failover"
+    ],
+    "gcp_services": ["Cloud SQL", "Cloud Storage", "VPC"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-spanner", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=UQTZWlxpHmM",
+    "official_doc_url": "https://cloud.google.com/sql/docs/postgres/high-availability"
+  },
+  {
+    "id": "pcde-spanner",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "topic_id": "cloud-spanner",
+    "name": "Cloud Spanner Global Scale and Consistency",
+    "description": "Designing schemas and applications for Cloud Spanner with proper key design to avoid hotspots, interleaved tables, and multi-region configurations.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Spanner provides external consistency (strongest isolation level) using TrueTime API (GPS + atomic clocks)",
+      "Row key design: avoid monotonically increasing keys (causes write hotspots); use UUID, bit-reversed sequences, or hashed keys",
+      "Interleaved tables physically co-locate child rows with their parent row, eliminating joins for parent-child queries",
+      "Read-write transactions vs read-only transactions: read-only transactions use a snapshot and don't hold locks",
+      "Spanner Change Streams provide near-real-time CDC for downstream consumers via Dataflow or direct API polling"
+    ],
+    "common_misconceptions": [
+      "Spanner's global consistency means all reads see the latest data — stale reads (bounded staleness) trade latency for throughput and are common for analytics",
+      "Spanner auto-scales without any key design consideration — poor key design causes split hotspots that limit throughput regardless of node count"
+    ],
+    "gcp_services": ["Cloud Spanner", "Dataflow", "Cloud Storage"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-cloud-sql-ha", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=IfsTINNCooY",
+    "official_doc_url": "https://cloud.google.com/spanner/docs/schema-and-data-model"
+  },
+  {
+    "id": "pcde-bigtable-design",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "topic_id": "bigtable-schema",
+    "name": "Bigtable Schema Design and Operations",
+    "description": "Designing Bigtable schemas with optimal row key structures for time-series, IoT, and operational analytics use cases at scale.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Wide-column model: row key (sorted lexicographically), column family, column qualifier, timestamp, cell value",
+      "Time-series row key pattern: reverse timestamp suffix prevents hotspots (e.g., device#9999999999-timestamp)",
+      "Column families have independent garbage collection: max versions and max age per column family",
+      "Bigtable replication (multi-cluster routing) enables failover and geo-distributed low-latency reads",
+      "cbt CLI and Key Visualizer are essential tools for inspecting data distribution and diagnosing hotspots"
+    ],
+    "common_misconceptions": [
+      "Bigtable rows can have arbitrary numbers of column families — column families are defined at table creation and adding too many degrades performance",
+      "Bigtable automatically indexes all columns — only the row key is indexed; design row keys to support all query patterns"
+    ],
+    "gcp_services": ["Bigtable", "Dataflow", "Cloud Storage"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-spanner", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=HI93iF6Dp88",
+    "official_doc_url": "https://cloud.google.com/bigtable/docs/schema-design"
+  },
+  {
+    "id": "pcde-firestore-design",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "topic_id": "firestore-document",
+    "name": "Firestore Document Database Design",
+    "description": "Designing Firestore data models for web and mobile applications using document-collection hierarchy, composite indexes, and security rules.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Firestore document size limit is 1 MB; avoid storing large BLOBs in documents; use Cloud Storage for files",
+      "Composite indexes are required for queries combining multiple inequality filters or ordering by a non-equality field",
+      "Subcollection vs root collection tradeoff: subcollections co-locate related data but make cross-document queries harder",
+      "Firestore security rules: auth-based rules prevent unauthorized access; field validation rules enforce data integrity",
+      "Firestore supports up to 1 write per second per document; use distributed counters for high-frequency counting"
+    ],
+    "common_misconceptions": [
+      "Firestore automatically indexes all fields — array and map field members require explicit index configuration",
+      "Transactions in Firestore lock entire collections — transactions only lock the specific documents they read or write"
+    ],
+    "gcp_services": ["Firestore", "Firebase Authentication", "Cloud Functions"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-bigtable-design", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=v_hR4K4auoQ",
+    "official_doc_url": "https://cloud.google.com/firestore/docs/data-model"
+  },
+  {
+    "id": "pcde-memorystore",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "topic_id": "memorystore-cache",
+    "name": "Memorystore for Redis and Memcached",
+    "description": "Selecting and configuring Memorystore for Redis or Memcached as caching, session storage, and message broker layers in cloud applications.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Memorystore for Redis Standard Tier: replicated instance across two zones with automatic failover",
+      "Redis Cluster (Sharded Redis) in Memorystore supports horizontal scaling across multiple shards",
+      "Redis data types: Strings, Lists, Sets, Sorted Sets, Hashes, Streams; each suited to different caching patterns",
+      "Memorystore is VPC-only; requires Serverless VPC Access for Cloud Run or App Engine connections",
+      "RDB snapshots and AOF persistence options in Memorystore Standard; Basic Tier has no persistence"
+    ],
+    "common_misconceptions": [
+      "Memorystore Standard Tier eliminates data loss on failure — replication reduces loss risk, but some in-flight writes may be lost during failover",
+      "Redis Cluster and Redis replication (HA) are the same — HA provides failover of one instance; Cluster shards data across multiple nodes for scale"
+    ],
+    "gcp_services": ["Memorystore", "VPC", "Cloud Run"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-firestore-design", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=LxHBSZb8yRM",
+    "official_doc_url": "https://cloud.google.com/memorystore/docs/redis"
+  },
+  {
+    "id": "pcde-database-migration",
+    "exam_id": "gcp-pcde",
+    "domain_id": "migrate-data",
+    "topic_id": "database-migration",
+    "name": "Database Migration Strategies and Tools",
+    "description": "Planning and executing database migrations to GCP using Database Migration Service (DMS) and Datastream for homogeneous and heterogeneous migrations.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Database Migration Service supports MySQL, PostgreSQL, SQL Server, Oracle to Cloud SQL, AlloyDB, and Spanner",
+      "DMS uses logical replication (CDC) enabling minimal downtime migrations with continuous change capture",
+      "Connection profile defines source and destination connection parameters; migration job orchestrates the transfer",
+      "Datastream provides CDC-based replication from Oracle, MySQL, PostgreSQL to BigQuery, Cloud Storage, and Cloud SQL",
+      "Heterogeneous migrations (e.g., Oracle to PostgreSQL) require schema conversion using Database Migration Service's conversion workspace"
+    ],
+    "common_misconceptions": [
+      "DMS automatically converts schema between database engines — heterogeneous migrations require schema review and manual SQL conversion for stored procedures and triggers",
+      "Minimal downtime migrations require zero downtime — a brief cutover window is still required to sync final changes and switch connection strings"
+    ],
+    "gcp_services": ["Database Migration Service", "Datastream", "Cloud SQL", "AlloyDB"],
+    "prerequisites": ["pcde-cloud-sql-ha"],
+    "lateral_relations": [{"concept_id": "pcde-cloud-sql-ha", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+Database+Migration+Service+DMS+tutorial",
+    "official_doc_url": "https://cloud.google.com/database-migration/docs/overview"
+  },
+  {
+    "id": "pcde-alloydb",
+    "exam_id": "gcp-pcde",
+    "domain_id": "deploy-databases",
+    "topic_id": "alloydb-postgres",
+    "name": "AlloyDB for PostgreSQL High Performance",
+    "description": "Using AlloyDB as a fully managed PostgreSQL-compatible database with columnar storage engine, intelligent caching, and read pool instances for analytics.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "AlloyDB is fully compatible with PostgreSQL 14+; existing applications migrate with minimal or no code changes",
+          "AlloyDB columnar engine automatically accelerates analytical queries by up to 100x over standard PostgreSQL",
+      "Read pool instances are automatically scalable read replicas; traffic auto-distributes across the pool",
+      "AlloyDB Omni is the downloadable version of AlloyDB that runs anywhere (on-premises, other clouds)",
+      "AI-assisted indexing and query insights automatically recommend missing indexes and explain plan improvements"
+    ],
+    "common_misconceptions": [
+      "AlloyDB replaces Cloud SQL for all PostgreSQL workloads — AlloyDB is optimized for high-throughput OLTP and HTAP; Cloud SQL remains simpler and cheaper for smaller workloads",
+      "AlloyDB columnar engine requires manual configuration — the columnar engine is fully automatic; no DDL changes needed"
+    ],
+    "gcp_services": ["AlloyDB", "Cloud Storage", "VPC"],
+    "prerequisites": ["pcde-cloud-sql-ha"],
+    "lateral_relations": [{"concept_id": "pcde-spanner", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=A3BsXXl1mOY",
+    "official_doc_url": "https://cloud.google.com/alloydb/docs/overview"
+  },
+  {
+    "id": "pcde-db-security",
+    "exam_id": "gcp-pcde",
+    "domain_id": "manage-multi-db",
+    "topic_id": "database-security",
+    "name": "Database Security and Access Control",
+    "description": "Implementing database security with IAM database authentication, CMEK, network security, and audit logging for GCP managed databases.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud SQL IAM authentication allows users and service accounts to authenticate with IAM credentials instead of DB passwords",
+      "CMEK encrypts database data with customer-managed keys in Cloud KMS for data sovereignty",
+      "Private IP (VPC peering) is preferred over public IP for Cloud SQL; authorized networks restrict public IP access by CIDR",
+      "Cloud SQL Audit Logs capture data access events when enabled; Spanner Data Access Logs track all reads/writes",
+      "Database flags (e.g., log_connections, log_min_duration_statement in PostgreSQL) enhance security logging"
+    ],
+    "common_misconceptions": [
+      "IAM database authentication replaces database roles entirely — IAM controls who can connect; database roles and privileges still control what they can do once connected",
+      "Private IP in Cloud SQL eliminates all attack surface — the database is still accessible from any VM in the peered VPC; use firewall rules and IAM"
+    ],
+    "gcp_services": ["Cloud SQL", "Cloud KMS", "Cloud IAM", "VPC"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-cloud-sql-ha", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+SQL+security+IAM+authentication+encryption",
+    "official_doc_url": "https://cloud.google.com/sql/docs/postgres/iam-authentication"
+  },
+  {
+    "id": "pcde-db-selection",
+    "exam_id": "gcp-pcde",
+    "domain_id": "design-scalable-db",
+    "topic_id": "database-selection",
+    "name": "Database Selection Decision Framework",
+    "description": "Selecting the right GCP database service based on consistency requirements, scale, query patterns, latency, and operational needs.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Decision matrix: OLTP + global scale + strong consistency -> Spanner; OLTP + regional + SQL -> Cloud SQL/AlloyDB",
+      "High-throughput NoSQL (IoT, time-series, analytics serving) -> Bigtable; document model with real-time sync -> Firestore",
+      "OLAP / analytics -> BigQuery; in-memory caching/session -> Memorystore (Redis)",
+      "AlloyDB for PostgreSQL-compatible HTAP (hybrid transactional/analytical) workloads needing both OLTP and analytics",
+      "Data volume tipping points: Cloud SQL up to ~10 TB; Spanner scales to petabytes; Bigtable scales to exabytes"
+    ],
+    "common_misconceptions": [
+      "There is one right database for all workloads — modern applications often use multiple database services (polyglot persistence)",
+      "The cheapest database is always best — choosing the wrong database often results in 10x more application complexity"
+    ],
+    "gcp_services": ["Cloud SQL", "Cloud Spanner", "Bigtable", "Firestore", "BigQuery", "AlloyDB", "Memorystore"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "pcde-spanner", "transfer_weight": 0.2},
+      {"concept_id": "pcde-bigtable-design", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=jexja1a5oYo",
+    "official_doc_url": "https://cloud.google.com/products/storage"
+  },
+  {
+    "id": "pcde-disaster-recovery",
+    "exam_id": "gcp-pcde",
+    "domain_id": "deploy-databases",
+    "topic_id": "database-dr",
+    "name": "Database Disaster Recovery and Backup Strategies",
+    "description": "Designing database disaster recovery strategies with backup policies, cross-region replication, and failover procedures to meet RPO/RTO requirements.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud SQL automated backups (daily) and on-demand backups stored in Cloud Storage; retained for up to 365 days",
+      "Cross-region read replicas for Cloud SQL provide a warm standby for regional DR with manual failover promotion",
+      "Cloud Spanner multi-region configurations provide 99.999% SLA with automatic failover across regions",
+      "Bigtable cluster replication with failover routing policy enables automatic regional failover",
+      "RTO and RPO requirements drive database tier selection: Spanner multi-region (RPO=0, RTO minutes); Cloud SQL cross-region replica (RPO minutes, RTO hours)"
+    ],
+    "common_misconceptions": [
+      "Cloud SQL backups are in the same region as the database — you can configure backups to use a different region for DR",
+      "Manual failover of a Cloud SQL replica is seamless — promoting a read replica requires DNS updates and application reconnection"
+    ],
+    "gcp_services": ["Cloud SQL", "Cloud Spanner", "Bigtable", "Cloud Storage"],
+    "prerequisites": ["pcde-cloud-sql-ha", "pcde-spanner"],
+    "lateral_relations": [{"concept_id": "pcde-cloud-sql-ha", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+database+disaster+recovery+backup+strategy",
+    "official_doc_url": "https://cloud.google.com/sql/docs/postgres/backup-recovery/backing-up"
+  },
+  {
+    "id": "pcde-performance-tuning",
+    "exam_id": "gcp-pcde",
+    "domain_id": "manage-multi-db",
+    "topic_id": "db-performance-tuning",
+    "name": "Database Performance Tuning and Monitoring",
+    "description": "Monitoring and optimizing database performance using Cloud SQL Insights, Spanner Query Insights, and database-specific optimization techniques.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud SQL Insights provides query performance analysis, slow query identification, and wait events for MySQL and PostgreSQL",
+      "Spanner Query Insights visualizes query execution plans, CPU usage, and latency percentiles for optimization",
+      "Index tuning: EXPLAIN ANALYZE in Cloud SQL; Query Plans in Spanner; Key Visualizer for Bigtable key distribution",
+      "Connection pooling (PgBouncer, HikariCP) is critical for Cloud SQL to prevent connection exhaustion from serverless workloads",
+      "Cloud SQL flag pg_stat_statements (PostgreSQL) and slow_query_log (MySQL) provide workload-level query analytics"
+    ],
+    "common_misconceptions": [
+      "Adding more indexes always improves performance — over-indexing slows write operations and increases storage; index only frequently-queried columns",
+      "Increasing machine size always solves performance issues — identify the bottleneck first (CPU, I/O, network) before scaling vertically"
+    ],
+    "gcp_services": ["Cloud SQL", "Cloud Spanner", "Cloud Monitoring"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-cloud-sql-ha", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+SQL+Insights+Spanner+Query+performance+tuning",
+    "official_doc_url": "https://cloud.google.com/sql/docs/postgres/using-query-insights"
+  },
+  {
+    "id": "pcde-bigquery-analytics",
+    "exam_id": "gcp-pcde",
+    "domain_id": "manage-multi-db",
+    "topic_id": "bigquery-as-analytics",
+    "name": "BigQuery for Analytical Database Workloads",
+    "description": "Using BigQuery as the analytical layer in a multi-database architecture with federated queries, connected sheets, and INFORMATION_SCHEMA for operational intelligence.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "BigQuery Omni queries data in AWS S3 and Azure Blob Storage without moving data, using BigQuery SQL",
+      "Federated queries in BigQuery can query Cloud SQL, Cloud Storage (CSV, Parquet), Bigtable, and Google Sheets",
+      "BigQuery external tables allow querying Cloud Storage data without loading; loading is faster for repeated queries",
+      "Analytics Hub enables sharing BigQuery datasets across organizations as data exchanges",
+      "BigQuery BI Engine provides in-memory analytics acceleration for Looker Studio and Google Sheets connections"
+    ],
+    "common_misconceptions": [
+      "Federated queries are as fast as native BigQuery tables — federated queries have higher latency due to network round-trips to source systems",
+      "BigQuery replaces operational databases — BigQuery is an analytics warehouse; operational databases handle OLTP with low-latency transactions"
+    ],
+    "gcp_services": ["BigQuery", "Cloud SQL", "Cloud Storage", "Looker"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-db-selection", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=d3MDxC_iuaw",
+    "official_doc_url": "https://cloud.google.com/bigquery/docs/federated-queries-intro"
+  },
+  {
+    "id": "pcde-schema-migration",
+    "exam_id": "gcp-pcde",
+    "domain_id": "migrate-data",
+    "topic_id": "schema-migration",
+    "name": "Schema Migration and Version Management",
+    "description": "Managing database schema changes with online DDL (Cloud Spanner, AlloyDB), migration tools, and zero-downtime schema migration patterns.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Spanner supports online schema changes that do not block reads or writes; changes are applied in the background",
+      "AlloyDB and Cloud SQL support pg_repack and fast DDL for minimal lock duration schema changes",
+      "Schema migration tools: Liquibase, Flyway, Alembic integrate with Cloud Build for automated migration pipelines",
+      "Backward-compatible migrations: add nullable columns, new tables; avoid removing or renaming columns in running applications",
+      "Expand-contract pattern: expand schema (add new structure), migrate data, update code, contract (remove old structure)"
+    ],
+    "common_misconceptions": [
+      "Spanner schema changes are instantaneous — they are online but have a propagation time across all Spanner nodes",
+      "DROP COLUMN in PostgreSQL is always fast — PostgreSQL marks the column as dropped logically but physical removal requires VACUUM FULL"
+    ],
+    "gcp_services": ["Cloud Spanner", "AlloyDB", "Cloud SQL", "Cloud Build"],
+    "prerequisites": ["pcde-cloud-sql-ha"],
+    "lateral_relations": [{"concept_id": "pcde-database-migration", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+Spanner+Cloud+SQL+schema+migration+zero+downtime",
+    "official_doc_url": "https://cloud.google.com/spanner/docs/schema-updates"
+  },
+  {
+    "id": "pcde-cloudsql-migration-tools",
+    "exam_id": "gcp-pcde",
+    "domain_id": "migrate-data",
+    "topic_id": "migration-assessment",
+    "name": "Database Migration Assessment and Planning",
+    "description": "Assessing current database workloads, identifying migration complexity, and selecting the optimal GCP target database using migration readiness tools.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Database Migration Service assessment profiles source database and identifies compatibility issues before migration",
+      "Cloud SQL migration from AWS RDS is supported via DMS using logical replication without downtime",
+      "Oracle to PostgreSQL migration: use pgloader or ora2pg for schema and data conversion; DMS for ongoing replication",
+      "INFORMATION_SCHEMA queries on source database provide table sizes, index usage, and stored procedure inventory for assessment",
+      "Cloud Architecture Diagramming tools help document the current state and target state for stakeholder communication"
+    ],
+    "common_misconceptions": [
+      "Database migration is primarily a technical exercise — business continuity planning and stakeholder change management are equally critical",
+      "All Oracle features are available in PostgreSQL — Oracle has proprietary features (CONNECT BY, ROWNUM, packages) requiring rewriting in PostgreSQL"
+    ],
+    "gcp_services": ["Database Migration Service", "Cloud SQL", "AlloyDB"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcde-database-migration", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+database+migration+assessment+Oracle+PostgreSQL",
+    "official_doc_url": "https://cloud.google.com/database-migration/docs/oracle-to-postgresql/overview"
+  },
+  {
+    "id": "pcde-datastream-cdc",
+    "exam_id": "gcp-pcde",
+    "domain_id": "migrate-data",
+    "topic_id": "datastream-cdc",
+    "name": "Datastream Change Data Capture for Real-Time Replication",
+    "description": "Using Datastream to continuously replicate database changes from Oracle, MySQL, and PostgreSQL sources to BigQuery and Cloud Storage for real-time analytics and migration.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Datastream uses CDC (Change Data Capture) to stream row-level changes from source databases in near real-time",
+      "Supported sources: Oracle (LogMiner), MySQL (binary log), PostgreSQL (logical replication); destinations: BigQuery, Cloud Storage",
+      "Private connectivity options: IP allowlisting, forward-SSH tunnel, or VPC peering for secure source connectivity",
+      "Datastream to BigQuery automatically creates and updates BigQuery tables to match source schema changes",
+      "Datastream integrates with Dataflow templates for transformations before landing data in the destination"
+    ],
+    "common_misconceptions": [
+      "Datastream replaces Database Migration Service — Datastream is for ongoing replication and analytics; DMS is for one-time migrations with cutover",
+      "Datastream guarantees exactly-once delivery to BigQuery — it provides at-least-once semantics; BigQuery deduplication handles duplicates via unique keys"
+    ],
+    "gcp_services": ["Datastream", "BigQuery", "Cloud Storage", "Dataflow"],
+    "prerequisites": ["pcde-database-migration"],
+    "lateral_relations": [{"concept_id": "pcde-database-migration", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+Datastream+CDC+BigQuery+real-time+replication",
+    "official_doc_url": "https://cloud.google.com/datastream/docs/overview"
+  }
+]

@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-pca-001",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "EHR Healthcare needs to migrate patient records to Google Cloud while maintaining HIPAA compliance. They need to ensure all data stays in the US, provide audit trails for all data access, and integrate with their on-premises systems. Which architecture best meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Cloud SQL in us-central1, VPC peering for on-premises connectivity, default audit logs", "is_correct": false},
+      {"id": "B", "text": "Cloud Spanner in US multi-region config, Dedicated Interconnect, Data Access Audit Logs enabled, VPC Service Controls perimeter", "is_correct": true},
+      {"id": "C", "text": "BigQuery in US with Cloud Interconnect and organization policy for US-only resources", "is_correct": false},
+      {"id": "D", "text": "Firestore in US region with Cloud VPN and Cloud Armor WAF", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "This architecture addresses all requirements: Spanner US multi-region ensures data stays in the US with 99.999% availability suitable for healthcare; Dedicated Interconnect provides secure, reliable on-premises integration with SLA; Data Access Audit Logs create HIPAA-compliant audit trails; VPC Service Controls prevent data exfiltration.",
+      "why_not_A": "Cloud SQL only provides regional HA (99.95%); VPC peering doesn't provide SLA-backed connectivity; default audit logs don't include data reads needed for HIPAA.",
+      "why_not_C": "BigQuery is an analytical database, not suited for OLTP patient record operations; organization policies address resource creation but not runtime data exfiltration.",
+      "why_not_D": "Firestore is a document DB without the strong ACID guarantees needed for healthcare records; Cloud VPN has no SLA guarantee; Armor doesn't address data access audit requirements."
+    },
+    "concept_ids": ["pca-compliance", "pca-network-design", "pca-data-storage-selection"],
+    "tags": ["hipaa", "compliance", "cloud-spanner", "audit-logs", "case-study"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-002",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "type": "comparison",
+    "difficulty": 4,
+    "stem": "Mountkirk Games is launching a global multiplayer game requiring sub-100ms latency for players worldwide, player state persistence, and autoscaling during tournaments. Which architecture provides the best foundation?",
+    "options": [
+      {"id": "A", "text": "Cloud SQL in US with App Engine for game logic and global CDN for assets", "is_correct": false},
+      {"id": "B", "text": "GKE clusters in 5 regions with Spanner multi-region for game state, Global Load Balancer routing players to nearest region", "is_correct": true},
+      {"id": "C", "text": "Single GKE cluster in us-central1 with Cloud CDN for global content delivery", "is_correct": false},
+      {"id": "D", "text": "Cloud Run in us-central1 with Firestore Native mode and Cloud CDN", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GKE clusters in multiple regions with Global Load Balancer routing ensures sub-100ms latency by serving players from nearest region. Cloud Spanner multi-region handles globally consistent game state with strong consistency for leaderboards and inventory. Kubernetes autoscaling handles tournament load spikes.",
+      "why_not_A": "Cloud SQL is regional with no global distribution; App Engine regional deployment introduces high latency for non-US players. Not suitable for sub-100ms global requirement.",
+      "why_not_C": "A single region in us-central1 cannot achieve sub-100ms latency for players in Asia, Europe, or South America.",
+      "why_not_D": "Cloud Run in a single region has the same geographic latency problem; Firestore has write limitations that make it challenging for high-frequency game state updates."
+    },
+    "concept_ids": ["pca-high-availability", "pca-architecture-design", "pca-data-storage-selection"],
+    "tags": ["global-architecture", "gaming", "gke", "spanner", "latency"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-003",
+    "exam_id": "gcp-pca",
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial institution stores sensitive customer data in BigQuery. They need to ensure that even if a data analyst's GCP account is compromised, the attacker cannot exfiltrate data to an external BigQuery project or Cloud Storage bucket outside the company's GCP organization. Which control prevents this?",
+    "options": [
+      {"id": "A", "text": "IAM deny policies at the organization level", "is_correct": false},
+      {"id": "B", "text": "VPC Service Controls with a service perimeter around BigQuery and Cloud Storage projects", "is_correct": true},
+      {"id": "C", "text": "Cloud DLP inspection on all BigQuery queries", "is_correct": false},
+      {"id": "D", "text": "Organization policy to restrict resource creation to specific projects", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Service Controls creates a security perimeter that restricts API calls FROM protected projects. Even an authorized user cannot copy BigQuery data to a project outside the perimeter, preventing exfiltration even with valid credentials.",
+      "why_not_A": "IAM deny policies control who can call which APIs but don't prevent authorized users from exfiltrating data to external projects they have access to.",
+      "why_not_C": "Cloud DLP can detect sensitive data in queries but doesn't prevent a compromised authorized account from accessing and copying the data.",
+      "why_not_D": "Resource creation constraints prevent creating new resources in wrong locations but don't prevent data being copied to existing external resources."
+    },
+    "concept_ids": ["pca-security-design"],
+    "tags": ["vpc-service-controls", "data-exfiltration", "security", "bigquery"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-004",
+    "exam_id": "gcp-pca",
+    "domain_id": "analyzing-optimizing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "TerramEarth manufactures heavy equipment with embedded sensors that send 9 GB of telemetry data per vehicle per day. They have 500,000 vehicles. They want to analyze this data for predictive maintenance and reduce the frequency of equipment failures. What is the most cost-effective architecture for ingesting and analyzing this data?",
+    "options": [
+      {"id": "A", "text": "Stream all sensor data to Bigtable in real time, query with Dataflow for analysis", "is_correct": false},
+      {"id": "B", "text": "Batch upload daily telemetry to Cloud Storage, use BigQuery external tables for analysis", "is_correct": false},
+      {"id": "C", "text": "Pub/Sub for ingestion, Dataflow to filter critical events for real-time alerting and batch aggregate to Cloud Storage, BigQuery for ML analysis", "is_correct": true},
+      {"id": "D", "text": "Direct vehicle API calls to Cloud SQL for storage and ad-hoc analysis", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "This implements a lambda-style architecture: Pub/Sub handles 500K vehicles' streaming data; Dataflow filters and routes critical events (anomalies) for real-time alerting to operations teams, while batching aggregated data to Cloud Storage; BigQuery ML analyzes historical patterns for predictive maintenance models — cost-effectively separating real-time from batch.",
+      "why_not_A": "Streaming 9 GB/vehicle/day × 500K vehicles to Bigtable costs significantly more than Cloud Storage for the raw telemetry. Bigtable is designed for operational reads, not batch analytics.",
+      "why_not_B": "Daily batch upload misses real-time anomaly detection for critical failures. 4.5 PB/day in external BigQuery tables also has query performance issues.",
+      "why_not_D": "Cloud SQL cannot handle the volume (500K concurrent connections, 4.5 PB/day ingestion) and is not designed for massive-scale IoT data ingestion."
+    },
+    "concept_ids": ["pca-data-analytics", "pca-architecture-design"],
+    "tags": ["iot", "terramearth", "case-study", "pub-sub", "dataflow", "bigquery"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-005",
+    "exam_id": "gcp-pca",
+    "domain_id": "reliability",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A service has an SLO of 99.9% monthly availability. In March (31 days), the service experienced a 20-minute outage. How much error budget was consumed by this outage, and how much budget remains for the month?",
+    "options": [
+      {"id": "A", "text": "20% consumed; 80% remains", "is_correct": false},
+      {"id": "B", "text": "45.5% consumed; 54.5% remains", "is_correct": true},
+      {"id": "C", "text": "All budget consumed; 0% remains", "is_correct": false},
+      {"id": "D", "text": "Less than 1% consumed; over 99% remains", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Total monthly minutes in March = 31 × 24 × 60 = 44,640 minutes. Error budget = 0.1% of 44,640 = 44.64 minutes. The 20-minute outage consumed 20/44.64 = 44.8% ≈ 45.5% of the budget. Remaining budget = 44.64 - 20 = 24.64 minutes ≈ 54.5% remains.",
+      "why_not_A": "20% is not derived from any standard calculation. The budget is a percentage of total time, not a flat 100-minute pool.",
+      "why_not_C": "The total error budget for 99.9% in 31 days is ~44.6 minutes; 20 minutes does not exhaust the full budget.",
+      "why_not_D": "20 minutes is a significant fraction of the ~44-minute monthly budget for 99.9% SLO; it's not less than 1%."
+    },
+    "concept_ids": ["pca-reliability-sre"],
+    "tags": ["slo", "error-budget", "reliability", "sre"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-006",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Helicopter Racing League (HRL) streams live race data and wants to provide real-time predictions of race positions to viewers worldwide. They need to process 100,000 events per second with < 1 second end-to-end latency from event to viewer. Which pipeline is most appropriate?",
+    "options": [
+      {"id": "A", "text": "Batch daily -> BigQuery ML prediction -> Looker dashboard", "is_correct": false},
+      {"id": "B", "text": "Pub/Sub -> Dataflow streaming -> Bigtable (serving) + BigQuery (analytics) -> API -> Global CDN", "is_correct": true},
+      {"id": "C", "text": "Cloud SQL streaming inserts -> Cloud Run API -> Cloud CDN", "is_correct": false},
+      {"id": "D", "text": "Direct VM API -> Memorystore -> Load Balancer -> viewers", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pub/Sub buffers and distributes 100K events/sec; Dataflow processes streams with sub-second latency applying ML predictions; Bigtable stores current state for single-digit ms serving reads; BigQuery captures historical data for analytics; Global CDN serves predictions to worldwide viewers at low latency.",
+      "why_not_A": "Batch processing introduces hours of latency; the requirement is sub-1-second real-time predictions to live viewers.",
+      "why_not_C": "Cloud SQL cannot handle 100K inserts/second reliably; it's a transactional OLTP database without the write throughput for this volume.",
+      "why_not_D": "Direct VM APIs without message buffering would lose events during scaling events; the architecture lacks the streaming pipeline components needed for reliable high-throughput processing."
+    },
+    "concept_ids": ["pca-data-analytics", "pca-architecture-design"],
+    "tags": ["streaming", "hrl", "case-study", "real-time", "pub-sub", "bigtable"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-007",
+    "exam_id": "gcp-pca",
+    "domain_id": "managing-provisioning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to manage GCP infrastructure for 200 projects using Infrastructure as Code with team collaboration and prevent Terraform state conflicts. Which approach is recommended?",
+    "options": [
+      {"id": "A", "text": "Use local Terraform state files on each team member's laptop", "is_correct": false},
+      {"id": "B", "text": "Store Terraform state in a Cloud Storage bucket with state locking enabled", "is_correct": true},
+      {"id": "C", "text": "Store Terraform state in a Cloud SQL database with row-level locking", "is_correct": false},
+      {"id": "D", "text": "Use Cloud Deployment Manager instead of Terraform for team workflows", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Storage GCS backend for Terraform supports remote state sharing (all team members access the same state) and state locking using GCS object generation conditions, preventing concurrent applies that could corrupt state.",
+      "why_not_A": "Local state files on laptops cannot be shared across the team; different team members would see different state, causing conflicts and duplicate resource creation.",
+      "why_not_C": "Cloud SQL is not a supported Terraform backend. Using a database manually for state is complex and non-standard. The GCS backend is the official GCP solution.",
+      "why_not_D": "Cloud Deployment Manager is less featured and has less community support than Terraform. Switching IaC tools to solve a state problem is not the recommended approach."
+    },
+    "concept_ids": ["pca-devops-cicd"],
+    "tags": ["terraform", "iac", "state-management", "cloud-storage"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-008",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company runs a microservices application on GKE. They need to manage inter-service traffic, enforce mTLS between services, and get detailed service-to-service latency metrics without modifying application code. What is the recommended solution?",
+    "options": [
+      {"id": "A", "text": "Configure GKE Network Policies for pod-to-pod traffic control", "is_correct": false},
+      {"id": "B", "text": "Implement Anthos Service Mesh (Istio) as a sidecar proxy in each pod", "is_correct": true},
+      {"id": "C", "text": "Add Cloud Armor security policies to each service's load balancer", "is_correct": false},
+      {"id": "D", "text": "Use GKE Gateway API for traffic management between services", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Anthos Service Mesh deploys Istio sidecar proxies alongside each service pod transparently. The proxy enforces mTLS between services, provides detailed telemetry (latency, error rates, throughput) sent to Cloud Monitoring, and enables traffic management — all without code changes.",
+      "why_not_A": "Network Policies control layer 3/4 connectivity (allow/deny pod connections) but don't provide mTLS encryption or application-level metrics.",
+      "why_not_C": "Cloud Armor is a WAF for external load balancers; it doesn't manage east-west (pod-to-pod) service mesh traffic.",
+      "why_not_D": "Gateway API manages ingress (north-south) traffic routing; it doesn't handle service-to-service east-west mTLS or metrics collection."
+    },
+    "concept_ids": ["pca-microservices"],
+    "tags": ["service-mesh", "anthos", "istio", "mtls", "observability"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-009",
+    "exam_id": "gcp-pca",
+    "domain_id": "analyzing-optimizing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company's BigQuery costs have grown 300% over 6 months. Analysis shows most cost comes from ad-hoc analyst queries scanning entire large tables. What is the most effective optimization strategy?",
+    "options": [
+      {"id": "A", "text": "Move analysts to Standard instead of On-Demand pricing", "is_correct": false},
+      {"id": "B", "text": "Partition and cluster tables by date and frequently-filtered columns; educate analysts to always use partition filters", "is_correct": true},
+      {"id": "C", "text": "Restrict analyst access to BigQuery and require DBA approval for queries", "is_correct": false},
+      {"id": "D", "text": "Export all data to Cloud Storage and have analysts query external tables only", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Partitioning and clustering dramatically reduce bytes scanned per query. Partitioned tables allow queries to skip entire partitions; clustering sorts data within partitions for filter performance. Combining partitioning with analyst education on using partition filters provides the largest and most sustainable cost reduction.",
+      "why_not_A": "Standard pricing uses slot reservations for consistent workloads; it doesn't reduce bytes scanned per query. If analysts scan the same amount of data, costs don't decrease and may increase with under-utilized slots.",
+      "why_not_C": "Restricting access reduces queries but also reduces business value. The root cause is inefficient queries, not too many authorized users.",
+      "why_not_D": "External tables on Cloud Storage are slower than native BigQuery tables and don't reduce scan costs; scanning externally stored data still incurs read costs."
+    },
+    "concept_ids": ["pca-cost-optimization"],
+    "tags": ["bigquery", "cost-optimization", "partitioning", "clustering"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-010",
+    "exam_id": "gcp-pca",
+    "domain_id": "managing-implementation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a 50 TB Oracle database to Google Cloud. They need to continue running the Oracle application during migration with minimal downtime. Which approach minimizes disruption?",
+    "options": [
+      {"id": "A", "text": "Take a full Oracle dump, upload to Cloud Storage, restore to Cloud SQL — accept the maintenance window", "is_correct": false},
+      {"id": "B", "text": "Use Database Migration Service with logical replication to migrate to AlloyDB with continuous CDC", "is_correct": true},
+      {"id": "C", "text": "Use Transfer Appliance to ship the 50 TB offline and then restore", "is_correct": false},
+      {"id": "D", "text": "Replicate Oracle on a GCE VM first, then migrate from VM to Cloud SQL", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Database Migration Service with CDC (Change Data Capture) continuously replicates Oracle changes to AlloyDB during the migration. Once replication catches up, the cutover window is seconds (flip DNS/connection strings), minimizing downtime to near-zero.",
+      "why_not_A": "A full dump and restore of 50 TB requires significant downtime (hours to days depending on speed). The requirement is minimal disruption.",
+      "why_not_C": "Transfer Appliance is for moving data offline when network is too slow; it still requires a long downtime for final sync and cutover. It doesn't support continuous CDC.",
+      "why_not_D": "Running Oracle on a GCE VM is a temporary workaround that adds another migration step without solving the minimal downtime requirement."
+    },
+    "concept_ids": ["pca-migration-strategy"],
+    "tags": ["migration", "dms", "alloydb", "oracle", "cdc"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-011",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "type": "comparison",
+    "difficulty": 4,
+    "stem": "A company needs to store time-series telemetry data from 1 million IoT sensors, each sending a reading every minute. Queries will look up the latest values by device ID and retrieve time ranges for a specific device. Write throughput is 1 million rows/minute. Which storage solution is most appropriate?",
+    "options": [
+      {"id": "A", "text": "Cloud Spanner with device_id as primary key", "is_correct": false},
+      {"id": "B", "text": "BigQuery with DATE partitioning on timestamp column", "is_correct": false},
+      {"id": "C", "text": "Bigtable with row key as device_id#reverse_timestamp", "is_correct": true},
+      {"id": "D", "text": "Cloud SQL with indexed device_id and timestamp columns", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Bigtable is purpose-built for high-throughput time-series data. Row key of device_id#reverse_timestamp enables efficient latest-value lookups and time-range scans per device. 1M writes/minute is within Bigtable's design envelope. The design avoids hotspots by having device_id as prefix.",
+      "why_not_A": "While Spanner handles high throughput, sequential timestamp suffixes in device_id primary keys cause write hotspots. Bigtable is more cost-effective for pure time-series ingestion at this scale.",
+      "why_not_B": "BigQuery is an analytics warehouse; it doesn't support low-latency point lookups by device ID and is not optimized for the write throughput of 1M rows/minute for operational reads.",
+      "why_not_D": "Cloud SQL cannot handle 1M inserts/minute and doesn't scale horizontally. This exceeds the write throughput capabilities of a relational database."
+    },
+    "concept_ids": ["pca-data-storage-selection"],
+    "tags": ["bigtable", "time-series", "iot", "row-key-design"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-012",
+    "exam_id": "gcp-pca",
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A multinational company stores sensitive customer data in Cloud Storage. They need to ensure that encryption keys can be controlled and revoked by the company, not Google, to meet data sovereignty requirements. What should they implement?",
+    "options": [
+      {"id": "A", "text": "Enable Google-managed encryption keys (default)", "is_correct": false},
+      {"id": "B", "text": "Customer-managed encryption keys (CMEK) using Cloud KMS", "is_correct": true},
+      {"id": "C", "text": "Customer-supplied encryption keys (CSEK) provided per request", "is_correct": false},
+      {"id": "D", "text": "Encrypt data before uploading to Cloud Storage using application-level encryption", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "CMEK with Cloud KMS gives the company control over key lifecycle: create, rotate, disable, and destroy keys in Cloud KMS. Revoking a key makes all encrypted data inaccessible, meeting data sovereignty requirements while being manageable at scale.",
+      "why_not_A": "Google-managed keys provide no customer control; Google manages key lifecycle without customer input or oversight.",
+      "why_not_C": "CSEK requires the customer to provide the key on every API call and Google never stores it — this is operationally complex at scale and the customer must manage key material securely outside GCP.",
+      "why_not_D": "Application-level encryption works but adds complexity, requires key management outside Google, and doesn't use GCP's built-in key management capabilities or audit logging."
+    },
+    "concept_ids": ["pca-compliance"],
+    "tags": ["cmek", "kms", "encryption", "data-sovereignty"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-013",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company has three separate GCP projects: frontend, backend, and data. They want to centralize networking so all projects share a common VPC with consistent firewall rules and security policies, while each project team manages their own GCP resources. Which networking approach achieves this?",
+    "options": [
+      {"id": "A", "text": "Create VPC peering between all three projects in a mesh topology", "is_correct": false},
+      {"id": "B", "text": "Shared VPC: designate one project as host, attach frontend/backend/data as service projects", "is_correct": true},
+      {"id": "C", "text": "Deploy all resources in a single project with team-based folder structure", "is_correct": false},
+      {"id": "D", "text": "Use Network Connectivity Center to connect the three project VPCs as spokes", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Shared VPC is designed exactly for this pattern: a host project owns the VPC, subnets, and firewall rules; service projects (frontend, backend, data) use host project subnets for their resources. The networking team manages the host; each product team manages resources in their service project.",
+      "why_not_A": "VPC peering is non-transitive; frontend and data cannot communicate unless directly peered. Also, each project keeps its own VPC with separate firewall rules — no centralization.",
+      "why_not_C": "Combining all resources in one project eliminates project-level isolation and billing separation, violating the separate project requirement.",
+      "why_not_D": "NCC connects VPCs for hybrid/multi-cloud routing; it doesn't provide the shared subnet model that Shared VPC offers for centralized network management."
+    },
+    "concept_ids": ["pca-network-design"],
+    "tags": ["shared-vpc", "network-architecture", "multi-project"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-014",
+    "exam_id": "gcp-pca",
+    "domain_id": "analyzing-optimizing",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company's GKE workloads run at 20% average CPU utilization but frequently spike to 100% with 10x traffic bursts during business hours. They are currently paying for peak-capacity nodes 24/7. What is the most cost-effective approach?",
+    "options": [
+      {"id": "A", "text": "Increase node machine type to handle spikes without autoscaling", "is_correct": false},
+      {"id": "B", "text": "Enable cluster autoscaler with Spot VMs as the primary node pool", "is_correct": false},
+      {"id": "C", "text": "Enable cluster autoscaler with a regular node pool for baseline and a Spot VM node pool for burst capacity", "is_correct": true},
+      {"id": "D", "text": "Migrate to Cloud Run to eliminate node management entirely", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A regular (on-demand) node pool handles predictable baseline capacity (20% utilization), while a Spot VM pool with tolerations handles burst traffic at 60-91% discount. The cluster autoscaler scales the Spot pool up during spikes and back down to zero during off-hours, minimizing costs while handling 10x bursts.",
+      "why_not_A": "Fixed large nodes run at 20% utilization most of the time, wasting 80% of compute cost — the current problem.",
+      "why_not_B": "Using Spot VMs as the primary pool is risky; Spot VMs can be preempted at any time. Baseline workloads need on-demand instances for reliability.",
+      "why_not_D": "Cloud Run is a valid option but the question assumes they need to keep GKE. Also, migrating complex stateful workloads to Cloud Run may not be feasible without refactoring."
+    },
+    "concept_ids": ["pca-cost-optimization"],
+    "tags": ["gke", "spot-vms", "autoscaling", "cost-optimization"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pca-015",
+    "exam_id": "gcp-pca",
+    "domain_id": "reliability",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company's e-commerce application has a dependency on a third-party payment processor API that occasionally experiences outages. During these outages, the entire checkout flow fails. What pattern best improves resilience?",
+    "options": [
+      {"id": "A", "text": "Increase the timeout on the payment API call to 30 seconds", "is_correct": false},
+      {"id": "B", "text": "Implement a circuit breaker pattern with fallback to queue payment for retry", "is_correct": true},
+      {"id": "C", "text": "Deploy multiple copies of the payment service in different regions", "is_correct": false},
+      {"id": "D", "text": "Cache the last successful payment API response and return it during outages", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The circuit breaker pattern stops calling the failing payment API once failures exceed a threshold (open state), preventing cascading failures and resource exhaustion. Queuing the payment request in Cloud Tasks or Pub/Sub with retry logic allows processing when the payment processor recovers — improving both resilience and user experience.",
+      "why_not_A": "Increasing timeouts makes failures slower; users wait 30 seconds for a failure instead of 5. This worsens the user experience and can exhaust server threads.",
+      "why_not_C": "Deploying more copies doesn't help if the dependency (third-party payment processor) is unavailable — all copies will fail the same way.",
+      "why_not_D": "Returning cached payment responses during outages would charge customers who aren't actually being billed — a serious financial and compliance problem."
+    },
+    "concept_ids": ["pca-reliability-sre", "pca-microservices"],
+    "tags": ["circuit-breaker", "resilience", "fault-tolerance", "cloud-tasks"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  }
+]

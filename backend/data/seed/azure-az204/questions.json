@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-az204-001",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-compute-solutions",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is building an Azure Function that processes messages from an Azure Service Bus queue. The function needs to run for up to 10 minutes processing a complex message and must scale automatically to handle bursts of messages. Which hosting plan should be used?",
+    "options": [
+      {"id": "A", "text": "Consumption plan", "is_correct": false},
+      {"id": "B", "text": "Premium plan (EP1)", "is_correct": true},
+      {"id": "C", "text": "Basic App Service Plan (B1)", "is_correct": false},
+      {"id": "D", "text": "Free plan (F1)", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Functions Premium plan provides: pre-warmed instances to eliminate cold starts, execution duration up to 60 minutes (vs 10 min on Consumption), automatic scaling, and VNet integration. It is the right choice for long-running, high-throughput workloads that need reliability.",
+      "why_not_A": "Consumption plan has a maximum execution timeout of 10 minutes (default 5 min). Since the function needs up to 10 minutes and the task mentions complex processing requiring reliability, Consumption plan's cold start issues and timeout limitations make it a poor choice.",
+      "why_not_C": "Basic App Service Plans support Functions but do not provide automatic scaling (no scale out based on load). Basic plans have a fixed number of instances.",
+      "why_not_D": "Free plans (F1) provide very limited resources (60 CPU minutes/day) and no auto-scaling. They are not suitable for production workloads."
+    },
+    "concept_ids": ["az204-azure-functions"],
+    "tags": ["azure-functions", "premium-plan", "hosting-plan"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-002",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-compute-solutions",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A developer uses Azure Durable Functions to implement a workflow that calls three external APIs sequentially, where the result of each API call is passed to the next. Which Durable Function pattern is being used?",
+    "options": [
+      {"id": "A", "text": "Fan-out/fan-in", "is_correct": false},
+      {"id": "B", "text": "Async HTTP APIs", "is_correct": false},
+      {"id": "C", "text": "Function chaining", "is_correct": true},
+      {"id": "D", "text": "Human interaction", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Function chaining is the Durable Functions pattern where a sequence of functions executes in order, with the output of each function becoming the input of the next. This exactly describes calling three APIs sequentially where each result feeds the next call.",
+      "why_not_A": "Fan-out/fan-in runs multiple functions in parallel (fan-out) and then aggregates all results (fan-in). The scenario describes sequential execution, not parallel.",
+      "why_not_B": "Async HTTP APIs expose long-running operations as HTTP endpoints with status polling. This pattern is about exposing async operations externally, not about sequentially chaining function calls.",
+      "why_not_D": "Human interaction pattern pauses workflow execution waiting for a human to approve or respond before continuing. This is for approval workflows, not sequential API calls."
+    },
+    "concept_ids": ["az204-azure-functions"],
+    "tags": ["durable-functions", "function-chaining", "workflow-patterns"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-003",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-azure-storage",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer needs to grant a third-party service temporary read-only access to a specific blob in Azure Storage that expires in 2 hours. The third party should not need an Azure account. What is the most appropriate approach?",
+    "options": [
+      {"id": "A", "text": "Share the storage account key with the third party", "is_correct": false},
+      {"id": "B", "text": "Create a Service Principal for the third party in Entra ID", "is_correct": false},
+      {"id": "C", "text": "Generate a Service SAS token with read permission scoped to the specific blob with a 2-hour expiry", "is_correct": true},
+      {"id": "D", "text": "Change the blob access level to public", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A Shared Access Signature (SAS) token is designed exactly for this scenario. A Service SAS can be scoped to a specific blob, limited to read operations only, and given a precise expiry time (2 hours). The third party uses the SAS URL without needing an Azure account or credentials.",
+      "why_not_A": "Sharing the storage account key grants full access to the entire storage account for an unlimited time. This violates least privilege and cannot be scoped to a single blob or limited in time without key regeneration.",
+      "why_not_B": "A Service Principal requires Entra ID and RBAC configuration. The third party would need an Azure identity, which contradicts the requirement of no Azure account. Also, RBAC access does not expire automatically without additional configuration.",
+      "why_not_D": "Changing blob access to public makes the blob accessible to anyone on the internet indefinitely. This is not controlled access and cannot be scoped to specific parties or limited in time."
+    },
+    "concept_ids": ["az204-azure-blob-dev"],
+    "tags": ["sas-token", "blob-storage", "temporary-access"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-004",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-azure-storage",
+    "type": "factual",
+    "difficulty": 4,
+    "stem": "An application stores user profiles in Azure Cosmos DB. The application queries profiles most frequently by city and then by user ID. Which property should be chosen as the partition key?",
+    "options": [
+      {"id": "A", "text": "User ID (unique per user)", "is_correct": false},
+      {"id": "B", "text": "Timestamp of profile creation", "is_correct": false},
+      {"id": "C", "text": "City", "is_correct": true},
+      {"id": "D", "text": "Email address (unique per user)", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The partition key should match the most common query pattern to minimize cross-partition queries. Since queries are most frequent by city, using city as the partition key ensures that queries filtered by city are single-partition queries. City also has reasonable cardinality (enough distinct values to distribute data evenly).",
+      "why_not_A": "Using User ID as the partition key distributes data evenly across partitions (high cardinality) but makes city-based queries cross-partition (expensive). Single-user queries would be fast but the most common access pattern suffers.",
+      "why_not_B": "Timestamp creates a monotonically increasing partition key causing hot partition writes—all new profiles go to the latest partition. This is an anti-pattern for write-heavy scenarios.",
+      "why_not_D": "Email as partition key is similar to User ID—high cardinality for even distribution but poor alignment with the primary query pattern (by city), causing expensive cross-partition queries."
+    },
+    "concept_ids": ["az204-cosmos-db-dev"],
+    "tags": ["cosmos-db", "partition-key", "query-optimization"],
+    "estimated_time_seconds": 95,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-005",
+    "exam_id": "azure-az204",
+    "domain_id": "implement-azure-security",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is building an Azure Function that needs to read secrets from Azure Key Vault. The company security policy prohibits storing any credentials in code or configuration files. Which approach should be used?",
+    "options": [
+      {"id": "A", "text": "Store the Key Vault client secret in the Function App's Application Settings", "is_correct": false},
+      {"id": "B", "text": "Enable a system-assigned managed identity on the Function App and grant it Key Vault Secrets User role", "is_correct": true},
+      {"id": "C", "text": "Hardcode the Key Vault access key in the function code", "is_correct": false},
+      {"id": "D", "text": "Use a certificate stored in Azure Blob Storage for Key Vault authentication", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Managed identities eliminate the need for credentials entirely. A system-assigned managed identity creates an identity tied to the Function App's lifecycle. Granting it the 'Key Vault Secrets User' RBAC role allows the function to read secrets from Key Vault using the DefaultAzureCredential SDK pattern—no credentials in code or config.",
+      "why_not_A": "Storing the Key Vault client secret in Application Settings is better than hardcoding, but it still represents a stored credential. If Application Settings are exposed, the secret is compromised. This does not eliminate the credential storage problem.",
+      "why_not_C": "Hardcoding credentials in function code is a serious security anti-pattern. Credentials in code appear in source control, deployment artifacts, and logs.",
+      "why_not_D": "Storing a certificate in Blob Storage for authentication still requires credentials to access Blob Storage, creating a circular dependency. Managed identities eliminate this problem."
+    },
+    "concept_ids": ["az204-managed-identities"],
+    "tags": ["managed-identity", "key-vault", "credential-free"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-006",
+    "exam_id": "azure-az204",
+    "domain_id": "implement-azure-security",
+    "type": "factual",
+    "difficulty": 4,
+    "stem": "A developer registers an application in Microsoft Entra ID. The app needs to call the Microsoft Graph API as itself (no user context) using a daemon process. Which OAuth 2.0 flow should be used?",
+    "options": [
+      {"id": "A", "text": "Authorization Code flow", "is_correct": false},
+      {"id": "B", "text": "Device Code flow", "is_correct": false},
+      {"id": "C", "text": "Client Credentials flow", "is_correct": true},
+      {"id": "D", "text": "Implicit flow", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Client Credentials flow is designed for service-to-service (daemon) scenarios where no user is present. The application authenticates using its own client ID and a client secret or certificate to get an access token. It is the correct flow for calling APIs in a background process without user interaction.",
+      "why_not_A": "Authorization Code flow is for user-delegated access where a user signs in and authorizes the app on their behalf. A daemon process has no user to sign in.",
+      "why_not_B": "Device Code flow is for devices with limited input capabilities (like IoT devices or CLI tools) where the user signs in on a separate device. It still requires user interaction.",
+      "why_not_D": "Implicit flow returns tokens directly in the URL fragment for single-page apps. It is deprecated in favor of Authorization Code with PKCE and requires user presence."
+    },
+    "concept_ids": ["az204-azure-ad-security-dev"],
+    "tags": ["oauth", "client-credentials", "daemon-app"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-007",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "An application needs to decouple two services where Service A generates orders and Service B processes them. Service B must process each order exactly once and in order (FIFO). Which Azure messaging service should be used?",
+    "options": [
+      {"id": "A", "text": "Azure Event Grid", "is_correct": false},
+      {"id": "B", "text": "Azure Event Hubs", "is_correct": false},
+      {"id": "C", "text": "Azure Service Bus Queue with sessions enabled", "is_correct": true},
+      {"id": "D", "text": "Azure Storage Queue", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Service Bus Queues provide reliable message delivery with guaranteed ordering, duplicate detection, and session support. Sessions in Service Bus enable FIFO processing—all messages with the same session ID are processed in order by a single consumer. Duplicate detection ensures each message is processed exactly once.",
+      "why_not_A": "Azure Event Grid is designed for event-driven reactive programming (event notifications). It provides at-least-once delivery with no FIFO ordering guarantee and is not designed for command processing with strong delivery guarantees.",
+      "why_not_B": "Azure Event Hubs is optimized for high-throughput streaming data ingestion (millions of events/second). It retains ordered events per partition but is designed for analytics streaming, not for guaranteed single-processing of business transactions.",
+      "why_not_D": "Azure Storage Queues support basic FIFO but with caveats—message ordering is approximate due to visibility timeouts. They lack duplicate detection, sessions, and the delivery guarantees that Service Bus provides."
+    },
+    "concept_ids": ["az204-azure-service-bus"],
+    "tags": ["service-bus", "fifo", "messaging"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-008",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A developer configures an Azure Event Grid subscription on a Blob Storage system topic to trigger an Azure Function when a new blob is created. The function fails and Event Grid retries. What is the maximum delivery retry period before the event is dropped or sent to the dead-letter container?",
+    "options": [
+      {"id": "A", "text": "1 hour", "is_correct": false},
+      {"id": "B", "text": "12 hours", "is_correct": false},
+      {"id": "C", "text": "24 hours", "is_correct": true},
+      {"id": "D", "text": "7 days", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Event Grid has a default event retention of 24 hours. During this period, it retries delivery with exponential backoff. After 24 hours (or after the configured maximum delivery count), undeliverable events are either dropped or sent to the dead-letter destination if configured.",
+      "why_not_A": "1 hour is too short. Event Grid retries for up to 24 hours by default to account for temporary endpoint outages.",
+      "why_not_B": "12 hours is incorrect. The default retry window for Event Grid is 24 hours.",
+      "why_not_D": "7 days is the default retention period for Azure Service Bus, not Event Grid. Event Grid's default is 24 hours."
+    },
+    "concept_ids": ["az204-azure-event-grid"],
+    "tags": ["event-grid", "retry-policy", "dead-letter"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-009",
+    "exam_id": "azure-az204",
+    "domain_id": "monitor-troubleshoot-optimize",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer wants to trace a single user request as it flows through multiple Azure microservices (Web App → Function → SQL Database) to identify where latency is introduced. Which Application Insights feature should be used?",
+    "options": [
+      {"id": "A", "text": "Application Insights Availability Tests", "is_correct": false},
+      {"id": "B", "text": "Application Insights Smart Detection", "is_correct": false},
+      {"id": "C", "text": "Application Insights End-to-End Transaction Diagnostics (Distributed Tracing)", "is_correct": true},
+      {"id": "D", "text": "Azure Monitor Activity Log", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Application Insights End-to-End Transaction Diagnostics provides distributed tracing by correlating telemetry across services using a shared operation ID. For a given request, you can see the complete call chain—from the web app to the function to the database query—with timing for each component, identifying exactly where latency is introduced.",
+      "why_not_A": "Availability Tests are synthetic monitor tests that check if an endpoint is accessible from various global locations. They test overall availability, not trace a specific user request through a service chain.",
+      "why_not_B": "Smart Detection automatically identifies anomalous failure rates or performance degradation. It provides alerts when patterns change but does not provide tracing of individual request paths.",
+      "why_not_D": "Azure Monitor Activity Log records control plane operations (resource management events like VM stop/start). It does not capture application-level request telemetry or database query timing."
+    },
+    "concept_ids": ["az204-azure-monitoring-dev"],
+    "tags": ["distributed-tracing", "application-insights", "microservices"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-010",
+    "exam_id": "azure-az204",
+    "domain_id": "monitor-troubleshoot-optimize",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer builds a product catalog web API in Azure App Service. The product catalog data changes infrequently (once per hour) but is queried thousands of times per second. What should be implemented to reduce database load and improve API response times?",
+    "options": [
+      {"id": "A", "text": "Scale out the App Service to more instances", "is_correct": false},
+      {"id": "B", "text": "Implement Azure Cache for Redis as a cache-aside layer in front of the database", "is_correct": true},
+      {"id": "C", "text": "Use Azure SQL Database read replicas", "is_correct": false},
+      {"id": "D", "text": "Enable Always On setting in App Service configuration", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cache-aside with Azure Cache for Redis caches frequently accessed, infrequently changing data in memory. The API checks Redis first; on a cache hit, it returns data in sub-millisecond time without touching the database. On a miss, it queries the database and populates the cache. For catalog data changing hourly, this pattern dramatically reduces database load.",
+      "why_not_A": "Scaling out App Service adds more compute instances but does not reduce the number of database queries. Each instance would still query the database independently.",
+      "why_not_C": "Azure SQL read replicas distribute read queries across multiple SQL replicas. While this helps with database scaling, it does not eliminate the database query overhead the way in-memory caching does.",
+      "why_not_D": "Always On prevents App Service from going idle between requests. It does not cache data or reduce database queries."
+    },
+    "concept_ids": ["az204-azure-cache-cdn"],
+    "tags": ["redis-cache", "cache-aside", "performance"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-011",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-compute-solutions",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A development team uses Azure Container Apps to host microservices. They want to deploy a new version of a service and route only 10% of production traffic to it initially, gradually increasing to 100% if no errors are observed. Which Azure Container Apps feature enables this?",
+    "options": [
+      {"id": "A", "text": "Container App environment scaling rules", "is_correct": false},
+      {"id": "B", "text": "Container App revision traffic splitting", "is_correct": true},
+      {"id": "C", "text": "Azure Container Registry webhook", "is_correct": false},
+      {"id": "D", "text": "Dapr service invocation", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Container Apps revisions represent immutable snapshots of a container app version. Traffic splitting allows distributing incoming requests across multiple revisions by percentage (e.g., 90% to v1, 10% to v2). You can progressively shift traffic from the old revision to the new revision.",
+      "why_not_A": "Scaling rules in Container Apps control how many replicas run based on demand metrics (HTTP requests, CPU). They do not control how traffic is distributed between different app versions.",
+      "why_not_C": "Container Registry webhooks trigger actions (like CI/CD pipelines) when images are pushed. They do not control traffic distribution between container app versions.",
+      "why_not_D": "Dapr service invocation provides service-to-service communication with retries and security within a Container Apps environment. It does not manage traffic percentages between different app versions."
+    },
+    "concept_ids": ["az204-azure-containers-dev"],
+    "tags": ["container-apps", "traffic-splitting", "canary-deployment"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-012",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A developer configures Azure API Management (APIM) with a rate-limiting policy. Which policy scope in APIM allows the rate limit to apply to ALL APIs within the gateway regardless of the specific API or operation called?",
+    "options": [
+      {"id": "A", "text": "API scope", "is_correct": false},
+      {"id": "B", "text": "Operation scope", "is_correct": false},
+      {"id": "C", "text": "Product scope", "is_correct": false},
+      {"id": "D", "text": "Global (All APIs) scope", "is_correct": true}
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "APIM policies can be applied at four scopes: Global (applies to all APIs), Product (applies to all APIs in a product), API (applies to all operations in an API), and Operation (applies to a single operation). The Global scope applies policies to all API calls through the gateway.",
+      "why_not_A": "API scope policies apply to all operations within a specific API, not across all APIs in the gateway.",
+      "why_not_B": "Operation scope is the most granular level, applying a policy to a single specific operation within an API.",
+      "why_not_C": "Product scope applies to all APIs included in a specific product subscription. Consumers must subscribe to the product for the policy to apply, which is narrower than all APIs."
+    },
+    "concept_ids": ["az204-azure-api-management"],
+    "tags": ["apim", "policy-scope", "rate-limiting"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-013",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-compute-solutions",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A developer needs to deploy an App Service web app that connects to an Azure SQL Database in the same VNet. The web app should retrieve the database connection string from Key Vault without storing any credentials in the app configuration. Which combination of features accomplishes this?",
+    "options": [
+      {"id": "A", "text": "VNet Integration + Managed Identity + Key Vault Reference in App Settings", "is_correct": true},
+      {"id": "B", "text": "Service Endpoint + Storage Account Key + App Settings connection string", "is_correct": false},
+      {"id": "C", "text": "VNet Integration + Hardcoded credentials in web.config", "is_correct": false},
+      {"id": "D", "text": "Public endpoint + Managed Identity + Azure Key Vault SDK call in startup code", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "VNet Integration routes the App Service outbound traffic to the VNet to reach the private SQL database endpoint. Managed Identity provides credential-free identity to Key Vault. Key Vault Reference in App Settings automatically fetches the secret value from Key Vault at runtime using the managed identity—no credentials stored anywhere.",
+      "why_not_B": "Storage Account Keys are credentials that would need to be stored somewhere. This does not provide credential-free access to Key Vault or the SQL database.",
+      "why_not_C": "Hardcoded credentials in web.config is a security anti-pattern regardless of networking configuration. Credentials would be visible in source code and deployment artifacts.",
+      "why_not_D": "Public endpoint exposure for the SQL database contradicts the requirement of using a VNet for private connectivity. Using SDK calls in startup code adds complexity without the simplicity of Key Vault References in App Settings."
+    },
+    "concept_ids": ["az204-managed-identities", "az204-azure-security-dev", "az204-azure-app-service-dev"],
+    "tags": ["managed-identity", "key-vault-reference", "vnet-integration"],
+    "estimated_time_seconds": 100,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-014",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A developer needs to build a low-code workflow that automatically sends an email notification whenever a new row is inserted into an Azure SQL Database table. Which Azure service is most appropriate for this requirement?",
+    "options": [
+      {"id": "A", "text": "Azure Functions with SQL trigger", "is_correct": false},
+      {"id": "B", "text": "Azure Logic Apps with SQL Server connector and Office 365 Outlook connector", "is_correct": true},
+      {"id": "C", "text": "Azure Stream Analytics with SQL input", "is_correct": false},
+      {"id": "D", "text": "Azure Data Factory pipeline with email activity", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Logic Apps with SQL Server and Outlook connectors enables a low-code workflow triggered by new SQL rows that sends email via Office 365. Logic Apps provides 1000+ pre-built connectors, visual workflow designer, and no custom code requirements—perfect for a low-code integration scenario.",
+      "why_not_A": "Azure Functions with SQL trigger requires writing C# or Python code to implement the email sending logic. While technically feasible, it is not low-code.",
+      "why_not_C": "Azure Stream Analytics processes streaming data and does not natively trigger based on SQL Database table inserts. It is designed for real-time analytics, not workflow automation.",
+      "why_not_D": "Azure Data Factory is an ETL orchestration service for moving and transforming data between systems. It does not have built-in email notification activities and is not designed for event-driven workflow automation."
+    },
+    "concept_ids": ["az204-azure-logic-apps"],
+    "tags": ["logic-apps", "connectors", "low-code"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az204-015",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-azure-storage",
+    "type": "factual",
+    "difficulty": 4,
+    "stem": "A developer uses Cosmos DB change feed in an Azure Function to process document updates. The function must process changes for a specific partition key range reliably, even after a function restart. What enables the change feed position to be tracked across restarts?",
+    "options": [
+      {"id": "A", "text": "The Function's Application Settings store the cursor position", "is_correct": false},
+      {"id": "B", "text": "The Cosmos DB change feed lease collection stores checkpoints for each partition range", "is_correct": true},
+      {"id": "C", "text": "Azure Blob Storage stores a JSON file with the last processed document ID", "is_correct": false},
+      {"id": "D", "text": "The Function host automatically remembers the last processed position in memory", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Cosmos DB change feed processor uses a 'lease collection' (a separate Cosmos DB container) to store checkpoints for each partition key range being monitored. When the function restarts, it reads the lease collection to determine the last processed position and resumes from that point, ensuring no events are missed or duplicated.",
+      "why_not_A": "Application Settings store static configuration values. They are not designed to track dynamic cursor positions for event streams and would be overwritten by each deployment.",
+      "why_not_C": "While it is possible to build a custom checkpoint mechanism in Blob Storage, the Cosmos DB change feed processor pattern uses the Cosmos DB lease collection natively. Azure Functions with Cosmos DB trigger handles this automatically.",
+      "why_not_D": "In-memory position tracking does not persist across restarts. When the function is restarted, recycled, or scaled, in-memory state is lost."
+    },
+    "concept_ids": ["az204-cosmos-db-dev"],
+    "tags": ["cosmos-db-change-feed", "checkpointing", "lease-collection"],
+    "estimated_time_seconds": 95,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.09,
+    "review_status": "approved"
+  }
+]

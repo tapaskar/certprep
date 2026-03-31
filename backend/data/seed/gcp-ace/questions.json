@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-ace-001",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You need to create a Compute Engine VM instance that automatically installs Nginx web server when it starts. Which approach should you use?",
+    "options": [
+      {"id": "A", "text": "SSH into the VM after creation and manually install Nginx", "is_correct": false},
+      {"id": "B", "text": "Add a startup script in the VM's metadata with the installation commands", "is_correct": true},
+      {"id": "C", "text": "Create a custom machine image with Nginx pre-installed using the VM wizard", "is_correct": false},
+      {"id": "D", "text": "Use Cloud Functions to trigger installation after the VM boots", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Startup scripts set via instance metadata (startup-script key) run automatically as root when the VM starts. This is the standard way to automate software installation and configuration on Compute Engine instances.",
+      "why_not_A": "Manual SSH installation is not automated; the VM won't automatically install Nginx and requires human intervention every time.",
+      "why_not_C": "Creating a custom image requires an existing VM with Nginx installed and snapshotting it — more steps than using a startup script for simple installations.",
+      "why_not_D": "Cloud Functions cannot directly install software on Compute Engine VMs and cannot trigger on VM boot events in this way."
+    },
+    "concept_ids": ["ace-compute-engine"],
+    "tags": ["compute-engine", "startup-script", "metadata"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-002",
+    "exam_id": "gcp-ace",
+    "domain_id": "access-security",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A web application running on Cloud Run needs to read objects from a private Cloud Storage bucket. What is the recommended approach for authentication?",
+    "options": [
+      {"id": "A", "text": "Create a service account key file, download it, and set GOOGLE_APPLICATION_CREDENTIALS", "is_correct": false},
+      {"id": "B", "text": "Assign the Cloud Run service a service account with Storage Object Viewer role; use the default client library authentication", "is_correct": true},
+      {"id": "C", "text": "Enable public access on the Cloud Storage bucket", "is_correct": false},
+      {"id": "D", "text": "Hardcode the storage access key in application environment variables", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Attaching a service account with the appropriate IAM role to the Cloud Run service uses identity federation automatically. Client libraries use Application Default Credentials (ADC) to authenticate via the attached service account, with no key files to manage.",
+      "why_not_A": "Downloading key files creates a security risk; keys can be leaked and require manual rotation. Google Cloud recommends avoiding key files in favor of attached service accounts.",
+      "why_not_C": "Making the bucket public is a serious security risk that exposes all bucket contents to the internet.",
+      "why_not_D": "Hardcoding credentials in environment variables is a security anti-pattern; credentials can be exposed in logs or environment dumps."
+    },
+    "concept_ids": ["ace-iam-roles"],
+    "tags": ["service-account", "cloud-run", "cloud-storage", "iam"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-003",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "A managed instance group (MIG) has autohealing configured with an HTTP health check. You notice that VM instances are being repeatedly recreated every few minutes. What is the most likely cause?",
+    "options": [
+      {"id": "A", "text": "The autoscaling policy is configured incorrectly", "is_correct": false},
+      {"id": "B", "text": "The health check is failing because the application is not healthy or not listening on the configured port/path", "is_correct": true},
+      {"id": "C", "text": "The instance template was updated and rolling replacement is in progress", "is_correct": false},
+      {"id": "D", "text": "Preemptible VMs in the MIG are being reclaimed by Google", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "When a MIG's health check consistently fails for a VM, autohealing marks it as unhealthy and recreates it. If the underlying application issue isn't fixed, the new instance also fails the health check and is recreated, creating a recreate loop.",
+      "why_not_A": "Autoscaling adds or removes instances based on metrics; it does not cause repeated instance recreation for fixed capacity. Autohealing is the relevant feature here.",
+      "why_not_C": "Rolling updates would update instances systematically, not in a continuous recreation loop. Also, no update was mentioned.",
+      "why_not_D": "Preemptible VM reclamation is random and not every-few-minutes; the pattern of constant recreation points to autohealing responding to failed health checks."
+    },
+    "concept_ids": ["ace-migs-autoscaling"],
+    "tags": ["migs", "autohealing", "health-check", "troubleshooting"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-004",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are deploying a containerized application to GKE. The application connects to a Cloud SQL database. You want to avoid storing database passwords in the Kubernetes configuration. What is the recommended approach?",
+    "options": [
+      {"id": "A", "text": "Store the database password in a Kubernetes ConfigMap", "is_correct": false},
+      {"id": "B", "text": "Use Cloud SQL IAM database authentication with the workload's GCP service account", "is_correct": true},
+      {"id": "C", "text": "Base64 encode the password and store it in a Kubernetes Secret", "is_correct": false},
+      {"id": "D", "text": "Pass the password as a Docker environment variable in the container image", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud SQL IAM database authentication lets GKE pods authenticate using their Workload Identity-linked GCP service account JWT token, eliminating database passwords entirely. This is the most secure approach with no credentials to manage.",
+      "why_not_A": "ConfigMaps store plain text and are not intended for sensitive data. Anyone with ConfigMap read access can see the password.",
+      "why_not_C": "Kubernetes Secrets are base64-encoded (not encrypted) by default. While better than ConfigMaps, the password still needs to be managed and rotated.",
+      "why_not_D": "Embedding credentials in Docker images creates a significant security risk; the image can be pulled and inspected to reveal the password."
+    },
+    "concept_ids": ["ace-gke-basics", "ace-iam-roles"],
+    "tags": ["gke", "cloud-sql", "iam", "workload-identity"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-005",
+    "exam_id": "gcp-ace",
+    "domain_id": "planning-configuring",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "You need to create a VPC firewall rule that allows SSH access (port 22) from your office IP address (203.0.113.25) to all VMs tagged with 'web-server'. Which firewall rule configuration is correct?",
+    "options": [
+      {"id": "A", "text": "Direction: Egress, Source: 203.0.113.25/32, Target: all instances, Port: 22", "is_correct": false},
+      {"id": "B", "text": "Direction: Ingress, Source: 203.0.113.25/32, Target tags: web-server, Port: 22", "is_correct": true},
+      {"id": "C", "text": "Direction: Ingress, Destination: 203.0.113.25/32, Target tags: web-server, Port: 22", "is_correct": false},
+      {"id": "D", "text": "Direction: Ingress, Source: 0.0.0.0/0, Target: web-server, Port: 22", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An ingress firewall rule allows incoming traffic TO the VMs tagged 'web-server' FROM the specified source IP. The source IP specifies where traffic originates (the office), and target tags define which VMs this rule applies to.",
+      "why_not_A": "Egress rules control outbound traffic FROM VMs, not inbound SSH access from an external IP.",
+      "why_not_C": "For ingress rules, 'Destination' is not a valid field. The rule applies to VMs via target tags; source defines where traffic comes from.",
+      "why_not_D": "Source 0.0.0.0/0 would allow SSH from any IP on the internet, not just the office IP — a significant security risk."
+    },
+    "concept_ids": ["ace-vpc-networking"],
+    "tags": ["vpc", "firewall-rules", "ssh", "network-security"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-006",
+    "exam_id": "gcp-ace",
+    "domain_id": "successful-operation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your team needs to store application logs from Compute Engine VMs for compliance purposes for 2 years. Cloud Logging only retains logs for 30 days. What is the most cost-effective solution?",
+    "options": [
+      {"id": "A", "text": "Increase Cloud Logging retention to 2 years in the settings", "is_correct": false},
+      {"id": "B", "text": "Create a log sink to export logs to Cloud Storage with a lifecycle policy to delete after 2 years", "is_correct": true},
+      {"id": "C", "text": "Create a log sink to BigQuery and set table expiration to 2 years", "is_correct": false},
+      {"id": "D", "text": "Write VM application logs directly to a Cloud SQL database", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Log sinks export Cloud Logging data to Cloud Storage (Archive class) for long-term, cost-effective retention. A lifecycle policy automatically deletes objects after 2 years, and Archive storage is the cheapest storage tier for rarely accessed compliance logs.",
+      "why_not_A": "Cloud Logging custom retention is supported (up to 3650 days) but is significantly more expensive than Cloud Storage archive. Cloud Storage is the cost-effective choice for compliance archives.",
+      "why_not_C": "BigQuery sinks work for analysis but are more expensive than Cloud Storage for pure archival; BigQuery charges for storage and queries.",
+      "why_not_D": "Writing logs to Cloud SQL is an anti-pattern; it adds latency, is not scalable for high-volume logs, and is much more expensive than Cloud Storage."
+    },
+    "concept_ids": ["ace-monitoring-logging"],
+    "tags": ["cloud-logging", "log-sink", "cloud-storage", "compliance"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-007",
+    "exam_id": "gcp-ace",
+    "domain_id": "cloud-solution-env",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "You want to configure the gcloud CLI to use a specific project and region by default so you don't need to specify them in every command. Which command achieves this?",
+    "options": [
+      {"id": "A", "text": "gcloud auth login --project=my-project --region=us-central1", "is_correct": false},
+      {"id": "B", "text": "gcloud config set project my-project && gcloud config set compute/region us-central1", "is_correct": true},
+      {"id": "C", "text": "gcloud init --project=my-project --region=us-central1", "is_correct": false},
+      {"id": "D", "text": "export GCLOUD_PROJECT=my-project && export GCLOUD_REGION=us-central1", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "gcloud config set project and gcloud config set compute/region set default values for the active configuration. Subsequent commands will use these defaults unless explicitly overridden.",
+      "why_not_A": "gcloud auth login only handles authentication; it does not accept project or region as parameters to configure defaults.",
+      "why_not_C": "gcloud init is an interactive setup wizard; it doesn't accept project and region flags directly in a non-interactive script-friendly way.",
+      "why_not_D": "GCLOUD_PROJECT and GCLOUD_REGION are not valid environment variables for the gcloud CLI. The correct env var is GOOGLE_CLOUD_PROJECT for some SDKs, but gcloud uses its configuration system."
+    },
+    "concept_ids": ["ace-gcloud-cli"],
+    "tags": ["gcloud", "cli", "configuration"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-008",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Cloud SQL PostgreSQL instance is in us-central1. Developers need to connect from their laptops without exposing the database to the public internet and without configuring authorized networks. What is the best approach?",
+    "options": [
+      {"id": "A", "text": "Add the developer's home IP to the authorized networks list", "is_correct": false},
+      {"id": "B", "text": "Use the Cloud SQL Auth Proxy running on the developer's laptop with IAM authentication", "is_correct": true},
+      {"id": "C", "text": "Enable public IP on the database and use SSL/TLS certificates", "is_correct": false},
+      {"id": "D", "text": "Create a VPN tunnel from developer laptops to the VPC", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Cloud SQL Auth Proxy runs locally on the developer's laptop, establishes an encrypted tunnel to Cloud SQL using the developer's GCP IAM credentials, and serves a local TCP socket. No public IP, no authorized networks, no key management — the most secure and convenient approach.",
+      "why_not_A": "Home IP addresses are often dynamic and change frequently. Managing a list of developer IPs is operationally burdensome and exposes the database to the internet.",
+      "why_not_C": "Enabling public IP even with SSL still exposes the database endpoint to the internet, requiring IP-based access control that is difficult to manage.",
+      "why_not_D": "A VPN tunnel is a valid but overly complex solution for individual developer access. VPN requires infrastructure setup and is better suited for connecting entire networks, not individual laptops."
+    },
+    "concept_ids": ["ace-cloud-sql"],
+    "tags": ["cloud-sql", "auth-proxy", "developer-access"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-009",
+    "exam_id": "gcp-ace",
+    "domain_id": "planning-configuring",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "Your application requires a global HTTP/HTTPS load balancer with a single anycast IP that serves users from the nearest Google Point of Presence. The backends are managed instance groups in multiple regions. Which load balancer should you use?",
+    "options": [
+      {"id": "A", "text": "Regional External Application Load Balancer", "is_correct": false},
+      {"id": "B", "text": "External Passthrough Network Load Balancer", "is_correct": false},
+      {"id": "C", "text": "Global External Application Load Balancer", "is_correct": true},
+      {"id": "D", "text": "Internal Application Load Balancer", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Global External Application Load Balancer (Layer 7) uses Google's global anycast network with a single IP that routes users to the nearest Google PoP, then forwards traffic to the closest healthy backend. It supports HTTPS, URL-based routing, and multi-region backends.",
+      "why_not_A": "The Regional External Application LB is scoped to a single region; it doesn't use anycast routing or serve users globally from the nearest PoP.",
+      "why_not_B": "The External Passthrough NLB is a Layer 4 (TCP/UDP) load balancer; it doesn't handle HTTP/HTTPS routing and is regional, not global.",
+      "why_not_D": "Internal Application LB routes traffic within a VPC; it is not accessible from the internet and doesn't suit public global traffic."
+    },
+    "concept_ids": ["ace-load-balancing"],
+    "tags": ["load-balancing", "global", "http", "anycast"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-010",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You have a Cloud Storage bucket with important objects that must not be accidentally deleted. You want to keep historical versions of overwritten objects. Which features should you enable?",
+    "options": [
+      {"id": "A", "text": "Enable bucket versioning and configure a lifecycle rule to keep all versions indefinitely", "is_correct": false},
+      {"id": "B", "text": "Enable object versioning on the bucket", "is_correct": true},
+      {"id": "C", "text": "Create a bucket lock with Retention Policy", "is_correct": false},
+      {"id": "D", "text": "Enable uniform bucket-level access", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Object versioning keeps all versions of an object whenever it is overwritten or deleted. The previous version becomes a non-current version and can be retrieved, providing protection against accidental overwrites and deletions.",
+      "why_not_A": "Lifecycle rules combined with versioning is a valid pattern, but the simplest answer to enable historical version keeping is just enabling versioning. Keeping all versions indefinitely with no lifecycle rule is also valid but may be expensive.",
+      "why_not_C": "Bucket Lock and Retention Policies prevent deletion of objects for a specified duration (for compliance/WORM storage); they don't create version history of overwritten objects.",
+      "why_not_D": "Uniform bucket-level access controls IAM permissions for the bucket; it has nothing to do with version history."
+    },
+    "concept_ids": ["ace-cloud-storage"],
+    "tags": ["cloud-storage", "versioning", "data-protection"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-011",
+    "exam_id": "gcp-ace",
+    "domain_id": "cloud-solution-env",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company has 50 projects across 5 teams. You need to enforce a policy that prevents any project from creating resources outside of US regions. You also want to prevent service account key creation. Where should you apply these organization policies?",
+    "options": [
+      {"id": "A", "text": "Apply the policies to each of the 50 projects individually", "is_correct": false},
+      {"id": "B", "text": "Apply the policies at the Organization level so they inherit to all projects", "is_correct": true},
+      {"id": "C", "text": "Apply the policies to the billing account", "is_correct": false},
+      {"id": "D", "text": "Create IAM deny policies on each project's IAM policy", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Organization policies applied at the Organization level inherit downward to all folders and projects. Setting constraints once at the org level applies to all 50 projects automatically, including any new projects created in the future.",
+      "why_not_A": "Applying to each of 50 projects individually is operationally burdensome and error-prone; new projects won't have the policies unless explicitly added.",
+      "why_not_C": "Billing accounts don't support organization policy constraints; policies are applied via the Resource Manager hierarchy.",
+      "why_not_D": "IAM deny policies control IAM permissions (who can do what), not resource configuration constraints (where resources can be created). Organization policies are the correct tool for resource location constraints."
+    },
+    "concept_ids": ["ace-org-policies"],
+    "tags": ["organization-policy", "resource-hierarchy", "governance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-012",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are deploying a new version of an App Engine application. You want to send 10% of production traffic to the new version to test it before full rollout. How do you accomplish this?",
+    "options": [
+      {"id": "A", "text": "Deploy the new version as a new App Engine application", "is_correct": false},
+      {"id": "B", "text": "Use traffic splitting to allocate 10% of traffic to the new version by version ID", "is_correct": true},
+      {"id": "C", "text": "Update the default version and monitor Cloud Monitoring for errors", "is_correct": false},
+      {"id": "D", "text": "Create a Cloud Load Balancer rule to route 10% to the new version", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "App Engine supports traffic splitting natively — you can split traffic between versions by percentage (10%/90%) using 'gcloud app services set-traffic'. This enables canary testing with precise traffic control without external load balancers.",
+      "why_not_A": "Creating a separate App Engine application is not traffic splitting; it creates a completely separate service with a different URL.",
+      "why_not_C": "Updating the default version immediately sends 100% of traffic to the new version with no gradual rollout, defeating the purpose of a canary test.",
+      "why_not_D": "App Engine has its own built-in traffic splitting; you don't need an external Cloud Load Balancer to split traffic between App Engine versions."
+    },
+    "concept_ids": ["ace-app-engine"],
+    "tags": ["app-engine", "traffic-splitting", "canary-deployment"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-013",
+    "exam_id": "gcp-ace",
+    "domain_id": "cloud-solution-env",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "You receive an alert that your project's Compute Engine vCPU quota has been exceeded, blocking new VM creation. What is the correct procedure to increase the quota?",
+    "options": [
+      {"id": "A", "text": "Delete existing VMs to free up quota automatically", "is_correct": false},
+      {"id": "B", "text": "Submit a quota increase request through the IAM & Admin > Quotas page in the Cloud Console", "is_correct": true},
+      {"id": "C", "text": "Upgrade the project billing account to a higher tier", "is_correct": false},
+      {"id": "D", "text": "Quotas cannot be changed; use a different project", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Quota increases are requested through the IAM & Admin > Quotas page (or Quotas & System Limits) in the Cloud Console. Select the quota, click Edit Quotas, and submit a justification. Google typically responds within 24-48 hours.",
+      "why_not_A": "Deleting VMs reduces current usage but doesn't increase the quota limit itself; you could hit the same limit when trying to create more VMs.",
+      "why_not_C": "Billing account tier doesn't directly control vCPU quotas; quotas are managed separately and require an explicit increase request.",
+      "why_not_D": "Quotas can be increased via request. Using different projects is a workaround, not the recommended solution."
+    },
+    "concept_ids": ["ace-billing"],
+    "tags": ["quotas", "billing", "cloud-console"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-014",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You need to deploy a stateless containerized microservice that processes HTTP requests. It should scale to zero when there's no traffic and scale up quickly during traffic spikes. The team wants to avoid managing Kubernetes clusters. Which service is most appropriate?",
+    "options": [
+      {"id": "A", "text": "GKE Autopilot", "is_correct": false},
+      {"id": "B", "text": "Cloud Run", "is_correct": true},
+      {"id": "C", "text": "App Engine Flexible", "is_correct": false},
+      {"id": "D", "text": "Compute Engine with Managed Instance Group", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Run is the ideal serverless container platform for stateless HTTP services. It scales from zero automatically, there are no clusters to manage, and it charges only for request processing time. This exactly matches all requirements.",
+      "why_not_A": "GKE Autopilot removes node management but still requires managing Kubernetes workloads (Deployments, Services); it doesn't scale to zero by default.",
+      "why_not_C": "App Engine Flexible has a minimum of one instance always running (no scale-to-zero) and is less flexible than Cloud Run for containers.",
+      "why_not_D": "Compute Engine with MIG requires managing VMs, OS, and autoscaling policies; it doesn't scale to zero and has significantly higher operational overhead."
+    },
+    "concept_ids": ["ace-cloud-run"],
+    "tags": ["cloud-run", "serverless", "containers", "scale-to-zero"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ace-015",
+    "exam_id": "gcp-ace",
+    "domain_id": "successful-operation",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "Your GKE application pods are being OOMKilled (out of memory). Cloud Monitoring shows memory usage consistently hitting 95% of the memory limit before crashing. The application has been running fine for months. What should you do first?",
+    "options": [
+      {"id": "A", "text": "Delete the GKE cluster and redeploy the application", "is_correct": false},
+      {"id": "B", "text": "Increase the memory limit in the pod specification and redeploy", "is_correct": false},
+      {"id": "C", "text": "Investigate the application for memory leaks using Cloud Profiler before increasing limits", "is_correct": true},
+      {"id": "D", "text": "Switch from GKE Standard to GKE Autopilot to get better resource management", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The application ran fine for months before starting to hit memory limits — this pattern strongly suggests a memory leak (gradual accumulation). Cloud Profiler can identify heap allocation hotspots. Fixing the root cause is better than repeatedly increasing limits, which only delays the inevitable crash.",
+      "why_not_A": "Deleting and redeploying doesn't fix the underlying issue; OOMKills will recur with the same application code.",
+      "why_not_B": "Increasing limits might temporarily stop the crashes but doesn't address a memory leak, which will eventually consume the new limit too. Investigate first.",
+      "why_not_D": "Switching to Autopilot doesn't fix application-level memory issues; the same pod will OOMKill in Autopilot too."
+    },
+    "concept_ids": ["ace-monitoring-logging"],
+    "tags": ["gke", "monitoring", "oomkilled", "troubleshooting", "profiler"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  }
+]

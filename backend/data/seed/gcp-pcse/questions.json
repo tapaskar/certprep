@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-pcse-001",
+    "exam_id": "gcp-pcse",
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer's GCP account is compromised. An attacker is using the developer's credentials to attempt to exfiltrate data from a BigQuery dataset in project A to a BigQuery dataset in their own project B. Both projects are different GCP organizations. What control MOST effectively prevents this exfiltration?",
+    "options": [
+      {"id": "A", "text": "Revoke the developer's IAM roles immediately", "is_correct": false},
+      {"id": "B", "text": "VPC Service Controls perimeter around project A's BigQuery, blocking API calls to resources outside the perimeter", "is_correct": true},
+      {"id": "C", "text": "Enable Cloud Armor on the BigQuery API endpoint", "is_correct": false},
+      {"id": "D", "text": "Require MFA for all GCP console logins", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Service Controls prevents data exfiltration even with valid credentials. The perimeter blocks BigQuery copy/export operations to projects outside the perimeter — regardless of IAM permissions. This is specifically designed for this threat scenario.",
+      "why_not_A": "Revoking roles is necessary for incident response but doesn't help if the attacker acts before revocation. VPC SC is a preventive control that stops exfiltration proactively.",
+      "why_not_C": "Cloud Armor is a WAF for HTTP(S) load balancers; it doesn't protect the BigQuery API from authenticated internal API calls.",
+      "why_not_D": "MFA protects against credential theft at login time; it doesn't prevent exfiltration once a session is active with stolen credentials."
+    },
+    "concept_ids": ["pcse-vpc-service-controls"],
+    "tags": ["vpc-service-controls", "data-exfiltration", "security", "bigquery"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-002",
+    "exam_id": "gcp-pcse",
+    "domain_id": "securing-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial company must ensure that if Google is ever requested to provide customer data to a government agency, the company retains the ability to deny access by revoking their encryption keys. Which encryption option satisfies this requirement?",
+    "options": [
+      {"id": "A", "text": "Google-managed encryption keys (default)", "is_correct": false},
+      {"id": "B", "text": "Customer-managed encryption keys (CMEK) in Cloud KMS", "is_correct": true},
+      {"id": "C", "text": "Customer-supplied encryption keys (CSEK)", "is_correct": false},
+      {"id": "D", "text": "Application-layer encryption using a third-party library", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "CMEK with Cloud KMS gives the company control over the encryption key lifecycle. They can disable or destroy the KMS key version, making all data encrypted with it permanently inaccessible — even to Google. This satisfies the requirement to deny access by revoking keys.",
+      "why_not_A": "Google-managed keys are fully controlled by Google; the company cannot revoke them or prevent Google from accessing data for legal compliance.",
+      "why_not_C": "CSEK requires providing the key on every API call and Google never stores it. While it gives key control, it's operationally complex at scale and doesn't provide the auditability of Cloud KMS.",
+      "why_not_D": "Application-layer encryption works technically but moves key management outside GCP, losing audit logging, version control, and integration with GCP services."
+    },
+    "concept_ids": ["pcse-cloud-kms"],
+    "tags": ["cmek", "kms", "key-management", "data-sovereignty"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-003",
+    "exam_id": "gcp-pcse",
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your security team wants to be notified whenever a GCP service account key is created. Creating service account keys is a security risk. Which approach enables automated detection and alerting?",
+    "options": [
+      {"id": "A", "text": "Schedule a daily script that lists all service account keys and emails the report", "is_correct": false},
+      {"id": "B", "text": "Create a Cloud Logging log-based metric for Admin Activity logs with 'google.iam.admin.v1.CreateServiceAccountKey', then create a Cloud Monitoring alert", "is_correct": true},
+      {"id": "C", "text": "Enable Security Command Center and monitor for service account key findings daily", "is_correct": false},
+      {"id": "D", "text": "Enable organization policy to block all service account key creation", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Admin Activity logs always record IAM changes including service account key creation. A log-based metric counts occurrences of this log entry. A Cloud Monitoring alert policy sends real-time notifications when the count is > 0, providing immediate detection.",
+      "why_not_A": "Daily scanning introduces up to 24 hours of detection delay; the question asks for automated alerting, implying near-real-time notification.",
+      "why_not_C": "SCC provides security health analytics but checking it daily is reactive; the question asks for automated alerting.",
+      "why_not_D": "Blocking key creation is a preventive control (org policy), not a detective control (alerting). The question asks for detection and alerting, not prevention."
+    },
+    "concept_ids": ["pcse-audit-logging"],
+    "tags": ["cloud-logging", "log-based-metrics", "alerting", "service-account"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-004",
+    "exam_id": "gcp-pcse",
+    "domain_id": "network-security",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company's external web application hosted behind a Global External Application Load Balancer is experiencing SQL injection attack attempts. Some attacks are successful. What GCP service should be configured to block these attacks?",
+    "options": [
+      {"id": "A", "text": "VPC firewall rules with deny rules for malicious IP ranges", "is_correct": false},
+      {"id": "B", "text": "Cloud Armor security policy with preconfigured WAF rules for SQL injection (sqli-stable)", "is_correct": true},
+      {"id": "C", "text": "Cloud IDS for SQL injection detection", "is_correct": false},
+      {"id": "D", "text": "Identity-Aware Proxy to require authentication for all requests", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Armor's preconfigured WAF rule 'sqli-stable' implements OWASP SQL injection protection and evaluates request content at the edge, blocking SQL injection attempts before they reach the application. It integrates natively with External Application Load Balancers.",
+      "why_not_A": "VPC firewall rules block traffic by IP/port at Layer 3/4; they cannot inspect HTTP request bodies for SQL injection patterns.",
+      "why_not_C": "Cloud IDS detects and alerts on threats (passive monitoring); it does not actively block requests. The requirement is to block SQL injection attacks.",
+      "why_not_D": "IAP requires user authentication, which would break the public application for unauthenticated users. SQL injection protection is a content inspection problem, not an authentication problem."
+    },
+    "concept_ids": ["pcse-cloud-armor"],
+    "tags": ["cloud-armor", "waf", "sql-injection", "owasp"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-005",
+    "exam_id": "gcp-pcse",
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company's employees use corporate Google Workspace accounts. They need to access an internal GCP application using Identity-Aware Proxy but only from managed corporate devices and only during business hours (9 AM - 5 PM). What configuration enables this?",
+    "options": [
+      {"id": "A", "text": "Configure IAP with email domain restriction to allow only @company.com accounts", "is_correct": false},
+      {"id": "B", "text": "Create an Access Context Manager Access Level with device policy (managed devices) and time-based conditions, then apply to IAP", "is_correct": true},
+      {"id": "C", "text": "Deploy the application in a VPC and restrict access to the corporate IP range", "is_correct": false},
+      {"id": "D", "text": "Require VPN connection during business hours using Cloud VPN", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Access Context Manager Access Levels define conditions combining device policy (OS version, encryption, management status) and IAM conditions (time-based using CEL expressions). Applying this Access Level to IAP enforces both device and time-based access control — BeyondCorp zero-trust in action.",
+      "why_not_A": "Domain restriction only verifies the email domain; it doesn't check device management status or enforce time-based access.",
+      "why_not_C": "IP-based restriction doesn't verify device management. Corporate employees accessing from a personal device on the corporate network would still get through.",
+      "why_not_D": "VPN provides network access but doesn't verify device compliance or restrict by time. VPN also doesn't integrate with IAP's per-application access control."
+    },
+    "concept_ids": ["pcse-beyond-corp"],
+    "tags": ["iap", "access-context-manager", "beyondcorp", "zero-trust"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-006",
+    "exam_id": "gcp-pcse",
+    "domain_id": "ensuring-compliance",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A company needs to process healthcare data in Google Cloud and must ensure HIPAA compliance. Which of the following is a REQUIRED step before storing Protected Health Information (PHI) in Google Cloud?",
+    "options": [
+      {"id": "A", "text": "Enable CMEK for all storage services", "is_correct": false},
+      {"id": "B", "text": "Sign a Business Associate Agreement (BAA) with Google", "is_correct": true},
+      {"id": "C", "text": "Deploy workloads only in US regions", "is_correct": false},
+      {"id": "D", "text": "Enable VPC Service Controls around all projects", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "HIPAA requires a signed Business Associate Agreement (BAA) between the covered entity and any cloud provider (business associate) that processes PHI. Google Cloud provides a BAA; without it, storing PHI in Google Cloud is not HIPAA compliant regardless of technical controls.",
+      "why_not_A": "CMEK is a security best practice but is not a HIPAA requirement. Default Google-managed encryption is HIPAA-acceptable with a valid BAA.",
+      "why_not_C": "HIPAA has no US-only data residency requirement. PHI can be stored internationally as long as appropriate safeguards are in place.",
+      "why_not_D": "VPC Service Controls is a security control; it's not required by HIPAA. The BAA is the foundational legal agreement required before any PHI storage."
+    },
+    "concept_ids": ["pcse-compliance-frameworks"],
+    "tags": ["hipaa", "baa", "compliance", "phi"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-007",
+    "exam_id": "gcp-pcse",
+    "domain_id": "network-security",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You have 50 Compute Engine VMs in a subnet that should NOT have internet access. You want to ensure they cannot reach public internet destinations even if a firewall rule misconfiguration allows outbound traffic. What provides an additional control?",
+    "options": [
+      {"id": "A", "text": "Remove the default route to the internet gateway from the VPC routing table", "is_correct": true},
+      {"id": "B", "text": "Create a firewall rule: Deny Egress to 0.0.0.0/0 on all ports with priority 1000", "is_correct": false},
+      {"id": "C", "text": "Assign private IP addresses only (no external IPs) to the VMs", "is_correct": false},
+      {"id": "D", "text": "Enable VPC Flow Logs to detect internet-bound traffic", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Removing the default route (0.0.0.0/0 via default internet gateway) at the VPC routing level means there is no path for traffic to reach the internet even if a firewall rule allows it. Routing and firewall rules are independent controls — removing the route provides defense in depth.",
+      "why_not_B": "This is a valid control but with priority 1000, a misconfigured rule with lower priority (e.g., 900) could override it. The question asks for a control BEYOND firewall rules.",
+      "why_not_C": "VMs without external IPs can still send traffic outbound if a Cloud NAT gateway exists or if the subnet has a default route via a NAT appliance.",
+      "why_not_D": "VPC Flow Logs detect traffic but are a detective control, not a preventive one. They don't block internet-bound traffic."
+    },
+    "concept_ids": ["pcse-private-networking"],
+    "tags": ["vpc", "routing", "defense-in-depth", "network-security"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-008",
+    "exam_id": "gcp-pcse",
+    "domain_id": "securing-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A BigQuery analyst table contains a 'credit_card_number' column with real credit card data. The security team wants analysts to be able to run queries but see only masked values (e.g., XXXX-XXXX-XXXX-1234) for this column. Which solution provides column-level access control?",
+    "options": [
+      {"id": "A", "text": "Create a BigQuery view that applies REGEXP_REPLACE to mask the credit card column and grant analysts access only to the view", "is_correct": false},
+      {"id": "B", "text": "Use BigQuery column-level security with a 'sensitive_data' policy tag and create a masked reader data policy", "is_correct": true},
+      {"id": "C", "text": "Run Cloud DLP de-identification on the BigQuery table to replace real values with masked values", "is_correct": false},
+      {"id": "D", "text": "Grant analysts roles/bigquery.dataViewer on the table; they should not see sensitive columns", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "BigQuery column-level security with policy tags enforces access at the BigQuery infrastructure level. Analysts without the fine-grained reader role see masked values through Data Masking policies (dynamic masking) when querying the column — the masking is enforced even if they query directly.",
+      "why_not_A": "A view with REGEXP_REPLACE works but analysts could be granted table access directly, bypassing the view. Column-level security enforces the policy at the table level.",
+      "why_not_C": "DLP de-identification permanently replaces the data in the table; analysts could not see the original data for authorized use cases. Column-level security allows authorized users to see real values.",
+      "why_not_D": "Data Viewer grants read access to all columns including the credit card number. It doesn't provide selective column masking."
+    },
+    "concept_ids": ["pcse-data-protection"],
+    "tags": ["bigquery", "column-level-security", "policy-tags", "data-masking"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-009",
+    "exam_id": "gcp-pcse",
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company has an org policy preventing service account key creation (constraints/iam.disableServiceAccountKeyCreation). A GitHub Actions CI/CD pipeline needs to deploy to GCP. How can this pipeline authenticate to GCP without service account keys?",
+    "options": [
+      {"id": "A", "text": "Create an exception to the org policy for the CI/CD project", "is_correct": false},
+      {"id": "B", "text": "Use Workload Identity Federation to configure GitHub Actions as an external identity provider", "is_correct": true},
+      {"id": "C", "text": "Encode a service account key in a GitHub Actions secret", "is_correct": false},
+      {"id": "D", "text": "Create a VM in GCP to run CI/CD jobs with an attached service account", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Workload Identity Federation allows GitHub Actions to authenticate to GCP using GitHub's OIDC tokens, which GCP exchanges for short-lived GCP credentials. No service account key is created or stored anywhere — compliant with the org policy.",
+      "why_not_A": "Creating a policy exception increases the attack surface and negates the security benefit of the org policy. It's the worst option.",
+      "why_not_C": "This requires creating a service account key, which is explicitly blocked by the org policy. Even stored as a GitHub secret, key rotation and revocation are required.",
+      "why_not_D": "Running CI/CD on a GCP VM works but requires managing a persistent VM, adds cost, and doesn't integrate with the GitHub Actions workflow model."
+    },
+    "concept_ids": ["pcse-iam-advanced"],
+    "tags": ["workload-identity-federation", "github-actions", "keyless-auth"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-010",
+    "exam_id": "gcp-pcse",
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Security Command Center Premium reports an active threat finding: 'Cryptomining malware detected on a Compute Engine instance.' What is the recommended immediate response?",
+    "options": [
+      {"id": "A", "text": "Delete the VM instance and recreate it from the original image", "is_correct": false},
+      {"id": "B", "text": "Take a disk snapshot for forensics, isolate the VM by removing its network tags/firewall rules, then investigate", "is_correct": true},
+      {"id": "C", "text": "Restore the VM from the most recent snapshot backup", "is_correct": false},
+      {"id": "D", "text": "Reboot the VM to clear the malware from memory", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Security incident response: first preserve evidence (disk snapshot), then contain (isolate network by removing firewall tags or modifying rules to deny all traffic), then investigate (forensic analysis of the snapshot). This follows the incident response framework without destroying evidence.",
+      "why_not_A": "Deleting the VM immediately destroys forensic evidence needed to understand how the attacker gained access and what data may have been compromised.",
+      "why_not_C": "Restoring from backup without investigating first doesn't address the root cause; the vulnerability may still be exploitable after restore.",
+      "why_not_D": "Rebooting doesn't remove persistent malware on disk. It also doesn't contain the threat — the VM may still have network access to exfiltrate data or mine crypto."
+    },
+    "concept_ids": ["pcse-incident-response"],
+    "tags": ["incident-response", "scc", "cryptomining", "forensics"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-011",
+    "exam_id": "gcp-pcse",
+    "domain_id": "network-security",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A GKE cluster runs a payment processing application. You want to ensure that only container images that have been signed by your security team's attestor can be deployed to this cluster. What service enforces this?",
+    "options": [
+      {"id": "A", "text": "Artifact Registry vulnerability scanning", "is_correct": false},
+      {"id": "B", "text": "Binary Authorization", "is_correct": true},
+      {"id": "C", "text": "GKE Pod Security Standards", "is_correct": false},
+      {"id": "D", "text": "Cloud Armor IP allowlisting", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Binary Authorization is a deploy-time security control for GKE and Cloud Run. It enforces a policy requiring cryptographic attestations from defined attestors before any container image can be deployed. Unsigned images are rejected at deploy time.",
+      "why_not_A": "Vulnerability scanning detects CVEs in images but doesn't enforce signing requirements or block deployments based on attestation.",
+      "why_not_C": "Pod Security Standards (formerly PodSecurityPolicy) enforce runtime security configurations (privilege escalation, host network) but don't verify image provenance or signing.",
+      "why_not_D": "Cloud Armor is a WAF for external load balancers. It has nothing to do with container image signing or deployment policies."
+    },
+    "concept_ids": ["pcse-binary-auth"],
+    "tags": ["binary-authorization", "container-signing", "gke", "supply-chain"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-012",
+    "exam_id": "gcp-pcse",
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps team accidentally created Compute Engine VMs with public IP addresses, violating the company's security policy. You need to prevent this from happening across all projects in the organization going forward. What is the most effective preventive control?",
+    "options": [
+      {"id": "A", "text": "Train developers on the policy and rely on manual code reviews", "is_correct": false},
+      {"id": "B", "text": "Set the organization policy constraint 'constraints/compute.vmExternalIpAccess' to DENY for all projects", "is_correct": true},
+      {"id": "C", "text": "Create Cloud Monitoring alerts when VMs with external IPs are detected", "is_correct": false},
+      {"id": "D", "text": "Restrict the Compute Instance Admin role to only senior engineers", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The organization policy constraint 'constraints/compute.vmExternalIpAccess' prevents Compute Engine VM instances from being configured with external IP addresses. Setting this at the organization level applies to all current and future projects, making it a preventive control rather than a detective one.",
+      "why_not_A": "Training and manual review are people-dependent controls that fail when processes are bypassed or new engineers aren't trained. Technical controls are more reliable.",
+      "why_not_C": "Monitoring alerts detect violations after they occur (detective control). The requirement is prevention — stop the VM from being created with a public IP in the first place.",
+      "why_not_D": "Restricting role assignment reduces who can create VMs but doesn't technically prevent authorized users from creating VMs with external IPs."
+    },
+    "concept_ids": ["pcse-org-policies"],
+    "tags": ["org-policy", "external-ip", "preventive-control", "governance"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-013",
+    "exam_id": "gcp-pcse",
+    "domain_id": "securing-data",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An application stores API keys and database passwords in Secret Manager. A new developer joins the team and needs read access to specific secrets (db-password and api-key) but not others. What is the most granular access configuration?",
+    "options": [
+      {"id": "A", "text": "Grant roles/secretmanager.viewer on the project", "is_correct": false},
+      {"id": "B", "text": "Grant roles/secretmanager.secretAccessor on each specific secret resource (not project-level)", "is_correct": true},
+      {"id": "C", "text": "Grant roles/secretmanager.admin on the project so they can manage their secrets", "is_correct": false},
+      {"id": "D", "text": "Create a custom role with secretmanager.versions.access permission and grant it at the project level", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "IAM roles can be granted at the resource level in Secret Manager. Granting secretmanager.secretAccessor on the specific secret resources (db-password and api-key) only gives access to those secrets, not all secrets in the project. This is the least-privilege approach.",
+      "why_not_A": "Project-level Secret Manager Viewer allows listing and viewing metadata of ALL secrets in the project — more than needed.",
+      "why_not_C": "secretmanager.admin at the project level grants full management of ALL secrets — way more than needed for a developer who should only read two specific secrets.",
+      "why_not_D": "Custom role at the project level still applies to all secrets in the project. Resource-level IAM binding on specific secrets is more granular."
+    },
+    "concept_ids": ["pcse-secret-manager"],
+    "tags": ["secret-manager", "iam", "least-privilege", "resource-level-iam"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-014",
+    "exam_id": "gcp-pcse",
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An audit finds that several service accounts have the roles/editor primitive role granted at the project level — a security risk. You need to identify which specific permissions these service accounts are actually using to recommend least-privilege replacements. Which tool helps?",
+    "options": [
+      {"id": "A", "text": "IAM Policy Simulator to test what actions the service accounts can take", "is_correct": false},
+      {"id": "B", "text": "IAM Recommender that analyzes usage patterns and recommends least-privilege role replacements", "is_correct": true},
+      {"id": "C", "text": "Security Command Center Premium to detect overprivileged service accounts", "is_correct": false},
+      {"id": "D", "text": "Cloud Asset Inventory to list all IAM bindings across the project", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "IAM Recommender uses ML to analyze which permissions a principal actually used in the last 90 days and recommends a set of predefined roles with the minimum required permissions. It specifically addresses over-permissive roles by suggesting least-privilege replacements.",
+      "why_not_A": "Policy Simulator tests whether a specific IAM action is allowed or denied; it doesn't analyze historical usage to recommend least-privilege roles.",
+      "why_not_C": "SCC can detect overprivileged accounts as a finding but doesn't provide specific role replacement recommendations based on usage.",
+      "why_not_D": "Cloud Asset Inventory lists IAM bindings but doesn't analyze actual usage to recommend right-sized permissions."
+    },
+    "concept_ids": ["pcse-iam-advanced"],
+    "tags": ["iam-recommender", "least-privilege", "service-account", "overpermissive"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcse-015",
+    "exam_id": "gcp-pcse",
+    "domain_id": "managing-operations",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A security auditor needs to review all data access operations on a BigQuery dataset containing PII for the past 6 months. By default, are BigQuery Data Access logs enabled?",
+    "options": [
+      {"id": "A", "text": "Yes, BigQuery Data Access logs are enabled by default for all tables", "is_correct": false},
+      {"id": "B", "text": "Yes, but only for Admin Activity; Data Access logs must be explicitly enabled", "is_correct": false},
+      {"id": "C", "text": "No, BigQuery is an exception — Data Access logs are enabled by default for BigQuery only", "is_correct": true},
+      {"id": "D", "text": "No, Data Access logs must be enabled for all services including BigQuery", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "BigQuery is a special exception — Data Access (DATA_READ, DATA_WRITE) audit logs are enabled by default for BigQuery, unlike other GCP services where they must be explicitly enabled. This is because BigQuery is inherently an analytics service where data access logging is critical.",
+      "why_not_A": "This answer is partially correct (BigQuery Data Access logs are enabled by default) but the phrasing 'all tables' is misleading; it applies to all BigQuery operations via the API.",
+      "why_not_B": "The answer mischaracterizes what's enabled by default. For BigQuery specifically, Data Access logs ARE enabled by default, unlike for other GCP services.",
+      "why_not_D": "For BigQuery, Data Access logs do not need to be manually enabled — they are on by default. For other services like Cloud Storage, they must be explicitly enabled."
+    },
+    "concept_ids": ["pcse-audit-logging"],
+    "tags": ["audit-logs", "bigquery", "data-access-logs", "compliance"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

@@ -1,0 +1,392 @@
+[
+  {
+    "id": "pcse-iam-advanced",
+    "exam_id": "gcp-pcse",
+    "domain_id": "configuring-access",
+    "topic_id": "iam-advanced-security",
+    "name": "Advanced IAM Configuration for Security",
+    "description": "Implementing fine-grained IAM policies with conditions, deny policies, service account security, and Workforce Identity Federation for enterprise security.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "IAM deny policies explicitly deny permissions regardless of allow policies; evaluated before allow policies",
+      "IAM conditions use CEL expressions to restrict access by time, resource name, or request attributes",
+      "Workforce Identity Federation lets external IdP users (Okta, Azure AD) authenticate without Google accounts using OIDC/SAML",
+      "Service account impersonation (iam.serviceAccounts.actAs) allows a principal to act as a service account; audit this carefully",
+      "IAM Recommender uses ML to identify overly permissive roles and recommends least-privilege replacements"
+    ],
+    "common_misconceptions": [
+      "IAM deny policies and org policy constraints are the same — deny policies work at IAM permission level; org policies enforce resource configuration",
+      "Workforce Identity Federation is only for external users — it can also federate on-premises Active Directory users into GCP"
+    ],
+    "gcp_services": ["Cloud IAM", "Cloud Identity", "Access Context Manager"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-vpc-service-controls", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=NnMFAQHyKjA",
+    "official_doc_url": "https://cloud.google.com/iam/docs/deny-overview"
+  },
+  {
+    "id": "pcse-vpc-service-controls",
+    "exam_id": "gcp-pcse",
+    "domain_id": "network-security",
+    "topic_id": "vpc-service-controls",
+    "name": "VPC Service Controls and Access Context Manager",
+    "description": "Creating security perimeters with VPC Service Controls to prevent data exfiltration from GCP services, using Access Levels for context-aware access.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "VPC Service Controls restricts API calls to and from protected services; even authorized identities cannot move data outside the perimeter",
+      "Service perimeters define which projects and services are inside; access policies define which identities can cross the perimeter",
+      "Access Context Manager defines access levels based on IP range, device policy, and user identity for context-aware access",
+      "Dry run mode logs what would be blocked without enforcing, enabling safe testing before perimeter enforcement",
+      "Perimeter bridges allow two separate perimeters to share data for approved use cases"
+    ],
+    "common_misconceptions": [
+      "VPC Service Controls protect against external hackers — they primarily prevent insider threats and data exfiltration; external access is still controlled by IAM and firewalls",
+      "All GCP services are supported by VPC Service Controls — support varies by service; check the supported services list before designing the perimeter"
+    ],
+    "gcp_services": ["VPC Service Controls", "Access Context Manager", "Cloud IAM"],
+    "prerequisites": ["pcse-iam-advanced"],
+    "lateral_relations": [{"concept_id": "pcse-iam-advanced", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=RL2Ln2BPW_E",
+    "official_doc_url": "https://cloud.google.com/vpc-service-controls/docs/overview"
+  },
+  {
+    "id": "pcse-cloud-kms",
+    "exam_id": "gcp-pcse",
+    "domain_id": "securing-data",
+    "topic_id": "encryption-kms",
+    "name": "Cloud KMS and Encryption Key Management",
+    "description": "Managing encryption keys with Cloud KMS, implementing CMEK for customer-controlled encryption, and using Cloud HSM for hardware-backed key security.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud KMS key hierarchy: Key Ring > Key (CryptoKey) > Key Version; primary version is used for encryption",
+      "CMEK (Customer-Managed Encryption Keys) lets customers control key lifecycle for at-rest encryption in BigQuery, Cloud Storage, and other services",
+      "Cloud HSM provides FIPS 140-2 Level 3 hardware security module protection for cryptographic keys",
+      "Key rotation: schedule automatic rotation; old versions retained for decryption but not encryption",
+      "CSEK (Customer-Supplied Encryption Keys): customer provides the key material; Google never stores it; key must be provided on every API call"
+    ],
+    "common_misconceptions": [
+      "CMEK prevents Google from accessing your data — CMEK controls the key, but Google's infrastructure still processes data; for higher isolation use Confidential VMs",
+      "Deleting a KMS key version is reversible — destroyed key versions are permanently deleted; any data encrypted with that version becomes unrecoverable"
+    ],
+    "gcp_services": ["Cloud KMS", "Cloud HSM", "Secret Manager", "BigQuery", "Cloud Storage"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-data-protection", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=0oZ_4EZkgb0",
+    "official_doc_url": "https://cloud.google.com/kms/docs/key-management-overview"
+  },
+  {
+    "id": "pcse-security-command-center",
+    "exam_id": "gcp-pcse",
+    "domain_id": "managing-operations",
+    "topic_id": "security-command-center",
+    "name": "Security Command Center Threat Detection",
+    "description": "Using Security Command Center Premium for threat detection, vulnerability scanning, compliance monitoring, and incident response on GCP.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SCC Standard (free) provides security health analytics; Premium adds Event Threat Detection, Container Threat Detection, and Web Security Scanner",
+      "Findings are categorized by severity (Critical, High, Medium, Low) and source (SHA, ETD, CTD, custom)",
+      "Event Threat Detection uses Google threat intelligence to detect brute force, crypto mining, and data exfiltration in logs",
+      "Security Health Analytics identifies misconfigurations: public Cloud Storage buckets, weak firewall rules, unused service account keys",
+      "SCC integrates with SIEM tools via Pub/Sub export for Security Operations teams using Chronicle or Splunk"
+    ],
+    "common_misconceptions": [
+      "SCC is a firewall that blocks attacks — SCC is a detection and monitoring tool; it identifies risks but does not automatically block them",
+      "SCC Premium is only for large enterprises — any organization handling sensitive data benefits from Premium's threat detection"
+    ],
+    "gcp_services": ["Security Command Center", "Cloud Logging", "Pub/Sub"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-audit-logging", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=HoEKKHMmK4M",
+    "official_doc_url": "https://cloud.google.com/security-command-center/docs/concepts-security-command-center-overview"
+  },
+  {
+    "id": "pcse-cloud-armor",
+    "exam_id": "gcp-pcse",
+    "domain_id": "network-security",
+    "topic_id": "cloud-armor-waf",
+    "name": "Cloud Armor WAF and DDoS Protection",
+    "description": "Configuring Cloud Armor security policies to protect web applications from DDoS attacks, SQL injection, XSS, and other OWASP threats.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Armor is a network security service attached to External Application Load Balancers at the global edge",
+      "Security policies contain rules with match conditions (IP ranges, geo, request headers, reCAPTCHA) and actions (allow, deny, rate-limit, redirect)",
+      "Preconfigured WAF rules implement OWASP Top 10 protections (SQLi, XSS, LFI, RFI, RCE) with sensitivity levels",
+      "Adaptive Protection uses ML to detect and automatically suggest rules to block DDoS attacks in near-real-time",
+      "Cloud Armor Managed Protection Plus provides higher DDoS protection SLA and dedicated support"
+    ],
+    "common_misconceptions": [
+      "Cloud Armor protects internal load balancers — Cloud Armor only attaches to External Application (HTTP/S) Load Balancers",
+      "IP allowlisting alone is sufficient security — attackers can spoof or compromise allowed IPs; use WAF rules and rate limiting too"
+    ],
+    "gcp_services": ["Cloud Armor", "Cloud Load Balancing", "Cloud CDN"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-vpc-firewall", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=MBNqB6VvVOQ",
+    "official_doc_url": "https://cloud.google.com/armor/docs/cloud-armor-overview"
+  },
+  {
+    "id": "pcse-vpc-firewall",
+    "exam_id": "gcp-pcse",
+    "domain_id": "network-security",
+    "topic_id": "vpc-firewall-rules",
+    "name": "VPC Firewall Rules and Firewall Policies",
+    "description": "Designing and implementing VPC firewall rules and hierarchical firewall policies to control traffic within and between GCP networks.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Firewall rules are stateful (connection tracking), evaluated by priority (0-65534), and scoped to a VPC network",
+      "Hierarchical firewall policies apply at organization or folder level and take precedence over VPC-level rules",
+      "Network firewall policies (replacing legacy rules) enable consistent firewall management and FQDN-based rules",
+      "Implied rules: deny all ingress and allow all egress; cannot be deleted but can be overridden by lower-priority rules",
+      "Service account-based firewall rules apply to VMs by service account rather than IP, providing identity-based network segmentation"
+    ],
+    "common_misconceptions": [
+      "Firewall rules block traffic to stopped VMs — firewall rules don't matter for stopped VMs; traffic reaches the VM only when it's running",
+      "Allowing all egress is safe — unrestricted egress enables data exfiltration and C2 communication; restrict outbound traffic where possible"
+    ],
+    "gcp_services": ["VPC", "Cloud Firewall", "Cloud Logging"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-cloud-armor", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=oQrFkEhMTCQ",
+    "official_doc_url": "https://cloud.google.com/vpc/docs/firewalls"
+  },
+  {
+    "id": "pcse-audit-logging",
+    "exam_id": "gcp-pcse",
+    "domain_id": "managing-operations",
+    "topic_id": "audit-logging",
+    "name": "Cloud Audit Logs and Compliance Monitoring",
+    "description": "Configuring and analyzing Cloud Audit Logs (Admin Activity, Data Access, System Event, Policy Denied) for security monitoring and compliance requirements.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Admin Activity logs are always enabled and cannot be disabled; record resource configuration and metadata changes",
+      "Data Access logs are disabled by default (except BigQuery); must be enabled explicitly per service for read/write data access",
+      "Cloud Audit Logs retention: Admin Activity (400 days), Data Access (30 days by default); use log sinks for longer retention",
+      "Log sinks to Cloud Storage, BigQuery, or Pub/Sub enable long-term retention and SIEM integration",
+      "Audit log analysis using BigQuery enables querying audit logs for compliance reporting and forensic investigation"
+    ],
+    "common_misconceptions": [
+      "All audit logging is enabled by default — only Admin Activity logs are on by default; Data Access logs must be explicitly enabled",
+      "Audit logs cannot be tampered with — audit logs should be exported to a locked Cloud Storage bucket with object versioning for tamper evidence"
+    ],
+    "gcp_services": ["Cloud Audit Logs", "Cloud Logging", "BigQuery", "Cloud Storage"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-security-command-center", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+audit+logs+compliance+monitoring+security",
+    "official_doc_url": "https://cloud.google.com/logging/docs/audit"
+  },
+  {
+    "id": "pcse-data-protection",
+    "exam_id": "gcp-pcse",
+    "domain_id": "securing-data",
+    "topic_id": "data-loss-prevention",
+    "name": "Data Loss Prevention and Sensitive Data Protection",
+    "description": "Using Cloud DLP to inspect, classify, and de-identify sensitive data across storage systems and data pipelines to meet compliance requirements.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud DLP supports 150+ built-in InfoType detectors for PII (SSN, credit cards, email, phone), healthcare, and finance data",
+      "De-identification techniques: redaction, masking, tokenization, pseudonymization, format-preserving encryption",
+      "Inspection jobs scan Cloud Storage, BigQuery, and Datastore for sensitive data on a schedule",
+      "DLP API can be integrated inline in streaming pipelines (Dataflow) for real-time data classification",
+      "Risk analysis jobs calculate statistical metrics (k-anonymity, l-diversity) to assess re-identification risk"
+    ],
+    "common_misconceptions": [
+      "DLP completely eliminates privacy risk — DLP helps manage risk but re-identification is still possible with enough external data",
+      "Masking data makes it safe to share externally — masked data may still contain quasi-identifiers; apply proper anonymization"
+    ],
+    "gcp_services": ["Cloud DLP", "BigQuery", "Cloud Storage", "Dataflow"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-cloud-kms", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=oMfBqCTqjC4",
+    "official_doc_url": "https://cloud.google.com/dlp/docs"
+  },
+  {
+    "id": "pcse-beyond-corp",
+    "exam_id": "gcp-pcse",
+    "domain_id": "configuring-access",
+    "topic_id": "zero-trust-access",
+    "name": "BeyondCorp Enterprise and Zero-Trust Access",
+    "description": "Implementing zero-trust network access with BeyondCorp Enterprise for secure access to internal applications without a traditional VPN.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "BeyondCorp Enterprise grants access based on user identity and device security state, not network location",
+      "Identity-Aware Proxy (IAP) enforces application-level access control based on Google Identity and context-aware access levels",
+      "Device posture policies check endpoint attributes (OS version, antivirus, disk encryption) before granting access",
+      "BeyondCorp eliminates VPN by authenticating every request at the application layer regardless of source network",
+      "Access Context Manager integrates with BeyondCorp to define granular access levels based on IP, device, and geography"
+    ],
+    "common_misconceptions": [
+      "BeyondCorp and VPN provide the same security — BeyondCorp provides per-application, per-request authentication; VPN grants network-level access once authenticated",
+      "IAP only works for web applications — IAP also supports TCP tunneling for SSH and RDP access to GCP VMs"
+    ],
+    "gcp_services": ["BeyondCorp Enterprise", "Identity-Aware Proxy", "Access Context Manager"],
+    "prerequisites": ["pcse-iam-advanced"],
+    "lateral_relations": [{"concept_id": "pcse-iam-advanced", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=gEa6e_EIjxM",
+    "official_doc_url": "https://cloud.google.com/beyondcorp-enterprise/docs/overview"
+  },
+  {
+    "id": "pcse-compliance-frameworks",
+    "exam_id": "gcp-pcse",
+    "domain_id": "ensuring-compliance",
+    "topic_id": "regulatory-compliance",
+    "name": "Compliance Frameworks and Assured Workloads",
+    "description": "Implementing compliance controls for FedRAMP, HIPAA, PCI DSS, and GDPR using Assured Workloads, organization policies, and GCP compliance tools.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Assured Workloads enforces compliance controls at the project level: restricts resource locations, encryption settings, and personnel access",
+      "FedRAMP compliance requires limiting data to US regions, using authorized services, and maintaining personnel access controls",
+      "HIPAA requires a BAA with Google, audit logging, access controls, and encryption for PHI data",
+      "PCI DSS requires network segmentation (VPC Service Controls), encryption, access logging, and vulnerability scanning",
+      "Forseti Security and Config Validator enforce policy-as-code to continuously audit for compliance drift"
+    ],
+    "common_misconceptions": [
+      "FedRAMP applies to all GCP services — only FedRAMP-authorized services can be used for federal workloads; check the authorized service list",
+      "Compliance is a one-time audit — compliance requires continuous monitoring and evidence collection, not just initial configuration"
+    ],
+    "gcp_services": ["Assured Workloads", "Security Command Center", "Cloud Audit Logs"],
+    "prerequisites": ["pcse-audit-logging"],
+    "lateral_relations": [{"concept_id": "pcse-audit-logging", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+Assured+Workloads+FedRAMP+HIPAA+compliance",
+    "official_doc_url": "https://cloud.google.com/assured-workloads/docs"
+  },
+  {
+    "id": "pcse-private-networking",
+    "exam_id": "gcp-pcse",
+    "domain_id": "network-security",
+    "topic_id": "private-google-access",
+    "name": "Private Networking and Google Private Access",
+    "description": "Configuring Private Google Access, Private Service Connect, and Cloud NAT to eliminate external IPs while maintaining connectivity to Google APIs and services.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Private Google Access allows VMs without external IPs to reach Google APIs using internal IP addresses",
+      "Private Service Connect provides VPC-native endpoints for Google services (Storage, BigQuery) within your VPC",
+      "Cloud NAT enables outbound internet access for VMs without external IPs without exposing them inbound",
+      "VPC-SC and Private Service Connect together prevent data exfiltration: private access + perimeter enforcement",
+      "Serverless VPC Access connector allows Cloud Run, Cloud Functions, and App Engine to access VPC resources privately"
+    ],
+    "common_misconceptions": [
+      "Removing external IPs from VMs eliminates all security risks — VMs without external IPs can still be reached via internal routes or compromised services",
+      "Private Google Access and Private Service Connect are identical — PGA uses routing; PSC creates VPC endpoints with internal IPs"
+    ],
+    "gcp_services": ["VPC", "Cloud NAT", "Private Service Connect", "Serverless VPC Access"],
+    "prerequisites": ["pcse-vpc-firewall"],
+    "lateral_relations": [{"concept_id": "pcse-vpc-service-controls", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=cNb7xKyya5c",
+    "official_doc_url": "https://cloud.google.com/vpc/docs/private-google-access"
+  },
+  {
+    "id": "pcse-incident-response",
+    "exam_id": "gcp-pcse",
+    "domain_id": "managing-operations",
+    "topic_id": "incident-response",
+    "name": "Cloud Security Incident Response",
+    "description": "Building cloud-native incident response capabilities including detection, investigation, containment, and forensics on Google Cloud.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Chronicle SIEM provides petabyte-scale security telemetry analysis using Google infrastructure for threat hunting",
+      "Cloud Logging exports to Pub/Sub enable real-time log streaming to SIEM tools for automated alerting",
+      "VM snapshots capture disk state for forensic analysis; use snapshots before quarantining suspected instances",
+      "IAM policy revocation and service account key deletion contain access during an incident",
+      "Google Cloud's Shared Fate model means Google actively invests in customer security posture beyond just infrastructure"
+    ],
+    "common_misconceptions": [
+      "Deleting a compromised VM eliminates all evidence — take a disk snapshot first for forensic investigation before terminating",
+      "Cloud providers handle incident response for you — you are responsible for detecting and responding to incidents in your environment"
+    ],
+    "gcp_services": ["Chronicle", "Cloud Logging", "Security Command Center", "Cloud IAM"],
+    "prerequisites": ["pcse-security-command-center"],
+    "lateral_relations": [{"concept_id": "pcse-security-command-center", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+security+incident+response+forensics",
+    "official_doc_url": "https://cloud.google.com/architecture/security-incident-response"
+  },
+  {
+    "id": "pcse-binary-auth",
+    "exam_id": "gcp-pcse",
+    "domain_id": "configuring-access",
+    "topic_id": "supply-chain-security",
+    "name": "Binary Authorization and Container Security",
+    "description": "Implementing supply chain security for containerized workloads using Binary Authorization, Artifact Registry vulnerability scanning, and SLSA frameworks.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Binary Authorization enforces a policy requiring attestations from authorized attestors before deploying to GKE or Cloud Run",
+      "Attestors cryptographically sign container image digests to certify they passed specific quality gates (security scan, code review)",
+      "Artifact Registry Container Analysis scans images for CVEs using OS and language package vulnerability databases",
+      "SLSA (Supply-chain Levels for Software Artifacts) levels 1-4 define provenance and build integrity requirements",
+      "Sigstore (Cosign) provides open-source container signing integrated with Binary Authorization attestations"
+    ],
+    "common_misconceptions": [
+      "Vulnerability scanning guarantees a container is safe to deploy — scanners have false negatives; scanning is one layer in a defense-in-depth strategy",
+      "Binary Authorization blocks runtime threats — it enforces deploy-time policy; use runtime security tools for post-deployment protection"
+    ],
+    "gcp_services": ["Binary Authorization", "Artifact Registry", "GKE", "Cloud Run"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-audit-logging", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=G9OM-7TBMpM",
+    "official_doc_url": "https://cloud.google.com/binary-authorization/docs/overview"
+  },
+  {
+    "id": "pcse-secret-manager",
+    "exam_id": "gcp-pcse",
+    "domain_id": "securing-data",
+    "topic_id": "secrets-management",
+    "name": "Secret Manager for Secrets Lifecycle Management",
+    "description": "Managing application secrets, API keys, and certificates using Secret Manager with versioning, rotation, replication, and access auditing.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Secret Manager stores secrets as opaque blobs up to 64 KB; versions allow rotation without changing secret names",
+      "Automatic secret replication vs manual: automatic replicates to multiple regions; manual allows specifying CMEK per region",
+      "Secret rotation best practice: add new version, update applications, disable old version, then destroy after confirmation",
+      "Cloud Audit Logs tracks every access to secrets; integrate with SCC for alerting on unusual secret access patterns",
+      "Pub/Sub notifications on secret events (creation, rotation, expiry) enable automated rotation workflows"
+    ],
+    "common_misconceptions": [
+      "Disabling a secret version immediately prevents access — existing processes holding the secret in memory still have it; disable only stops new reads",
+      "Secret Manager and Cloud KMS serve the same purpose — KMS manages encryption keys; Secret Manager stores arbitrary secret values"
+    ],
+    "gcp_services": ["Secret Manager", "Cloud IAM", "Cloud Audit Logs"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcse-cloud-kms", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=PbHD5sPOHAM",
+    "official_doc_url": "https://cloud.google.com/secret-manager/docs"
+  },
+  {
+    "id": "pcse-org-policies",
+    "exam_id": "gcp-pcse",
+    "domain_id": "ensuring-compliance",
+    "topic_id": "organization-policy",
+    "name": "Organization Policies for Security Governance",
+    "description": "Using Organization Policy Service to enforce security guardrails across an entire GCP organization, including resource location restrictions and service restrictions.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Organization policies are evaluated during resource creation and configuration; they do not affect existing resources",
+      "Key security policies: constraints/compute.requireOsLogin, constraints/iam.disableServiceAccountKeyCreation, constraints/compute.vmExternalIpAccess",
+      "Custom organization policies (Preview) use CEL to write policy conditions against resource attributes",
+      "Policy inheritance: organization > folder > project; child nodes can be overridden if parent allows exception",
+      "Policy intelligence tools: Organization Policy Analyzer and Policy Simulator validate policy impact before enforcement"
+    ],
+    "common_misconceptions": [
+      "Organization policies enforce IAM permissions — org policies constrain resource configuration; IAM controls identity-based access to operations",
+      "Org policies apply retroactively to existing resources — they only apply to new resource creation and updates, not pre-existing resources"
+    ],
+    "gcp_services": ["Resource Manager", "Cloud IAM", "Organization Policy Service"],
+    "prerequisites": ["pcse-iam-advanced"],
+    "lateral_relations": [{"concept_id": "pcse-compliance-frameworks", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=rS2tFpDqNtg",
+    "official_doc_url": "https://cloud.google.com/resource-manager/docs/organization-policy/overview"
+  }
+]

@@ -1,0 +1,436 @@
+[
+  {
+    "id": "q-ai102-001",
+    "exam_id": "azure-ai102",
+    "domain_id": "generative-ai-ai102",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company wants to deploy Azure OpenAI GPT-4 to answer customer questions using their product documentation stored in Azure Blob Storage. The solution must ensure responses are grounded only in company documentation and not use the model's general training knowledge. Which approach should the AI engineer implement?",
+    "options": [
+      {"id": "A", "text": "Fine-tune the GPT-4 model with the product documentation as training data", "is_correct": false},
+      {"id": "B", "text": "Implement Retrieval-Augmented Generation (RAG) using Azure AI Search to index the documentation and inject relevant chunks into the prompt context", "is_correct": true},
+      {"id": "C", "text": "Set the Azure OpenAI temperature parameter to 0 to prevent the model from generating responses outside its training data", "is_correct": false},
+      {"id": "D", "text": "Use the Azure OpenAI system message to instruct the model to only use company data and set max_tokens to a low value", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RAG is the recommended pattern for grounding responses in specific organizational data. Azure AI Search indexes the documentation, and at query time the relevant document chunks are retrieved and injected into the prompt. This ensures the model generates responses based on the retrieved context rather than relying on its general training data.",
+      "why_not_A": "Fine-tuning changes the model's weights and is expensive and time-consuming. It also does not guarantee the model will only use the fine-tuning data—it blends fine-tuned knowledge with pretrained knowledge, making it unsuitable for strict grounding requirements.",
+      "why_not_B": "N/A",
+      "why_not_C": "Temperature=0 makes responses more deterministic but does not prevent the model from using its pretrained general knowledge. The model will still draw on everything it learned during pretraining regardless of the temperature setting.",
+      "why_not_D": "System message instructions are best-effort guidance; they reduce but do not eliminate the model using its general knowledge. Setting a low max_tokens only limits response length, not the source of information the model uses."
+    },
+    "concept_ids": ["ai102-rag-pattern", "ai102-openai-deployment"],
+    "tags": ["rag", "azure-openai", "grounding", "ai-search"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-002",
+    "exam_id": "azure-ai102",
+    "domain_id": "plan-manage-ai",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "An AI engineer needs to configure Azure Cognitive Services to restrict access so that only resources within a specific Azure Virtual Network can call the service endpoint. Which security feature should be configured?",
+    "options": [
+      {"id": "A", "text": "Configure IP firewall rules to allow only the VNet's public NAT IP address", "is_correct": false},
+      {"id": "B", "text": "Enable Azure Private Endpoint for the Cognitive Services resource", "is_correct": true},
+      {"id": "C", "text": "Rotate the Cognitive Services subscription keys and store them in a secret configuration file on the VNet resources", "is_correct": false},
+      {"id": "D", "text": "Enable Managed Identity on the Cognitive Services resource and assign it a network contributor role", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Private Endpoint assigns a private IP address from the VNet to the Cognitive Services resource, routing all traffic through the Microsoft backbone without traversing the public internet. This fully removes public endpoint exposure and restricts access to resources within the VNet or connected networks.",
+      "why_not_A": "IP firewall rules restrict which public IP addresses can call the public endpoint, but traffic still traverses the public internet. This is less secure than a Private Endpoint and does not eliminate public exposure of the service.",
+      "why_not_B": "N/A",
+      "why_not_C": "Rotating keys controls who can authenticate but does not restrict network access. Keys could still be used from any network location, so rotating them does not achieve network isolation.",
+      "why_not_D": "Managed Identity is an authentication mechanism for Azure resources calling other services. Assigning a Managed Identity to Cognitive Services does not control which networks can access that Cognitive Services endpoint."
+    },
+    "concept_ids": ["ai102-cognitive-services-setup"],
+    "tags": ["private-endpoint", "network-security", "cognitive-services"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-003",
+    "exam_id": "azure-ai102",
+    "domain_id": "computer-vision-ai102",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A manufacturing company wants to detect specific defects on their products using a camera on the production line. They have 50 labeled images of each of 4 defect types. The model must run locally on an edge device without a constant internet connection. Which solution should the AI engineer recommend?",
+    "options": [
+      {"id": "A", "text": "Use Azure AI Vision Image Analysis API with the Objects visual feature for real-time defect detection over the internet", "is_correct": false},
+      {"id": "B", "text": "Train a Custom Vision object detection model and export it as an ONNX model for deployment on the edge device", "is_correct": true},
+      {"id": "C", "text": "Use Azure Machine Learning to train a custom deep learning model and deploy it to an Azure ML endpoint", "is_correct": false},
+      {"id": "D", "text": "Use Azure AI Vision Image Analysis with Dense Captions to generate text descriptions and parse defect names from the output", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Custom Vision supports object detection models that can be exported as ONNX, TensorFlow, or CoreML files for edge deployment. With 50 images per class, Custom Vision's transfer learning approach can produce an accurate model. The ONNX export runs entirely locally on the edge device without internet connectivity.",
+      "why_not_A": "The Azure AI Vision Image Analysis API requires internet connectivity to call the cloud endpoint. This does not satisfy the requirement for offline edge deployment. Additionally, the general Objects feature is not trained for specific manufacturing defects.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure ML is a valid approach for custom deep learning models but requires significantly more data, expertise, and time. Custom Vision is the purpose-built, low-code service for this scenario and supports the same edge export capability with far less effort.",
+      "why_not_D": "Dense Captions generates natural language descriptions of image regions. Parsing defect names from text descriptions is unreliable for production quality control and does not support object localization with bounding boxes needed for defect position reporting."
+    },
+    "concept_ids": ["ai102-custom-vision", "ai102-computer-vision-analyze"],
+    "tags": ["custom-vision", "edge-deployment", "onnx", "object-detection"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-004",
+    "exam_id": "azure-ai102",
+    "domain_id": "nlp-ai102",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A team needs to build a chatbot for a healthcare organization that must understand patient appointment booking intents (such as 'Schedule appointment', 'Cancel appointment', 'Reschedule appointment') and extract entities like doctor name and date. Which Azure AI service should be used for intent and entity extraction?",
+    "options": [
+      {"id": "A", "text": "Azure AI Language - Sentiment Analysis feature", "is_correct": false},
+      {"id": "B", "text": "Azure AI Language - Conversational Language Understanding (CLU)", "is_correct": true},
+      {"id": "C", "text": "Azure AI Language - Named Entity Recognition (NER) feature", "is_correct": false},
+      {"id": "D", "text": "Azure OpenAI GPT-4 with a zero-shot prompt to classify intent", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Conversational Language Understanding (CLU) is purpose-built for intent classification and entity extraction in conversational scenarios. It allows defining specific intents (Schedule, Cancel, Reschedule) and entity types (DoctorName, DateTime) and trains a model on labeled utterance examples to recognize them reliably.",
+      "why_not_A": "Sentiment Analysis determines the emotional tone (positive, negative, neutral) of text. It cannot classify intents or extract structured entities like doctor names and dates for appointment booking.",
+      "why_not_B": "N/A",
+      "why_not_C": "NER extracts predefined entity categories (Person, Location, DateTime) from text. While it can extract some entities, it does not classify intents. You would need a separate classification model, making it an incomplete solution compared to CLU which handles both.",
+      "why_not_D": "GPT-4 zero-shot classification can work but is significantly more expensive per inference, has higher latency, and is less deterministic than a purpose-trained CLU model. For a production chatbot with well-defined intents, CLU is the recommended approach."
+    },
+    "concept_ids": ["ai102-luis-clu", "ai102-language-service"],
+    "tags": ["clu", "intent-recognition", "entity-extraction", "chatbot"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-005",
+    "exam_id": "azure-ai102",
+    "domain_id": "content-moderation",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A social media platform is using Azure Content Safety to moderate user-generated text. They receive content where the severity score for 'Violence' is returned as 4. What does this severity score indicate?",
+    "options": [
+      {"id": "A", "text": "The content is completely safe with no violent content detected", "is_correct": false},
+      {"id": "B", "text": "The content contains medium-severity violent content", "is_correct": true},
+      {"id": "C", "text": "The content contains high-severity violent content that must be immediately removed", "is_correct": false},
+      {"id": "D", "text": "The content has been identified as potentially violent but the result is inconclusive", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Content Safety uses a severity scale of 0-6 for each harm category. Scores 0-1 are Safe, 2-3 are Low, 4-5 are Medium, and 6 is High. A score of 4 falls in the Medium range, indicating moderately harmful violent content that likely warrants review or action based on the platform's moderation policies.",
+      "why_not_A": "A score of 0 or 1 indicates safe content. A score of 4 is clearly in the Medium harmful range, not safe.",
+      "why_not_B": "N/A",
+      "why_not_C": "High severity corresponds to a score of 6. Score 4 is Medium, not High. High severity content (score 6) is the most extreme category requiring immediate action.",
+      "why_not_D": "Azure Content Safety severity scores are definitive classifications, not uncertainty indicators. Each score maps to a specific severity band; there is no 'inconclusive' category in the scoring system."
+    },
+    "concept_ids": ["ai102-content-safety"],
+    "tags": ["content-safety", "moderation", "severity-scoring"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-006",
+    "exam_id": "azure-ai102",
+    "domain_id": "knowledge-mining",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A legal firm has 10,000 contract PDFs stored in Azure Blob Storage. They need to extract specific clauses, party names, and effective dates from each contract and store the structured data in Azure Cosmos DB for querying. Which Azure AI solution architecture should the engineer implement?",
+    "options": [
+      {"id": "A", "text": "Use Azure AI Vision Image Analysis Read feature to extract text, then use Azure AI Language NER to identify entities, and write results to Cosmos DB via Logic Apps", "is_correct": false},
+      {"id": "B", "text": "Configure an Azure AI Search indexer with a skillset using Document Intelligence Layout skill for PDF extraction, Entity Recognition skill for entities, and a knowledge store output to Cosmos DB", "is_correct": false},
+      {"id": "C", "text": "Train a custom Azure AI Document Intelligence model on labeled contract samples to extract specific fields, then use an Azure Function triggered by blob events to process each PDF and write to Cosmos DB", "is_correct": true},
+      {"id": "D", "text": "Use Azure OpenAI GPT-4 to read each PDF and extract information using a structured output prompt, then store the JSON response in Cosmos DB", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure AI Document Intelligence custom models are purpose-built for structured field extraction from documents of a consistent type. Training on labeled contract samples enables accurate extraction of specific clauses, party names, and dates with field-level confidence scores. An Azure Function with blob event trigger provides serverless, scalable processing for 10,000 documents, and writing the structured extraction results to Cosmos DB meets the querying requirement.",
+      "why_not_A": "Using Vision Read + Language NER is a two-step approach that works for generic text extraction but lacks the structured field extraction capability of Document Intelligence. NER does not reliably extract domain-specific contract clauses without custom training.",
+      "why_not_B": "Azure AI Search knowledge store outputs to Azure Storage (tables/blobs or Azure Search index), not directly to Cosmos DB. While AI Search with Document Intelligence skill is a valid enrichment approach, it does not natively write structured extraction results to Cosmos DB.",
+      "why_not_D": "Using GPT-4 to process 10,000 PDFs is prohibitively expensive and slow. PDFs must be converted to text first (GPT-4 cannot read binary PDFs natively). Document Intelligence provides purpose-built, cost-effective document processing with consistent structured output."
+    },
+    "concept_ids": ["ai102-document-intelligence", "ai102-ai-search"],
+    "tags": ["document-intelligence", "knowledge-mining", "custom-model", "blob-storage"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-007",
+    "exam_id": "azure-ai102",
+    "domain_id": "nlp-ai102",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "An AI engineer is using Azure AI Speech for a call center transcription solution. The solution must transcribe hours-long recorded call audio files overnight. Which Azure AI Speech feature should be used?",
+    "options": [
+      {"id": "A", "text": "Real-time speech-to-text with the Speech SDK continuous recognition mode", "is_correct": false},
+      {"id": "B", "text": "Speech translation API to convert speech to text across multiple languages simultaneously", "is_correct": false},
+      {"id": "C", "text": "Batch transcription via the REST API to submit audio files for asynchronous background processing", "is_correct": true},
+      {"id": "D", "text": "Custom Speech model training to improve accuracy on call center audio before transcription", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Batch transcription is designed for transcribing large volumes of pre-recorded audio files asynchronously. It accepts SAS URLs to Azure Blob Storage audio files, processes them in the background, and stores the results back to storage. This is the correct approach for processing hours-long files overnight at scale.",
+      "why_not_A": "Real-time speech-to-text with continuous recognition processes audio as it arrives and requires an active connection. It is not appropriate for pre-recorded files that need offline processing; it would require playing each file in real time which is inefficient.",
+      "why_not_B": "Speech translation converts speech in one language to text in another. This is irrelevant if the goal is simply to transcribe call audio, and it does not address the batch processing requirement.",
+      "why_not_C": "N/A",
+      "why_not_D": "Custom Speech model training improves transcription accuracy for domain-specific vocabulary but is a one-time training step, not the transcription mechanism itself. After training, you still need batch transcription to actually transcribe the files."
+    },
+    "concept_ids": ["ai102-speech-service"],
+    "tags": ["speech-to-text", "batch-transcription", "call-center"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-008",
+    "exam_id": "azure-ai102",
+    "domain_id": "generative-ai-ai102",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is building an Azure OpenAI chat application. During testing, they notice the model sometimes returns harmful content despite instructions in the system message to avoid it. What is the most reliable way to prevent harmful content in Azure OpenAI API responses?",
+    "options": [
+      {"id": "A", "text": "Set the temperature parameter to 0 to ensure the model always outputs the most predictable response", "is_correct": false},
+      {"id": "B", "text": "Configure content filter policies on the Azure OpenAI deployment to block harmful content categories at the API level", "is_correct": true},
+      {"id": "C", "text": "Add more detailed instructions to the system message prohibiting harmful content generation", "is_correct": false},
+      {"id": "D", "text": "Use a post-processing function to scan the model output and replace harmful words before returning to the user", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure OpenAI content filter policies are enforced at the service level, independent of the model's stochastic behavior. Content filters evaluate both prompts and completions against harm categories (hate, sexual, violence, self-harm) and block or flag responses exceeding configured severity thresholds. This is the most reliable control because it operates outside the model itself.",
+      "why_not_A": "Setting temperature to 0 makes outputs more deterministic but does not prevent harmful content. A deterministic model that has learned harmful patterns will still output them consistently at temperature 0.",
+      "why_not_B": "N/A",
+      "why_not_C": "System message instructions are probabilistic guidance, not hard guardrails. They reduce the likelihood of harmful outputs but do not guarantee prevention, especially with adversarial prompts or jailbreak attempts that override system message instructions.",
+      "why_not_D": "Post-processing keyword filtering is brittle, easily circumvented by paraphrasing, and adds latency. It cannot catch nuanced harmful content that does not use explicit keywords. Azure Content Safety or built-in content filters are far more robust solutions."
+    },
+    "concept_ids": ["ai102-openai-deployment", "ai102-content-safety"],
+    "tags": ["content-filtering", "azure-openai", "safety", "responsible-ai"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-009",
+    "exam_id": "azure-ai102",
+    "domain_id": "knowledge-mining",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An organization uses Azure AI Search with AI enrichment to process financial reports. They need a custom skill that calls a proprietary sentiment scoring API hosted on their on-premises servers. The AI Search service is in Azure. How should the custom skill be implemented?",
+    "options": [
+      {"id": "A", "text": "Create a custom skill as an Azure Function that calls the on-premises API via Azure API Management with a Self-hosted Integration Runtime", "is_correct": false},
+      {"id": "B", "text": "Create a custom skill as an Azure Function that calls the on-premises API through an Azure VPN Gateway or ExpressRoute connection", "is_correct": true},
+      {"id": "C", "text": "Use the Azure AI Search built-in sentiment skill and configure it to call the on-premises endpoint", "is_correct": false},
+      {"id": "D", "text": "Register the on-premises API as a cognitive service resource and add it to the AI Search skillset directly", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Custom skills in Azure AI Search must expose an HTTPS endpoint. An Azure Function is the recommended host for custom skill logic. The Function calls the on-premises API, which is reachable through secure hybrid connectivity via Azure VPN Gateway (site-to-site) or ExpressRoute (dedicated private connection) that connects the Azure VNet to the on-premises network.",
+      "why_not_A": "Azure API Management does not have a Self-hosted Integration Runtime—that is an Azure Data Factory concept. APIM can proxy on-premises APIs but requires the on-premises API to be internet-accessible or connected via VNet integration. The description mixes features from different services incorrectly.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure AI Search built-in sentiment skill uses the Azure AI Language service in Azure. It cannot be redirected to call a custom on-premises API endpoint. Built-in skills are fixed in their target service.",
+      "why_not_D": "On-premises APIs cannot be registered as Azure Cognitive Service resources. Azure Cognitive Services are Azure-hosted managed services; you cannot register custom or external endpoints as Cognitive Service resources."
+    },
+    "concept_ids": ["ai102-ai-search"],
+    "tags": ["ai-search", "custom-skill", "azure-function", "hybrid-connectivity"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-010",
+    "exam_id": "azure-ai102",
+    "domain_id": "nlp-ai102",
+    "type": "factual",
+    "difficulty": 1,
+    "stem": "Which Azure AI service should be used to translate a 200-page Microsoft Word document from English to Spanish while preserving the original document formatting, tables, and images?",
+    "options": [
+      {"id": "A", "text": "Azure AI Language - Text Translation feature", "is_correct": false},
+      {"id": "B", "text": "Azure AI Speech - Speech Translation feature", "is_correct": false},
+      {"id": "C", "text": "Azure AI Translator - Document Translation feature", "is_correct": true},
+      {"id": "D", "text": "Azure OpenAI with a system message instructing it to translate the document content", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure AI Translator Document Translation is designed specifically for translating entire documents (Word, PDF, HTML, etc.) while preserving the original layout, formatting, tables, images, and styles. It accepts documents from Azure Blob Storage and outputs translated documents to a target storage container.",
+      "why_not_A": "Azure AI Language Text Translation (which is actually part of Azure AI Translator) translates text strings, not full documents. It does not preserve document structure, formatting, or handle binary file formats like .docx.",
+      "why_not_B": "Speech Translation converts spoken audio in one language to text in another language. It is designed for real-time audio translation, not document translation.",
+      "why_not_C": "N/A",
+      "why_not_D": "Azure OpenAI has input token limits and cannot accept binary .docx files directly. Even if the text were extracted, reconstructing the formatted document with preserved tables and images from GPT-4 output would be complex and unreliable compared to the purpose-built Document Translation API."
+    },
+    "concept_ids": ["ai102-translator-service"],
+    "tags": ["document-translation", "azure-translator", "language-service"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.20,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-011",
+    "exam_id": "azure-ai102",
+    "domain_id": "plan-manage-ai",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer is building an application that calls Azure Cognitive Services. The organization's security policy requires that all secrets be stored in Azure Key Vault and rotated every 90 days. How should the developer configure the application to authenticate to Cognitive Services without storing the subscription key in application code?",
+    "options": [
+      {"id": "A", "text": "Retrieve the subscription key from Azure Key Vault at application startup and cache it in memory for the session", "is_correct": false},
+      {"id": "B", "text": "Assign a System-assigned Managed Identity to the compute resource hosting the application and grant it Cognitive Services User role", "is_correct": true},
+      {"id": "C", "text": "Store the subscription key as an environment variable on the compute resource and reference it in the application configuration", "is_correct": false},
+      {"id": "D", "text": "Use an Azure AD service principal with a client certificate and configure the Cognitive Services resource to accept certificate authentication", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "System-assigned Managed Identity eliminates the need to store any credentials (keys or certificates) in code or configuration. The application authenticates to Azure AD automatically using the compute resource's managed identity, which is granted the Cognitive Services User role on the resource. No key rotation is needed because there are no static credentials.",
+      "why_not_A": "While fetching from Key Vault is better than hardcoding, the application still retrieves and holds the secret in memory. If the key rotates within the session, the cached key becomes invalid. Managed Identity is a cleaner solution with no secrets to manage.",
+      "why_not_B": "N/A",
+      "why_not_C": "Environment variables are not secrets management. They are visible to anyone with access to the compute environment, may appear in process listings, and storing Cognitive Services keys as environment variables violates the organization's requirement for Key Vault-managed secrets.",
+      "why_not_D": "Cognitive Services does not natively support Azure AD certificate authentication for API calls. The service uses either subscription keys or Azure AD OAuth2 tokens obtained by an application using a Managed Identity or service principal with a secret/certificate—but the token is still the authentication mechanism, not the certificate directly."
+    },
+    "concept_ids": ["ai102-cognitive-services-setup", "ai102-responsible-ai"],
+    "tags": ["managed-identity", "key-vault", "security", "authentication"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-012",
+    "exam_id": "azure-ai102",
+    "domain_id": "generative-ai-ai102",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An engineer is configuring Azure OpenAI prompt parameters for a creative writing application. Users complain that responses are repetitive and too similar to each other even when they submit the same prompt multiple times. Which parameter change will introduce the most variation in the model's responses?",
+    "options": [
+      {"id": "A", "text": "Increase max_tokens from 256 to 1024 to allow longer responses", "is_correct": false},
+      {"id": "B", "text": "Increase temperature from 0.2 to 0.9 to increase the randomness of the token selection", "is_correct": true},
+      {"id": "C", "text": "Set frequency_penalty to -2.0 to encourage the model to repeat successful phrases", "is_correct": false},
+      {"id": "D", "text": "Set top_p to 0.1 to focus on the most probable next tokens", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Temperature controls the randomness of the model's token sampling. A low temperature (0.2) makes the model very deterministic by sharpening the probability distribution, causing similar outputs for the same prompt. Increasing temperature to 0.9 flattens the distribution so the model samples from a wider range of tokens, producing more varied and creative responses.",
+      "why_not_A": "max_tokens only controls the maximum length of the generated output. It does not affect the diversity or creativity of the content within that length. Longer repetitive responses are still repetitive.",
+      "why_not_B": "N/A",
+      "why_not_C": "frequency_penalty reduces the likelihood of tokens that have already appeared frequently. Setting it to -2.0 (negative value) actually penalizes novel tokens and rewards repetition, which is the opposite of what is needed. Valid range is -2.0 to 2.0; positive values reduce repetition, negative values encourage it.",
+      "why_not_D": "top_p of 0.1 restricts sampling to only the top 10% most probable tokens, making the model more deterministic and predictable. This would make repetition worse, not better. Higher top_p values (closer to 1.0) allow more diverse token sampling."
+    },
+    "concept_ids": ["ai102-prompt-engineering"],
+    "tags": ["temperature", "sampling", "azure-openai", "prompt-parameters"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-013",
+    "exam_id": "azure-ai102",
+    "domain_id": "computer-vision-ai102",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "An AI engineer calls the Azure AI Vision Image Analysis 4.0 API with the Read visual feature to extract text from scanned document images. The API returns text successfully for most images but some multi-page PDF documents return incomplete text. What is the likely cause and solution?",
+    "options": [
+      {"id": "A", "text": "The API has a file size limit; compress the PDF files before calling the API", "is_correct": false},
+      {"id": "B", "text": "Image Analysis 4.0 Read feature only processes single images; use Azure AI Document Intelligence Read model for multi-page PDF documents", "is_correct": true},
+      {"id": "C", "text": "The Read visual feature requires a Premium pricing tier; upgrade the Cognitive Services resource SKU", "is_correct": false},
+      {"id": "D", "text": "Enable the DenseCaptions visual feature alongside Read to improve text extraction accuracy in documents", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Azure AI Vision Image Analysis API processes single images or image frames. For multi-page documents like PDFs, the Azure AI Document Intelligence Read model is the correct service. It is designed specifically for document analysis with multi-page support, preserving reading order, and returning detailed layout information including paragraphs and tables.",
+      "why_not_A": "While there are image size limits, PDF incompleteness in Image Analysis is a feature limitation (single-image processing), not a file size issue. Compressing the PDF would not enable multi-page processing.",
+      "why_not_B": "N/A",
+      "why_not_C": "The Read visual feature in Image Analysis is available on standard pricing tiers and does not require a premium SKU. The issue is a capability limitation, not a tier restriction.",
+      "why_not_D": "DenseCaptions generates region-level text captions describing image content. It does not improve OCR text extraction accuracy and is unrelated to the multi-page PDF processing limitation."
+    },
+    "concept_ids": ["ai102-computer-vision-analyze", "ai102-document-intelligence"],
+    "tags": ["image-analysis", "ocr", "document-intelligence", "troubleshooting"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-014",
+    "exam_id": "azure-ai102",
+    "domain_id": "plan-manage-ai",
+    "type": "factual",
+    "difficulty": 1,
+    "stem": "Which of Microsoft's six Responsible AI principles specifically addresses ensuring that AI systems operate as intended and do not cause unintended harm in safety-critical scenarios?",
+    "options": [
+      {"id": "A", "text": "Fairness", "is_correct": false},
+      {"id": "B", "text": "Reliability and Safety", "is_correct": true},
+      {"id": "C", "text": "Transparency", "is_correct": false},
+      {"id": "D", "text": "Accountability", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Reliability and Safety is the principle that addresses how AI systems should perform reliably and safely across conditions. It requires systems to behave as designed, handle unexpected inputs gracefully, and not cause unintended harm—especially in safety-critical scenarios like healthcare, autonomous vehicles, or financial decisions.",
+      "why_not_A": "Fairness addresses ensuring AI systems treat all people equitably and do not discriminate based on protected characteristics like gender, race, or disability. It focuses on bias and equitable outcomes, not operational reliability.",
+      "why_not_B": "N/A",
+      "why_not_C": "Transparency addresses making AI systems understandable to users and stakeholders—explaining what data was used, how decisions are made, and what the system's limitations are. It focuses on explainability and openness, not operational safety.",
+      "why_not_D": "Accountability addresses ensuring that humans are responsible for AI systems and their decisions. It focuses on oversight, governance, and who is answerable for AI outcomes, rather than the technical reliability of the system itself."
+    },
+    "concept_ids": ["ai102-responsible-ai"],
+    "tags": ["responsible-ai", "microsoft-rai-principles", "safety"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.22,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-ai102-015",
+    "exam_id": "azure-ai102",
+    "domain_id": "nlp-ai102",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is building a multilingual customer support bot that must handle queries in English, French, and German. The bot uses Conversational Language Understanding (CLU). The training data is only available in English. Which CLU capability allows the model to handle French and German queries without additional training data in those languages?",
+    "options": [
+      {"id": "A", "text": "CLU automatically detects the input language and queries a language-specific model for each supported language", "is_correct": false},
+      {"id": "B", "text": "CLU multilingual projects train on one language and use cross-lingual transfer to predict in 96+ languages without per-language training data", "is_correct": true},
+      {"id": "C", "text": "CLU translates all non-English input to English before inference using the Azure Translator service automatically", "is_correct": false},
+      {"id": "D", "text": "CLU requires separate project deployments for each language; the bot must route queries to the correct project based on detected language", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "CLU multilingual projects leverage cross-lingual language models (based on multilingual transformers) that support transferring intent and entity recognition capabilities from a training language to other languages. By training in English and enabling the multilingual project option, the model can accurately predict intents and entities from French and German inputs without French or German training utterances.",
+      "why_not_A": "CLU does not maintain separate language-specific models within a project. A multilingual project uses a single model trained on the available language(s) and applies cross-lingual transfer to handle other languages.",
+      "why_not_B": "N/A",
+      "why_not_C": "CLU does not automatically translate input text using Azure Translator before inference. While you could build a translation pre-processing step manually, CLU's multilingual capability handles other languages natively without translation.",
+      "why_not_D": "CLU multilingual projects are designed specifically to avoid the need for separate per-language projects. A single multilingual project handles all supported languages through the same endpoint."
+    },
+    "concept_ids": ["ai102-luis-clu"],
+    "tags": ["clu", "multilingual", "cross-lingual", "bot"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

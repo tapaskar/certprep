@@ -1,0 +1,422 @@
+[
+  {
+    "id": "az104-entra-id-management",
+    "exam_id": "azure-az104",
+    "domain_id": "manage-identities-governance",
+    "topic_id": "entra-id-admin",
+    "name": "Microsoft Entra ID User and Group Management",
+    "description": "Creating, managing, and synchronizing users and groups in Microsoft Entra ID for Azure access control.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Users can be cloud-only or synchronized from on-premises Active Directory via Entra Connect",
+      "Groups can be Security groups (for access) or Microsoft 365 groups (for collaboration)",
+      "Dynamic membership rules auto-assign users to groups based on user attributes",
+      "Bulk operations (bulk create, invite, delete) can be performed using CSV files in the portal",
+      "Guest accounts (B2B) allow external users to access your tenant's resources"
+    ],
+    "common_misconceptions": [
+      "Deleting a user in Azure does not immediately remove all their access; group memberships may persist",
+      "Dynamic groups automatically update membership but may have a delay of up to 24 hours"
+    ],
+    "azure_services": ["Microsoft Entra ID", "Microsoft Entra Connect"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-rbac", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=4H8gHRoN65s",
+    "official_doc_url": "https://learn.microsoft.com/en-us/entra/fundamentals/add-users-azure-active-directory"
+  },
+  {
+    "id": "az104-azure-rbac",
+    "exam_id": "azure-az104",
+    "domain_id": "manage-identities-governance",
+    "topic_id": "rbac",
+    "name": "Azure Role-Based Access Control (RBAC)",
+    "description": "Fine-grained access management for Azure resources using role assignments at various management scopes.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "RBAC role assignments have three parts: security principal, role definition, and scope",
+      "Scope hierarchy: Management Group > Subscription > Resource Group > Resource",
+      "Built-in roles: Owner, Contributor, Reader, User Access Administrator",
+      "Role assignments are additive; the most permissive role wins if multiple roles are assigned",
+      "Deny assignments override role assignments and block specific actions even for owners"
+    ],
+    "common_misconceptions": [
+      "Removing a role assignment takes effect immediately but may take up to 30 minutes to propagate to all tokens",
+      "Owner role does not grant all rights; certain actions like changing resource lock require Owner plus management lock permissions"
+    ],
+    "azure_services": ["Azure RBAC", "Azure Resource Manager", "Microsoft Entra ID"],
+    "prerequisites": ["az104-entra-id-management"],
+    "lateral_relations": [
+      {"concept_id": "az104-entra-id-management", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=4H8gHRoN65s",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/role-based-access-control/overview"
+  },
+  {
+    "id": "az104-azure-policy-management",
+    "exam_id": "azure-az104",
+    "domain_id": "manage-identities-governance",
+    "topic_id": "azure-policy",
+    "name": "Azure Policy and Management Groups",
+    "description": "Governance controls for enforcing organizational standards and assessing compliance across Azure resources.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Policy evaluates resources and flags or blocks non-compliant configurations",
+      "Policy effects: Deny, Audit, Append, Modify, DeployIfNotExists, AuditIfNotExists",
+      "Initiatives (policy sets) group related policies for a compliance goal like CIS Benchmark",
+      "Management Groups organize subscriptions and apply policies/RBAC hierarchically",
+      "Policy remediation can automatically fix non-compliant existing resources via DeployIfNotExists"
+    ],
+    "common_misconceptions": [
+      "Audit effect logs non-compliance but does not block deployment; Deny effect prevents deployment",
+      "Policies do not override RBAC; they operate at the resource configuration level, not permission level"
+    ],
+    "azure_services": ["Azure Policy", "Azure Management Groups", "Azure Blueprints"],
+    "prerequisites": ["az104-azure-rbac"],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-rbac", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=9osAmtwHFEs",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/governance/policy/overview"
+  },
+  {
+    "id": "az104-azure-storage-accounts",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-storage",
+    "topic_id": "storage-accounts",
+    "name": "Azure Storage Accounts and Access",
+    "description": "Managing Azure Storage accounts including replication, access tiers, security, and lifecycle management.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Storage account types: Standard GPv2 (general), Premium (SSD-backed, low latency), BlobStorage (blob only)",
+      "Redundancy options: LRS (3 copies, 1 datacenter), ZRS (3 zones), GRS (2 regions), GZRS (zones + region)",
+      "Access is controlled via Storage Account Keys (full access), SAS tokens (delegated), or Azure RBAC",
+      "Lifecycle management policies automatically transition blobs between tiers or delete them based on age",
+      "Blob versioning preserves previous blob versions for recovery from accidental modifications"
+    ],
+    "common_misconceptions": [
+      "Storage Account Key access bypasses RBAC; key rotation should be automated to reduce exposure",
+      "GRS replicates to a paired region but the secondary is read-only unless a failover is initiated"
+    ],
+    "azure_services": ["Azure Blob Storage", "Azure Files", "Azure Storage Accounts"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-file-share", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=UzTtastcBsk",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/storage/common/storage-account-overview"
+  },
+  {
+    "id": "az104-azure-file-share",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-storage",
+    "topic_id": "azure-files",
+    "name": "Azure File Shares and Azure File Sync",
+    "description": "Fully managed cloud file shares accessible via SMB/NFS and hybrid sync with on-premises Windows file servers.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Files provides SMB 2.1/3.0 and NFS 4.1 protocol support for cloud file shares",
+      "Azure File Sync caches Azure file shares on on-premises Windows servers to reduce cloud latency",
+      "Cloud tiering in File Sync keeps frequently accessed files locally and tiers cold files to the cloud",
+      "Share snapshots provide point-in-time read-only copies of Azure file share data",
+      "Azure Files supports identity-based authentication via Active Directory or Entra ID"
+    ],
+    "common_misconceptions": [
+      "Azure File Sync server endpoints can have cloud tiering disabled; all files will be cached locally",
+      "NFS Azure file shares require premium storage accounts and are not supported on Windows"
+    ],
+    "azure_services": ["Azure Files", "Azure File Sync", "Azure Storage Accounts"],
+    "prerequisites": ["az104-azure-storage-accounts"],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-storage-accounts", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=UzTtastcBsk",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/storage/files/storage-files-introduction"
+  },
+  {
+    "id": "az104-azure-virtual-machines",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-manage-compute",
+    "topic_id": "virtual-machines",
+    "name": "Azure Virtual Machines Deployment and Management",
+    "description": "Deploying, configuring, managing, and scaling Azure Virtual Machines for various workload types.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "VM sizes are organized into families: General Purpose (D), Compute Optimized (F), Memory Optimized (E/M), Storage Optimized (L)",
+      "Availability Sets distribute VMs across fault domains and update domains within a datacenter",
+      "VM Scale Sets automatically scale VM count based on demand rules or schedules",
+      "Managed disks handle storage replication automatically; OS disks use Premium or Standard SSD",
+      "Azure Spot VMs use spare capacity at discount but can be evicted with 30 seconds notice"
+    ],
+    "common_misconceptions": [
+      "Stopping (deallocating) a VM stops compute billing but still incurs storage and IP address costs",
+      "Availability Sets provide redundancy within a single datacenter; Availability Zones span separate datacenters"
+    ],
+    "azure_services": ["Azure Virtual Machines", "Azure VM Scale Sets", "Azure Managed Disks"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-monitoring", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=inaXkN2UrFE",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/virtual-machines/overview"
+  },
+  {
+    "id": "az104-azure-app-service",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-manage-compute",
+    "topic_id": "app-service",
+    "name": "Azure App Service and Deployment Slots",
+    "description": "PaaS platform for hosting web applications, REST APIs, and mobile backends with zero-downtime deployment features.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "App Service Plans define the compute resources (CPU, memory, instances) for hosting apps",
+      "Deployment slots are separate staging environments that can be swapped with production atomically",
+      "Auto-scaling in App Service uses rules based on CPU, memory, HTTP queue length, or schedule",
+      "Custom domains and SSL/TLS certificates can be bound to App Service apps",
+      "App Service supports multiple runtimes: .NET, Node.js, Python, Java, PHP, Ruby"
+    ],
+    "common_misconceptions": [
+      "Multiple apps can share the same App Service Plan and share its compute resources",
+      "Slot swap routes traffic to the new slot without downtime, but session state may be lost during the swap"
+    ],
+    "azure_services": ["Azure App Service", "Azure App Service Plan"],
+    "prerequisites": ["az104-azure-virtual-machines"],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-virtual-machines", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=4BwyqmRTrx8",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/app-service/overview"
+  },
+  {
+    "id": "az104-azure-virtual-network",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-networking",
+    "topic_id": "virtual-networking",
+    "name": "Azure Virtual Network Design and Management",
+    "description": "Planning, configuring, and managing Azure Virtual Networks including subnets, routing, and DNS.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "VNets are scoped to a region; address spaces use CIDR notation and cannot overlap when peering",
+      "Subnets divide the VNet address space and must be non-overlapping within the VNet",
+      "Azure reserves 5 IP addresses in each subnet: network, broadcast, and 3 Azure infrastructure addresses",
+      "User-defined routes (UDRs) override Azure default routing to control traffic paths",
+      "Service endpoints provide optimized routing to Azure PaaS services over the Azure backbone"
+    ],
+    "common_misconceptions": [
+      "VNet peering is not transitive; you must explicitly peer every pair of VNets that need to communicate",
+      "Private endpoints and service endpoints both restrict PaaS access, but private endpoints assign a private IP"
+    ],
+    "azure_services": ["Azure Virtual Network", "Azure Network Security Groups", "Azure Route Tables"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-network-security", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=5NMcM4zJPM4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview"
+  },
+  {
+    "id": "az104-azure-network-security",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-networking",
+    "topic_id": "network-security-groups",
+    "name": "Network Security Groups and Application Security Groups",
+    "description": "Layer 4 network access control lists and application-centric groupings for simplifying security rule management.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "NSG rules filter traffic by priority (100-4096), lower number = higher priority, first match wins",
+      "NSGs can be associated with subnets or individual NICs; both can apply to a single resource",
+      "Default NSG rules allow VNet traffic and Azure Load Balancer; deny all other inbound by default",
+      "Application Security Groups (ASGs) group VMs logically so NSG rules reference ASGs instead of IPs",
+      "Effective Security Rules show the combined NSG rules from subnet and NIC associations"
+    ],
+    "common_misconceptions": [
+      "NSG rules with the same priority number across inbound and outbound are separate; they do not conflict",
+      "NSGs are stateful; allowing inbound port 80 automatically allows the return outbound traffic"
+    ],
+    "azure_services": ["Azure Network Security Groups", "Azure Application Security Groups"],
+    "prerequisites": ["az104-azure-virtual-network"],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-virtual-network", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=5NMcM4zJPM4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview"
+  },
+  {
+    "id": "az104-azure-load-balancer",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-networking",
+    "topic_id": "load-balancing",
+    "name": "Azure Load Balancing Services",
+    "description": "Services that distribute network traffic across multiple backend resources for high availability and performance.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Load Balancer (Layer 4) distributes TCP/UDP traffic; Standard SKU supports zones and HTTPS health probes",
+      "Azure Application Gateway (Layer 7) load balances HTTP/HTTPS with SSL termination and WAF",
+      "Azure Traffic Manager uses DNS-based routing policies to distribute traffic across global endpoints",
+      "Azure Front Door provides global load balancing, WAF, and CDN capabilities in a single service",
+      "Health probes monitor backend health; unhealthy backends are removed from the pool automatically"
+    ],
+    "common_misconceptions": [
+      "Azure Load Balancer is internal or public, not both simultaneously; use separate instances for each",
+      "Traffic Manager is DNS-based and does not proxy traffic; latency includes DNS TTL caching delays"
+    ],
+    "azure_services": ["Azure Load Balancer", "Azure Application Gateway", "Azure Traffic Manager", "Azure Front Door"],
+    "prerequisites": ["az104-azure-virtual-network"],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-virtual-network", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=5NMcM4zJPM4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-overview"
+  },
+  {
+    "id": "az104-azure-monitoring",
+    "exam_id": "azure-az104",
+    "domain_id": "monitor-maintain-resources",
+    "topic_id": "azure-monitor",
+    "name": "Azure Monitor and Log Analytics",
+    "description": "Collecting, analyzing, and acting on telemetry data from Azure resources to maintain operational health.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Monitor collects metrics (numerical time-series) and logs (structured records) from resources",
+      "Diagnostic settings must be configured to route resource logs to Log Analytics, Storage, or Event Hubs",
+      "KQL (Kusto Query Language) is used to query Log Analytics workspaces",
+      "Alerts fire when metric thresholds are breached or log query results match conditions",
+      "Action Groups define who is notified and how (email, SMS, Azure Function, webhook) when an alert fires"
+    ],
+    "common_misconceptions": [
+      "Platform metrics are free; custom metrics and log data ingestion incur charges based on volume",
+      "Alerts are stateful; they fire once when a condition is met, not repeatedly while the condition persists"
+    ],
+    "azure_services": ["Azure Monitor", "Azure Log Analytics", "Azure Alerts", "Azure Action Groups"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-virtual-machines", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=eLVmyxP4J2A",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-monitor/overview"
+  },
+  {
+    "id": "az104-arm-templates",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-infrastructure",
+    "topic_id": "infrastructure-as-code",
+    "name": "ARM Templates and Bicep for Infrastructure as Code",
+    "description": "Declarative Infrastructure-as-Code tools for deploying and managing Azure resources consistently at scale.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "ARM templates are JSON files that declaratively define Azure infrastructure; idempotent deployments",
+      "Bicep is a domain-specific language that compiles to ARM JSON; shorter and more readable syntax",
+      "Template parameters allow reuse across environments; template outputs return values after deployment",
+      "ARM deployment modes: Incremental (default, adds/updates resources) and Complete (deletes unspecified resources)",
+      "Linked templates reference external template URLs for modular deployments"
+    ],
+    "common_misconceptions": [
+      "ARM templates are not procedural; they declare end state, and ARM determines the deployment order",
+      "Complete deployment mode deletes ALL resources in the resource group not in the template—use with care"
+    ],
+    "azure_services": ["Azure Resource Manager", "Azure Bicep", "Azure Template Specs"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-policy-management", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=O4xbmBDnkMM",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/overview"
+  },
+  {
+    "id": "az104-azure-backup",
+    "exam_id": "azure-az104",
+    "domain_id": "monitor-maintain-resources",
+    "topic_id": "backup-recovery",
+    "name": "Azure Backup and Site Recovery",
+    "description": "Services for protecting data and applications with backup, restore, and disaster recovery capabilities.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Backup provides backup for VMs, SQL databases, Azure Files, and on-premises servers",
+      "Recovery Services Vault stores backup data with configurable retention policies",
+      "Azure Site Recovery replicates VMs to a secondary region for disaster recovery failover",
+      "Backup policies define backup frequency (daily, weekly) and retention (daily, weekly, monthly, yearly)",
+      "Instant restore allows restoring VM disks from snapshots within 1-5 days without waiting for vault retrieval"
+    ],
+    "common_misconceptions": [
+      "Azure Backup and Azure Site Recovery serve different purposes; Backup restores data, ASR fails over workloads",
+      "Backup policy changes apply to future backups only; existing recovery points retain their original retention"
+    ],
+    "azure_services": ["Azure Backup", "Azure Site Recovery", "Azure Recovery Services Vault"],
+    "prerequisites": ["az104-azure-virtual-machines"],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-monitoring", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=eLVmyxP4J2A",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/backup/backup-overview"
+  },
+  {
+    "id": "az104-azure-container-services",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-manage-compute",
+    "topic_id": "containers",
+    "name": "Azure Container Instances and AKS",
+    "description": "Running containerized workloads in Azure using serverless containers or managed Kubernetes clusters.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Azure Container Instances (ACI) runs containers without managing VMs; pay-per-second billing",
+      "Azure Kubernetes Service (AKS) manages Kubernetes control plane; customers manage worker nodes",
+      "Container images are stored in Azure Container Registry (ACR) and pulled during deployment",
+      "AKS node pools group VMs by SKU; system pools run critical pods, user pools run application pods",
+      "AKS integrates with Entra ID for RBAC and Azure Monitor for container insights"
+    ],
+    "common_misconceptions": [
+      "ACI and AKS serve different use cases; ACI is for simple single containers, AKS for complex orchestration",
+      "AKS control plane (API server, etcd) is managed by Microsoft; worker nodes are customer-managed VMs"
+    ],
+    "azure_services": ["Azure Kubernetes Service", "Azure Container Instances", "Azure Container Registry"],
+    "prerequisites": ["az104-azure-virtual-machines"],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-virtual-machines", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=inaXkN2UrFE",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/aks/intro-kubernetes"
+  },
+  {
+    "id": "az104-azure-vpn-expressroute",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-networking",
+    "topic_id": "hybrid-connectivity",
+    "name": "Azure VPN Gateway and ExpressRoute",
+    "description": "Connectivity options for linking on-premises networks and Azure VNets securely.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure VPN Gateway creates encrypted IPsec/IKE tunnels between Azure VNets and on-premises networks",
+      "Site-to-Site VPN connects an on-premises network to Azure; Point-to-Site connects individual devices",
+      "ExpressRoute provides dedicated private connectivity from on-premises to Azure via a connectivity provider",
+      "ExpressRoute does not traverse the public internet, offering higher reliability, speed, and security",
+      "VPN Gateway SKUs determine maximum throughput and number of connections supported"
+    ],
+    "common_misconceptions": [
+      "VPN Gateway and ExpressRoute can coexist as active-active for resiliency or ExpressRoute failover",
+      "ExpressRoute bandwidth is shared in a circuit; multiple virtual connections (peerings) share the total bandwidth"
+    ],
+    "azure_services": ["Azure VPN Gateway", "Azure ExpressRoute", "Azure Virtual WAN"],
+    "prerequisites": ["az104-azure-virtual-network"],
+    "lateral_relations": [
+      {"concept_id": "az104-azure-virtual-network", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=5NMcM4zJPM4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways"
+  }
+]

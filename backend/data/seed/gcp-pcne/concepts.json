@@ -1,0 +1,392 @@
+[
+  {
+    "id": "pcne-vpc-design",
+    "exam_id": "gcp-pcne",
+    "domain_id": "designing-gcp-network",
+    "topic_id": "vpc-architecture",
+    "name": "VPC Network Architecture and Design",
+    "description": "Designing scalable VPC architectures with proper subnet sizing, auto vs custom mode, multi-project networks using Shared VPC, and IP address planning.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "GCP VPCs are global; subnets are regional; each subnet has a primary CIDR and optional secondary ranges for GKE pods/services",
+      "Auto-mode VPC creates /20 subnets in each region automatically; custom mode requires explicit subnet creation but avoids overlap risk",
+      "RFC 1918 private ranges: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16; plan for growth as subnets cannot shrink",
+      "Shared VPC: host project owns subnets; service projects use them; enables centralized network control with decentralized resource management",
+      "Alias IP ranges on VMs allow multiple IPs per NIC for multi-tenancy (e.g., containers on a VM)"
+    ],
+    "common_misconceptions": [
+      "GCP subnets can be resized freely — subnets can be expanded (larger CIDR) but cannot be shrunk or deleted if in use",
+      "Auto-mode VPC is suitable for production — auto-mode creates overlapping CIDRs across regions making VPC peering and VPN routing difficult"
+    ],
+    "gcp_services": ["VPC", "Resource Manager", "Cloud IAM"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcne-cloud-interconnect", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=cNb7xKyya5c",
+    "official_doc_url": "https://cloud.google.com/vpc/docs/vpc"
+  },
+  {
+    "id": "pcne-cloud-interconnect",
+    "exam_id": "gcp-pcne",
+    "domain_id": "hybrid-connectivity",
+    "topic_id": "cloud-interconnect",
+    "name": "Cloud Interconnect for Hybrid Connectivity",
+    "description": "Connecting on-premises networks to GCP using Dedicated Interconnect (10/100 Gbps) or Partner Interconnect for SLA-backed private connectivity.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Dedicated Interconnect: direct physical connection in a colocation facility; 10 Gbps or 100 Gbps circuits; 99.99% SLA with 4 circuits",
+      "Partner Interconnect: connects through a supported service provider; 50 Mbps to 50 Gbps; useful when colocation isn't possible",
+      "VLAN attachments (interconnect attachments) connect Interconnect circuits to Cloud Routers within a VPC region",
+      "99.99% SLA requires 2 Dedicated Interconnect connections in 2 different metropolitan areas, each with 2 VLAN attachments",
+      "MACsec encryption on Dedicated Interconnect provides Layer 2 encryption for the physical link"
+    ],
+    "common_misconceptions": [
+      "One Dedicated Interconnect circuit provides 99.99% SLA — you need 4 circuits across 2 metros for the highest SLA",
+      "Partner Interconnect is slower than Dedicated — Partner can provide up to 50 Gbps; it's about physical access, not speed limits"
+    ],
+    "gcp_services": ["Cloud Interconnect", "Cloud Router", "VPC"],
+    "prerequisites": ["pcne-vpc-design"],
+    "lateral_relations": [{"concept_id": "pcne-cloud-vpn", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=cKaryf7qp9w",
+    "official_doc_url": "https://cloud.google.com/network-connectivity/docs/interconnect/concepts/dedicated-overview"
+  },
+  {
+    "id": "pcne-cloud-vpn",
+    "exam_id": "gcp-pcne",
+    "domain_id": "hybrid-connectivity",
+    "topic_id": "cloud-vpn",
+    "name": "Cloud VPN for IPSec Connectivity",
+    "description": "Configuring HA VPN tunnels with Cloud Router for dynamic BGP routing between GCP and on-premises or other cloud networks.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "HA VPN provides 99.99% SLA using two gateway interfaces and two tunnels to the peer VPN gateway",
+      "Cloud Router uses BGP to exchange routes dynamically; ASN assignment is flexible (16-bit or 32-bit private ASNs)",
+      "Classic VPN (99.9% SLA) uses static routes or policy-based routing; HA VPN always requires dynamic BGP routing",
+      "IKEv2 is supported for HA VPN and recommended over IKEv1 for stronger security",
+      "VPN tunnel throughput is up to 3 Gbps per tunnel; multiple tunnels provide ECMP load balancing"
+    ],
+    "common_misconceptions": [
+      "Cloud VPN encrypts traffic end-to-end within GCP — VPN encrypts traffic between on-premises and the GCP VPN gateway; traffic within GCP is on Google's private network",
+      "HA VPN with two tunnels always achieves 99.99% SLA — HA VPN requires the peer VPN device to also support two tunnels to different Google IPs"
+    ],
+    "gcp_services": ["Cloud VPN", "Cloud Router", "VPC"],
+    "prerequisites": ["pcne-vpc-design"],
+    "lateral_relations": [{"concept_id": "pcne-cloud-interconnect", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=ItA8w7FHFYQ",
+    "official_doc_url": "https://cloud.google.com/network-connectivity/docs/vpn/concepts/overview"
+  },
+  {
+    "id": "pcne-load-balancing",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "topic_id": "cloud-load-balancing",
+    "name": "Cloud Load Balancing Selection and Configuration",
+    "description": "Selecting and configuring the appropriate load balancer type based on traffic (HTTP/S vs TCP/UDP), origin (internal vs external), and scope (regional vs global).",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "External Application LB (global): HTTP/S, single anycast IP, integrates with Cloud CDN and Cloud Armor, backend: NEGs and MIGs",
+      "Regional External Application LB: HTTP/S, regional scope, supports private backends in VPC via serverless NEGs",
+      "Internal Application LB: HTTP/S, internal VPC traffic, ideal for microservices service-to-service communication",
+      "External Proxy NLB (global): TCP/SSL, proxy-based, terminates TLS at the load balancer",
+      "Passthrough NLBs (Internal and External): TCP/UDP, preserve client IP, no proxy; backends receive full packets"
+    ],
+    "common_misconceptions": [
+      "All load balancers work globally — only External Application LB and External Proxy NLB are global; all others are regional",
+      "Internal LBs have no public IP — correct, but they still require backend health checks and firewall rules for health check probes"
+    ],
+    "gcp_services": ["Cloud Load Balancing", "Cloud CDN", "Cloud Armor", "VPC"],
+    "prerequisites": ["pcne-vpc-design"],
+    "lateral_relations": [{"concept_id": "pcne-cloud-dns", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=HUHBq_VGgFg",
+    "official_doc_url": "https://cloud.google.com/load-balancing/docs/choosing-load-balancer"
+  },
+  {
+    "id": "pcne-cloud-dns",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "topic_id": "dns-management",
+    "name": "Cloud DNS and DNS Management",
+    "description": "Managing public and private DNS zones in Cloud DNS, configuring DNS policies for hybrid environments, and implementing DNS security with DNSSEC.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud DNS supports public zones (internet-facing) and private zones (VPC-internal, not routable externally)",
+      "DNS peering shares private zone DNS records with peered VPCs; forwarding zones forward queries to on-premises DNS servers",
+      "DNS policies control inbound (DNS Server Policy) and outbound (Response Policy) behavior for VPC networks",
+      "DNSSEC signs DNS records to prevent DNS spoofing; supported for public zones with compatible registrar",
+      "GCP assigns internal DNS names to VMs (INSTANCE.ZONE.c.PROJECT_ID.internal) resolvable within the VPC"
+    ],
+    "common_misconceptions": [
+      "Private DNS zones are accessible from outside VPC — private zones only respond to queries from VMs within the associated VPC",
+      "DNSSEC protects against all DNS attacks — DNSSEC only prevents DNS record spoofing; it doesn't protect against DDoS on DNS servers"
+    ],
+    "gcp_services": ["Cloud DNS", "VPC", "Cloud Interconnect"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcne-load-balancing", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=0jnhTmxVxEM",
+    "official_doc_url": "https://cloud.google.com/dns/docs/overview"
+  },
+  {
+    "id": "pcne-cloud-nat",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "topic_id": "cloud-nat",
+    "name": "Cloud NAT for Outbound Internet Access",
+    "description": "Configuring Cloud NAT to provide managed, scalable outbound internet connectivity for VMs without external IP addresses.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Cloud NAT is a regional service, software-defined, and does not use proxy VMs unlike traditional NAT gateways",
+      "Automatic NAT IP allocation or manual static IP assignment; Cloud NAT does not support inbound connections",
+      "Port allocation: Cloud NAT allocates source ports per (NAT IP, destination IP, destination port) tuple",
+      "Logging to Cloud Logging records NAT translations for security auditing and connection debugging",
+      "Cloud NAT works with Compute Engine, GKE, Cloud Run (via Serverless NEG), and App Engine Flex instances"
+    ],
+    "common_misconceptions": [
+      "Cloud NAT allows inbound connections from the internet — Cloud NAT is outbound-only; it does not support inbound NAT (port forwarding)",
+      "Cloud NAT requires a dedicated VM or network appliance — it is a fully managed software-defined service with no VMs to manage"
+    ],
+    "gcp_services": ["Cloud NAT", "Cloud Router", "VPC"],
+    "prerequisites": ["pcne-vpc-design"],
+    "lateral_relations": [{"concept_id": "pcne-vpc-design", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=DrHMC2rQ1_U",
+    "official_doc_url": "https://cloud.google.com/nat/docs/overview"
+  },
+  {
+    "id": "pcne-vpc-peering",
+    "exam_id": "gcp-pcne",
+    "domain_id": "designing-gcp-network",
+    "topic_id": "vpc-connectivity",
+    "name": "VPC Peering, Shared VPC, and Network Connectivity Center",
+    "description": "Connecting GCP VPCs using peering for non-transitive connectivity, Shared VPC for centralized management, and NCC for hub-and-spoke topology.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "VPC peering connects VPCs with non-overlapping CIDRs; peering is not transitive (A-B and B-C does not mean A-C)",
+      "Shared VPC: host project owns the VPC; service projects attach to host project subnets; IAM controls which projects can use which subnets",
+      "Network Connectivity Center (NCC) provides hub-and-spoke topology; spoke can be VPN tunnels, VLAN attachments, or VPC networks",
+      "VPC peering has no bandwidth restrictions and does not incur egress charges within the same zone",
+      "Internal DNS does not traverse VPC peering by default; use DNS peering to resolve peer VPC DNS names"
+    ],
+    "common_misconceptions": [
+      "Shared VPC and VPC peering provide the same isolation — Shared VPC centralizes management; VPC peering maintains separate VPCs with bidirectional routes",
+      "NCC replaces Cloud Interconnect — NCC uses Interconnect attachments as spokes; it's an abstraction layer, not a replacement"
+    ],
+    "gcp_services": ["VPC", "Network Connectivity Center", "Cloud Router"],
+    "prerequisites": ["pcne-vpc-design"],
+    "lateral_relations": [{"concept_id": "pcne-vpc-design", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=z3Wl4WtAEr4",
+    "official_doc_url": "https://cloud.google.com/vpc/docs/vpc-peering"
+  },
+  {
+    "id": "pcne-cloud-cdn",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "topic_id": "cloud-cdn",
+    "name": "Cloud CDN for Content Delivery",
+    "description": "Configuring Cloud CDN for global content delivery, cache key customization, signed requests, and cache invalidation to optimize latency and origin load.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Cloud CDN uses Google's global edge network (100+ PoPs) to cache content close to users",
+      "CDN is configured on backend services of External Application LBs; HTTP cache-control headers control TTL",
+      "Cache modes: USE_ORIGIN_HEADERS (default), FORCE_CACHE_ALL, CACHE_ALL_STATIC control what gets cached",
+      "Signed URLs and signed cookies restrict CDN-cached content to authorized users for premium content",
+      "Cache invalidation (purging) removes cached content before TTL expiry; supports individual URLs or prefix wildcards"
+    ],
+    "common_misconceptions": [
+      "Cloud CDN caches all responses — only GET/HEAD requests with appropriate Cache-Control headers and 2xx/3xx responses are cached",
+      "CDN only helps with static content — Cloud CDN also caches dynamic content if proper Cache-Control headers are set"
+    ],
+    "gcp_services": ["Cloud CDN", "Cloud Load Balancing", "Cloud Storage"],
+    "prerequisites": ["pcne-load-balancing"],
+    "lateral_relations": [{"concept_id": "pcne-load-balancing", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=HmXm0ozlSWU",
+    "official_doc_url": "https://cloud.google.com/cdn/docs/overview"
+  },
+  {
+    "id": "pcne-firewall-security",
+    "exam_id": "gcp-pcne",
+    "domain_id": "network-security-design",
+    "topic_id": "network-security",
+    "name": "Network Security Design with Firewalls and IDS",
+    "description": "Designing multi-tier network security using VPC firewall rules, hierarchical firewall policies, Cloud IDS, and Cloud NGFW for threat inspection.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Cloud IDS (Intrusion Detection System) uses Palo Alto Networks threat intelligence for east-west and north-south traffic inspection via Packet Mirroring",
+      "Cloud NGFW (Next-Generation Firewall) provides L7 inspection, FQDN-based rules, and TLS decryption without third-party appliances",
+      "Packet Mirroring copies VM traffic to inspection tools (IDS, SIEM) for analysis without impacting production traffic",
+      "Network Threat Intelligence identifies known malicious IP addresses and integrates with Cloud Armor and Cloud NGFW",
+      "Micro-segmentation using service account-based firewall rules creates identity-based network zones for East-West traffic control"
+    ],
+    "common_misconceptions": [
+      "VPC firewalls and Cloud IDS serve the same function — firewalls allow/deny traffic; IDS detects and alerts on threats in allowed traffic",
+      "Cloud NGFW requires deploying VM appliances — Cloud NGFW is a fully managed service; no VMs or inspection clusters to manage"
+    ],
+    "gcp_services": ["Cloud IDS", "Cloud NGFW", "VPC", "Packet Mirroring"],
+    "prerequisites": ["pcne-vpc-design"],
+    "lateral_relations": [{"concept_id": "pcne-vpc-peering", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=oQrFkEhMTCQ",
+    "official_doc_url": "https://cloud.google.com/intrusion-detection-system/docs/overview"
+  },
+  {
+    "id": "pcne-monitoring-network",
+    "exam_id": "gcp-pcne",
+    "domain_id": "managing-network-ops",
+    "topic_id": "network-monitoring",
+    "name": "Network Monitoring and Troubleshooting",
+    "description": "Using VPC Flow Logs, Cloud Network Intelligence Center, and Connectivity Tests to monitor, diagnose, and optimize GCP network performance.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "VPC Flow Logs capture metadata (5-tuple, bytes, packets) for VM network connections; sampled at configurable rates",
+      "Network Intelligence Center tools: Topology, Connectivity Tests, Performance Dashboard, Firewall Insights",
+      "Connectivity Tests simulate network paths and identify blocking firewall rules, routes, or peering issues without sending real traffic",
+      "Performance Dashboard shows packet loss and latency between GCP regions and to internet destinations",
+      "Firewall Insights uses ML to identify shadowed rules, overly permissive rules, and unused firewall rules"
+    ],
+    "common_misconceptions": [
+      "VPC Flow Logs capture packet payloads — Flow Logs only capture connection metadata (IPs, ports, bytes, packets); not packet content",
+      "Connectivity Tests actually send packets — Connectivity Tests perform static analysis of the network configuration without sending test traffic"
+    ],
+    "gcp_services": ["VPC Flow Logs", "Network Intelligence Center", "Cloud Logging"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcne-vpc-design", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=TUtR2TsK1tM",
+    "official_doc_url": "https://cloud.google.com/network-intelligence-center/docs"
+  },
+  {
+    "id": "pcne-cloud-router",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "topic_id": "cloud-router-bgp",
+    "name": "Cloud Router and BGP Routing",
+    "description": "Configuring Cloud Router for dynamic BGP route exchange between GCP VPCs and on-premises networks via Cloud VPN and Cloud Interconnect.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Router is a regional, fully managed BGP router that manages route advertisements for Cloud VPN and Interconnect",
+      "Routes learned via BGP are dynamically propagated to all subnets in the VPC without manual route table management",
+      "Cloud Router advertises subnet CIDR ranges to on-premises by default; custom route advertisements control which CIDRs are shared",
+      "Bidirectional Forwarding Detection (BFD) with Cloud Router detects link failures faster than BGP hold-down timers",
+      "Router appliance in NCC enables third-party SD-WAN or routing appliances to participate in BGP routing via NCC"
+    ],
+    "common_misconceptions": [
+      "Cloud Router is needed for VPC peering — VPC peering exchanges routes automatically without Cloud Router",
+      "Cloud Router runs on a VM that you manage — it is a fully managed distributed routing service with no VMs to maintain"
+    ],
+    "gcp_services": ["Cloud Router", "Cloud VPN", "Cloud Interconnect", "VPC"],
+    "prerequisites": ["pcne-cloud-vpn", "pcne-cloud-interconnect"],
+    "lateral_relations": [{"concept_id": "pcne-cloud-interconnect", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+Router+BGP+dynamic+routing+VPN+Interconnect",
+    "official_doc_url": "https://cloud.google.com/network-connectivity/docs/router/concepts/overview"
+  },
+  {
+    "id": "pcne-global-routing",
+    "exam_id": "gcp-pcne",
+    "domain_id": "designing-gcp-network",
+    "topic_id": "routing-modes",
+    "name": "Global vs Regional Routing and Network Tiers",
+    "description": "Configuring VPC routing modes (regional vs global) and selecting Premium or Standard Network Tier to optimize for performance, cost, or both.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Global dynamic routing: Cloud Router in any region can learn and advertise routes for the entire global VPC",
+      "Regional dynamic routing: Cloud Router only manages routes for its local region; cannot learn or advertise routes globally",
+      "Premium Network Tier: traffic stays on Google's private backbone for lowest latency; external IPs are premium global IPs",
+      "Standard Network Tier: traffic uses public internet from the nearest Google PoP; lower cost but higher latency",
+      "Network Tier selection is per external IP address or Cloud NAT; Premium is default for most services"
+    ],
+    "common_misconceptions": [
+      "Standard Network Tier only affects international traffic — Standard Tier also affects domestic traffic routing within a country",
+      "Changing a VM's network tier affects its existing connections — changes apply to new connections only"
+    ],
+    "gcp_services": ["VPC", "Cloud Router", "Cloud Load Balancing"],
+    "prerequisites": ["pcne-cloud-router"],
+    "lateral_relations": [{"concept_id": "pcne-cloud-router", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=M988_fsOSWo",
+    "official_doc_url": "https://cloud.google.com/network-tiers/docs/overview"
+  },
+  {
+    "id": "pcne-private-service-connect",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "topic_id": "private-service-connect",
+    "name": "Private Service Connect for Service Networking",
+    "description": "Using Private Service Connect to consume Google APIs and publish/consume services across VPC networks using private endpoints and service attachments.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "PSC endpoint provides a VPC-internal IP for accessing Google APIs (storage.googleapis.com) without external routing",
+      "PSC Published Services allow SaaS providers to expose services to consumer VPCs privately without VPC peering",
+      "PSC backend (NEG type PRIVATE_SERVICE_CONNECT) allows load balancers to forward traffic to a PSC endpoint",
+      "PSC avoids the 25-peering limit of VPC peering for large-scale service publishing across many VPCs",
+      "Consumer-controlled networking: service producers cannot see consumer VPC details; consumer controls the private IP"
+    ],
+    "common_misconceptions": [
+      "Private Google Access and PSC are the same — PGA uses routing rules; PSC creates private VPC endpoints with dedicated internal IPs",
+      "PSC only works for Google services — PSC also enables private connectivity to third-party SaaS and internal services"
+    ],
+    "gcp_services": ["Private Service Connect", "VPC", "Cloud Load Balancing"],
+    "prerequisites": ["pcne-vpc-design"],
+    "lateral_relations": [{"concept_id": "pcne-vpc-peering", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=yJm2T3mJoW4",
+    "official_doc_url": "https://cloud.google.com/vpc/docs/private-service-connect"
+  },
+  {
+    "id": "pcne-network-cost",
+    "exam_id": "gcp-pcne",
+    "domain_id": "managing-network-ops",
+    "topic_id": "network-cost-optimization",
+    "name": "Network Cost Optimization",
+    "description": "Optimizing GCP networking costs by understanding egress pricing, using Standard Tier where appropriate, and designing efficient data transfer patterns.",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Egress to the internet incurs cost; same-zone traffic between VMs is free; cross-zone egress within a region costs 0.01/GB",
+      "Cloud Interconnect reduces egress costs significantly compared to internet egress for large data transfers",
+      "CDN egress pricing is cheaper than direct internet egress; use Cloud CDN for frequently accessed content",
+      "Standard Network Tier is cheaper than Premium for cost-sensitive workloads where latency is not critical",
+      "Data transfer to Google's free tier services (Cloud Storage in same region, BigQuery) from Compute has no charge"
+    ],
+    "common_misconceptions": [
+      "Traffic within a VPC is always free — cross-zone traffic within a region has egress charges; intra-zone is free",
+      "VPC peering eliminates all egress charges — peering removes routing overhead but egress charges still apply for cross-zone traffic"
+    ],
+    "gcp_services": ["Cloud CDN", "Cloud Interconnect", "VPC", "Cloud Load Balancing"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcne-cloud-cdn", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+network+egress+cost+optimization",
+    "official_doc_url": "https://cloud.google.com/vpc/network-pricing"
+  },
+  {
+    "id": "pcne-dual-stack",
+    "exam_id": "gcp-pcne",
+    "domain_id": "designing-gcp-network",
+    "topic_id": "ipv6-dual-stack",
+    "name": "IPv6 and Dual-Stack Networking on GCP",
+    "description": "Configuring IPv6 addresses and dual-stack (IPv4+IPv6) networking for subnets, VM instances, and external load balancers on Google Cloud.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "GCP supports dual-stack subnets with both IPv4 and IPv6 (/96 subnet for internal IPv6)",
+      "External IPv6 addresses enable direct public IPv6 access to VMs and load balancers",
+      "External Application LB and External Proxy NLB support IPv6 Anycast addresses for global IPv6 access",
+      "ULA (Unique Local Address) internal IPv6 addresses are for VPC-internal communication only",
+      "IPv6 firewall rules work identically to IPv4 rules; both must be configured for dual-stack VMs"
+    ],
+    "common_misconceptions": [
+      "IPv6 on GCP replaces IPv4 — GCP supports dual-stack (both protocols simultaneously); IPv4-only and IPv6-only are also possible",
+      "IPv6 addresses are automatically assigned when enabled — you must explicitly enable IPv6 on subnets and configure VMs to use them"
+    ],
+    "gcp_services": ["VPC", "Cloud Load Balancing", "Compute Engine"],
+    "prerequisites": ["pcne-vpc-design"],
+    "lateral_relations": [{"concept_id": "pcne-vpc-design", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+IPv6+dual+stack+VPC+networking",
+    "official_doc_url": "https://cloud.google.com/vpc/docs/create-modify-vpc-networks#ipv6"
+  }
+]

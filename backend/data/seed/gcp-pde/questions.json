@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-pde-001",
+    "exam_id": "gcp-pde",
+    "domain_id": "ingest-process",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A streaming pipeline processes user click events. Some events arrive up to 5 minutes late due to mobile network delays. The pipeline must produce accurate per-minute aggregations of click counts. Which Dataflow windowing configuration handles this correctly?",
+    "options": [
+      {"id": "A", "text": "Fixed windows of 1 minute with default allowed lateness of 0 seconds", "is_correct": false},
+      {"id": "B", "text": "Fixed windows of 1 minute with allowed lateness of 5 minutes; use accumulate-and-retract trigger", "is_correct": true},
+      {"id": "C", "text": "Session windows with a gap duration of 5 minutes", "is_correct": false},
+      {"id": "D", "text": "Global window with a periodic trigger every 1 minute", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Fixed 1-minute windows partition click events by event time. Allowed lateness of 5 minutes ensures late-arriving events (up to 5 min delayed) are still included in the correct window. The accumulate-and-retract trigger emits updated results when late data arrives, correcting prior counts.",
+      "why_not_A": "Default allowed lateness of 0 means any late-arriving event is dropped, producing incorrect (under-counted) aggregations.",
+      "why_not_C": "Session windows group events by user activity gaps, not fixed time intervals — not suitable for per-minute click count aggregations.",
+      "why_not_D": "A global window with periodic triggers creates rolling aggregations without fixed time boundaries; it doesn't produce accurate per-minute isolated counts."
+    },
+    "concept_ids": ["pde-dataflow"],
+    "tags": ["dataflow", "windowing", "late-data", "streaming"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-002",
+    "exam_id": "gcp-pde",
+    "domain_id": "prepare-analyze",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer notices that BigQuery queries on a 10 TB sales table take 45 seconds each. The table is frequently queried by date range (WHERE sale_date BETWEEN '2024-01-01' AND '2024-03-31') and filtered by region. What optimization reduces query time and cost most effectively?",
+    "options": [
+      {"id": "A", "text": "Create a materialized view that pre-aggregates sales by date and region", "is_correct": false},
+      {"id": "B", "text": "Partition the table by sale_date and cluster by region", "is_correct": true},
+      {"id": "C", "text": "Move the table to BigQuery BI Engine for in-memory acceleration", "is_correct": false},
+      {"id": "D", "text": "Export data to Cloud Storage Parquet files and use external tables", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Date partitioning allows BigQuery to scan only the relevant date partitions (Q1 2024) instead of the entire 10 TB table — a >90% reduction in data scanned for the date range query. Clustering by region further reduces bytes scanned within each partition when the region filter is applied.",
+      "why_not_A": "Materialized views help if the same aggregation is queried repeatedly with the exact same query structure, but they don't help for ad-hoc date range queries with varying filters.",
+      "why_not_C": "BI Engine accelerates cached dashboard queries; it doesn't reduce bytes scanned for arbitrary analytical queries and has capacity limits.",
+      "why_not_D": "External tables on Cloud Storage are slower than native BigQuery tables and do not reduce scan costs; they add I/O overhead."
+    },
+    "concept_ids": ["pde-bigquery-advanced"],
+    "tags": ["bigquery", "partitioning", "clustering", "performance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-003",
+    "exam_id": "gcp-pde",
+    "domain_id": "ingest-process",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a Hadoop Spark job from on-premises to GCP. The job reads 5 TB of HDFS data daily and writes results to HDFS. What is the recommended approach for running this in GCP with minimal changes?",
+    "options": [
+      {"id": "A", "text": "Rewrite the Spark job in Dataflow (Apache Beam) to run serverlessly", "is_correct": false},
+      {"id": "B", "text": "Create a persistent Dataproc cluster with HDFS mirroring the on-premises layout", "is_correct": false},
+      {"id": "C", "text": "Run the existing Spark job on an ephemeral Dataproc cluster with input/output in Cloud Storage", "is_correct": true},
+      {"id": "D", "text": "Migrate HDFS data to Bigtable and rewrite the Spark job as a Bigtable scan", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Dataproc runs Spark/Hadoop with minimal code changes (change hdfs:// to gs:// in paths). Ephemeral clusters create in 90 seconds, run the job, and terminate — paying only for job duration. Cloud Storage replaces HDFS with better durability, lower cost, and no cluster dependency.",
+      "why_not_A": "Rewriting in Dataflow (Apache Beam) requires significant development effort. The question asks for minimal changes.",
+      "why_not_B": "Persistent clusters incur cost even when idle. Storing data in HDFS within Dataproc means data is lost when the cluster is deleted; Cloud Storage is the recommended persistent store.",
+      "why_not_D": "Rewriting to a Bigtable scan is a major architectural change, incompatible with Spark's DataFrame/RDD programming model and not 'minimal changes'."
+    },
+    "concept_ids": ["pde-dataproc"],
+    "tags": ["dataproc", "spark", "hadoop", "cloud-storage", "migration"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-004",
+    "exam_id": "gcp-pde",
+    "domain_id": "store-data",
+    "type": "comparison",
+    "difficulty": 4,
+    "stem": "A data engineering team needs to store user activity events for a social media application. Requirements: 500,000 writes/second, low-latency reads of a specific user's activity history (last 100 events), data retained for 90 days. Which storage choice is correct?",
+    "options": [
+      {"id": "A", "text": "Cloud Spanner: globally consistent, SQL queries, automatic scaling", "is_correct": false},
+      {"id": "B", "text": "BigQuery: columnar analytics, partitioned by date for efficient access", "is_correct": false},
+      {"id": "C", "text": "Bigtable: high-throughput NoSQL with row key user_id#reverse_timestamp for user history queries", "is_correct": true},
+      {"id": "D", "text": "Cloud SQL (PostgreSQL): relational with user_id index for history lookups", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Bigtable handles 500K writes/second (designed for millions/second). The row key user_id#reverse_timestamp enables efficient range scans to retrieve a user's most recent 100 events in a single read. A TTL (time-to-live) garbage collection policy can automatically expire rows older than 90 days.",
+      "why_not_A": "Spanner is strong for global ACID transactions; it's not cost-effective for the write throughput of 500K/second event logging. It also doesn't support TTL natively.",
+      "why_not_B": "BigQuery is an analytics warehouse; it supports batch query, not sub-10ms point lookups of a user's event history. Not suitable for operational serving.",
+      "why_not_D": "Cloud SQL PostgreSQL cannot handle 500K inserts/second. It's limited by single-node write throughput and would require massive sharding."
+    },
+    "concept_ids": ["pde-bigtable"],
+    "tags": ["bigtable", "row-key-design", "high-throughput", "time-series"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-005",
+    "exam_id": "gcp-pde",
+    "domain_id": "ingest-process",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Pub/Sub subscriber function processes messages and inserts them into BigQuery. The team observes that some messages are processed multiple times, causing duplicate rows in BigQuery. They cannot modify the publisher. What is the most reliable fix?",
+    "options": [
+      {"id": "A", "text": "Set Pub/Sub subscription acknowledgment deadline to 600 seconds", "is_correct": false},
+      {"id": "B", "text": "Use BigQuery Storage Write API with exactly-once semantics using message IDs as deduplication keys", "is_correct": true},
+      {"id": "C", "text": "Enable Pub/Sub message deduplication on the topic", "is_correct": false},
+      {"id": "D", "text": "Add a UNIQUE constraint on the BigQuery table for the message ID column", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "BigQuery Storage Write API's 'COMMITTED' mode supports exactly-once semantics with deduplication based on offset or a custom deduplication key. Using the Pub/Sub message ID as the deduplication key ensures that even if the same message is delivered multiple times, only one row is written to BigQuery.",
+      "why_not_A": "Longer acknowledgment deadline reduces (but doesn't eliminate) redelivery. Redelivery is inherent in Pub/Sub's at-least-once guarantee regardless of deadline.",
+      "why_not_C": "Pub/Sub topic deduplication is not a feature. Pub/Sub guarantees at-least-once delivery by design.",
+      "why_not_D": "BigQuery tables don't support UNIQUE constraints; it's an analytics warehouse without row-level uniqueness enforcement."
+    },
+    "concept_ids": ["pde-pubsub-streaming", "pde-bigquery-advanced"],
+    "tags": ["pub-sub", "bigquery", "deduplication", "exactly-once"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-006",
+    "exam_id": "gcp-pde",
+    "domain_id": "design-data-systems",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data team uses Cloud Composer to orchestrate a daily BigQuery ETL pipeline. The pipeline fails intermittently when the upstream data file in Cloud Storage is delayed by 30-60 minutes. What is the best practice to handle this?",
+    "options": [
+      {"id": "A", "text": "Increase the Cloud Composer DAG retry count to 10 retries", "is_correct": false},
+      {"id": "B", "text": "Use a Composer sensor (GCSObjectExistenceSensor) to wait for the file before proceeding", "is_correct": true},
+      {"id": "C", "text": "Schedule the DAG 2 hours later to ensure the file is always available", "is_correct": false},
+      {"id": "D", "text": "Move the file sensor logic into a Cloud Function triggered by Cloud Scheduler", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GCSObjectExistenceSensor polls Cloud Storage until the expected file appears, then allows downstream tasks to proceed. This is the idiomatic Airflow/Composer pattern for data-dependent pipelines — it waits efficiently without failing the DAG when upstream data is delayed.",
+      "why_not_A": "Retrying the entire DAG 10 times is wasteful — each retry starts from scratch. Sensors are purpose-built to wait for conditions, not task retries.",
+      "why_not_C": "Delaying the DAG by 2 hours introduces unnecessary latency on days when the file arrives on time and still fails on days with >2 hour delays.",
+      "why_not_D": "Moving sensor logic to a Cloud Function adds complexity and doesn't integrate cleanly with Composer's DAG execution and monitoring."
+    },
+    "concept_ids": ["pde-composer"],
+    "tags": ["cloud-composer", "airflow", "sensor", "gcs"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-007",
+    "exam_id": "gcp-pde",
+    "domain_id": "store-data",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company stores 100 TB of raw transaction data in Cloud Storage as CSV files and runs daily BigQuery queries on the data. Query performance is slow and costs are high due to CSV inefficiency. What is the best optimization?",
+    "options": [
+      {"id": "A", "text": "Load the CSV data into Cloud SQL for better SQL query performance", "is_correct": false},
+      {"id": "B", "text": "Convert CSV files to Parquet format and reload as native BigQuery tables with partitioning", "is_correct": true},
+      {"id": "C", "text": "Enable BigQuery caching to avoid re-scanning data on repeated queries", "is_correct": false},
+      {"id": "D", "text": "Increase BigQuery slot reservations to process queries faster", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Parquet is a columnar format that provides 3-10x compression vs CSV and enables column pruning (only read needed columns). Loading into native BigQuery tables (vs external) with date partitioning provides the full benefit of BigQuery's columnar engine, dramatically reducing bytes scanned and query cost.",
+      "why_not_A": "100 TB in Cloud SQL is not feasible. Cloud SQL is an OLTP database limited to ~10 TB and not designed for analytical queries of this scale.",
+      "why_not_C": "BigQuery caching only helps for exact repeated queries; it doesn't reduce base scan cost for new queries or ad-hoc analysis.",
+      "why_not_D": "More slots speed up query execution time but don't reduce bytes scanned; you'd pay the same in on-demand pricing with faster execution."
+    },
+    "concept_ids": ["pde-cloud-storage-data", "pde-bigquery-advanced"],
+    "tags": ["parquet", "bigquery", "cloud-storage", "file-format"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-008",
+    "exam_id": "gcp-pde",
+    "domain_id": "design-data-systems",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data engineer needs to build a pipeline that reads order events from Pub/Sub, enriches each event with customer data from Firestore, and writes to BigQuery. The pipeline must handle 50,000 events/second with sub-5-minute end-to-end latency. Which architecture is most appropriate?",
+    "options": [
+      {"id": "A", "text": "Cloud Functions reading from Pub/Sub subscription, querying Firestore, writing to BigQuery streaming inserts", "is_correct": false},
+      {"id": "B", "text": "Dataflow streaming pipeline reading Pub/Sub, side input from Firestore for enrichment, BigQuery Storage Write API output", "is_correct": true},
+      {"id": "C", "text": "Cloud Composer DAG: Pub/Sub pull -> Firestore read -> BigQuery load job (hourly)", "is_correct": false},
+      {"id": "D", "text": "Dataproc Spark Structured Streaming from Pub/Sub to BigQuery with Firestore lookup", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dataflow streaming with Apache Beam handles 50K events/second with automatic scaling. Firestore enrichment data is loaded as a side input (periodically refreshed). BigQuery Storage Write API provides high-throughput, low-latency output with exactly-once semantics, meeting the sub-5-minute latency requirement.",
+      "why_not_A": "Cloud Functions don't scale efficiently to 50K events/sec. Each function invocation for every Pub/Sub message would create 50K concurrent Firestore reads per second, likely hitting quota limits.",
+      "why_not_C": "Cloud Composer DAGs run on a schedule (hourly); this provides batch-level latency, not sub-5-minute real-time processing.",
+      "why_not_D": "Dataproc Spark Structured Streaming is valid but requires a persistent cluster (higher cost) and more operational management than managed Dataflow."
+    },
+    "concept_ids": ["pde-dataflow", "pde-pubsub-streaming"],
+    "tags": ["dataflow", "streaming", "enrichment", "side-input", "bigquery"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-009",
+    "exam_id": "gcp-pde",
+    "domain_id": "prepare-analyze",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data scientist wants to train a logistic regression model to predict customer churn using BigQuery data. They do not have Python skills but are proficient in SQL. Which service allows them to train this model without leaving BigQuery?",
+    "options": [
+      {"id": "A", "text": "Vertex AI AutoML Tables with BigQuery export", "is_correct": false},
+      {"id": "B", "text": "BigQuery ML with CREATE MODEL statement", "is_correct": true},
+      {"id": "C", "text": "Dataproc with PySpark MLlib library", "is_correct": false},
+      {"id": "D", "text": "Vertex AI custom training job with scikit-learn", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "BigQuery ML trains ML models directly in BigQuery using SQL. CREATE MODEL logistic_reg OPTIONS(model_type='logistic_reg') AS SELECT... trains the model on BigQuery data. The data scientist can use their SQL skills without Python, export, or ML frameworks.",
+      "why_not_A": "AutoML Tables requires exporting data from BigQuery and uploading to Vertex AI — not 'without leaving BigQuery'. It also doesn't use SQL.",
+      "why_not_C": "PySpark MLlib requires Python skills — the requirement explicitly states no Python. It also requires a Dataproc cluster setup.",
+      "why_not_D": "scikit-learn custom training requires Python, data export, and ML framework knowledge — all excluded by the requirements."
+    },
+    "concept_ids": ["pde-ml-integration"],
+    "tags": ["bigquery-ml", "logistic-regression", "sql-ml"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-010",
+    "exam_id": "gcp-pde",
+    "domain_id": "design-data-systems",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data team needs to identify all BigQuery tables containing Social Security Numbers (SSNs) to comply with a new data governance policy. They have 5,000 tables across 20 projects. What is the most efficient approach?",
+    "options": [
+      {"id": "A", "text": "Manually inspect each table's schema and sample data across 20 projects", "is_correct": false},
+      {"id": "B", "text": "Run Cloud DLP inspection jobs on all BigQuery tables using the SSN infoType detector", "is_correct": true},
+      {"id": "C", "text": "Write a BigQuery SQL query joining all INFORMATION_SCHEMA.COLUMNS across projects", "is_correct": false},
+      {"id": "D", "text": "Ask data owners to self-report tables containing SSNs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud DLP inspection jobs scan BigQuery tables for sensitive data types (InfoTypes) like SSNs automatically. They can be configured to scan all projects and report findings in Security Command Center or Cloud Logging, identifying sensitive data without manual review of 5,000 tables.",
+      "why_not_A": "Manual inspection of 5,000 tables is not scalable and prone to human error. It would take weeks and could miss tables.",
+      "why_not_C": "INFORMATION_SCHEMA.COLUMNS shows column names and types, not actual data values. A column named 'id' could contain SSNs without being named accordingly.",
+      "why_not_D": "Self-reporting is unreliable and incomplete. Data owners may not know what sensitive data their tables contain, especially for legacy systems."
+    },
+    "concept_ids": ["pde-data-security"],
+    "tags": ["cloud-dlp", "data-governance", "pii-detection", "bigquery"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-011",
+    "exam_id": "gcp-pde",
+    "domain_id": "maintain-automate",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A Dataflow streaming pipeline is experiencing high memory usage and backlog growth in Pub/Sub. The Dataflow job dashboard shows worker utilization at 95% and throughput dropping. What should you check first?",
+    "options": [
+      {"id": "A", "text": "Increase Pub/Sub message retention duration", "is_correct": false},
+      {"id": "B", "text": "Check for data skew in the GroupByKey operations causing hot keys in the pipeline", "is_correct": true},
+      {"id": "C", "text": "Reduce the Pub/Sub subscription acknowledgment deadline", "is_correct": false},
+      {"id": "D", "text": "Switch from Apache Beam Python to Java SDK for better performance", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "High memory usage with backlog growth and worker saturation often indicates data skew — a small number of keys receiving disproportionate data volume in GroupByKey transforms. Some workers handle massive key groups while others are idle. Check Key Visualizer or step metrics for uneven distribution.",
+      "why_not_A": "Pub/Sub message retention only affects how long undelivered messages are retained; it doesn't affect pipeline throughput or worker memory.",
+      "why_not_C": "Reducing the acknowledgment deadline would cause more redeliveries and increase the backlog further — the opposite of what's needed.",
+      "why_not_D": "Switching SDKs doesn't address data skew in the pipeline logic. Java may be faster, but skew in GroupByKey is a logic issue, not a language performance issue."
+    },
+    "concept_ids": ["pde-monitoring-pipelines"],
+    "tags": ["dataflow", "data-skew", "performance", "troubleshooting"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-012",
+    "exam_id": "gcp-pde",
+    "domain_id": "store-data",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial application needs a globally distributed database with strong consistency for transaction records. The application requires SQL queries for reporting, 99.999% SLA, and the ability to scale horizontally as transaction volume grows. Which service is the best fit?",
+    "options": [
+      {"id": "A", "text": "Cloud SQL with read replicas in multiple regions", "is_correct": false},
+      {"id": "B", "text": "Cloud Spanner with multi-region configuration", "is_correct": true},
+      {"id": "C", "text": "Bigtable with multi-cluster replication", "is_correct": false},
+      {"id": "D", "text": "BigQuery with streaming inserts and clustered tables", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Spanner multi-region provides 99.999% SLA, external consistency (strongest isolation), SQL support (Standard SQL or PostgreSQL dialect), and unlimited horizontal scaling. It is specifically designed for globally distributed ACID transactions — the financial use case.",
+      "why_not_A": "Cloud SQL multi-region read replicas provide 99.95% SLA (not 99.999%), and cross-region replicas use asynchronous replication (not strong consistency). Promotion is manual and slow.",
+      "why_not_C": "Bigtable provides high throughput but no SQL support and no ACID transaction guarantees across multiple rows. Not suitable for financial transaction records requiring SQL.",
+      "why_not_D": "BigQuery is an analytics warehouse; it doesn't support ACID transactions or serve as an operational database for financial transaction processing."
+    },
+    "concept_ids": ["pde-spanner-data"],
+    "tags": ["cloud-spanner", "multi-region", "strong-consistency", "financial"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-013",
+    "exam_id": "gcp-pde",
+    "domain_id": "maintain-automate",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data team needs to migrate 200 TB from a Teradata data warehouse to BigQuery. The migration should minimize manual SQL rewriting. Which Google Cloud tool accelerates this migration?",
+    "options": [
+      {"id": "A", "text": "Database Migration Service (DMS) for Teradata to BigQuery", "is_correct": false},
+      {"id": "B", "text": "BigQuery Migration Service with the SQL Assessment and Translation feature", "is_correct": true},
+      {"id": "C", "text": "Storage Transfer Service to move Teradata exports to Cloud Storage, then BigQuery load jobs", "is_correct": false},
+      {"id": "D", "text": "Dataproc with Teradata JDBC connector to query and insert into BigQuery", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "BigQuery Migration Service includes automated SQL Assessment (identifies issues in Teradata SQL) and SQL Translation (converts Teradata TD SQL to BigQuery Standard SQL), significantly reducing manual rewriting effort for 200 TB warehouse migrations.",
+      "why_not_A": "DMS handles database server migrations (e.g., MySQL to Cloud SQL); it does not migrate data warehouses from Teradata to BigQuery.",
+      "why_not_C": "Storage Transfer Service moves data files but doesn't handle the SQL transformation. You'd still need to manually rewrite all Teradata SQL for BigQuery.",
+      "why_not_D": "Dataproc JDBC approach works for data movement but doesn't help translate Teradata-specific SQL dialects (TD SQL) to BigQuery Standard SQL."
+    },
+    "concept_ids": ["pde-migrations"],
+    "tags": ["bigquery-migration", "teradata", "sql-translation"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-014",
+    "exam_id": "gcp-pde",
+    "domain_id": "prepare-analyze",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A data analyst wants to share a BigQuery dataset containing financial data with a partner organization without sharing the underlying source tables or allowing the partner to copy the data. What is the best approach?",
+    "options": [
+      {"id": "A", "text": "Grant BigQuery Data Viewer role on the source dataset to the partner's service account", "is_correct": false},
+      {"id": "B", "text": "Create an authorized view that only exposes approved columns/rows and grant access to only that view", "is_correct": true},
+      {"id": "C", "text": "Export the data to Cloud Storage and share the bucket with the partner", "is_correct": false},
+      {"id": "D", "text": "Use BigQuery Data Transfer Service to copy data to the partner's project", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An authorized view in BigQuery lets you share query results without exposing underlying tables. The view is 'authorized' to query the source tables, but the partner only has access to the view. Row-level and column-level filters in the view SQL control what data is visible.",
+      "why_not_A": "Data Viewer on the source dataset exposes all tables and data, not just the approved subset. The partner could query raw financial data directly.",
+      "why_not_C": "Exporting to Cloud Storage removes BigQuery's access controls; the partner could download and copy the data, violating the 'no copying' requirement.",
+      "why_not_D": "Data Transfer Service copies the entire dataset to the partner's project, explicitly violating the 'no copying' requirement."
+    },
+    "concept_ids": ["pde-data-governance"],
+    "tags": ["bigquery", "authorized-view", "data-sharing", "access-control"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pde-015",
+    "exam_id": "gcp-pde",
+    "domain_id": "design-data-systems",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data team wants to implement a modern streaming analytics architecture to replace their batch ETL. Data must flow from web clickstream events to a dashboard with < 10 minute end-to-end latency. Which pipeline architecture is correct?",
+    "options": [
+      {"id": "A", "text": "Cloud Storage batch upload (hourly) -> Dataproc -> BigQuery -> Looker", "is_correct": false},
+      {"id": "B", "text": "Pub/Sub -> Dataflow streaming -> BigQuery (streaming inserts) -> Looker Studio", "is_correct": true},
+      {"id": "C", "text": "Pub/Sub -> Cloud Functions (one per event) -> Cloud SQL -> Looker", "is_correct": false},
+      {"id": "D", "text": "Kinesis -> EMR -> S3 -> Redshift -> Tableau (multi-cloud alternative)", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pub/Sub ingests clickstream events in real time; Dataflow processes and aggregates the stream continuously; BigQuery streaming inserts make data queryable within seconds; Looker Studio provides real-time dashboards. End-to-end latency is typically 1-3 minutes, well within the 10-minute requirement.",
+      "why_not_A": "Hourly batch upload adds 60 minutes of latency minimum — exceeding the 10-minute requirement.",
+      "why_not_C": "Cloud Functions per-event doesn't scale efficiently for high-volume clickstreams; Cloud SQL can't handle high-frequency inserts at streaming volume.",
+      "why_not_D": "This is an AWS architecture (Kinesis/EMR/Redshift). The question is about Google Cloud."
+    },
+    "concept_ids": ["pde-streaming-analytics"],
+    "tags": ["streaming", "pub-sub", "dataflow", "bigquery", "real-time"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

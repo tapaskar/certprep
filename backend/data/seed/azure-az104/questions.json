@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-az104-001",
+    "exam_id": "azure-az104",
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A junior administrator needs to be able to restart virtual machines in a specific resource group but should NOT be able to create or delete VMs, or modify any other resources. Which is the most appropriate solution?",
+    "options": [
+      {"id": "A", "text": "Assign the Contributor role to the resource group", "is_correct": false},
+      {"id": "B", "text": "Assign the Virtual Machine Contributor built-in role to the resource group", "is_correct": false},
+      {"id": "C", "text": "Create a custom RBAC role with only Microsoft.Compute/virtualMachines/restart/action and assign it to the resource group", "is_correct": true},
+      {"id": "D", "text": "Assign the Owner role and use Azure Policy to deny other actions", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The principle of least privilege requires granting only the minimum permissions necessary. The built-in roles are too broad; creating a custom role with only the restart action (Microsoft.Compute/virtualMachines/restart/action) scoped to the specific resource group grants exactly the required access.",
+      "why_not_A": "Contributor can create, modify, and delete all resource types in the resource group—far more than restart-only access needed.",
+      "why_not_B": "Virtual Machine Contributor allows creating, modifying, and deleting VMs, managing disks, and more. It is broader than just restart permission.",
+      "why_not_D": "Assigning Owner and then using Policy to deny is operationally complex and counterintuitive. It is not least privilege and deny assignments from Policy can have unexpected effects."
+    },
+    "concept_ids": ["az104-azure-rbac"],
+    "tags": ["custom-rbac", "least-privilege", "vm-management"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-002",
+    "exam_id": "azure-az104",
+    "domain_id": "manage-identities-governance",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "An organization wants all newly created storage accounts in their subscription to enforce HTTPS-only traffic. Non-HTTPS storage accounts should be blocked at deployment time. Which Azure Policy effect should be configured?",
+    "options": [
+      {"id": "A", "text": "Audit", "is_correct": false},
+      {"id": "B", "text": "Append", "is_correct": false},
+      {"id": "C", "text": "DeployIfNotExists", "is_correct": false},
+      {"id": "D", "text": "Deny", "is_correct": true}
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "The Deny effect prevents resource deployment when the resource configuration does not meet the policy conditions. To block creation of storage accounts where HTTPS-only is not enabled, use Deny—this actively rejects the deployment request.",
+      "why_not_A": "Audit logs non-compliance in the Activity Log and marks resources as non-compliant, but it does not block the deployment. Non-compliant storage accounts would still be created.",
+      "why_not_B": "Append adds additional fields to a resource during creation (e.g., adding a tag). It cannot change an existing property like enabling HTTPS-only; for that, use Modify.",
+      "why_not_C": "DeployIfNotExists deploys a related resource if a specific configuration is missing (e.g., deploy a diagnostic setting if none exists). It is not used to block deployment of non-compliant resources."
+    },
+    "concept_ids": ["az104-azure-policy-management"],
+    "tags": ["azure-policy", "deny-effect", "storage-security"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-003",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-storage",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company stores regulatory compliance documents in Azure Blob Storage. These documents must be retained for 7 years and cannot be deleted or modified during that period, even by administrators. Which feature should be configured?",
+    "options": [
+      {"id": "A", "text": "Blob versioning", "is_correct": false},
+      {"id": "B", "text": "Soft delete", "is_correct": false},
+      {"id": "C", "text": "Immutable Blob Storage with time-based retention policy and purge protection", "is_correct": true},
+      {"id": "D", "text": "Azure Backup policy with 7-year retention", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Immutable Blob Storage with a time-based retention policy locks blobs in WORM (Write Once, Read Many) state for the configured duration. With purge protection enabled, even subscription admins cannot delete the data during the retention period—satisfying regulatory requirements.",
+      "why_not_A": "Blob versioning keeps previous versions of blobs but does not prevent deletion of all versions. An admin can still delete all versions manually.",
+      "why_not_B": "Soft delete holds deleted blobs for a configurable period (up to 365 days) before permanent deletion. It does not enforce a 7-year non-deletion period and can be bypassed by admins.",
+      "why_not_D": "Azure Backup creates copies of data for restore scenarios. Backup copies can be deleted after the retention period or by authorized admins; it does not enforce immutability on the original data."
+    },
+    "concept_ids": ["az104-azure-storage-accounts"],
+    "tags": ["immutable-storage", "worm", "compliance", "blob-storage"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-004",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-manage-compute",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "A virtual machine in Azure is stopped (deallocated). An administrator reports that the VM's public IP address has changed after the VM was started again. What should the administrator configure to prevent the IP address from changing?",
+    "options": [
+      {"id": "A", "text": "Assign the VM to an Availability Set", "is_correct": false},
+      {"id": "B", "text": "Change the public IP address SKU from Basic to Standard", "is_correct": false},
+      {"id": "C", "text": "Change the public IP address allocation method from Dynamic to Static", "is_correct": true},
+      {"id": "D", "text": "Assign the VM to an Availability Zone", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Dynamic public IP addresses are released when a VM is deallocated and a new IP is assigned when the VM restarts. Changing the allocation to Static assigns a permanent IP address that persists across VM stop/start cycles.",
+      "why_not_A": "Availability Sets distribute VMs across fault and update domains for high availability. They have no effect on public IP address allocation method.",
+      "why_not_B": "Changing from Basic to Standard SKU does not by itself prevent IP changes. Standard SKU IPs are static by default, but the core change needed is the allocation method—from Dynamic to Static.",
+      "why_not_D": "Availability Zones provide redundancy by distributing VMs across physically separate datacenters. They do not control public IP address persistence."
+    },
+    "concept_ids": ["az104-azure-virtual-machines"],
+    "tags": ["public-ip", "static-ip", "vm-management"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-005",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A web application hosted on Azure App Service needs to be updated. The team wants to test the new version in a staging environment before making it available to users, and the swap to production should happen with zero downtime. Which App Service feature enables this?",
+    "options": [
+      {"id": "A", "text": "Auto-scaling rules", "is_correct": false},
+      {"id": "B", "text": "Deployment slots with slot swap", "is_correct": true},
+      {"id": "C", "text": "Blue/Green deployment with Azure Traffic Manager", "is_correct": false},
+      {"id": "D", "text": "Rolling deployment with Azure DevOps", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Deployment slots in Azure App Service provide separate staging environments (e.g., 'staging' slot) where the new version can be tested. The slot swap operation atomically switches the staging and production slots, routing traffic to the new version instantly without any downtime.",
+      "why_not_A": "Auto-scaling rules automatically adjust the number of instances based on demand. They are not related to deploying a new version or zero-downtime swaps.",
+      "why_not_C": "While Azure Traffic Manager can implement blue/green deployments across separate App Service instances, it is more complex. App Service deployment slots provide this capability natively within a single App Service resource.",
+      "why_not_D": "Azure DevOps provides CI/CD pipelines for deployment automation. While it can deploy to App Service slots, the zero-downtime swap feature is the deployment slots feature itself, not Azure DevOps specifically."
+    },
+    "concept_ids": ["az104-azure-app-service"],
+    "tags": ["deployment-slots", "zero-downtime", "app-service"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-006",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-networking",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "An administrator needs to force all internet-bound traffic from VMs in a subnet through an Azure Firewall for inspection. What must be configured in addition to the Azure Firewall?",
+    "options": [
+      {"id": "A", "text": "A Network Security Group rule allowing traffic to the firewall", "is_correct": false},
+      {"id": "B", "text": "A User-Defined Route (UDR) with a default route (0.0.0.0/0) pointing to the Azure Firewall private IP", "is_correct": true},
+      {"id": "C", "text": "Azure DDoS Protection Standard on the VNet", "is_correct": false},
+      {"id": "D", "text": "VNet peering between the subnet and the firewall VNet", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Simply deploying Azure Firewall does not redirect traffic through it. A User-Defined Route (UDR) must be applied to the subnet, adding a route for 0.0.0.0/0 (all internet traffic) with the next hop as the Azure Firewall's private IP address. This forces internet traffic through the firewall for inspection.",
+      "why_not_A": "NSG rules filter traffic but do not redirect it. You cannot use NSG rules to send traffic to a specific next-hop device like a firewall.",
+      "why_not_C": "Azure DDoS Protection defends against volumetric DDoS attacks. It does not route or inspect outbound internet traffic.",
+      "why_not_D": "VNet peering connects two VNets for direct communication. The scenario assumes the firewall is in the same VNet or hub VNet, but peering alone does not redirect traffic through the firewall—the UDR is the critical missing piece."
+    },
+    "concept_ids": ["az104-azure-virtual-network"],
+    "tags": ["udr", "azure-firewall", "traffic-routing"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-007",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-networking",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "An organization needs to distribute HTTPS web traffic across multiple Azure VMs in the same region with SSL termination at the load balancer and protection against SQL injection attacks. Which load balancing service should be used?",
+    "options": [
+      {"id": "A", "text": "Azure Load Balancer (Standard SKU)", "is_correct": false},
+      {"id": "B", "text": "Azure Traffic Manager", "is_correct": false},
+      {"id": "C", "text": "Azure Application Gateway with WAF", "is_correct": true},
+      {"id": "D", "text": "Azure Front Door", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Application Gateway is a Layer 7 load balancer that supports SSL/TLS termination and includes an optional Web Application Firewall (WAF) for protection against OWASP Top 10 attacks including SQL injection. It is designed for HTTP/HTTPS traffic within a region.",
+      "why_not_A": "Azure Load Balancer operates at Layer 4 (TCP/UDP). It does not support SSL termination or application-layer security features like WAF.",
+      "why_not_B": "Azure Traffic Manager uses DNS-based routing for global traffic distribution. It does not proxy traffic, so it cannot perform SSL termination or WAF inspection.",
+      "why_not_D": "Azure Front Door provides global load balancing, WAF, and CDN at the edge across multiple regions. For a single-region requirement, Application Gateway is the appropriate choice, and Front Door adds global complexity not needed here."
+    },
+    "concept_ids": ["az104-azure-load-balancer"],
+    "tags": ["application-gateway", "waf", "ssl-termination"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-008",
+    "exam_id": "azure-az104",
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An administrator wants to receive an email notification when a VM's CPU utilization exceeds 90% for more than 5 minutes. Which Azure components must be configured to accomplish this?",
+    "options": [
+      {"id": "A", "text": "Azure Advisor recommendation and Log Analytics workspace", "is_correct": false},
+      {"id": "B", "text": "Azure Monitor metric alert rule with an Action Group configured with email", "is_correct": true},
+      {"id": "C", "text": "Azure Service Health alert and a webhook endpoint", "is_correct": false},
+      {"id": "D", "text": "Application Insights availability test and email notification", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Monitor metric alert rules evaluate metric values (like CPU percentage) at defined intervals against a threshold. When the condition (CPU > 90% for 5 minutes) is met, the alert fires and triggers an Action Group, which can send email notifications to specified addresses.",
+      "why_not_A": "Azure Advisor provides recommendations based on best practices and usage patterns. It does not generate real-time threshold alerts on metric values.",
+      "why_not_C": "Azure Service Health alerts notify about Azure platform issues, planned maintenance, and health advisories. They do not monitor individual VM resource metrics.",
+      "why_not_D": "Application Insights availability tests monitor web endpoint accessibility and response times. They do not monitor infrastructure metrics like VM CPU utilization."
+    },
+    "concept_ids": ["az104-azure-monitoring"],
+    "tags": ["metric-alerts", "action-groups", "monitoring"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-009",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-infrastructure",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "An administrator deploys an ARM template using Complete mode to a resource group. The template contains 3 resources but the resource group currently has 5 resources. What will happen to the 2 resources not defined in the template?",
+    "options": [
+      {"id": "A", "text": "They will remain unchanged alongside the template-defined resources", "is_correct": false},
+      {"id": "B", "text": "They will be moved to a different resource group", "is_correct": false},
+      {"id": "C", "text": "They will be deleted by the ARM engine", "is_correct": true},
+      {"id": "D", "text": "The deployment will fail because of the resource count mismatch", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "ARM template Complete mode deploys the template as the desired end state of the resource group. Resources in the resource group that are NOT defined in the template are deleted. This is why Complete mode should be used with extreme caution.",
+      "why_not_A": "Resources not in the template are retained in Incremental mode (the default), not Complete mode. Complete mode treats the template as authoritative—resources not in the template are considered deleted.",
+      "why_not_B": "ARM does not move resources to another resource group during a Complete mode deployment. It deletes resources not defined in the template.",
+      "why_not_D": "The deployment will not fail; ARM Complete mode handles resource counts by deploying what is in the template and deleting what is not. It does not validate against the existing resource count."
+    },
+    "concept_ids": ["az104-arm-templates"],
+    "tags": ["arm-templates", "complete-mode", "iac"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-010",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-networking",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "VNet A is peered with VNet B. VNet B is peered with VNet C. Can resources in VNet A communicate with resources in VNet C without additional configuration?",
+    "options": [
+      {"id": "A", "text": "Yes, because VNet peering is automatically transitive", "is_correct": false},
+      {"id": "B", "text": "No, VNet peering is not transitive; a direct peering between VNet A and VNet C is required", "is_correct": true},
+      {"id": "C", "text": "Yes, if the VNets are in the same region", "is_correct": false},
+      {"id": "D", "text": "Yes, if all three VNets are in the same subscription", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure VNet peering is NOT transitive. Even if VNet A peers with VNet B and VNet B peers with VNet C, resources in VNet A cannot directly communicate with resources in VNet C. You must create a direct peering between VNet A and VNet C, or use a hub-spoke topology with routing through a hub.",
+      "why_not_A": "Peering is explicitly non-transitive in Azure. This is a common misconception. The only exception is Azure Virtual WAN, which provides transitive routing.",
+      "why_not_C": "Transitivity does not apply regardless of whether the VNets are in the same region. Both regional (same-region) and global (cross-region) peerings are non-transitive.",
+      "why_not_D": "Subscription membership does not affect peering transitivity. Non-transitive behavior applies regardless of subscription boundaries."
+    },
+    "concept_ids": ["az104-azure-virtual-network"],
+    "tags": ["vnet-peering", "transitive-routing", "networking"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-011",
+    "exam_id": "azure-az104",
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to replicate their Azure VMs to another Azure region to meet a Recovery Time Objective (RTO) of 4 hours in case of a regional outage. Which Azure service provides VM-level replication for disaster recovery?",
+    "options": [
+      {"id": "A", "text": "Azure Backup", "is_correct": false},
+      {"id": "B", "text": "Azure Site Recovery", "is_correct": true},
+      {"id": "C", "text": "Geo-redundant storage (GRS)", "is_correct": false},
+      {"id": "D", "text": "Azure Availability Zones", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Site Recovery (ASR) continuously replicates VMs to a secondary Azure region. In a regional outage, you perform a failover to the secondary region to meet RTO objectives. It is specifically designed for VM-level disaster recovery and region-to-region failover scenarios.",
+      "why_not_A": "Azure Backup creates point-in-time restore points for data recovery. However, restoring a backup to a new region in a DR scenario typically takes longer than ASR failover and does not maintain a continuously synchronized replica.",
+      "why_not_C": "Geo-redundant storage (GRS) replicates Azure Storage data to a paired region. It protects storage data but does not replicate entire VMs (including OS disks, configurations, and applications) for failover.",
+      "why_not_D": "Availability Zones provide resiliency within a single region by distributing VMs across separate datacenters. They do not protect against an entire regional outage."
+    },
+    "concept_ids": ["az104-azure-backup"],
+    "tags": ["site-recovery", "disaster-recovery", "rto"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-012",
+    "exam_id": "azure-az104",
+    "domain_id": "manage-identities-governance",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "An administrator wants to automatically add users to an Azure AD security group based on a user attribute—specifically, users with the 'Department' attribute set to 'Engineering'. Which group type supports this?",
+    "options": [
+      {"id": "A", "text": "Assigned security group with manual member management", "is_correct": false},
+      {"id": "B", "text": "Dynamic security group with a dynamic membership rule", "is_correct": true},
+      {"id": "C", "text": "Microsoft 365 group with auto-enrollment", "is_correct": false},
+      {"id": "D", "text": "Administrative unit with automated assignment", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dynamic security groups in Microsoft Entra ID use membership rules that evaluate user attributes (like Department = 'Engineering') to automatically add or remove users. When a user's Department attribute changes to 'Engineering', they are automatically added to the group.",
+      "why_not_A": "Assigned security groups require manual management of members. An administrator must manually add or remove each user—no automation based on attributes.",
+      "why_not_C": "Microsoft 365 groups are for collaboration (Teams, SharePoint, etc.). While they can have dynamic membership, the scenario describes a security group requirement. Also, 'auto-enrollment' is not a standard Microsoft 365 group feature.",
+      "why_not_D": "Administrative units are containers for delegating admin scope within Entra ID. They are not groups and do not support dynamic user assignment based on attributes."
+    },
+    "concept_ids": ["az104-entra-id-management"],
+    "tags": ["dynamic-groups", "entra-id", "attribute-based"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-013",
+    "exam_id": "azure-az104",
+    "domain_id": "implement-manage-storage",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A storage account needs to replicate data synchronously across three Availability Zones in the same Azure region to protect against a datacenter failure. Which redundancy option should be configured?",
+    "options": [
+      {"id": "A", "text": "Locally Redundant Storage (LRS)", "is_correct": false},
+      {"id": "B", "text": "Geo-Redundant Storage (GRS)", "is_correct": false},
+      {"id": "C", "text": "Zone-Redundant Storage (ZRS)", "is_correct": true},
+      {"id": "D", "text": "Geo-Zone-Redundant Storage (GZRS)", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Zone-Redundant Storage (ZRS) synchronously replicates data across three Availability Zones in a single region. If one datacenter fails, data remains accessible from the other two zones. It provides 99.9999999999% (12 nines) durability within the region.",
+      "why_not_A": "LRS replicates data three times within a single datacenter. It does not protect against datacenter-level failures—all three copies are in the same physical location.",
+      "why_not_B": "GRS replicates data to a paired region asynchronously. It provides geo-redundancy for regional outages but does not use Availability Zones within the primary region for synchronous datacenter-level redundancy.",
+      "why_not_D": "GZRS combines ZRS (across zones in primary region) with GRS (geo-replication to secondary region). It is the highest redundancy option but more expensive than required for the described datacenter-failure protection scenario."
+    },
+    "concept_ids": ["az104-azure-storage-accounts"],
+    "tags": ["zrs", "storage-redundancy", "availability-zones"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-014",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-manage-compute",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What happens to the compute billing when an Azure Virtual Machine is 'stopped (deallocated)' versus just 'stopped' (not deallocated)?",
+    "options": [
+      {"id": "A", "text": "Both states stop compute billing; only storage continues to be billed", "is_correct": false},
+      {"id": "B", "text": "Stopped (deallocated) stops compute billing; stopped (not deallocated) continues to bill for compute", "is_correct": true},
+      {"id": "C", "text": "Both states continue to bill for compute; neither saves money", "is_correct": false},
+      {"id": "D", "text": "Stopped (deallocated) deletes the VM disks; stopped (not deallocated) retains them", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "When a VM is deallocated, Azure releases the underlying compute resources (CPU and RAM) and stops billing for compute. When a VM is stopped but NOT deallocated, the VM still holds its compute resources on the host and continues to incur compute charges even though the OS is not running.",
+      "why_not_A": "A stopped (not deallocated) VM continues to bill for compute. Only deallocated VMs stop compute billing. Storage, static IPs, and premium disks continue to bill in both states.",
+      "why_not_C": "Deallocation does stop compute billing. This is one of the primary cost-saving actions for VMs that are not in continuous use.",
+      "why_not_D": "Neither stop state deletes VM disks. Managed disks are separate resources that persist regardless of VM state and continue to be billed."
+    },
+    "concept_ids": ["az104-azure-virtual-machines"],
+    "tags": ["vm-billing", "deallocated", "cost-management"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az104-015",
+    "exam_id": "azure-az104",
+    "domain_id": "deploy-infrastructure",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A platform team wants to create reusable Infrastructure-as-Code templates that are more readable and concise than ARM JSON templates. They also want to use native Azure tooling without third-party tools. Which language should they use?",
+    "options": [
+      {"id": "A", "text": "Terraform (HashiCorp Configuration Language)", "is_correct": false},
+      {"id": "B", "text": "Azure Bicep", "is_correct": true},
+      {"id": "C", "text": "Azure CLI scripts (Bash/PowerShell)", "is_correct": false},
+      {"id": "D", "text": "Pulumi (TypeScript/Python)", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Bicep is Microsoft's first-party domain-specific language (DSL) for Azure IaC. It compiles to ARM JSON templates but uses a cleaner, more concise syntax that is significantly more readable. It is natively supported by Azure tooling, VS Code extension, and ARM backends without requiring third-party tools.",
+      "why_not_A": "Terraform uses HCL and is a popular cross-cloud IaC tool. However, it is a third-party tool from HashiCorp, not native Azure tooling. The question specifically requires native Azure tooling.",
+      "why_not_C": "Azure CLI scripts are imperative (step-by-step commands), not declarative IaC. They are not as repeatable or idempotent as template-based IaC and are not the recommended approach for infrastructure definition.",
+      "why_not_D": "Pulumi is a third-party multi-cloud IaC tool using general-purpose programming languages. Like Terraform, it is not native Azure tooling."
+    },
+    "concept_ids": ["az104-arm-templates"],
+    "tags": ["bicep", "iac", "arm-templates"],
+    "estimated_time_seconds": 80,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

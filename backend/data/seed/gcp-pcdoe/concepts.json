@@ -1,0 +1,392 @@
+[
+  {
+    "id": "pcdoe-cloud-build",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "cicd-pipelines",
+    "topic_id": "cloud-build-cicd",
+    "name": "Cloud Build for CI/CD Automation",
+    "description": "Building and testing applications using Cloud Build with cloudbuild.yaml, parallel steps, build triggers, and integration with source repositories.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Build executes builds in Docker containers; each step uses a builder image from Artifact Registry or Docker Hub",
+      "waitFor: ['-'] runs a step in parallel with all previously defined steps; waitFor: ['step-id'] creates dependencies",
+      "Build triggers connect to Cloud Source Repositories, GitHub, and Bitbucket; trigger on push, PR, or tag events",
+      "Cloud Build service account needs permissions to push to Artifact Registry and deploy to GKE/Cloud Run",
+      "Build substitutions ($BRANCH_NAME, $COMMIT_SHA, $BUILD_ID) inject runtime values into build steps"
+    ],
+    "common_misconceptions": [
+      "Cloud Build is only for containerized applications — it can build any artifact (JARs, Python packages) by using appropriate builder images",
+      "Cloud Build steps must run sequentially — steps can run in parallel using waitFor: ['-'] for faster pipeline execution"
+    ],
+    "gcp_services": ["Cloud Build", "Artifact Registry", "Cloud Source Repositories"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-cloud-deploy", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=Bvo6jzC7O_4",
+    "official_doc_url": "https://cloud.google.com/build/docs/overview"
+  },
+  {
+    "id": "pcdoe-cloud-deploy",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "cicd-pipelines",
+    "topic_id": "cloud-deploy-releases",
+    "name": "Cloud Deploy Continuous Delivery Pipelines",
+    "description": "Managing release pipelines with Cloud Deploy: creating delivery pipelines, promotion sequences, approval gates, and rollback for GKE and Cloud Run targets.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Deploy delivery pipeline defines an ordered sequence of targets (dev -> staging -> prod) for progressive delivery",
+          "Releases are immutable; once a release is created with a container image, the same image is promoted through all stages",
+      "Approval gates require human approval before promoting a release to specific targets (e.g., production)",
+      "Automated rollback triggers can revert a deployment if Cloud Monitoring alerting policies detect degradation",
+      "Skaffold manifests define how to render and apply Kubernetes or Cloud Run configurations per target environment"
+    ],
+    "common_misconceptions": [
+      "Cloud Deploy automatically runs tests before promotion — tests must be configured as separate verification jobs or Cloud Build steps",
+      "Rollback in Cloud Deploy creates a new deployment of the previous version — rollback re-deploys the prior release without creating a new one"
+    ],
+    "gcp_services": ["Cloud Deploy", "GKE", "Cloud Run", "Cloud Build"],
+    "prerequisites": ["pcdoe-cloud-build"],
+    "lateral_relations": [{"concept_id": "pcdoe-cloud-build", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=u5vn5mUBmj4",
+    "official_doc_url": "https://cloud.google.com/deploy/docs/overview"
+  },
+  {
+    "id": "pcdoe-sre-slos",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "sre-practices",
+    "topic_id": "sli-slo-error-budget",
+    "name": "SLIs, SLOs, and Error Budgets",
+    "description": "Defining meaningful Service Level Indicators and Objectives, calculating error budgets, and using error budget policies to balance reliability with feature velocity.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SLI examples: availability (successful requests/total requests), latency (p99 < 200ms), throughput (requests/second)",
+      "Error budget = 1 - SLO target; for 99.9% SLO, error budget is 0.1% = ~43.8 minutes/month",
+      "When error budget is exhausted, feature deployments stop and the team focuses on reliability improvements",
+      "SLO windows: rolling 28-day windows are common; a window that's too short leads to alert fatigue",
+      "Cloud Monitoring SLO monitoring creates burn rate alerts (fast burn = high urgency, slow burn = ticket-level urgency)"
+    ],
+    "common_misconceptions": [
+      "SLOs should always be 99.999% — 'five nines' is expensive; choose SLOs based on actual user expectations and business impact",
+      "Exceeding the SLO target is always good — spending error budget means less reliability margin; aim for target, not above"
+    ],
+    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Error Reporting"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-incident-management", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=tEylFyxbDLE",
+    "official_doc_url": "https://cloud.google.com/monitoring/service-monitoring"
+  },
+  {
+    "id": "pcdoe-cloud-monitoring",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-monitoring",
+    "topic_id": "cloud-monitoring-ops",
+    "name": "Cloud Monitoring Dashboards and Alerting",
+    "description": "Creating custom monitoring dashboards, configuring alerting policies with notification channels, and managing uptime checks for service health.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Alert policies define conditions (metric threshold, uptime check failure), notification channels (email, PagerDuty, Pub/Sub), and incident creation",
+      "Custom metrics from Cloud Logging log-based metrics and application-emitted metrics via Cloud Monitoring API",
+      "Uptime checks test URL, TCP port, or DNS endpoints from 6 global regions; use for external health monitoring",
+      "Monitoring query language (MQL) enables complex metric queries including aggregation, ratio, and time-shift operations",
+      "Dashboards and alerts can be managed as code using Terraform provider for google_monitoring_alert_policy"
+    ],
+    "common_misconceptions": [
+      "Alerts should be set for every metric — alert only on actionable signals; too many alerts cause alert fatigue and ignored notifications",
+      "Cloud Monitoring only works with GCP resources — it monitors on-premises and multi-cloud resources with the Ops Agent"
+    ],
+    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Pub/Sub"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-sre-slos", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=h7pY5KLNFPY",
+    "official_doc_url": "https://cloud.google.com/monitoring/docs"
+  },
+  {
+    "id": "pcdoe-cloud-logging",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-monitoring",
+    "topic_id": "cloud-logging-structured",
+    "name": "Cloud Logging Structured Logging and Log Management",
+    "description": "Configuring structured logging, log-based metrics, log sinks, and log analytics for operational visibility and long-term log retention.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Structured JSON logs parsed by Cloud Logging enable filtering on log fields (e.g., severity, httpRequest.status, labels)",
+      "Log sinks export to Cloud Storage (archive), BigQuery (analysis), Pub/Sub (real-time SIEM streaming), or Log Buckets",
+      "Log-based metrics create custom Prometheus-style metrics from log entries for dashboards and alerting",
+      "Log exclusion filters reduce logging costs by dropping high-volume, low-value logs before ingestion",
+      "Log Analytics (with Upgrade) uses BigQuery to analyze logs with SQL for historical investigations"
+    ],
+    "common_misconceptions": [
+      "All logs are retained forever by default — Cloud Logging retains most logs for 30 days; use sinks to Cloud Storage for longer retention",
+      "Cloud Logging handles log ingestion automatically for all workloads — VMs require the Ops Agent to stream application and system logs"
+    ],
+    "gcp_services": ["Cloud Logging", "Cloud Monitoring", "BigQuery", "Cloud Storage"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-cloud-monitoring", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=gyDpKBbFOIQ",
+    "official_doc_url": "https://cloud.google.com/logging/docs"
+  },
+  {
+    "id": "pcdoe-incident-management",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "sre-practices",
+    "topic_id": "incident-management",
+    "name": "Incident Management and Postmortems",
+    "description": "Managing production incidents using structured response procedures, blameless postmortems, and action items to improve system reliability.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Incident severity levels (P1-P4) define response times and escalation paths; P1 is complete service outage",
+      "Incident commander role coordinates response; separates diagnosis from communication to avoid cross-talk",
+      "Blameless postmortems focus on system improvements, not individual blame; use 5-Whys for root cause analysis",
+      "MTTR (Mean Time To Repair) and MTTD (Mean Time To Detect) are key SRE reliability metrics",
+      "Error budget burn rate alerts (2% burn in 1 hour or 5% in 6 hours) provide early warning before SLO violation"
+    ],
+    "common_misconceptions": [
+      "Postmortems are only needed for major outages — even minor incidents provide learning opportunities; document all P1-P3 incidents",
+      "Fast MTTR means the team is good at firefighting — reducing MTTD and improving automation reduces the need for firefighting"
+    ],
+    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Cloud Trace"],
+    "prerequisites": ["pcdoe-sre-slos"],
+    "lateral_relations": [{"concept_id": "pcdoe-sre-slos", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=Q_1pXDZ7w6w",
+    "official_doc_url": "https://sre.google/sre-book/managing-incidents/"
+  },
+  {
+    "id": "pcdoe-gke-operations",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "cicd-pipelines",
+    "topic_id": "gke-devops",
+    "name": "GKE Operations for DevOps Engineers",
+    "description": "Managing GKE cluster operations including upgrades, multi-cluster deployments, workload identity, and operational tooling for DevOps teams.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "GKE release channels: Rapid (latest), Regular (default), Stable; auto-upgrade maintains versions within chosen channel",
+      "Config Sync and Policy Controller (Anthos Config Management) enforce GitOps patterns for Kubernetes configuration",
+      "GKE Workload Identity is the recommended method for granting GKE pods access to GCP APIs; eliminates key files",
+      "GKE Gateway API (successor to Ingress) provides richer traffic management for multi-cluster deployments",
+      "GKE multi-cluster Ingress (MCI) routes global traffic to the nearest healthy cluster using Google's global LB"
+    ],
+    "common_misconceptions": [
+      "GKE Autopilot requires no operational effort — you still need to manage workloads, RBAC, and networking; Autopilot only manages nodes",
+      "GKE auto-upgrade always happens immediately — auto-upgrades follow the release channel cadence and maintenance windows"
+    ],
+    "gcp_services": ["GKE", "Anthos Config Management", "Artifact Registry"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-cloud-deploy", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=Rl5M1CzgEH4",
+    "official_doc_url": "https://cloud.google.com/kubernetes-engine/docs"
+  },
+  {
+    "id": "pcdoe-terraform-iac",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "bootstrapping-org",
+    "topic_id": "infrastructure-as-code",
+    "name": "Terraform and Infrastructure as Code for GCP",
+    "description": "Managing GCP infrastructure with Terraform using remote state in Cloud Storage, modules, and CI/CD pipeline integration for automated infrastructure provisioning.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Terraform state stored in Cloud Storage with state locking via Cloud Firestore or GCS native locking prevents concurrent modifications",
+      "terraform plan shows proposed changes; terraform apply executes them; terraform destroy tears down infrastructure",
+      "GCP Cloud Foundation Toolkit provides opinionated Terraform modules for org structure, VPC, GKE, and GCR",
+      "Atlantis or terraform-cloud integrates Terraform with GitHub PRs for automated plan and apply in CI/CD",
+      "Workspaces in Terraform separate state per environment (dev/staging/prod) using the same configuration"
+    ],
+    "common_misconceptions": [
+      "terraform apply is always safe to run — always review terraform plan output before applying; misconfigurations can delete production resources",
+      "IaC eliminates all configuration drift — runtime changes outside Terraform cause drift; use terraform plan regularly to detect and remediate"
+    ],
+    "gcp_services": ["Cloud Storage", "Cloud Build", "Resource Manager"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-org-setup", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=HmXm0ozlSWU",
+    "official_doc_url": "https://cloud.google.com/docs/terraform"
+  },
+  {
+    "id": "pcdoe-org-setup",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "bootstrapping-org",
+    "topic_id": "org-bootstrap",
+    "name": "Google Cloud Organization Bootstrap and Landing Zone",
+    "description": "Setting up a GCP organization with folder hierarchy, shared VPC, centralized logging, billing controls, and organization policies using the Cloud Foundation Fabric.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Landing zone components: org structure (folders/projects), networking (Shared VPC), IAM (groups/roles), logging, billing controls",
+      "Organization bootstrap project (seed project) deploys Terraform using org admin permissions to create the landing zone",
+      "Google Cloud Setup Checklist and Cloud Foundation Toolkit provide reference implementations for enterprise LZ",
+      "Centralized logging: all-projects log sinks route to a central logging project with BigQuery for long-term analysis",
+      "Cloud Identity or Google Workspace is required for the domain-based org; GCDS syncs on-premises AD to Cloud Identity"
+    ],
+    "common_misconceptions": [
+      "A GCP organization can be set up without Cloud Identity — an org node requires a Cloud Identity or Workspace domain",
+      "All projects must be under folders — projects can exist directly under the organization; folders add optional grouping"
+    ],
+    "gcp_services": ["Resource Manager", "Cloud Identity", "Cloud Billing", "Cloud Logging"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-terraform-iac", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+organization+landing+zone+bootstrap+setup",
+    "official_doc_url": "https://cloud.google.com/architecture/landing-zones"
+  },
+  {
+    "id": "pcdoe-trace-profiler",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-monitoring",
+    "topic_id": "distributed-tracing",
+    "name": "Distributed Tracing and Profiling",
+    "description": "Implementing distributed tracing with Cloud Trace and continuous profiling with Cloud Profiler to diagnose latency and CPU performance issues.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Trace automatically collects traces for App Engine, Cloud Run, and GKE with no instrumentation for HTTP requests",
+      "OpenTelemetry SDK provides vendor-neutral tracing instrumentation; traces export to Cloud Trace, Jaeger, or Zipkin",
+      "Trace sampling rate balances visibility with overhead; 100% sampling is feasible for low-traffic services",
+      "Cloud Profiler uses statistical sampling for CPU and heap profiling with less than 1% performance overhead",
+      "Trace context propagation (W3C TraceContext headers) links spans across microservices for end-to-end visibility"
+    ],
+    "common_misconceptions": [
+      "Distributed tracing requires rewriting all services — OpenTelemetry auto-instrumentation handles common frameworks without code changes",
+      "High latency in traces is always a database query issue — traces reveal all bottlenecks including serialization, lock contention, and network"
+    ],
+    "gcp_services": ["Cloud Trace", "Cloud Profiler", "Cloud Monitoring"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-cloud-monitoring", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=GQ8-tYIjeMo",
+    "official_doc_url": "https://cloud.google.com/trace/docs"
+  },
+  {
+    "id": "pcdoe-chaos-engineering",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "sre-practices",
+    "topic_id": "reliability-testing",
+    "name": "Chaos Engineering and Reliability Testing",
+    "description": "Implementing chaos engineering practices on GCP to validate system resilience through controlled failure injection and game day exercises.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Chaos engineering hypothesis: 'the system will exhibit normal behavior when X fails'; run controlled experiments to verify",
+      "GCP reliability test tools: simulate zone failure by stopping a MIG in one zone, test load balancer failover by terminating backends",
+      "Game days simulate disaster scenarios (region failure, network partition) with recovery objectives measured against SLOs",
+      "Cloud Scheduler can trigger synthetic load or failure injection functions for scheduled reliability tests",
+      "Gradual rollouts (Cloud Deploy traffic splitting) reduce blast radius during production changes"
+    ],
+    "common_misconceptions": [
+      "Chaos engineering means randomly breaking production systems — chaos engineering is controlled experiments with clear hypotheses and abort conditions",
+      "Chaos engineering is only for Netflix-scale companies — any production system benefits from controlled failure testing"
+    ],
+    "gcp_services": ["Cloud Monitoring", "Cloud Scheduler", "GKE", "Cloud Deploy"],
+    "prerequisites": ["pcdoe-incident-management"],
+    "lateral_relations": [{"concept_id": "pcdoe-sre-slos", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+SRE+chaos+engineering+reliability+testing",
+    "official_doc_url": "https://cloud.google.com/architecture/devops/devops-process-test-automation"
+  },
+  {
+    "id": "pcdoe-artifact-registry",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "cicd-pipelines",
+    "topic_id": "artifact-management",
+    "name": "Artifact Registry for Software Artifact Management",
+    "description": "Managing Docker images, Helm charts, Maven, npm, and Python packages in Artifact Registry with vulnerability scanning and access control.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Artifact Registry supports Docker, Helm, Maven, npm, Python (pip), Apt, and Yum package formats in one service",
+      "Container Analysis automatically scans Docker images for CVEs using OS and language package vulnerability databases",
+      "Remote repositories proxy public registries (Docker Hub, Maven Central) with caching for improved reliability",
+      "Virtual repositories aggregate multiple repositories behind a single endpoint for flexible package resolution",
+      "IAM roles control access: artifactregistry.reader (pull), artifactregistry.writer (push), artifactregistry.admin"
+    ],
+    "common_misconceptions": [
+      "Container Registry and Artifact Registry are the same — Artifact Registry supersedes Container Registry with multi-format support and better IAM",
+      "Public Docker Hub images don't need scanning — images from public registries should always be scanned before use in production"
+    ],
+    "gcp_services": ["Artifact Registry", "Cloud Build", "GKE", "Binary Authorization"],
+    "prerequisites": ["pcdoe-cloud-build"],
+    "lateral_relations": [{"concept_id": "pcdoe-cloud-build", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=742uQFGUqM0",
+    "official_doc_url": "https://cloud.google.com/artifact-registry/docs/overview"
+  },
+  {
+    "id": "pcdoe-cost-management",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-performance",
+    "topic_id": "cost-efficiency",
+    "name": "Cost Management and FinOps for DevOps",
+    "description": "Implementing FinOps practices to optimize GCP costs in CI/CD pipelines, container workloads, and monitoring systems.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Cloud Build pricing: first 120 minutes/day free; costs scale with machine type and duration of build steps",
+      "GKE cost optimization: Spot VMs for CI/CD workers, node auto-provisioning for right-sized node pools, idle cluster management",
+      "Budget alerts with Pub/Sub notifications trigger automated cost governance actions (e.g., stop dev VMs at night)",
+      "Cloud Billing export to BigQuery enables detailed cost analysis by service, SKU, project, and label",
+      "Recommenders (Idle VM, Unattended Project, Cost) continuously suggest cost savings based on usage patterns"
+    ],
+    "common_misconceptions": [
+      "Cost optimization is only the platform team's responsibility — DevOps engineers influence costs through build efficiency, resource sizing, and cleanup automation",
+      "Labels automatically reduce costs — labels only enable cost attribution; cost reduction requires action based on the insights"
+    ],
+    "gcp_services": ["Cloud Billing", "Cloud Build", "GKE", "Recommender"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcdoe-gke-operations", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=dxLHoJob4dg",
+    "official_doc_url": "https://cloud.google.com/billing/docs/how-to/budgets"
+  },
+  {
+    "id": "pcdoe-security-devops",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "bootstrapping-org",
+    "topic_id": "devsecops",
+    "name": "DevSecOps and Secure CI/CD Pipelines",
+    "description": "Integrating security into CI/CD pipelines with Binary Authorization, container scanning, SAST, DAST, and supply chain security controls.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SLSA (Supply-chain Levels for Software Artifacts) defines provenance requirements; Google Cloud DSSE attestations support SLSA Level 3",
+      "Binary Authorization enforces deploy-time policy: require attestations from security scanning, QA approval, and code review sign-offs",
+      "Cloud Build can run SAST tools (SonarQube, Semgrep) and DAST tools (OWASP ZAP) as build steps in the pipeline",
+      "Secrets in Cloud Build: use Cloud Secret Manager version references in cloudbuild.yaml; never hardcode in YAML",
+      "Software Bill of Materials (SBOM) generated by Artifact Registry helps track vulnerable dependencies across services"
+    ],
+    "common_misconceptions": [
+      "Security scanning in CI/CD slows down pipelines too much — most scanning tools take under 5 minutes; this is acceptable for production protection",
+      "DevSecOps means the security team runs CI/CD — DevSecOps integrates security tooling; developers own fixing the findings"
+    ],
+    "gcp_services": ["Binary Authorization", "Artifact Registry", "Cloud Build", "Secret Manager"],
+    "prerequisites": ["pcdoe-cloud-build", "pcdoe-artifact-registry"],
+    "lateral_relations": [{"concept_id": "pcdoe-artifact-registry", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=G9OM-7TBMpM",
+    "official_doc_url": "https://cloud.google.com/architecture/devops/devops-tech-shifting-left-on-security"
+  },
+  {
+    "id": "pcdoe-service-performance",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-performance",
+    "topic_id": "performance-optimization",
+    "name": "Service Performance Optimization",
+    "description": "Optimizing GKE and Cloud Run service performance using VPA, HPA, KEDA, load testing, and performance benchmarking on Google Cloud.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "GKE Vertical Pod Autoscaler (VPA) recommends and sets right-sized CPU/memory requests based on observed usage",
+      "KEDA (Kubernetes Event-Driven Autoscaling) scales deployments based on Pub/Sub queue depth, Bigtable, or custom metrics",
+      "Load testing with Locust or k6 on Cloud Run validates system behavior under expected and peak load conditions",
+      "Cloud Trace identifies tail latency bottlenecks; Cloud Profiler finds CPU hotspots in application code",
+      "GKE Node Auto Provisioning creates right-sized node pools automatically based on pending pod resource requests"
+    ],
+    "common_misconceptions": [
+      "Setting resource limits too high is a safe default — oversized limits waste cluster capacity and increase cost; right-size with VPA recommendations",
+      "Load testing in staging is sufficient — production traffic patterns often differ; use gradual rollouts to test under real conditions"
+    ],
+    "gcp_services": ["GKE", "Cloud Run", "Cloud Monitoring", "Cloud Trace"],
+    "prerequisites": ["pcdoe-gke-operations"],
+    "lateral_relations": [{"concept_id": "pcdoe-gke-operations", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=GKE+performance+optimization+autoscaling+VPA+HPA+KEDA",
+    "official_doc_url": "https://cloud.google.com/kubernetes-engine/docs/concepts/verticalpodautoscaler"
+  }
+]

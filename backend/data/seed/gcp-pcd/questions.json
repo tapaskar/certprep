@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-pcd-001",
+    "exam_id": "gcp-pcd",
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are building a cloud-native e-commerce application. The shopping cart service needs to store session state so users don't lose their cart during service restarts. Which approach aligns with 12-factor app principles?",
+    "options": [
+      {"id": "A", "text": "Store cart state in an in-memory object within the Cloud Run container", "is_correct": false},
+      {"id": "B", "text": "Store cart state in Memorystore for Redis, accessed by the stateless Cloud Run service", "is_correct": true},
+      {"id": "C", "text": "Write cart state to the container's local filesystem in /tmp", "is_correct": false},
+      {"id": "D", "text": "Store cart state in a class-level static variable shared across requests", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "12-factor apps are stateless; state is stored in external backing services. Memorystore for Redis is an external, persistent, high-performance state store. Cloud Run can scale to multiple instances, all sharing the same Redis state, enabling horizontal scaling without session affinity.",
+      "why_not_A": "In-memory state in a container is lost when the container restarts or scales down — violating the 12-factor principle of stateless processes.",
+      "why_not_C": "Cloud Run containers have ephemeral local filesystems that are reset on container restarts. The /tmp directory is not persistent and can't be shared across multiple container instances.",
+      "why_not_D": "Static variables are in-process memory; they are not shared across Cloud Run instances and are lost on container restart."
+    },
+    "concept_ids": ["pcd-cloud-native-design", "pcd-memorystore"],
+    "tags": ["12-factor", "stateless", "memorystore", "cloud-run"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-002",
+    "exam_id": "gcp-pcd",
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your Cloud Run service needs to access a Cloud SQL database using private IP. The Cloud Run service and Cloud SQL are in the same VPC. What configuration is required to allow Cloud Run to access the private Cloud SQL IP?",
+    "options": [
+      {"id": "A", "text": "Add a Cloud Run VPC connector (Serverless VPC Access) and configure Cloud Run to use it", "is_correct": true},
+      {"id": "B", "text": "Enable Cloud Run with Direct VPC egress only — no connector needed", "is_correct": false},
+      {"id": "C", "text": "Enable public IP on Cloud SQL and whitelist the Cloud Run service IP range", "is_correct": false},
+      {"id": "D", "text": "Cloud Run can automatically access VPC resources — no additional configuration needed", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Serverless VPC Access connector (also called VPC connector) allows Cloud Run services to send traffic into a VPC. Without it, Cloud Run traffic goes directly to the internet. The connector bridges Cloud Run to the VPC where Cloud SQL's private IP is accessible.",
+      "why_not_B": "Direct VPC egress is a newer option that also works, but option A is the traditional documented approach. In a real exam, either would be acceptable, but this question specifically tests the VPC connector pattern.",
+      "why_not_C": "Enabling public IP to avoid VPC configuration is an anti-pattern that exposes the database endpoint to the internet.",
+      "why_not_D": "Cloud Run does NOT automatically access VPC resources; it runs outside the VPC by default and requires explicit VPC access configuration."
+    },
+    "concept_ids": ["pcd-cloud-run-deploy", "pcd-spanner-cloudsql"],
+    "tags": ["cloud-run", "cloud-sql", "vpc-connector", "private-ip"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-003",
+    "exam_id": "gcp-pcd",
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Cloud Build pipeline runs tests and builds a Docker image. You want to ensure the image is automatically deployed to Cloud Run in the dev environment but requires manual approval for production deployment. Which approach implements this?",
+    "options": [
+      {"id": "A", "text": "Add two gcloud run deploy steps in cloudbuild.yaml with a manual approval step between them", "is_correct": false},
+      {"id": "B", "text": "Use Cloud Deploy with a delivery pipeline: dev target (auto-promote) -> prod target (requires approval)", "is_correct": true},
+      {"id": "C", "text": "Create two separate Cloud Build triggers: one for dev and one for prod with different branch filters", "is_correct": false},
+      {"id": "D", "text": "Use Cloud Scheduler to trigger prod deployment after 24 hours if dev deployment succeeds", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Deploy is designed for managed progressive delivery. The delivery pipeline promotes releases through stages; you configure the production target to require manual approval before promotion. This separates build (Cloud Build) from release management (Cloud Deploy).",
+      "why_not_A": "Cloud Build steps run sequentially within a single build; a 'manual approval step' in cloudbuild.yaml doesn't exist as a native feature.",
+      "why_not_C": "Separate triggers create two independent pipelines without a promotion relationship. They don't ensure the same artifact that passed dev tests is promoted to prod.",
+      "why_not_D": "Time-based promotion doesn't guarantee the dev deployment was successful before promoting. It also introduces unnecessary delays."
+    },
+    "concept_ids": ["pcd-cicd-cloud-build"],
+    "tags": ["cloud-deploy", "cloud-build", "approval-gate", "progressive-delivery"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-004",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Pub/Sub subscriber receives the same message multiple times despite acknowledging it. The subscriber processes each message by inserting a record in Firestore. Duplicate insertions are causing data quality issues. What is the best fix?",
+    "options": [
+      {"id": "A", "text": "Enable exactly-once delivery on the Pub/Sub subscription", "is_correct": false},
+      {"id": "B", "text": "Make the Firestore insertion idempotent using the message ID as the Firestore document ID", "is_correct": true},
+      {"id": "C", "text": "Switch from Pub/Sub to Cloud Tasks which guarantees exactly-once delivery", "is_correct": false},
+      {"id": "D", "text": "Increase the acknowledgment deadline so messages are less likely to be redelivered", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using the Pub/Sub message ID as the Firestore document ID makes insertion idempotent — Firestore's document set operation overwrites existing documents with the same ID, so duplicate messages result in the same document being written rather than creating duplicate records.",
+      "why_not_A": "While Pub/Sub does support exactly-once delivery with a specific subscription type, the robust solution is always to make consumers idempotent. Exactly-once delivery adds latency and is not always available in all configurations.",
+      "why_not_C": "Cloud Tasks provides at-least-once delivery, not exactly-once. The fundamental distributed systems guarantee is at-least-once; idempotent consumers are always the correct solution.",
+      "why_not_D": "A longer acknowledgment deadline reduces the frequency of redelivery but doesn't eliminate it. Redelivery is inherent to Pub/Sub's at-least-once guarantee."
+    },
+    "concept_ids": ["pcd-pubsub-integration"],
+    "tags": ["pub-sub", "idempotency", "firestore", "at-least-once"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-005",
+    "exam_id": "gcp-pcd",
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer wants to run integration tests for a Cloud Functions function that uses Pub/Sub locally without incurring costs or connecting to the real GCP services. What is the recommended approach?",
+    "options": [
+      {"id": "A", "text": "Mock the Pub/Sub client in unit tests using a mocking library", "is_correct": false},
+      {"id": "B", "text": "Use the Pub/Sub emulator running locally with PUBSUB_EMULATOR_HOST environment variable", "is_correct": true},
+      {"id": "C", "text": "Create a separate test project in GCP and run integration tests there", "is_correct": false},
+      {"id": "D", "text": "Use Cloud Build to run integration tests in an ephemeral environment", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Google Cloud provides a Pub/Sub emulator that mimics the real Pub/Sub API locally. Setting PUBSUB_EMULATOR_HOST directs the Pub/Sub client library to the local emulator instead of GCP, enabling full integration testing without GCP costs or network access.",
+      "why_not_A": "Unit testing with mocks tests the function logic but not the actual Pub/Sub integration. Integration tests should exercise real API interactions, even if locally emulated.",
+      "why_not_C": "A separate test project incurs costs and requires network access. It's a valid but not recommended alternative when local emulators are available.",
+      "why_not_D": "Cloud Build integration tests connect to real GCP services, incurring costs. The question specifically asks about local testing without costs."
+    },
+    "concept_ids": ["pcd-app-testing"],
+    "tags": ["pub-sub-emulator", "testing", "local-development"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-006",
+    "exam_id": "gcp-pcd",
+    "domain_id": "managing-deployed",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "A Cloud Run service is experiencing higher-than-expected latency. Cloud Trace shows a chain of service calls with high latency in the 'database-query' span. The span takes 800ms on average. What should you investigate first?",
+    "options": [
+      {"id": "A", "text": "Increase Cloud Run memory allocation for the service", "is_correct": false},
+      {"id": "B", "text": "Review the database query execution plan for missing indexes using Cloud SQL Insights", "is_correct": true},
+      {"id": "C", "text": "Add more Cloud Run instances by increasing minimum instances", "is_correct": false},
+      {"id": "D", "text": "Increase the VPC connector throughput", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Trace specifically identified that the 'database-query' span is the bottleneck at 800ms. This directly points to a database performance issue. Cloud SQL Insights provides query execution analysis, slow query logs, and can identify missing indexes that would reduce query time.",
+      "why_not_A": "The trace identified the database query as the bottleneck, not memory. Adding memory won't speed up database queries.",
+      "why_not_C": "More Cloud Run instances increase throughput (concurrent requests) but don't reduce per-request latency caused by slow database queries.",
+      "why_not_D": "VPC connector throughput affects total bandwidth. An 800ms query latency is likely query performance, not network bandwidth saturation."
+    },
+    "concept_ids": ["pcd-error-handling"],
+    "tags": ["cloud-trace", "cloud-sql", "latency", "troubleshooting"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-007",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A mobile application needs to store user profile data with real-time sync across multiple devices. When a user updates their profile on one device, all other signed-in devices should reflect the change within 1 second. Which GCP service is best suited?",
+    "options": [
+      {"id": "A", "text": "Cloud SQL with polling from mobile clients every 1 second", "is_correct": false},
+      {"id": "B", "text": "Firestore in Native mode with real-time listeners", "is_correct": true},
+      {"id": "C", "text": "Bigtable with client-side polling", "is_correct": false},
+      {"id": "D", "text": "BigQuery with streaming inserts", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Firestore Native mode supports real-time listeners that push document changes to connected clients within milliseconds. When a user updates their profile, all other devices with active listeners receive the update instantly without polling.",
+      "why_not_A": "Polling Cloud SQL every 1 second is inefficient (1 query/second/device), adds unnecessary load, and doesn't achieve true real-time push semantics.",
+      "why_not_C": "Bigtable is a NoSQL database for time-series/analytics, not real-time mobile sync. It has no built-in client SDK or real-time listener capability.",
+      "why_not_D": "BigQuery is an analytical data warehouse, not suited for real-time mobile data sync or operational CRUD operations."
+    },
+    "concept_ids": ["pcd-firestore"],
+    "tags": ["firestore", "real-time", "mobile", "listeners"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-008",
+    "exam_id": "gcp-pcd",
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your Cloud Run service needs to access a database password stored in Secret Manager. The service account for Cloud Run has the secretmanager.secretAccessor role. How should the secret be accessed in the application code?",
+    "options": [
+      {"id": "A", "text": "Mount the secret as an environment variable in Cloud Run configuration referencing the secret version", "is_correct": true},
+      {"id": "B", "text": "Hardcode the Secret Manager secret path in the application and call the API at startup", "is_correct": false},
+      {"id": "C", "text": "Download the secret to a file during Docker build and bake it into the image", "is_correct": false},
+      {"id": "D", "text": "Pass the secret as a build argument in Cloud Build and set it in the container image", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Cloud Run natively integrates with Secret Manager: you can mount a secret as an environment variable or volume in the Cloud Run service configuration. This avoids application code changes and Secret Manager API calls in code, and the secret value is injected at container startup.",
+      "why_not_B": "Calling the Secret Manager API in application code works but requires error handling for API failures and adds startup latency. The native integration is simpler and more secure.",
+      "why_not_C": "Baking secrets into Docker images is a severe security anti-pattern; the secret is visible in the image layers and can be extracted by anyone with image access.",
+      "why_not_D": "Build arguments are baked into image layers and visible in docker inspect — the same security problem as baking secrets directly into the image."
+    },
+    "concept_ids": ["pcd-security-dev"],
+    "tags": ["secret-manager", "cloud-run", "security", "environment-variables"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-009",
+    "exam_id": "gcp-pcd",
+    "domain_id": "deploying-apps",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "You need to deploy a containerized application that runs nightly batch processing jobs (not HTTP-triggered). The job takes 2 hours to complete. Cloud Run with scale-to-zero is preferred. Which Cloud Run construct should you use?",
+    "options": [
+      {"id": "A", "text": "Cloud Run Service triggered by Cloud Scheduler via HTTP", "is_correct": false},
+      {"id": "B", "text": "Cloud Run Job executed via Cloud Scheduler", "is_correct": true},
+      {"id": "C", "text": "Cloud Run Service with a Pub/Sub push trigger", "is_correct": false},
+      {"id": "D", "text": "App Engine Cron service for scheduled batch jobs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Run Jobs are designed for batch/background tasks that run to completion. They don't require an HTTP server, support up to 24-hour timeout, and scale to zero when not running. Cloud Scheduler triggers the job on a cron schedule.",
+      "why_not_A": "Cloud Run Service requires an HTTP server within the container and must respond within the request timeout. A 2-hour batch job would time out (default and max timeout for Services is 60 minutes).",
+      "why_not_C": "Pub/Sub push triggers still go through the Cloud Run Service timeout; not suitable for 2-hour jobs.",
+      "why_not_D": "App Engine Cron is App Engine-specific and requires running an App Engine application. The question specifies Cloud Run is preferred."
+    },
+    "concept_ids": ["pcd-cloud-run-deploy"],
+    "tags": ["cloud-run-jobs", "batch-processing", "scheduled-jobs"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-010",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Cloud Storage bucket receives file uploads from users. You want to trigger a Cloud Function to process each uploaded file within seconds of upload. What is the recommended trigger configuration?",
+    "options": [
+      {"id": "A", "text": "Poll the Cloud Storage bucket every 30 seconds from a scheduled Cloud Function", "is_correct": false},
+      {"id": "B", "text": "Enable Cloud Storage object notifications via Pub/Sub and trigger the Cloud Function with a Pub/Sub trigger", "is_correct": false},
+      {"id": "C", "text": "Configure an Eventarc trigger on the Cloud Function for google.cloud.storage.object.v1.finalized events", "is_correct": true},
+      {"id": "D", "text": "Use Cloud Scheduler to call the Cloud Function API every minute", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Eventarc is the recommended trigger mechanism for Cloud Functions 2nd gen. The 'google.cloud.storage.object.v1.finalized' event fires immediately when an object upload completes, triggering the function with details about the new object within seconds.",
+      "why_not_A": "Polling every 30 seconds introduces latency, consumes unnecessary quota, and may process files that have already been processed.",
+      "why_not_B": "While Pub/Sub with Cloud Storage notifications works for Cloud Functions 1st gen, Eventarc is the modern recommended approach for Cloud Functions 2nd gen and provides better event management.",
+      "why_not_D": "Cloud Scheduler triggers on time intervals, not on file uploads. This approach adds latency and can't respond to individual file arrivals."
+    },
+    "concept_ids": ["pcd-cloud-functions", "pcd-storage-cloud-native"],
+    "tags": ["cloud-functions", "eventarc", "cloud-storage", "event-driven"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-011",
+    "exam_id": "gcp-pcd",
+    "domain_id": "deploying-apps",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A GKE Deployment is using a Rolling Update strategy. You want to ensure that during the update, at least 3 instances of the old version remain available (current replicas = 5, desired replicas after = 5). What configuration achieves this?",
+    "options": [
+      {"id": "A", "text": "maxUnavailable: 2, maxSurge: 1", "is_correct": true},
+      {"id": "B", "text": "maxUnavailable: 0, maxSurge: 5", "is_correct": false},
+      {"id": "C", "text": "maxUnavailable: 5, maxSurge: 0", "is_correct": false},
+      {"id": "D", "text": "maxUnavailable: 3, maxSurge: 3", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "maxUnavailable: 2 means at most 2 old pods can be terminated at once, ensuring at least 3 (5-2) old pods remain available during the update. maxSurge: 1 allows 1 extra pod (6 total) during the update for smooth replacement.",
+      "why_not_B": "maxUnavailable: 0 means no pods can go down — all 5 must remain running. This would require extra capacity (maxSurge) to deploy new pods before terminating old ones. While correct for zero-downtime, it doesn't match the stated requirement.",
+      "why_not_C": "maxUnavailable: 5 means all 5 pods could be terminated at once — during the update, 0 instances would be available, violating the 'at least 3' requirement.",
+      "why_not_D": "maxUnavailable: 3 allows 3 pods to go down (leaving only 2), which violates the requirement of at least 3 remaining available."
+    },
+    "concept_ids": ["pcd-gke-deployment"],
+    "tags": ["gke", "rolling-update", "maxunavailable", "maxsurge"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-012",
+    "exam_id": "gcp-pcd",
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your Cloud Run service writes logs to stdout in plain text format. Operations team says they cannot filter logs by error type or HTTP status code using Cloud Logging filters. What change should you make?",
+    "options": [
+      {"id": "A", "text": "Enable Cloud Trace on the Cloud Run service", "is_correct": false},
+      {"id": "B", "text": "Change the application to output structured JSON logs with severity, httpRequest, and other fields", "is_correct": true},
+      {"id": "C", "text": "Add a sidecar container to parse and forward logs to Cloud Logging", "is_correct": false},
+      {"id": "D", "text": "Enable Cloud Profiler to capture detailed runtime metrics", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Logging automatically parses JSON-formatted log entries. By outputting structured JSON with standard fields like 'severity', 'httpRequest.status', 'message', and custom labels, operations teams can use Cloud Logging advanced filters to query specific fields, create log-based metrics, and set up targeted alerts.",
+      "why_not_A": "Cloud Trace captures distributed request tracing; it doesn't improve log filtering capabilities.",
+      "why_not_C": "Cloud Run doesn't support sidecar containers in the traditional sense. Structured logging is the correct and simpler solution.",
+      "why_not_D": "Cloud Profiler captures CPU/memory profiles; it doesn't provide filterable logs."
+    },
+    "concept_ids": ["pcd-error-handling"],
+    "tags": ["structured-logging", "cloud-logging", "json-logs", "observability"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-013",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "You need to expose 10 different microservices through a single API endpoint with authentication via Firebase JWT tokens and rate limiting at 1000 requests/minute per client. Cloud Run hosts all microservices. Which API management approach is most appropriate?",
+    "options": [
+      {"id": "A", "text": "Configure Cloud Armor security policies on the Load Balancer", "is_correct": false},
+      {"id": "B", "text": "API Gateway with an OpenAPI spec defining all 10 service backends and Firebase authentication", "is_correct": true},
+      {"id": "C", "text": "Expose each Cloud Run service directly with its own URL and implement auth in each service", "is_correct": false},
+      {"id": "D", "text": "Use Cloud Functions as a proxy layer in front of each microservice", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "API Gateway provides a single managed endpoint that routes to multiple backends based on the OpenAPI spec. It natively integrates with Firebase Auth for JWT validation and supports quotas/rate limiting per API consumer — exactly what's required.",
+      "why_not_A": "Cloud Armor is a WAF/DDoS protection layer; it doesn't handle API routing, JWT authentication, or per-client rate limiting.",
+      "why_not_C": "Exposing 10 services directly means each service must implement auth and rate limiting independently — duplicated effort, harder to manage, inconsistent behavior.",
+      "why_not_D": "Cloud Functions as a proxy layer adds latency and cost; it requires implementing auth and rate limiting in each proxy function — more complexity than API Gateway."
+    },
+    "concept_ids": ["pcd-api-gateway"],
+    "tags": ["api-gateway", "firebase-auth", "rate-limiting", "microservices"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-014",
+    "exam_id": "gcp-pcd",
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A Cloud Run service experiences a 10x traffic spike every day at 9 AM when the business opens. Users report slow responses during the first 2 minutes of the spike due to cold starts. How should you configure Cloud Run to prevent this?",
+    "options": [
+      {"id": "A", "text": "Increase the Cloud Run CPU allocation to 4 vCPUs", "is_correct": false},
+      {"id": "B", "text": "Set Cloud Run minimum instances to a value that handles the pre-spike baseline load", "is_correct": true},
+      {"id": "C", "text": "Switch from Cloud Run to GKE with node auto-provisioning", "is_correct": false},
+      {"id": "D", "text": "Increase Cloud Run max instances to handle the 10x spike", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Run minimum instances keeps a specified number of container instances warm (no cold start), ready to handle incoming requests immediately. Setting minimum instances to handle pre-spike load ensures users don't experience cold start latency during the predictable daily traffic ramp.",
+      "why_not_A": "More CPU doesn't prevent cold starts; cold starts are caused by containers that need to be initialized (pulled, started, app init), not by insufficient CPU once running.",
+      "why_not_C": "Migrating to GKE is a significant operational change that's not needed. Cloud Run minimum instances solves the problem elegantly.",
+      "why_not_D": "Max instances controls the upper bound of scaling, not the lower bound. Cold starts happen on the way UP from zero or low instance counts; max instances doesn't prevent this."
+    },
+    "concept_ids": ["pcd-app-scaling"],
+    "tags": ["cloud-run", "cold-start", "minimum-instances", "performance"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcd-015",
+    "exam_id": "gcp-pcd",
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your CI/CD pipeline builds and pushes Docker images to Artifact Registry. You want to prevent deployment of any container image that has critical CVE vulnerabilities to production GKE clusters. What configuration enforces this?",
+    "options": [
+      {"id": "A", "text": "Enable Container Analysis scanning in Artifact Registry and review scan reports manually", "is_correct": false},
+      {"id": "B", "text": "Configure Binary Authorization policy requiring a vulnerability-scan attestation before deployment, triggered by Container Analysis scan passing", "is_correct": true},
+      {"id": "C", "text": "Add a gcloud container images scan step in Cloud Build before deployment", "is_correct": false},
+      {"id": "D", "text": "Enable VPC Service Controls around the Artifact Registry project", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Binary Authorization enforces a deploy-time policy on GKE. The policy requires a specific attestation (e.g., 'vulnerability-scan-passed') before a container can be deployed. Container Analysis generates this attestation when no critical CVEs are found. Images with critical CVEs are blocked from production deployment automatically.",
+      "why_not_A": "Manual review doesn't prevent deployment; a developer could deploy a vulnerable image before reviewing the report, especially under deadline pressure.",
+      "why_not_C": "A Cloud Build scan step can fail the build but doesn't prevent re-deploying an old vulnerable image using kubectl or gcloud directly, bypassing the pipeline.",
+      "why_not_D": "VPC Service Controls restricts which services can access Artifact Registry; it doesn't evaluate image contents for vulnerabilities."
+    },
+    "concept_ids": ["pcd-security-dev"],
+    "tags": ["binary-authorization", "container-analysis", "vulnerability-scanning", "security"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  }
+]

@@ -1,0 +1,392 @@
+[
+  {
+    "id": "pde-bigquery-advanced",
+    "exam_id": "gcp-pde",
+    "domain_id": "prepare-analyze",
+    "topic_id": "bigquery-advanced",
+    "name": "BigQuery Advanced Features for Data Engineers",
+    "description": "Advanced BigQuery capabilities including partitioning, clustering, authorized views, row-level security, and optimizing query performance and cost.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Partitioning (by ingestion time, column date, or integer range) reduces bytes scanned and query cost significantly",
+      "Clustering organizes data within partitions by specified columns, improving filter and aggregation performance",
+      "Authorized views allow sharing query results without exposing underlying tables; row-level security uses row access policies",
+      "INFORMATION_SCHEMA views provide metadata about tables, partitions, jobs, and slot reservations for monitoring",
+      "Materialized views precompute and cache query results; BigQuery automatically refreshes them when base tables change"
+    ],
+    "common_misconceptions": [
+      "Clustering and partitioning have the same effect — partitioning reduces data scanned; clustering improves ordering within partitions for filter queries",
+      "More BigQuery slots always means faster queries — slots are units of compute; query performance also depends on data organization and SQL efficiency"
+    ],
+    "gcp_services": ["BigQuery", "Looker", "Data Studio"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-dataflow", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=qqbYrQGSibQ",
+    "official_doc_url": "https://cloud.google.com/bigquery/docs/partitioned-tables"
+  },
+  {
+    "id": "pde-dataflow",
+    "exam_id": "gcp-pde",
+    "domain_id": "ingest-process",
+    "topic_id": "dataflow-beam",
+    "name": "Dataflow and Apache Beam for Stream and Batch Processing",
+    "description": "Building and running Apache Beam pipelines on Dataflow for unified batch and streaming data processing with windowing, triggers, and side inputs.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Apache Beam provides a unified programming model for batch (bounded) and streaming (unbounded) data pipelines",
+      "Windowing divides streaming data into finite chunks: Fixed (tumbling), Sliding (hopping), Session, and Global windows",
+      "Dataflow Shuffle service and Dataflow Prime optimize resource usage and reduce worker costs",
+      "Dataflow Flex Templates package pipeline code and dependencies in a container for portable, parameterized job submission",
+      "Watermarks track event-time progress in streaming pipelines; late data handling uses allowed lateness and side outputs"
+    ],
+    "common_misconceptions": [
+      "Dataflow only supports Java — Dataflow supports Python, Java, and Go Apache Beam SDKs",
+      "Processing time and event time are the same — event time is when the event occurred; processing time is when it arrives at the pipeline"
+    ],
+    "gcp_services": ["Dataflow", "Pub/Sub", "BigQuery", "Cloud Storage"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-pubsub-streaming", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=KalJ0VuEM7s",
+    "official_doc_url": "https://cloud.google.com/dataflow/docs/concepts"
+  },
+  {
+    "id": "pde-pubsub-streaming",
+    "exam_id": "gcp-pde",
+    "domain_id": "ingest-process",
+    "topic_id": "streaming-ingestion",
+    "name": "Pub/Sub for Streaming Data Ingestion",
+    "description": "Using Pub/Sub as a scalable, durable message ingestion layer for streaming data pipelines, including ordering, filtering, and schema enforcement.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Pub/Sub provides global, durable, at-least-once message delivery with configurable retention (up to 7 days)",
+      "Schema registry in Pub/Sub enforces Avro or Protocol Buffer schemas on published messages",
+      "BigQuery subscriptions write Pub/Sub messages directly to BigQuery tables without Dataflow for simple pipelines",
+      "Message filtering on subscriptions reduces costs by delivering only matching messages to subscribers",
+      "Pub/Sub Lite is a zonal, lower-cost alternative for high-volume workloads where regional durability is not required"
+    ],
+    "common_misconceptions": [
+      "Pub/Sub automatically deduplicates messages — at-least-once delivery means duplicates can occur; consumers must handle idempotently",
+      "Pub/Sub subscriptions store messages indefinitely — message retention is configurable (10 minutes to 7 days) before messages expire"
+    ],
+    "gcp_services": ["Pub/Sub", "Dataflow", "BigQuery", "Cloud Storage"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-dataflow", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=MjEam95zaU0",
+    "official_doc_url": "https://cloud.google.com/pubsub/docs/overview"
+  },
+  {
+    "id": "pde-dataproc",
+    "exam_id": "gcp-pde",
+    "domain_id": "ingest-process",
+    "topic_id": "dataproc-hadoop",
+    "name": "Dataproc for Managed Hadoop and Spark",
+    "description": "Running Apache Spark, Hadoop, Flink, and Hive workloads on managed Dataproc clusters with autoscaling, serverless Spark, and Cloud Storage integration.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Dataproc clusters create in 90 seconds; use ephemeral clusters for each job and store data in Cloud Storage (not HDFS)",
+      "Dataproc Serverless for Spark runs Spark batches without managing clusters; Google manages resources automatically",
+      "Dataproc Metastore provides a fully managed Hive Metastore for Spark, Hive, and other data processing frameworks",
+      "Preemptible VMs as secondary workers reduce Dataproc batch job costs by 60-80%",
+      "Cloud Storage connector enables Dataproc to read/write directly to Cloud Storage using the gs:// URI scheme"
+    ],
+    "common_misconceptions": [
+      "Dataproc is only for Hadoop workloads — it supports Spark (including Structured Streaming), Flink, Hive, Presto, and more",
+      "HDFS on Dataproc is recommended for production — use Cloud Storage for persistent storage; HDFS is only for temporary shuffle data"
+    ],
+    "gcp_services": ["Dataproc", "Cloud Storage", "BigQuery", "Dataproc Metastore"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-dataflow", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=Y9lcBsGrFpI",
+    "official_doc_url": "https://cloud.google.com/dataproc/docs/concepts"
+  },
+  {
+    "id": "pde-bigtable",
+    "exam_id": "gcp-pde",
+    "domain_id": "store-data",
+    "topic_id": "bigtable-nosql",
+    "name": "Bigtable for High-Throughput NoSQL Workloads",
+    "description": "Designing Bigtable schemas for time-series, IoT, and analytics workloads with optimal row key design, column families, and performance tuning.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Row key design is critical: reverse domain names (com.example vs example.com) prevent hotspots; avoid sequential keys",
+      "Column families group related columns; all columns in a family share the same garbage collection policy",
+      "Bigtable tables have one index (the row key); design row keys to support primary query patterns without table scans",
+      "Replication to multiple clusters in different regions provides low-latency global reads and disaster recovery",
+      "Key Visualizer tool identifies hotspots in row key access patterns to diagnose performance issues"
+    ],
+    "common_misconceptions": [
+      "Bigtable supports SQL — Bigtable uses an HBase-compatible API; it does not support SQL (use BigQuery for SQL analytics)",
+      "More column families improve performance — too many column families increase memory and storage overhead; use few families with many columns"
+    ],
+    "gcp_services": ["Bigtable", "Dataflow", "BigQuery"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-bigquery-advanced", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=HI93iF6Dp88",
+    "official_doc_url": "https://cloud.google.com/bigtable/docs/schema-design"
+  },
+  {
+    "id": "pde-data-pipeline-design",
+    "exam_id": "gcp-pde",
+    "domain_id": "design-data-systems",
+    "topic_id": "pipeline-architecture",
+    "name": "Data Pipeline Architecture Design",
+    "description": "Designing ELT/ETL data pipelines for batch and streaming workloads, selecting the right processing framework, and implementing data quality checks.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "ELT (Extract-Load-Transform) is preferred in modern cloud data stacks; load raw data first, transform in BigQuery",
+      "Cloud Composer (managed Apache Airflow) orchestrates complex multi-step DAG pipelines with dependencies and scheduling",
+      "Dataprep by Trifacta is a visual data preparation tool that generates Dataflow jobs for data cleaning and transformation",
+      "Data Catalog provides unified discovery, metadata management, and data lineage across GCP data assets",
+      "Data quality dimensions: completeness, consistency, accuracy, timeliness, validity — validate at ingestion and transformation stages"
+    ],
+    "common_misconceptions": [
+      "ETL is always better than ELT — ELT is preferred when the destination system (BigQuery) is powerful enough for transformation",
+      "Cloud Composer and Dataflow do the same thing — Composer orchestrates workflows; Dataflow executes data processing steps"
+    ],
+    "gcp_services": ["Cloud Composer", "Dataflow", "BigQuery", "Data Catalog"],
+    "prerequisites": ["pde-dataflow"],
+    "lateral_relations": [{"concept_id": "pde-dataflow", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=1igpGP9C3FQ",
+    "official_doc_url": "https://cloud.google.com/architecture/data-lifecycle-cloud-platform"
+  },
+  {
+    "id": "pde-cloud-storage-data",
+    "exam_id": "gcp-pde",
+    "domain_id": "store-data",
+    "topic_id": "cloud-storage-data-lake",
+    "name": "Cloud Storage as a Data Lake",
+    "description": "Using Cloud Storage as the foundation of a data lake with optimal file formats (Parquet, Avro, ORC), folder organization, and access control patterns.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Parquet and ORC are columnar formats ideal for BigQuery external tables and Dataproc analytics; Avro is row-based and good for streaming",
+      "Organizing data by date (year/month/day prefix) enables partition discovery in BigQuery and Dataproc Hive",
+      "Cloud Storage Transfer Service and gsutil -m enable parallel multi-threaded transfers for large dataset migrations",
+      "Requester Pays enables cost attribution to the requester for large shared datasets",
+      "CMEK with Cloud KMS encrypts bucket data with customer-controlled keys for data sovereignty requirements"
+    ],
+    "common_misconceptions": [
+      "JSON is efficient for large analytical datasets — JSON is verbose; use Parquet or Avro for significantly better compression and query performance",
+      "Cloud Storage data is immediately queryable by BigQuery — external tables require Schema definition; load jobs offer better query performance"
+    ],
+    "gcp_services": ["Cloud Storage", "BigQuery", "Dataflow", "Cloud KMS"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-bigquery-advanced", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=ID6UmFub7HE",
+    "official_doc_url": "https://cloud.google.com/architecture/build-a-data-lake-on-gcp"
+  },
+  {
+    "id": "pde-spanner-data",
+    "exam_id": "gcp-pde",
+    "domain_id": "store-data",
+    "topic_id": "spanner-globally-distributed",
+    "name": "Cloud Spanner for Global ACID Transactions",
+    "description": "Designing schemas and using Cloud Spanner for globally consistent, horizontally scalable relational data with interleaved tables and commit timestamps.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Spanner uses TrueTime (GPS + atomic clocks) to assign globally consistent timestamps, enabling external consistency",
+      "Interleaved tables co-locate child rows with parent rows physically, avoiding expensive joins for parent-child queries",
+      "Primary key design: use UUIDs or bit-reversed sequence numbers to avoid write hotspots on sequential keys",
+      "Spanner Change Streams capture data changes in near-real-time for CDC (change data capture) pipelines via Dataflow",
+      "Spanner INFORMATION_SCHEMA provides metadata about tables, indexes, and columns for schema introspection"
+    ],
+    "common_misconceptions": [
+      "Spanner is just Cloud SQL scaled up — Spanner uses a fundamentally different architecture (Paxos consensus, TrueTime) enabling global consistency",
+      "Sequential primary keys are safe in Spanner — sequential keys cause write hotspots; use hashed or UUID keys"
+    ],
+    "gcp_services": ["Cloud Spanner", "Dataflow", "Pub/Sub"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-bigtable", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=IfsTINNCooY",
+    "official_doc_url": "https://cloud.google.com/spanner/docs/schema-and-data-model"
+  },
+  {
+    "id": "pde-ml-integration",
+    "exam_id": "gcp-pde",
+    "domain_id": "prepare-analyze",
+    "topic_id": "ml-for-data-engineers",
+    "name": "ML Integration for Data Engineers",
+    "description": "Integrating ML capabilities into data pipelines using BigQuery ML, Vertex AI predictions, and feature engineering on GCP.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "BigQuery ML trains linear regression, logistic regression, k-means, and deep neural networks using SQL",
+      "Feature Store in Vertex AI stores and serves ML features for training and online prediction with low latency",
+      "Vertex AI Batch Prediction integrates with BigQuery for bulk scoring of large datasets",
+      "ML.PREDICT in BigQuery calls Vertex AI endpoints from BigQuery SQL for inline predictions",
+      "Feature engineering transforms raw data into model-ready features; common techniques include normalization, bucketing, and embedding"
+    ],
+    "common_misconceptions": [
+      "BigQuery ML requires Python or TensorFlow knowledge — it uses standard SQL for model training and prediction",
+      "Feature Store eliminates the need for feature engineering — Feature Store manages feature storage and serving, not the engineering itself"
+    ],
+    "gcp_services": ["BigQuery ML", "Vertex AI", "Dataflow", "Cloud Storage"],
+    "prerequisites": ["pde-bigquery-advanced"],
+    "lateral_relations": [{"concept_id": "pde-bigquery-advanced", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=2ePnWrYDaoE",
+    "official_doc_url": "https://cloud.google.com/bigquery/docs/bqml-introduction"
+  },
+  {
+    "id": "pde-data-security",
+    "exam_id": "gcp-pde",
+    "domain_id": "design-data-systems",
+    "topic_id": "data-security-governance",
+    "name": "Data Security and Governance",
+    "description": "Implementing data security controls including encryption, access control, data masking, and audit logging for sensitive data in GCP data systems.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud DLP (Data Loss Prevention) identifies, classifies, and redacts sensitive data (PII, PHI, PCI) in BigQuery, Cloud Storage, and Datastore",
+      "BigQuery column-level security uses policy tags in Data Catalog to control access to sensitive columns",
+      "VPC Service Controls create data perimeters around BigQuery and Cloud Storage to prevent exfiltration",
+      "Cloud Audit Logs capture BigQuery job execution and data access events for compliance and forensics",
+      "Dataset and table ACLs in BigQuery control access; authorized views and authorized datasets enable controlled sharing"
+    ],
+    "common_misconceptions": [
+      "Encrypting a BigQuery dataset protects all its data — encryption protects data at rest; you still need column-level security and IAM for access control",
+      "DLP scanning is real-time — DLP jobs are typically batch scans; use DLP API for real-time content inspection in streaming pipelines"
+    ],
+    "gcp_services": ["Cloud DLP", "BigQuery", "Data Catalog", "VPC Service Controls"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-bigquery-advanced", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+DLP+data+security+BigQuery+governance",
+    "official_doc_url": "https://cloud.google.com/dlp/docs"
+  },
+  {
+    "id": "pde-composer",
+    "exam_id": "gcp-pde",
+    "domain_id": "maintain-automate",
+    "topic_id": "workflow-orchestration",
+    "name": "Cloud Composer Workflow Orchestration",
+    "description": "Building and managing data pipeline DAGs in Cloud Composer (managed Apache Airflow) with GCP operators, XComs, and monitoring.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Composer is fully managed Apache Airflow; DAGs are Python files stored in a Cloud Storage bucket",
+      "GCP operators (BigQueryInsertJobOperator, DataflowCreateJavaJobOperator, etc.) integrate pipelines with GCP services",
+      "XComs (cross-communications) pass small data between tasks; for large data use Cloud Storage as intermediate store",
+      "Cloud Composer 2 uses GKE Autopilot for autoscaling and reduced management overhead vs Composer 1",
+      "SLA miss callbacks and email alerts notify when DAG or task execution exceeds expected duration"
+    ],
+    "common_misconceptions": [
+      "Cloud Composer and Dataflow are interchangeable — Composer orchestrates which jobs to run and when; Dataflow processes the data within a job",
+      "Larger Composer environments always run DAGs faster — DAG parsing speed depends on Python code quality; over-provisioning increases cost"
+    ],
+    "gcp_services": ["Cloud Composer", "Dataflow", "BigQuery", "Cloud Storage"],
+    "prerequisites": ["pde-data-pipeline-design"],
+    "lateral_relations": [{"concept_id": "pde-data-pipeline-design", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=bwZOAXnCMf8",
+    "official_doc_url": "https://cloud.google.com/composer/docs/concepts/overview"
+  },
+  {
+    "id": "pde-streaming-analytics",
+    "exam_id": "gcp-pde",
+    "domain_id": "ingest-process",
+    "topic_id": "real-time-analytics",
+    "name": "Real-Time Streaming Analytics Architecture",
+    "description": "Designing end-to-end real-time analytics pipelines from event ingestion through Pub/Sub, processing with Dataflow, and serving via BigQuery.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Reference streaming architecture: Source -> Pub/Sub -> Dataflow -> BigQuery (analytical) + Bigtable (operational serving)",
+      "BigQuery Storage Write API supports exactly-once and at-least-once streaming into BigQuery at high throughput",
+      "Dataflow streaming jobs use autoscaling to handle traffic spikes; monitor with Cloud Monitoring metrics",
+      "Change Data Capture (CDC) from Cloud SQL/Spanner using Datastream replicates changes to BigQuery in real time",
+      "Real-time dashboards with Looker Studio and BigQuery BI Engine enable sub-second query performance on streaming data"
+    ],
+    "common_misconceptions": [
+      "BigQuery supports real-time transactional queries — BigQuery is optimized for analytical queries; for real-time operational queries use Bigtable or Spanner",
+      "Datastream and Dataflow are alternatives — Datastream handles CDC replication; Dataflow handles general data transformation"
+    ],
+    "gcp_services": ["Pub/Sub", "Dataflow", "BigQuery", "Bigtable", "Datastream"],
+    "prerequisites": ["pde-dataflow", "pde-pubsub-streaming"],
+    "lateral_relations": [{"concept_id": "pde-dataflow", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=rO8jXOSYfVE",
+    "official_doc_url": "https://cloud.google.com/architecture/streaming-data-processing-dataflow"
+  },
+  {
+    "id": "pde-monitoring-pipelines",
+    "exam_id": "gcp-pde",
+    "domain_id": "maintain-automate",
+    "topic_id": "pipeline-monitoring",
+    "name": "Data Pipeline Monitoring and Troubleshooting",
+    "description": "Monitoring data pipeline health, setting up SLO-based alerts, debugging failed jobs, and implementing data quality validation in production.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Dataflow monitoring UI shows job graph, step metrics, throughput, and worker utilization for debugging",
+      "Cloud Monitoring custom metrics and dashboards track data pipeline SLIs (records processed, latency, error rate)",
+      "BigQuery job INFORMATION_SCHEMA tracks query performance, bytes billed, and slot utilization trends",
+      "Dead letter patterns in Dataflow route failed records to separate PubSub topic or BigQuery table for investigation",
+      "Cloud Composer task retry policies and failure callbacks handle transient failures in orchestration pipelines"
+    ],
+    "common_misconceptions": [
+      "A successful Dataflow job means data quality is good — a job can complete successfully while silently dropping or misprocessing records",
+      "Monitoring is only needed for streaming jobs — batch pipelines also need monitoring for duration SLOs and data completeness"
+    ],
+    "gcp_services": ["Cloud Monitoring", "Dataflow", "Cloud Composer", "BigQuery"],
+    "prerequisites": ["pde-dataflow", "pde-composer"],
+    "lateral_relations": [{"concept_id": "pde-composer", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+Dataflow+monitoring+troubleshooting+pipeline",
+    "official_doc_url": "https://cloud.google.com/dataflow/docs/guides/monitoring-overview"
+  },
+  {
+    "id": "pde-migrations",
+    "exam_id": "gcp-pde",
+    "domain_id": "design-data-systems",
+    "topic_id": "data-migration",
+    "name": "Data Migration and Modernization",
+    "description": "Migrating on-premises data warehouses, Hadoop clusters, and relational databases to GCP using appropriate migration tools and strategies.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "BigQuery Migration Service assesses, translates SQL, and migrates Teradata, Redshift, and Snowflake workloads to BigQuery",
+      "Dataproc migration from on-premises Hadoop: move data to Cloud Storage first, then run same Spark/Hive jobs on Dataproc",
+      "Database Migration Service (DMS) handles homogeneous (MySQL->Cloud SQL) and heterogeneous (Oracle->AlloyDB) migrations",
+      "Datastream provides continuous CDC replication from Oracle, MySQL, PostgreSQL to BigQuery or Cloud Storage",
+      "Transfer Appliance (hardware) ships petabytes offline when network bandwidth makes online transfer impractical (>100 TB)"
+    ],
+    "common_misconceptions": [
+      "Migrating to BigQuery requires rewriting all SQL — BigQuery Migration Service includes automated SQL translation for common dialects",
+      "Online database migrations always cause downtime — DMS uses logical replication to migrate with minimal downtime"
+    ],
+    "gcp_services": ["BigQuery Migration Service", "Database Migration Service", "Datastream", "Dataproc"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-bigquery-advanced", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+BigQuery+data+migration+modernization",
+    "official_doc_url": "https://cloud.google.com/bigquery/docs/migration-intro"
+  },
+  {
+    "id": "pde-data-governance",
+    "exam_id": "gcp-pde",
+    "domain_id": "maintain-automate",
+    "topic_id": "data-governance",
+    "name": "Data Governance and Catalog",
+    "description": "Implementing data governance with Data Catalog for metadata management, data discovery, business glossary, and lineage tracking across GCP data assets.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Data Catalog automatically indexes metadata from BigQuery, Cloud Storage, Pub/Sub, and third-party sources",
+      "Business metadata (descriptions, tags, business terms) enriches technical metadata for data discoverability",
+      "Policy tags in Data Catalog enforce column-level access control in BigQuery for sensitive data classification",
+      "Data lineage in Dataplex tracks how data flows through pipelines for compliance and impact analysis",
+      "Dataplex provides unified data management with data quality rules, metadata, and automatic catalog integration"
+    ],
+    "common_misconceptions": [
+      "Data Catalog is a data store — it is a metadata catalog only; it does not store the actual data",
+      "Dataplex replaces Data Catalog — Dataplex incorporates Data Catalog as part of a broader data management platform"
+    ],
+    "gcp_services": ["Data Catalog", "Dataplex", "BigQuery", "Cloud Storage"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pde-data-security", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=m45JaSzgUSU",
+    "official_doc_url": "https://cloud.google.com/data-catalog/docs"
+  }
+]

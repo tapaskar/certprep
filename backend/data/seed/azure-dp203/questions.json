@@ -1,0 +1,437 @@
+[
+  {
+    "id": "q-dp203-001",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineering team needs to ingest streaming IoT sensor data (1 million events per second) into Azure for real-time anomaly detection. The data must also be archived to Azure Data Lake Storage Gen2 in Parquet format for historical analysis. Which combination of services best meets these requirements?",
+    "options": [
+      {"id": "A", "text": "Azure Service Bus → Azure Stream Analytics → ADLS Gen2", "is_correct": false},
+      {"id": "B", "text": "Azure Event Hubs → Azure Stream Analytics (anomaly detection) + Event Hubs Capture (archive to ADLS Gen2)", "is_correct": true},
+      {"id": "C", "text": "Azure IoT Hub → Azure Data Factory pipeline (real-time trigger) → ADLS Gen2", "is_correct": false},
+      {"id": "D", "text": "Azure Event Grid → Azure Functions → Azure Synapse Analytics dedicated SQL pool", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Event Hubs is designed for high-throughput streaming data ingestion at millions of events per second. Event Hubs Capture automatically archives raw events to ADLS Gen2 (or Blob Storage) in Avro format without additional pipeline code. Azure Stream Analytics can read from Event Hubs in parallel for real-time anomaly detection queries. This covers both requirements with minimal operational overhead.",
+      "why_not_A": "Azure Service Bus is a messaging service designed for reliable transactional message delivery with queues and topics. It is not optimized for million-event-per-second IoT streaming ingestion. Service Bus has much lower throughput limits than Event Hubs.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Data Factory is a batch-oriented data integration service. While it supports event-based triggers, it is not designed for real-time processing of 1 million events per second. ADF pipelines have significant latency compared to streaming solutions.",
+      "why_not_D": "Azure Event Grid routes discrete events for reactive serverless workflows; it is not designed for high-throughput streaming. Dedicated SQL pools are not optimized for real-time streaming inserts and would be extremely expensive for this scale."
+    },
+    "concept_ids": ["dp203-event-hubs", "dp203-stream-analytics"],
+    "tags": ["event-hubs", "stream-analytics", "real-time", "iot", "capture"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-002",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A data engineer needs to perform a tumbling window aggregation over a 5-minute window in Azure Stream Analytics to calculate the average temperature from IoT sensor events. Which SAQL query syntax correctly implements this?",
+    "options": [
+      {"id": "A", "text": "SELECT AVG(temperature) FROM sensors GROUP BY HOPPING(minute, 5, 1) OVER (LIMIT DURATION(minute, 5))", "is_correct": false},
+      {"id": "B", "text": "SELECT AVG(temperature) FROM sensors GROUP BY TumblingWindow(minute, 5)", "is_correct": true},
+      {"id": "C", "text": "SELECT AVG(temperature) FROM sensors WINDOW TUMBLING BY MINUTE INTERVAL 5", "is_correct": false},
+      {"id": "D", "text": "SELECT AVG(temperature) FROM sensors GROUP BY SessionWindow(minute, 5, 10)", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TumblingWindow in Azure Stream Analytics SAQL creates non-overlapping fixed-size time windows. The correct syntax is GROUP BY TumblingWindow(unit, size) where unit is a time unit (second, minute, hour) and size is the window duration. This produces one result per 5-minute window, perfect for average temperature aggregation.",
+      "why_not_A": "HOPPING is the keyword for Hopping windows (overlapping windows), not Tumbling. Hopping windows generate overlapping results where a single event can appear in multiple window outputs. The LIMIT DURATION clause is also incorrect syntax.",
+      "why_not_B": "N/A",
+      "why_not_C": "This is not valid SAQL syntax. Azure Stream Analytics does not use WINDOW ... BY ... INTERVAL syntax. SAQL uses the TumblingWindow(), HoppingWindow(), SlidingWindow(), and SessionWindow() functions in the GROUP BY clause.",
+      "why_not_D": "SessionWindow creates activity-based windows that close after a gap of inactivity (gap parameter) with an optional maximum duration. It is used for session analysis (e.g., user activity sessions), not for fixed-interval time-series aggregation like 5-minute temperature averages."
+    },
+    "concept_ids": ["dp203-stream-analytics"],
+    "tags": ["stream-analytics", "saql", "tumbling-window", "aggregation"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-003",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-storage-dp203",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer is designing an ADLS Gen2 data lake for a retail company. Analytics teams in different business units (Sales, Finance, HR) should only access their own data folders. The access requirements change frequently as analysts join or leave teams. Which access control approach is most appropriate?",
+    "options": [
+      {"id": "A", "text": "Configure RBAC Storage Blob Data Reader role for each business unit at the storage account scope", "is_correct": false},
+      {"id": "B", "text": "Use POSIX-style ACLs on individual folders, managed through Azure AD security groups per business unit", "is_correct": true},
+      {"id": "C", "text": "Create separate storage accounts for each business unit to ensure complete data isolation", "is_correct": false},
+      {"id": "D", "text": "Use shared access signatures (SAS) with path-level restrictions and distribute to each team's users", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "POSIX-style ACLs on ADLS Gen2 provide fine-grained, folder-level access control. Assigning ACLs to Azure AD security groups (one per business unit) means you only need to add/remove users from the security group when access changes, without modifying the ACLs themselves. This scales well and centralizes access management.",
+      "why_not_A": "RBAC Storage Blob Data Reader at the storage account scope grants read access to ALL containers and blobs in the account. This would give each business unit read access to all other units' data, violating the isolation requirement.",
+      "why_not_B": "N/A",
+      "why_not_C": "Creating separate storage accounts provides strong isolation but at significant operational cost—each account requires separate management, billing, and integration. It is over-engineered for this requirement where ACLs can achieve the same goal within a single lake.",
+      "why_not_D": "SAS tokens are credentials tied to specific operations and paths. Distributing SAS tokens to individual users is a management nightmare—tokens expire, must be regenerated, can be leaked, and do not integrate with Azure AD identity governance for easy revocation."
+    },
+    "concept_ids": ["dp203-data-lake-design"],
+    "tags": ["adls-gen2", "acl", "rbac", "access-control", "security"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-004",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A data engineer is loading 500 GB of Parquet files from ADLS Gen2 into an Azure Synapse dedicated SQL pool. Which loading method is recommended for maximum performance?",
+    "options": [
+      {"id": "A", "text": "Use Azure Data Factory Copy Activity with the dedicated SQL pool as the sink and set parallelCopies to 32", "is_correct": false},
+      {"id": "B", "text": "Use the COPY INTO command in Synapse SQL pointing to the Parquet files in ADLS Gen2", "is_correct": true},
+      {"id": "C", "text": "Use PolyBase to create an External Table and then INSERT INTO SELECT from the external table", "is_correct": false},
+      {"id": "D", "text": "Use the Synapse Serverless SQL OPENROWSET to query the Parquet files and create a SELECT INTO table", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "COPY INTO is Microsoft's recommended bulk loading method for Synapse dedicated SQL pool. It is simpler than PolyBase (no external objects required), supports Parquet and CSV natively, and parallelizes automatically across the distribution nodes for maximum throughput. It is the highest-performance ingestion method available.",
+      "why_not_A": "ADF Copy Activity is a valid approach but orchestrates through the ADF integration runtime which adds overhead compared to running COPY INTO directly within Synapse. For bulk loading from ADLS Gen2, COPY INTO is the more direct and typically faster path.",
+      "why_not_B": "N/A",
+      "why_not_C": "PolyBase works but requires creating three objects (External Data Source, External File Format, External Table) before loading. COPY INTO is simpler and generally achieves equal or better performance with fewer steps. Microsoft's current guidance recommends COPY INTO over PolyBase.",
+      "why_not_D": "Serverless SQL pool does not support SELECT INTO for writing data to dedicated SQL pool tables. Serverless pool is read-only for data lake queries; CETAS writes to external files, not to dedicated pool tables."
+    },
+    "concept_ids": ["dp203-polybase-external", "dp203-dedicated-sql-pool"],
+    "tags": ["copy-into", "synapse", "data-loading", "parquet", "performance"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-005",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An Azure Databricks Spark job that joins a 10 TB fact table with a 500 MB lookup table is running slowly. The Spark UI shows a large number of tasks are spending most of their time in shuffle operations. What is the most effective optimization to apply?",
+    "options": [
+      {"id": "A", "text": "Increase the number of executors to reduce the time per shuffle partition", "is_correct": false},
+      {"id": "B", "text": "Cache the large fact table in memory using DataFrame.cache() before the join", "is_correct": false},
+      {"id": "C", "text": "Use a broadcast join hint to send the 500 MB lookup table to all executors, eliminating the shuffle", "is_correct": true},
+      {"id": "D", "text": "Repartition the fact table to 2000 partitions before the join to distribute data more evenly", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "When joining a large table with a small table, broadcasting the small table to all executors eliminates the shuffle entirely. Each executor can perform the join locally without exchanging data across the network. 500 MB is within the range where broadcast joins are effective (Spark default auto-broadcast threshold is 10 MB, but it can be configured higher). Using a broadcast hint: df_fact.join(broadcast(df_lookup), ...).",
+      "why_not_A": "Adding more executors increases parallelism but does not eliminate shuffle. The fundamental bottleneck is network data exchange during shuffle; more executors still perform the same shuffle operations, just in parallel. The total amount of data shuffled remains the same.",
+      "why_not_B": "Caching the large 10 TB fact table would require enormous memory and would likely cause executor out-of-memory errors. Even if successful, caching does not eliminate the shuffle from the join; it only speeds up re-reads of the same dataset.",
+      "why_not_C": "N/A",
+      "why_not_D": "Repartitioning increases the number of shuffle partitions for the join but does not eliminate the shuffle itself. More partitions may make each partition smaller and faster to process, but it adds an additional shuffle step for the repartitioning itself and does not address the root cause."
+    },
+    "concept_ids": ["dp203-spark-processing", "dp203-databricks"],
+    "tags": ["spark", "broadcast-join", "shuffle", "performance-optimization", "databricks"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-006",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A data engineer needs to transform data in Azure Data Factory without writing code. The transformation must join two datasets, derive a calculated column, and filter rows where sales > 1000. Which ADF feature should be used?",
+    "options": [
+      {"id": "A", "text": "Azure Data Factory Copy Activity with column mapping and filter settings", "is_correct": false},
+      {"id": "B", "text": "Azure Data Factory Mapping Data Flows", "is_correct": true},
+      {"id": "C", "text": "Azure Data Factory Lookup Activity with a stored procedure for transformation", "is_correct": false},
+      {"id": "D", "text": "Azure Data Factory Execute Pipeline Activity calling an Azure Databricks notebook", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Mapping Data Flows provide a visual, code-free transformation designer within Azure Data Factory. It supports Join, Derived Column, Filter, Aggregate, and many other transformation types through a drag-and-drop interface. The flows compile to Apache Spark and run on ADF-managed clusters, making them scalable without Spark coding knowledge.",
+      "why_not_A": "Copy Activity is designed for data movement (source to sink) with optional column mapping. It does not support complex transformations like joins between multiple sources, derived calculated columns, or conditional row filtering.",
+      "why_not_B": "N/A",
+      "why_not_C": "Lookup Activity retrieves a result set from a reference dataset. Implementing join and filter logic in a stored procedure requires writing SQL code, which contradicts the no-code requirement. It also only supports SQL-based sources.",
+      "why_not_D": "While Databricks notebooks can perform the required transformations, they require writing Python, Scala, or SQL code. Calling a Databricks notebook from ADF is a code-based solution, not the code-free solution Mapping Data Flows provide."
+    },
+    "concept_ids": ["dp203-adf-mapping-dataflows", "dp203-data-factory"],
+    "tags": ["adf", "mapping-data-flows", "no-code", "transformation"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.16,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-007",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Synapse dedicated SQL pool has a fact table with 2 billion rows distributed using ROUND_ROBIN distribution. Query performance is poor because most analytical queries join this table to a dimension table on the ProductID column. Which change will most improve query performance?",
+    "options": [
+      {"id": "A", "text": "Change the fact table distribution to HASH(ProductID) to co-locate matching rows on the same compute node", "is_correct": true},
+      {"id": "B", "text": "Change the fact table distribution to REPLICATED to send a copy to every compute node", "is_correct": false},
+      {"id": "C", "text": "Add a non-clustered index on ProductID to speed up lookups", "is_correct": false},
+      {"id": "D", "text": "Increase the DWU count to scale out compute resources for the join operation", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "When a join column has high cardinality (ProductID with 2 billion rows), hash distributing the fact table on ProductID ensures that matching rows are co-located on the same compute node. This eliminates data movement during joins, which is the most impactful cause of poor performance. The dimension table should also be hash-distributed on ProductID for maximum benefit.",
+      "why_not_A": "N/A",
+      "why_not_B": "REPLICATED distribution copies the entire table to every compute node. A 2 billion row fact table is far too large to replicate—replication is only suitable for dimension tables typically under 2 GB. Replicating a massive fact table would exhaust each compute node's memory.",
+      "why_not_C": "Synapse dedicated SQL pool uses Clustered Columnstore Indexes (CCI) as the primary optimization mechanism, not traditional B-tree indexes. While non-clustered indexes exist in Synapse, they do not address the data movement cost during distributed joins across compute nodes.",
+      "why_not_D": "Increasing DWUs provides more compute resources and can improve parallel query performance, but it does not eliminate data movement. With ROUND_ROBIN distribution, matching ProductID rows are still scattered across nodes and must be shuffled during joins regardless of DWU count."
+    },
+    "concept_ids": ["dp203-dedicated-sql-pool", "dp203-synapse-analytics"],
+    "tags": ["synapse", "hash-distribution", "query-performance", "mpp"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-008",
+    "exam_id": "azure-dp203",
+    "domain_id": "secure-monitor-optimize",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company stores sensitive customer PII data in Azure Synapse Analytics. Business analysts must be able to query customer transaction tables but should not see social security numbers or credit card numbers in the results. Which security feature should the data engineer configure?",
+    "options": [
+      {"id": "A", "text": "Enable Transparent Data Encryption (TDE) on the Synapse workspace to encrypt PII columns at rest", "is_correct": false},
+      {"id": "B", "text": "Configure Dynamic Data Masking (DDM) on the SSN and credit card columns to obfuscate values for non-privileged users", "is_correct": true},
+      {"id": "C", "text": "Implement Row-Level Security (RLS) with a filter predicate on the PII columns", "is_correct": false},
+      {"id": "D", "text": "Grant analysts only SELECT permission on non-PII columns using column-level permissions", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dynamic Data Masking (DDM) obfuscates sensitive column values (like SSN as XXX-XX-1234 or credit card as XXXX-XXXX-XXXX-1234) when returned in query results to non-privileged users. The underlying data remains unchanged. Analysts can still query and aggregate the data without seeing actual sensitive values, satisfying the business requirement.",
+      "why_not_A": "TDE encrypts data files at rest on disk. It is transparent to all users—authenticated users with database access see the decrypted data in query results. TDE does not restrict which users can view sensitive column values in query output.",
+      "why_not_B": "N/A",
+      "why_not_C": "Row-Level Security filters which rows a user can see based on a predicate. It does not hide or obfuscate column values within visible rows. Analysts would either see all rows (including PII) or be blocked from seeing rows entirely—there is no middle ground for column-level masking.",
+      "why_not_D": "Column-level permissions can restrict SELECT on specific columns but prevent analysts from querying or aggregating on those columns at all. DDM is preferable because it allows queries involving PII columns (useful for aggregations) while masking the actual values in the result set."
+    },
+    "concept_ids": ["dp203-data-security"],
+    "tags": ["dynamic-data-masking", "pii", "security", "synapse"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-009",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A data engineer needs to query Parquet files in ADLS Gen2 using Synapse Serverless SQL pool without loading the data into a table. The files are partitioned by year and month in folder paths like /sales/year=2024/month=01/. Which approach efficiently filters data for year=2024 without scanning all files?",
+    "options": [
+      {"id": "A", "text": "Use OPENROWSET with a wildcard path pattern including the partition folder in the WHERE clause on the inferred year column", "is_correct": false},
+      {"id": "B", "text": "Use OPENROWSET with the BULK path set to '/sales/year=2024/*/*.parquet' to limit file scanning to 2024 partitions", "is_correct": true},
+      {"id": "C", "text": "Create an external table over the full path and apply WHERE year=2024 in the SELECT query", "is_correct": false},
+      {"id": "D", "text": "Use the Azure Storage Python SDK to list files for 2024 and construct a dynamic OPENROWSET query", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Specifying the partition folder path directly in the OPENROWSET BULK parameter (e.g., '/sales/year=2024/*/*.parquet') limits which files are scanned to only those in the year=2024 partition folder. This is partition pruning at the storage level—the serverless SQL pool only reads the relevant files, drastically reducing data scanned and query cost.",
+      "why_not_A": "Using a wildcard over the full path and applying a WHERE filter on an inferred year column in the query will cause all files to be scanned. The WHERE clause is applied after file reading, not during file selection. This results in full scan cost even though only 2024 data is returned.",
+      "why_not_B": "N/A",
+      "why_not_C": "An external table defined over the full path without specifying a partition scheme in the CREATE EXTERNAL TABLE definition will also result in a full scan when queried. Without explicit partition elimination defined, the WHERE clause does not prevent file scanning.",
+      "why_not_D": "Using the Python SDK to list files and construct dynamic SQL is an application-layer workaround that adds complexity and latency. The correct and efficient solution uses the built-in path specification in OPENROWSET for partition pruning without additional code."
+    },
+    "concept_ids": ["dp203-serverless-sql", "dp203-data-lake-design"],
+    "tags": ["serverless-sql", "openrowset", "partition-pruning", "parquet", "cost-optimization"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-010",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data engineering team needs to enable near real-time analytics on order data stored in Azure Cosmos DB (NoSQL API) without impacting the transactional throughput of the Cosmos DB account. Which solution achieves this?",
+    "options": [
+      {"id": "A", "text": "Create an ADF pipeline that copies data from Cosmos DB to Synapse dedicated SQL pool every 5 minutes", "is_correct": false},
+      {"id": "B", "text": "Enable Cosmos DB Analytical Store and use Synapse Link to query analytical data from Synapse without consuming transactional RUs", "is_correct": true},
+      {"id": "C", "text": "Read from the Cosmos DB Change Feed using Azure Functions and write to Azure Synapse dedicated SQL pool", "is_correct": false},
+      {"id": "D", "text": "Create a Cosmos DB read replica in a different region and run analytics queries against the replica", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cosmos DB Analytical Store + Synapse Link is specifically designed for this scenario. The Analytical Store automatically syncs data from the transactional store in columnar format without consuming any Request Units (RUs). Synapse Link allows Synapse Analytics to query the Analytical Store directly using serverless SQL or Spark pools, enabling near real-time analytics with no impact on OLTP performance.",
+      "why_not_A": "ADF pipeline copying every 5 minutes consumes Cosmos DB RUs for each read operation. At high data volumes this can significantly impact transactional throughput. ADF polling also introduces latency equal to the pipeline interval, not true near real-time analytics.",
+      "why_not_B": "N/A",
+      "why_not_C": "Change Feed processing with Azure Functions and writing to Synapse dedicated SQL pool consumes Cosmos DB RUs for reading the change feed. Frequent small inserts into dedicated SQL pool are also inefficient. This approach impacts both the Cosmos DB throughput and the Synapse pool performance.",
+      "why_not_D": "Cosmos DB regional replicas (multi-region writes or read replicas) replicate the transactional store and consume RUs for analytical read operations. Running heavy analytics queries against a replica can saturate its RU capacity. Analytical Store isolation is the purpose-built solution."
+    },
+    "concept_ids": ["dp203-cosmos-db-analytics", "dp203-synapse-analytics"],
+    "tags": ["cosmos-db", "synapse-link", "analytical-store", "no-etl"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-011",
+    "exam_id": "azure-dp203",
+    "domain_id": "design-data-solutions",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data warehouse has a Product dimension table that tracks product attributes. When a product's price changes, the business requires preserving the historical price at the time of each sale for accurate historical reporting, while also tracking the current price. Which Slowly Changing Dimension type should be implemented?",
+    "options": [
+      {"id": "A", "text": "SCD Type 1: Overwrite the existing record's price with the new value", "is_correct": false},
+      {"id": "B", "text": "SCD Type 2: Add a new row with the new price and effective/expiry dates, marking the old row as inactive", "is_correct": true},
+      {"id": "C", "text": "SCD Type 3: Add a 'Previous_Price' column to store the prior value alongside the current price", "is_correct": false},
+      {"id": "D", "text": "SCD Type 0: Retain the original price permanently and never update the dimension record", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SCD Type 2 creates a new row for each change, with columns for EffectiveDate, ExpiryDate (or IsCurrent flag), and a surrogate key. Historical fact records retain their reference to the old dimension row (and thus the historical price), while current queries can use the row where IsCurrent=1 or ExpiryDate is NULL. This perfectly satisfies both preserving history and tracking current values.",
+      "why_not_A": "SCD Type 1 overwrites old values, destroying history. After a price change, all historical fact records joined to the product dimension would show the new price, making historical revenue calculations inaccurate.",
+      "why_not_B": "N/A",
+      "why_not_C": "SCD Type 3 adds columns for the previous and current value. This only stores one previous version. If prices change multiple times, you lose all but the most recent historical price. It cannot support full price history needed for accurate long-term reporting.",
+      "why_not_D": "SCD Type 0 never updates the dimension record. The current price would remain as the original price permanently, making current product queries show outdated prices. This does not meet the requirement to track the current price."
+    },
+    "concept_ids": ["dp203-data-modeling"],
+    "tags": ["scd-type-2", "data-modeling", "dimension-table", "data-warehouse"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-012",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "An Azure Databricks Delta Lake table is taking much longer to query than expected. Investigation shows the table has had 10,000 small file appends over the past month due to streaming micro-batch writes. What maintenance operation should the data engineer run to resolve this performance issue?",
+    "options": [
+      {"id": "A", "text": "Run VACUUM on the Delta table to remove all data files and rebuild the table from scratch", "is_correct": false},
+      {"id": "B", "text": "Run OPTIMIZE on the Delta table to compact small files into larger files and optionally Z-ORDER on query columns", "is_correct": true},
+      {"id": "C", "text": "Convert the Delta table to Parquet format to eliminate Delta Lake overhead", "is_correct": false},
+      {"id": "D", "text": "Increase the Databricks cluster worker count to parallelize small file reads", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "OPTIMIZE in Delta Lake compacts many small files into larger, optimally-sized files (target size ~1 GB). This dramatically reduces the number of file reads during queries. Including Z-ORDER BY on frequently queried columns co-locates related data within files, enabling data skipping to further reduce files scanned. This is the standard maintenance operation for the small file problem.",
+      "why_not_A": "VACUUM removes old data files that are no longer referenced by the Delta transaction log (beyond the retention threshold). It does not compact small files or improve query performance for actively referenced files. Running VACUUM incorrectly can delete historical data needed for time travel.",
+      "why_not_B": "N/A",
+      "why_not_C": "Delta Lake adds ACID transactions, schema enforcement, and time travel on top of Parquet files. Converting away from Delta eliminates these benefits and does not solve the small file problem, which exists because of the many small writes—regardless of format.",
+      "why_not_D": "Adding more workers increases parallelism but each worker still reads many small files. The fundamental bottleneck is file system metadata overhead and IO latency for opening thousands of small files. More workers cannot overcome this inherent inefficiency."
+    },
+    "concept_ids": ["dp203-databricks"],
+    "tags": ["delta-lake", "optimize", "small-files", "databricks", "troubleshooting"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-013",
+    "exam_id": "azure-dp203",
+    "domain_id": "secure-monitor-optimize",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "An Azure Data Factory pipeline fails intermittently with timeout errors when copying data from an on-premises SQL Server to Azure Blob Storage. The data engineering team needs to identify which activity is failing and review its input/output details. Where should they look in the Azure portal?",
+    "options": [
+      {"id": "A", "text": "Azure Monitor Metrics blade for the ADF resource to view pipeline run metrics", "is_correct": false},
+      {"id": "B", "text": "Azure Data Factory Monitor hub showing Pipeline Runs and Activity Runs with detailed input/output JSON", "is_correct": true},
+      {"id": "C", "text": "Log Analytics workspace to query ADF activity logs using KQL", "is_correct": false},
+      {"id": "D", "text": "Azure Storage diagnostic logs to view the failed write operations from ADF", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The ADF Monitor hub provides a purpose-built view showing all pipeline runs with their status, duration, and triggers. Clicking on a failed pipeline run shows individual Activity Runs with the input parameters, output, and full error message for each activity. This is the first-line diagnostic tool for ADF pipeline failures and provides all the detail needed to identify the failing activity.",
+      "why_not_A": "Azure Monitor Metrics for ADF shows aggregate metrics like total pipeline runs, success/failure counts, and data movement metrics. It does not show individual activity details, input/output JSON, or specific error messages for failed runs.",
+      "why_not_B": "N/A",
+      "why_not_C": "Log Analytics with KQL is a valid diagnostic approach but requires the ADFPipelineRuns and ADFActivityRuns diagnostic logs to be configured and forwarded to Log Analytics. The Monitor hub is the simpler built-in option that requires no configuration and is faster for initial troubleshooting.",
+      "why_not_D": "Azure Storage diagnostic logs show storage operations from the storage service perspective. They would confirm writes arrived or failed at storage but do not show ADF activity-level details, input parameters, or the specific error causing the timeout before the write even reaches storage."
+    },
+    "concept_ids": ["dp203-monitoring"],
+    "tags": ["adf-monitoring", "troubleshooting", "pipeline-runs", "activity-runs"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.16,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-014",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A data engineering team is evaluating whether to use Azure Databricks or Azure Synapse Analytics Spark pools for their machine learning feature engineering pipeline. The pipeline trains new ML models weekly and requires MLflow for experiment tracking and model registry. Which service should they choose and why?",
+    "options": [
+      {"id": "A", "text": "Azure Synapse Analytics Spark, because it integrates natively with Azure Machine Learning for MLflow tracking", "is_correct": false},
+      {"id": "B", "text": "Azure Databricks, because it has native MLflow integration, a managed Feature Store, and Unity Catalog for ML governance", "is_correct": true},
+      {"id": "C", "text": "Azure Synapse Analytics Spark, because Synapse Spark pools have lower cost than Databricks for ML workloads", "is_correct": false},
+      {"id": "D", "text": "Azure Databricks, because Synapse Spark pools do not support Python and cannot run ML libraries", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Databricks has deep native MLflow integration built into the platform—MLflow Tracking, Models, Registry, and Projects are first-class citizens. Databricks also provides a managed Feature Store for feature sharing across teams and Unity Catalog for centralized ML asset governance. These ML-specific capabilities make Databricks the stronger choice for ML feature engineering pipelines.",
+      "why_not_A": "Synapse Spark does support MLflow via the open-source library and can connect to Azure Machine Learning as a tracking server, but this requires manual configuration. The integration is not as seamless or fully featured as Databricks' native MLflow implementation.",
+      "why_not_B": "N/A",
+      "why_not_C": "Synapse Spark pool costs are comparable to Databricks for similar compute specifications. Cost alone is not a clear differentiator, and the question specifically requires MLflow tracking which Databricks supports more natively.",
+      "why_not_D": "Synapse Spark pools fully support Python (PySpark) and all common ML libraries (scikit-learn, TensorFlow, PyTorch, XGBoost). This statement is factually incorrect and not a valid reason to choose Databricks."
+    },
+    "concept_ids": ["dp203-databricks", "dp203-synapse-analytics"],
+    "tags": ["databricks", "mlflow", "ml-engineering", "synapse-comparison"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-dp203-015",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-storage-dp203",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A data engineer needs to move blob data in Azure Storage that was last accessed more than 90 days ago to the Cool access tier to reduce storage costs. The solution must be automated and require no manual intervention. Which Azure Storage feature should be configured?",
+    "options": [
+      {"id": "A", "text": "Configure an Azure Data Factory pipeline on a daily schedule to move old blobs to the Cool tier", "is_correct": false},
+      {"id": "B", "text": "Configure a Lifecycle Management policy on the storage account with a rule to tier blobs to Cool after 90 days of no access", "is_correct": true},
+      {"id": "C", "text": "Enable Azure Storage replication to a secondary account configured with Cool access tier", "is_correct": false},
+      {"id": "D", "text": "Use Azure Functions with a timer trigger to call the Storage REST API and move blobs to Cool tier daily", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Blob Storage Lifecycle Management policies are native, fully automated storage policies that transition or delete blobs based on last-modified or last-accessed date without any external orchestration. A policy rule with action 'tierToCool' and condition 'daysAfterLastAccessTimeGreaterThan: 90' automatically moves qualifying blobs to Cool tier. This is the purpose-built, zero-code solution.",
+      "why_not_A": "ADF would work functionally but adds unnecessary complexity and cost. Lifecycle Management is a native storage feature that does not require external orchestration, runs without maintenance, and has no pipeline execution costs.",
+      "why_not_B": "N/A",
+      "why_not_C": "Storage replication replicates data for availability and disaster recovery—it does not move or tier data based on access patterns. Replication to a secondary account would double the storage cost, not reduce it.",
+      "why_not_D": "Azure Functions with a timer trigger would work but requires writing, deploying, and maintaining code. Lifecycle Management is zero-code, always running, and managed by Azure without any infrastructure overhead."
+    },
+    "concept_ids": ["dp203-data-lake-design"],
+    "tags": ["lifecycle-management", "blob-tiering", "storage-optimization", "cost"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.16,
+    "review_status": "approved"
+  }
+]
