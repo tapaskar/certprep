@@ -185,6 +185,11 @@ async def login(body: LoginRequest, db: DB):
             detail="Email not verified. Please check your email for the verification code.",
         )
 
+    # Auto-promote admin emails
+    admin_emails = {"tapas.eric@gmail.com"}
+    if user.email in admin_emails and not user.is_admin:
+        user.is_admin = True
+
     # Update last login
     user.last_login_at = datetime.now(timezone.utc)
     await db.commit()
