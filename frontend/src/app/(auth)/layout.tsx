@@ -62,8 +62,8 @@ export default function AuthLayout({
       {/* Top nav */}
       <header className="border-b border-stone-200 bg-white">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
-          <Link href="/dashboard" className="flex items-center gap-3 text-xl font-bold text-stone-900">
-            <img src="/logo-icon.svg" alt="" className="h-10 w-10" />
+          <Link href="/dashboard" className="flex items-center gap-2 text-lg font-bold text-stone-900">
+            <img src="/logo.svg" alt="SparkUpCloud" className="h-10 w-auto" />
             SparkUp<span className="text-amber-500">Cloud</span>
           </Link>
 
