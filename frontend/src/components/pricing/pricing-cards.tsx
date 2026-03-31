@@ -50,7 +50,7 @@ const tiers: Tier[] = [
       { text: "Smart spaced repetition", included: false },
     ],
     cta: "Get Started Free",
-    ctaHref: "/register",
+    ctaHref: "/register?plan=free",
     ctaStyle: "secondary",
   },
   {
@@ -73,7 +73,7 @@ const tiers: Tier[] = [
       { text: "All certifications", included: false },
     ],
     cta: "Buy Now",
-    ctaHref: "/register",
+    ctaHref: "/register?plan=single",
     ctaStyle: "outline",
   },
   {
@@ -99,7 +99,7 @@ const tiers: Tier[] = [
       { text: "Weekly reports & analytics", included: true },
     ],
     cta: "Start Free Trial",
-    ctaHref: "/register",
+    ctaHref: "/register?plan=pro",
     ctaStyle: "primary",
   },
 ];
@@ -233,7 +233,11 @@ export default function PricingCards() {
 
               {/* CTA */}
               <Link
-                href={tier.ctaHref}
+                href={
+                  tier.showToggle
+                    ? `${tier.ctaHref}-${billing}`
+                    : tier.ctaHref
+                }
                 className={cn(
                   "flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all",
                   tier.ctaStyle === "primary" &&

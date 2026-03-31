@@ -29,9 +29,10 @@ export default function AuthLayout({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push("/login");
+      const redirect = pathname !== "/dashboard" ? `?redirect=${encodeURIComponent(pathname)}` : "";
+      router.push(`/login${redirect}`);
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, router, pathname]);
 
   const navItems = user?.is_admin
     ? [...baseNavItems, { label: "Admin", href: "/admin", icon: Shield }]

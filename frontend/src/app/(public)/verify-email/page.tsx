@@ -72,7 +72,10 @@ export default function VerifyEmailPage() {
       const data = await api.verifyEmail(email, fullCode);
       setSuccess("Email verified successfully!");
       setAuthFromToken(data.access_token, { ...data.user, is_admin: false, active_exam_id: null, enrolled_exams: [] });
-      setTimeout(() => router.push("/onboarding"), 1000);
+      const savedPlan = sessionStorage.getItem("sparkupcloud_selected_plan");
+      const destination = savedPlan ? `/onboarding?plan=${savedPlan}` : "/onboarding";
+      sessionStorage.removeItem("sparkupcloud_selected_plan");
+      setTimeout(() => router.push(destination), 1000);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Verification failed.";
