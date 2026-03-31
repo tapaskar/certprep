@@ -210,10 +210,16 @@ export default function LandingPage() {
       </section>
 
       {/* Trust tagline */}
-      <section className="pb-20 text-center">
+      <section className="pb-20 text-center space-y-4">
         <p className="text-xs font-medium uppercase tracking-widest text-stone-400">
           Trusted by professionals preparing for cloud certifications worldwide
         </p>
+        <Link
+          href="/contact"
+          className="inline-block text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
+        >
+          Contact Us
+        </Link>
       </section>
     </div>
     </>

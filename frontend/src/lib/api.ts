@@ -335,6 +335,19 @@ class ApiClient {
       body: JSON.stringify({ review_status: status }),
     });
   }
+  // ── Contact ──────────────────────────────────────────────────
+
+  async sendContactMessage(data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+  }): Promise<{ message: string }> {
+    return this.request("/contact", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const api = new ApiClient();

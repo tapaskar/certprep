@@ -100,6 +100,12 @@ export default function PricingPage() {
           </Link>
           <div className="flex items-center gap-4">
             <Link
+              href="/contact"
+              className="hidden sm:inline text-sm font-medium text-stone-500 hover:text-stone-700"
+            >
+              Contact
+            </Link>
+            <Link
               href="/login"
               className="text-sm font-medium text-stone-500 hover:text-stone-700"
             >
