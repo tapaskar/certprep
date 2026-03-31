@@ -47,6 +47,38 @@ async def start_onboarding(
             detail="Already enrolled in this exam",
         )
 
+    # Free plan: limit to 1 exam only
+    if user.plan == "free":
+        enrollment_count = await db.execute(
+            select(func.count()).select_from(UserExamEnrollment).where(
+                and_(
+                    UserExamEnrollment.user_id == user.id,
+                    UserExamEnrollment.is_active,
+                )
+            )
+        )
+        if (enrollment_count.scalar() or 0) >= 1:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Free plan allows only 1 exam. Upgrade to add more exams.",
+            )
+
+    # Single exam plan: limit to 1 exam
+    if user.plan == "single":
+        enrollment_count = await db.execute(
+            select(func.count()).select_from(UserExamEnrollment).where(
+                and_(
+                    UserExamEnrollment.user_id == user.id,
+                    UserExamEnrollment.is_active,
+                )
+            )
+        )
+        if (enrollment_count.scalar() or 0) >= 1:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Single Exam plan allows only 1 exam. Upgrade to Pro for all exams.",
+            )
+
     # Count concepts
     concept_count = await db.execute(
         select(func.count()).select_from(Concept).where(Concept.exam_id == request.exam_id)

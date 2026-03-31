@@ -130,14 +130,20 @@ async def create_session(
         remaining = daily_limit - (await _get_questions_answered_today(db, str(user.id)))
         max_questions = min(max_questions, remaining)
 
+    # Free plan: only 50% of content (easier questions, difficulty <= 3)
+    question_filter = and_(
+        Question.exam_id == request.exam_id,
+        Question.review_status == "approved",
+    )
+    if user.plan == "free":
+        question_filter = and_(
+            question_filter,
+            Question.difficulty <= 3,  # Only easier 50% of questions
+        )
+
     questions_result = await db.execute(
         select(Question)
-        .where(
-            and_(
-                Question.exam_id == request.exam_id,
-                Question.review_status == "approved",
-            )
-        )
+        .where(question_filter)
         .limit(max_questions)
     )
     questions = questions_result.scalars().all()

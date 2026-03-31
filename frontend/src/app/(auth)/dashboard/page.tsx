@@ -128,11 +128,17 @@ export default function DashboardPage() {
           </button>
         ))}
         <Link
-          href="/onboarding"
+          href={
+            (isFreePlan || userPlan === "single") && enrolledExams.length >= 1
+              ? "/pricing"
+              : "/onboarding"
+          }
           className="flex items-center gap-1.5 rounded-xl border border-dashed border-stone-300 px-4 py-2.5 text-sm font-medium text-stone-400 transition-colors hover:border-amber-400 hover:text-amber-600"
         >
           <Plus className="h-4 w-4" />
-          Add Exam
+          {(isFreePlan || userPlan === "single") && enrolledExams.length >= 1
+            ? "Upgrade to Add Exam"
+            : "Add Exam"}
         </Link>
       </div>
 
