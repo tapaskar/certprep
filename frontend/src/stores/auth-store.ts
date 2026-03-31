@@ -16,6 +16,7 @@ export interface AuthUser {
   email: string;
   display_name: string;
   is_admin: boolean;
+  plan: string;
   active_exam_id: string | null;
   enrolled_exams: EnrolledExam[];
 }
@@ -54,7 +55,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
       api.setToken(data.access_token);
       set({
         token: data.access_token,
-        user: { ...data.user, is_admin: false, active_exam_id: null, enrolled_exams: [] },
+        user: { ...data.user, is_admin: false, plan: "free", active_exam_id: null, enrolled_exams: [] },
         isAuthenticated: true,
         isLoading: false,
       });
@@ -93,6 +94,7 @@ export const useAuthStore = create<AuthState>((set, get) => {
             email: me.email,
             display_name: me.display_name,
             is_admin: me.is_admin,
+            plan: me.plan ?? "free",
             active_exam_id: me.active_exam_id ?? null,
             enrolled_exams: me.enrolled_exams ?? [],
           },

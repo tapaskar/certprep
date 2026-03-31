@@ -71,7 +71,7 @@ export default function VerifyEmailPage() {
     try {
       const data = await api.verifyEmail(email, fullCode);
       setSuccess("Email verified successfully!");
-      setAuthFromToken(data.access_token, { ...data.user, is_admin: false, active_exam_id: null, enrolled_exams: [] });
+      setAuthFromToken(data.access_token, { ...data.user, is_admin: false, plan: "free", active_exam_id: null, enrolled_exams: [] });
       const savedPlan = sessionStorage.getItem("sparkupcloud_selected_plan");
       const destination = savedPlan ? `/onboarding?plan=${savedPlan}` : "/onboarding";
       sessionStorage.removeItem("sparkupcloud_selected_plan");
