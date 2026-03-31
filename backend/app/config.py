@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     jwt_access_token_expire_minutes: int = 1440  # 24 hours
 
     # Email (AWS SES)
-    ses_sender_email: str = "support@aalsitrader.com"
+    ses_sender_email: str = "admin@sparkupcloud.com"
     ses_region: str = "ap-south-1"
 
     # Stripe
