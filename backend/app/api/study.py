@@ -1,11 +1,11 @@
 """Study session endpoints — the core study experience."""
 
 import uuid
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timezone
 from decimal import Decimal
 
 from fastapi import APIRouter, HTTPException, status
-from sqlalchemy import and_, select
+from sqlalchemy import and_, func, select
 
 from app.api.deps import DB, CurrentUser
 from app.models.exam import Concept, Question
@@ -33,6 +33,42 @@ from app.services.mastery.propagation import compute_lateral_transfers
 
 router = APIRouter(prefix="/study", tags=["study"])
 
+# Plan-based daily question limits
+PLAN_DAILY_LIMITS: dict[str, int | None] = {
+    "free": 10,
+    "single": None,  # unlimited for enrolled exam
+    "pro_monthly": None,
+    "pro_annual": None,
+}
+
+
+async def _get_questions_answered_today(db, user_id: str) -> int:
+    """Count how many questions the user answered today."""
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    result = await db.execute(
+        select(func.count()).select_from(UserAnswer).where(
+            and_(
+                UserAnswer.user_id == user_id,
+                UserAnswer.answered_at >= today_start,
+            )
+        )
+    )
+    return result.scalar() or 0
+
+
+@router.get("/quota")
+async def get_daily_quota(user: CurrentUser, db: DB):
+    """Return the user's daily question quota and usage."""
+    limit = PLAN_DAILY_LIMITS.get(user.plan, 10)
+    answered = await _get_questions_answered_today(db, str(user.id))
+    return {
+        "plan": user.plan,
+        "daily_limit": limit,
+        "answered_today": answered,
+        "remaining": max(0, limit - answered) if limit is not None else None,
+        "unlimited": limit is None,
+    }
+
 
 @router.post("/session")
 async def create_session(
@@ -41,6 +77,28 @@ async def create_session(
     db: DB,
 ):
     """Create a new study session with AI-composed plan."""
+    # ── Plan-based gating ──────────────────────────────────
+    daily_limit = PLAN_DAILY_LIMITS.get(user.plan, 10)
+    if daily_limit is not None:
+        answered_today = await _get_questions_answered_today(db, str(user.id))
+        if answered_today >= daily_limit:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Daily limit reached ({daily_limit} questions). Upgrade your plan for unlimited access.",
+            )
+
+    # Check plan expiry
+    if user.plan != "free" and user.plan_expires_at:
+        if user.plan_expires_at < datetime.now(timezone.utc):
+            # Plan expired — downgrade to free
+            user.plan = "free"
+            user.plan_expires_at = None
+            await db.commit()
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Your plan has expired. You've been moved to the Free plan (10 questions/day). Upgrade to continue with unlimited access.",
+            )
+
     # Verify enrollment
     enrollment = await db.execute(
         select(UserExamEnrollment).where(
@@ -66,7 +124,12 @@ async def create_session(
     }
     session_type = type_map.get(request.session_type, f"focused_{request.duration_minutes}")
 
-    # Get questions for the session
+    # Get questions for the session (cap for free users)
+    max_questions = int(request.duration_minutes / 2)
+    if daily_limit is not None:
+        remaining = daily_limit - (await _get_questions_answered_today(db, str(user.id)))
+        max_questions = min(max_questions, remaining)
+
     questions_result = await db.execute(
         select(Question)
         .where(
@@ -75,7 +138,7 @@ async def create_session(
                 Question.review_status == "approved",
             )
         )
-        .limit(int(request.duration_minutes / 2))
+        .limit(max_questions)
     )
     questions = questions_result.scalars().all()
 
