@@ -341,6 +341,15 @@ class ApiClient {
       body: JSON.stringify({ review_status: status }),
     });
   }
+  // ── Payments ─────────────────────────────────────────────────
+
+  async createCheckout(plan: string): Promise<{ checkout_url: string; plan: string }> {
+    return this.request("/payments/checkout", {
+      method: "POST",
+      body: JSON.stringify({ plan }),
+    });
+  }
+
   // ── Contact ──────────────────────────────────────────────────
 
   async sendContactMessage(data: {

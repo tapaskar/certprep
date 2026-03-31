@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Check, X, Shield, Zap, BookOpen, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { api } from "@/lib/api";
 
 type Billing = "monthly" | "annual";
 
@@ -238,30 +239,55 @@ export default function PricingCards() {
               </ul>
 
               {/* CTA */}
-              <Link
-                href={(() => {
-                  const planParam = tier.showToggle
-                    ? `${tier.ctaHref.split("?plan=")[1]}-${billing}`
-                    : tier.ctaHref.split("?plan=")[1] || "free";
-                  if (isLoggedIn && planParam !== "free") {
-                    return `/dashboard?upgrade=${planParam}`;
+              {isLoggedIn && tier.name !== "Free" ? (
+                <button
+                  onClick={async () => {
+                    const plan = tier.showToggle
+                      ? `pro_${billing}`
+                      : "single";
+                    try {
+                      const { checkout_url } = await api.createCheckout(plan);
+                      window.open(checkout_url, "_blank");
+                    } catch {
+                      // Fallback to direct Gumroad link
+                      const urls: Record<string, string> = {
+                        single: "https://tapasaurus.gumroad.com/l/eutwyu",
+                        pro_monthly: "https://tapasaurus.gumroad.com/l/arfrcr",
+                        pro_annual: "https://tapasaurus.gumroad.com/l/zpchn",
+                      };
+                      window.open(urls[plan], "_blank");
+                    }
+                  }}
+                  className={cn(
+                    "flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all cursor-pointer",
+                    tier.ctaStyle === "primary" &&
+                      "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md shadow-amber-200/50 hover:scale-[1.02]",
+                    tier.ctaStyle === "outline" &&
+                      "border-2 border-stone-300 text-stone-700 hover:border-amber-400 hover:text-amber-700"
+                  )}
+                >
+                  {tier.cta}
+                </button>
+              ) : (
+                <Link
+                  href={
+                    tier.showToggle
+                      ? `${tier.ctaHref}-${billing}`
+                      : tier.ctaHref
                   }
-                  return tier.showToggle
-                    ? `${tier.ctaHref}-${billing}`
-                    : tier.ctaHref;
-                })()}
-                className={cn(
-                  "flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all",
-                  tier.ctaStyle === "primary" &&
-                    "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md shadow-amber-200/50 hover:scale-[1.02]",
-                  tier.ctaStyle === "secondary" &&
-                    "bg-stone-900 text-white hover:bg-stone-800",
-                  tier.ctaStyle === "outline" &&
-                    "border-2 border-stone-300 text-stone-700 hover:border-amber-400 hover:text-amber-700"
-                )}
-              >
-                {tier.cta}
-              </Link>
+                  className={cn(
+                    "flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all",
+                    tier.ctaStyle === "primary" &&
+                      "bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-md shadow-amber-200/50 hover:scale-[1.02]",
+                    tier.ctaStyle === "secondary" &&
+                      "bg-stone-900 text-white hover:bg-stone-800",
+                    tier.ctaStyle === "outline" &&
+                      "border-2 border-stone-300 text-stone-700 hover:border-amber-400 hover:text-amber-700"
+                  )}
+                >
+                  {tier.cta}
+                </Link>
+              )}
             </div>
           );
         })}

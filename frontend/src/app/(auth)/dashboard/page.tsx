@@ -9,6 +9,7 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import { WeakConcepts } from "@/components/dashboard/weak-concepts";
 import { BookOpen, Plus, Crown, Zap } from "lucide-react";
 import Link from "next/link";
+import { api } from "@/lib/api";
 
 export default function DashboardPage() {
   const { progress, isLoading, error, fetchProgress } = useProgressStore();
@@ -57,16 +58,31 @@ export default function DashboardPage() {
                 Upgrade to {upgradeParam.replace("_", " ").replace("pro", "Pro")}
               </p>
               <p className="text-sm text-stone-500">
-                Payment integration coming soon. Contact admin@sparkupcloud.com to activate your plan.
+                Complete your purchase to unlock full access.
               </p>
             </div>
           </div>
-          <button
-            onClick={() => setUpgradeParam(null)}
-            className="text-sm text-stone-400 hover:text-stone-600"
-          >
-            Dismiss
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={async () => {
+                try {
+                  const { checkout_url } = await api.createCheckout(upgradeParam);
+                  window.open(checkout_url, "_blank");
+                } catch {
+                  window.open("/pricing", "_self");
+                }
+              }}
+              className="rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-white hover:scale-[1.02] transition-all"
+            >
+              Buy Now
+            </button>
+            <button
+              onClick={() => setUpgradeParam(null)}
+              className="text-sm text-stone-400 hover:text-stone-600"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       )}
 

@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import admin, auth, contact, content, onboarding, progress, study
+from app.api import admin, auth, contact, content, onboarding, payments, progress, study
 from app.config import settings
 
 
@@ -39,6 +39,7 @@ app.include_router(progress.router, prefix=f"/api/{settings.api_version}")
 app.include_router(content.router, prefix=f"/api/{settings.api_version}")
 app.include_router(admin.router, prefix=f"/api/{settings.api_version}")
 app.include_router(contact.router, prefix=f"/api/{settings.api_version}")
+app.include_router(payments.router, prefix=f"/api/{settings.api_version}")
 
 
 @app.get("/health")
