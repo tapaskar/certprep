@@ -300,6 +300,10 @@ class ApiClient {
     });
   }
 
+  async deleteUser(userId: string): Promise<{ message: string }> {
+    return this.request(`/admin/users/${userId}`, { method: "DELETE" });
+  }
+
   async getAdminExams(): Promise<
     Array<{
       id: string;

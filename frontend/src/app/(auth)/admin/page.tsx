@@ -150,6 +150,18 @@ export default function AdminPage() {
     }
   };
 
+  // Delete user
+  const handleDeleteUser = async (userId: string, email: string) => {
+    if (!confirm(`Delete user ${email}? This cannot be undone.`)) return;
+    try {
+      await api.deleteUser(userId);
+      setUsers((prev) => prev.filter((u) => u.id !== userId));
+      setUsersTotal((prev) => prev - 1);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to delete user");
+    }
+  };
+
   // Toggle admin
   const handleToggleAdmin = async (userId: string) => {
     try {
@@ -338,12 +350,22 @@ export default function AdminPage() {
                         : "Never"}
                     </td>
                     <td className="px-4 py-3">
-                      <button
-                        onClick={() => handleToggleAdmin(u.id)}
-                        className="rounded-lg bg-amber-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-amber-600"
-                      >
-                        {u.is_admin ? "Remove Admin" : "Make Admin"}
-                      </button>
+                      <div className="flex gap-1">
+                        <button
+                          onClick={() => handleToggleAdmin(u.id)}
+                          className="rounded-lg bg-amber-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-amber-600"
+                        >
+                          {u.is_admin ? "Remove Admin" : "Make Admin"}
+                        </button>
+                        {!u.is_admin && (
+                          <button
+                            onClick={() => handleDeleteUser(u.id, u.email)}
+                            className="rounded-lg bg-red-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-red-600"
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

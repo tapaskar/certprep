@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.orm import selectinload
 
 from app.api.deps import DB, AdminUser
@@ -242,6 +242,39 @@ async def update_user_plan(user_id: str, body: UserPlanUpdate, admin: AdminUser,
         "plan": user.plan,
         "plan_expires_at": user.plan_expires_at.isoformat() if user.plan_expires_at else None,
     }
+
+
+@router.delete("/users/{user_id}")
+async def delete_user(user_id: str, admin: AdminUser, db: DB):
+    """Delete a user and all their related data."""
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete an admin user. Remove admin status first.",
+        )
+
+    # Delete related data first (enrollments, sessions, answers)
+    await db.execute(
+        text("DELETE FROM user_answers WHERE user_id = :uid"), {"uid": user_id}
+    )
+    await db.execute(
+        text("DELETE FROM study_sessions WHERE user_id = :uid"), {"uid": user_id}
+    )
+    await db.execute(
+        text("DELETE FROM user_exam_enrollments WHERE user_id = :uid"), {"uid": user_id}
+    )
+    await db.execute(
+        text("DELETE FROM user_concept_mastery WHERE user_id = :uid"), {"uid": user_id}
+    )
+    await db.delete(user)
+    await db.commit()
+
+    return {"message": f"User {user.email} deleted"}
 
 
 # ── Exam / Content Management ───────────────────────────────────
