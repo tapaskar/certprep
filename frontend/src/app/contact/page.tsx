@@ -15,9 +15,9 @@ export default function ContactPage() {
     <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
       {/* Nav */}
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 text-lg font-bold text-stone-900">
           <img src="/logo.svg" alt="SparkUpCloud" className="h-10 w-auto" />
-          <span className="text-lg font-bold text-stone-900">SparkUpCloud</span>
+          SparkUp<span className="text-amber-500">Cloud</span>
         </Link>
         <div className="flex items-center gap-4">
           <Link
