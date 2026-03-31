@@ -234,6 +234,7 @@ class ApiClient {
       email: string;
       display_name: string | null;
       plan: string;
+      plan_expires_at: string | null;
       is_email_verified: boolean;
       is_admin: boolean;
       created_at: string | null;
@@ -290,11 +291,12 @@ class ApiClient {
 
   async updateUserPlan(
     userId: string,
-    plan: string
-  ): Promise<{ id: string; email: string; plan: string }> {
+    plan: string,
+    planExpiresAt?: string
+  ): Promise<{ id: string; email: string; plan: string; plan_expires_at: string | null }> {
     return this.request(`/admin/users/${userId}/plan`, {
       method: "PUT",
-      body: JSON.stringify({ plan }),
+      body: JSON.stringify({ plan, plan_expires_at: planExpiresAt || null }),
     });
   }
 

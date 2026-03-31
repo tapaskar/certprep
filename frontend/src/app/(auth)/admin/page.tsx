@@ -33,6 +33,7 @@ interface AdminUserRow {
   email: string;
   display_name: string | null;
   plan: string;
+  plan_expires_at: string | null;
   is_email_verified: boolean;
   is_admin: boolean;
   created_at: string | null;
@@ -129,12 +130,19 @@ export default function AdminPage() {
   );
 
   // Change user plan
-  const handleChangePlan = async (userId: string, plan: string) => {
+  const handleChangePlan = async (userId: string, plan: string, expiresAt?: string) => {
+    // If selecting a paid plan without expiry, prompt for date
+    if (plan !== "free" && !expiresAt) {
+      const date = prompt("Set plan expiry date (YYYY-MM-DD):",
+        new Date(Date.now() + (plan === "single" ? 180 : 365) * 86400000).toISOString().split("T")[0]);
+      if (!date) return;
+      expiresAt = date;
+    }
     try {
-      const result = await api.updateUserPlan(userId, plan);
+      const result = await api.updateUserPlan(userId, plan, plan === "free" ? undefined : expiresAt);
       setUsers((prev) =>
         prev.map((u) =>
-          u.id === userId ? { ...u, plan: result.plan } : u
+          u.id === userId ? { ...u, plan: result.plan, plan_expires_at: result.plan_expires_at } : u
         )
       );
     } catch (err) {
@@ -290,15 +298,23 @@ export default function AdminPage() {
                       {u.display_name || "-"}
                     </td>
                     <td className="px-4 py-3">
-                      <select
-                        value={u.plan}
-                        onChange={(e) => handleChangePlan(u.id, e.target.value)}
-                        className="rounded-lg border border-stone-200 bg-white px-2 py-1 text-xs font-medium text-stone-700 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
-                      >
-                        <option value="free">Free</option>
-                        <option value="pro">Pro</option>
-                        <option value="team">Team</option>
-                      </select>
+                      <div className="flex flex-col gap-1">
+                        <select
+                          value={u.plan}
+                          onChange={(e) => handleChangePlan(u.id, e.target.value)}
+                          className="rounded-lg border border-stone-200 bg-white px-2 py-1 text-xs font-medium text-stone-700 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                        >
+                          <option value="free">Free</option>
+                          <option value="single">Single Exam</option>
+                          <option value="pro_monthly">Pro Monthly</option>
+                          <option value="pro_annual">Pro Annual</option>
+                        </select>
+                        {u.plan !== "free" && u.plan_expires_at && (
+                          <span className="text-[10px] text-stone-400">
+                            exp: {new Date(u.plan_expires_at).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       {u.is_email_verified ? (

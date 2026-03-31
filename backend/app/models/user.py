@@ -63,9 +63,10 @@ class User(Base, UUIDPrimaryKey, TimestampMixin):
     # Subscription
     plan: Mapped[str] = mapped_column(
         String(20),
-        CheckConstraint("plan IN ('free', 'pro', 'team')"),
+        CheckConstraint("plan IN ('free', 'single', 'pro_monthly', 'pro_annual')"),
         default="free",
     )
+    plan_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     stripe_customer_id: Mapped[str | None] = mapped_column(String(255))
     stripe_subscription_id: Mapped[str | None] = mapped_column(String(255))
     subscription_status: Mapped[str] = mapped_column(String(20), default="none")

@@ -24,6 +24,7 @@ class QuestionStatusUpdate(BaseModel):
 
 class UserPlanUpdate(BaseModel):
     plan: str
+    plan_expires_at: str | None = None  # ISO date string e.g. "2026-09-30"
 
 
 # ── Dashboard Stats ──────────────────────────────────────────────
@@ -116,6 +117,9 @@ async def admin_list_users(
                 "created_at": user.created_at.isoformat() if user.created_at else None,
                 "last_login_at": (
                     user.last_login_at.isoformat() if user.last_login_at else None
+                ),
+                "plan_expires_at": (
+                    user.plan_expires_at.isoformat() if user.plan_expires_at else None
                 ),
                 "enrollments_count": enrollments_count or 0,
             }
@@ -210,7 +214,7 @@ async def toggle_admin(user_id: str, admin: AdminUser, db: DB):
 @router.put("/users/{user_id}/plan")
 async def update_user_plan(user_id: str, body: UserPlanUpdate, admin: AdminUser, db: DB):
     """Update a user's subscription plan."""
-    valid_plans = {"free", "pro", "team"}
+    valid_plans = {"free", "single", "pro_monthly", "pro_annual"}
     if body.plan not in valid_plans:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -223,12 +227,20 @@ async def update_user_plan(user_id: str, body: UserPlanUpdate, admin: AdminUser,
         raise HTTPException(status_code=404, detail="User not found")
 
     user.plan = body.plan
+
+    if body.plan == "free":
+        user.plan_expires_at = None
+    elif body.plan_expires_at:
+        from datetime import datetime, timezone
+        user.plan_expires_at = datetime.fromisoformat(body.plan_expires_at).replace(tzinfo=timezone.utc)
+
     await db.commit()
 
     return {
         "id": str(user.id),
         "email": user.email,
         "plan": user.plan,
+        "plan_expires_at": user.plan_expires_at.isoformat() if user.plan_expires_at else None,
     }
 
 
