@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "fMWv6tW3hL13XD0csK9PbORizzh5c9M0L_GXC5YMVSg",
+    google: "Yie--gyH-JTjcM1URDOUskfB1ndrn0Z2LIYQuSy4mIU",
   },
   alternates: {
     canonical: "https://sparkupcloud.com",
