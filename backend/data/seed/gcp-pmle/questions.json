@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-pmle-001",
+    "exam_id": "gcp-pmle",
+    "domain_id": "scaling-prototypes",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data scientist has a Jupyter notebook that trains a TensorFlow image classification model taking 6 hours on their laptop. They need to reduce training time and collaborate with team members. Which Vertex AI approach best addresses both needs?",
+    "options": [
+      {"id": "A", "text": "Upload the notebook to Cloud Storage and share the link with the team", "is_correct": false},
+      {"id": "B", "text": "Migrate the training code to a Vertex AI Training custom job using GPU machines; use Vertex AI Workbench for collaborative notebooks", "is_correct": true},
+      {"id": "C", "text": "Deploy the model to a Cloud Run endpoint for team members to call", "is_correct": false},
+      {"id": "D", "text": "Use BigQuery ML to retrain the TensorFlow model with SQL", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Vertex AI Training jobs can use GPU machines (e.g., NVIDIA A100) that reduce 6-hour training to minutes. Vertex AI Workbench provides managed, shareable Jupyter notebooks with GCP integration for team collaboration — addressing both requirements.",
+      "why_not_A": "Sharing a Cloud Storage link shares the notebook file but doesn't provide a collaborative environment or accelerate training time.",
+      "why_not_C": "Deploying the model to Cloud Run is for inference serving, not training. The problem is training time, not serving.",
+      "why_not_D": "BigQuery ML doesn't support TensorFlow model training with custom architectures. It supports specific model types via SQL, not arbitrary TensorFlow code."
+    },
+    "concept_ids": ["pmle-model-training", "pmle-vertex-ai"],
+    "tags": ["vertex-ai-training", "gpu", "workbench", "collaboration"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-002",
+    "exam_id": "gcp-pmle",
+    "domain_id": "serving-scaling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A deployed Vertex AI model endpoint has 2 model versions: v1 (production) and v2 (new). You want to test v2 with 10% of real traffic while v1 handles the remaining 90%. If v2 shows degraded metrics, you want to instantly revert to 100% v1. What configuration achieves this?",
+    "options": [
+      {"id": "A", "text": "Deploy v2 as a separate endpoint and configure Cloud Load Balancer to split traffic 90/10", "is_correct": false},
+      {"id": "B", "text": "Use Vertex AI Endpoint traffic splitting: assign 90% traffic to v1 deployed model and 10% to v2", "is_correct": true},
+      {"id": "C", "text": "Run v1 and v2 in parallel and aggregate predictions client-side", "is_correct": false},
+      {"id": "D", "text": "Use Cloud Deploy to gradually promote v2 from 10% to 100% automatically", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Vertex AI Endpoints natively support traffic splitting between multiple deployed model versions. Setting 90% to v1 and 10% to v2 enables canary testing. Reverting is instant — change the split back to 100% v1 via API or console with no redeployment needed.",
+      "why_not_A": "A separate endpoint with Cloud Load Balancer works but is more complex and requires client-side changes. Vertex AI's built-in traffic splitting is the native and simpler solution.",
+      "why_not_C": "Client-side aggregation is complex and requires making 2 API calls per request. It also doesn't provide easy revert functionality.",
+      "why_not_D": "Cloud Deploy manages application deployment pipelines; it's not integrated with Vertex AI model endpoint traffic splitting."
+    },
+    "concept_ids": ["pmle-model-serving"],
+    "tags": ["vertex-ai", "traffic-splitting", "canary-deployment", "model-serving"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-003",
+    "exam_id": "gcp-pmle",
+    "domain_id": "monitoring-ml",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A fraud detection model was trained on transaction data from 2022. It is now 2024 and the model's precision has dropped from 0.92 to 0.67. Analyst review shows that transaction patterns have significantly changed (new fraud methods, different amounts). What ML concept describes this problem?",
+    "options": [
+      {"id": "A", "text": "Training-serving skew: different preprocessing between training and serving", "is_correct": false},
+      {"id": "B", "text": "Concept drift: the relationship between input features and the target variable has changed over time", "is_correct": true},
+      {"id": "C", "text": "Data leakage: future information was inadvertently used in training features", "is_correct": false},
+      {"id": "D", "text": "Model overfitting: the model memorized training data and cannot generalize", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Concept drift occurs when the statistical relationship between input features and the target label changes over time. New fraud patterns (different feature-to-fraud relationships) make the 2022 model's learned patterns stale. The model is correct for the old pattern but wrong for the new reality.",
+      "why_not_A": "Training-serving skew would cause performance issues from day one, not gradually over 2 years. It refers to inconsistent feature preprocessing.",
+      "why_not_C": "Data leakage causes artificially high training performance but immediate poor production performance — not gradual degradation over years.",
+      "why_not_D": "Overfitting would be evident from day one with high train accuracy and low test accuracy. The model worked well in 2022; the decline over 2 years indicates drift, not overfitting."
+    },
+    "concept_ids": ["pmle-model-monitoring"],
+    "tags": ["concept-drift", "model-degradation", "monitoring"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-004",
+    "exam_id": "gcp-pmle",
+    "domain_id": "automating-pipelines",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An ML team wants to automate model retraining whenever new training data exceeds 10,000 rows in a Cloud Storage bucket. The pipeline should train, evaluate against a quality threshold, and only deploy if evaluation passes. Which architecture implements this?",
+    "options": [
+      {"id": "A", "text": "Cloud Scheduler triggers a Vertex AI training job daily regardless of data volume", "is_correct": false},
+      {"id": "B", "text": "Cloud Functions monitors Cloud Storage, triggers a Vertex AI Pipeline when data threshold is met; pipeline trains, evaluates, and conditionally deploys", "is_correct": true},
+      {"id": "C", "text": "Vertex AI Model Monitoring triggers retraining when predictions drift beyond threshold", "is_correct": false},
+      {"id": "D", "text": "Cloud Composer DAG runs hourly, counts rows in Cloud Storage, and calls Vertex AI APIs if threshold is met", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Functions triggered by Cloud Storage events (object.finalize) can count accumulated rows and trigger the Vertex AI Pipeline when the threshold is reached. The pipeline handles training, evaluation against metrics threshold, and conditional deployment (component: if eval_metric > threshold, deploy model) — event-driven and automated.",
+      "why_not_A": "Daily scheduling ignores data volume; if data arrives more or less frequently, the schedule is wrong. Event-driven is more appropriate.",
+      "why_not_C": "Vertex AI Model Monitoring detects distribution drift in production; it doesn't monitor training data accumulation or trigger retraining pipelines.",
+      "why_not_D": "Cloud Composer is valid but adds operational overhead (managed Airflow cluster) for what a lightweight Cloud Function + Vertex AI Pipeline can handle."
+    },
+    "concept_ids": ["pmle-vertex-pipelines", "pmle-mlops-practices"],
+    "tags": ["vertex-ai-pipelines", "event-driven", "mlops", "automated-retraining"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-005",
+    "exam_id": "gcp-pmle",
+    "domain_id": "low-code-ml",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A business analyst with SQL skills needs to forecast monthly sales for 500 product SKUs for the next 12 months using historical sales data in BigQuery. They want to use the data without moving it out of BigQuery. Which approach requires the least ML expertise?",
+    "options": [
+      {"id": "A", "text": "Export data to Python Pandas, train sklearn ARIMA model, deploy to Vertex AI", "is_correct": false},
+      {"id": "B", "text": "CREATE MODEL with model_type='ARIMA_PLUS' in BigQuery ML using SQL", "is_correct": true},
+      {"id": "C", "text": "Use Vertex AI AutoML Forecasting with the BigQuery dataset", "is_correct": false},
+      {"id": "D", "text": "Write a Dataflow pipeline to aggregate data and output forecasts", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "BigQuery ML ARIMA_PLUS model trains time-series forecasting models using SQL. The analyst writes: CREATE MODEL my_model OPTIONS(model_type='ARIMA_PLUS', time_series_data_col='sales', ...) AS SELECT... — no Python, no ML framework, no data movement.",
+      "why_not_A": "Requires Python (Pandas, sklearn) knowledge and moving data out of BigQuery — the analyst has only SQL skills.",
+      "why_not_C": "AutoML Forecasting requires data upload to Vertex AI Datasets, an AutoML UI workflow, and some ML terminology understanding. BigQuery ML is simpler for SQL users.",
+      "why_not_D": "Dataflow is a data processing pipeline service, not a forecasting model. It doesn't generate forecasts; it processes data."
+    },
+    "concept_ids": ["pmle-bigquery-ml"],
+    "tags": ["bigquery-ml", "arima", "forecasting", "sql-ml"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-006",
+    "exam_id": "gcp-pmle",
+    "domain_id": "scaling-prototypes",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A model training job runs on Vertex AI. The training script reads 500 GB of training data from Cloud Storage. The team notices that 80% of training time is spent loading data rather than computing. What optimization addresses this?",
+    "options": [
+      {"id": "A", "text": "Increase the number of workers for distributed training", "is_correct": false},
+      {"id": "B", "text": "Convert training data to TFRecords and use the tf.data pipeline with prefetching and parallel reads", "is_correct": true},
+      {"id": "C", "text": "Increase the machine's memory to cache more data in RAM", "is_correct": false},
+      {"id": "D", "text": "Use Cloud SQL to store training data for faster access", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TFRecords is an optimized binary format for TensorFlow training data. The tf.data pipeline with num_parallel_reads, prefetch(), and cache() overlaps data loading with model computation. GPU utilization jumps from 20% to near 100% when data loading is no longer the bottleneck.",
+      "why_not_A": "More workers for distributed training adds compute but doesn't fix the I/O bottleneck. If each worker also spends 80% time on data loading, more workers just means more wasted I/O.",
+      "why_not_C": "More RAM helps cache data but doesn't fix the fundamental I/O throughput issue. 500 GB won't fit in RAM anyway.",
+      "why_not_D": "Cloud SQL is a relational database; reading 500 GB of training data via SQL queries would be far slower than optimized Cloud Storage reads with TFRecords."
+    },
+    "concept_ids": ["pmle-model-training"],
+    "tags": ["tfrecords", "tf-data", "training-performance", "io-bottleneck"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-007",
+    "exam_id": "gcp-pmle",
+    "domain_id": "serving-scaling",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company needs to score 10 billion customer records daily with an ML model for a marketing campaign. The predictions must be completed within 4 hours and don't need to be available immediately. Which Vertex AI serving approach is most cost-effective?",
+    "options": [
+      {"id": "A", "text": "Deploy the model to a Vertex AI Endpoint and call it 10 billion times with individual requests", "is_correct": false},
+      {"id": "B", "text": "Use Vertex AI Batch Prediction with the model and 10 billion records in BigQuery as input", "is_correct": true},
+      {"id": "C", "text": "Deploy model to Cloud Run and use Cloud Tasks to distribute prediction requests", "is_correct": false},
+      {"id": "D", "text": "Train a separate BigQuery ML model that scores the records with SQL", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Vertex AI Batch Prediction processes large datasets efficiently without a running endpoint. It uses BigQuery as input/output, automatically scales workers, and is significantly cheaper than online prediction for batch workloads. No endpoint cost during non-batch periods.",
+      "why_not_A": "10 billion individual API calls to an online endpoint would be expensive (per-request pricing), slow, and would require massive endpoint scaling. Online prediction is for real-time individual requests.",
+      "why_not_C": "Cloud Run with Cloud Tasks for 10 billion predictions is complex, expensive, and not the right tool — Batch Prediction is purpose-built for this.",
+      "why_not_D": "Training a BigQuery ML model is for a different use case; if the existing Vertex AI model is already trained and working well, re-training in BigQuery ML may produce a different model."
+    },
+    "concept_ids": ["pmle-batch-prediction"],
+    "tags": ["batch-prediction", "vertex-ai", "cost-optimization", "large-scale"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-008",
+    "exam_id": "gcp-pmle",
+    "domain_id": "collaborating-teams",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A model predicting loan approvals shows high accuracy overall (95%) but the team discovers it approves 90% of loans for Group A and only 60% for Group B despite similar financial profiles. What responsible AI tool helps analyze and quantify this disparity?",
+    "options": [
+      {"id": "A", "text": "Cloud Profiler to analyze model execution performance", "is_correct": false},
+      {"id": "B", "text": "Vertex Explainable AI with SHAP feature importance to understand key prediction factors", "is_correct": false},
+      {"id": "C", "text": "What-if Tool to slice model performance by demographic group and analyze fairness metrics", "is_correct": true},
+      {"id": "D", "text": "Vertex AI Model Monitoring for feature distribution drift", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The What-if Tool enables interactive analysis of model behavior across demographic subgroups. It computes fairness metrics (demographic parity, equal opportunity) and visualizes performance disparities — exactly suited for identifying and quantifying the approval rate disparity between Group A and Group B.",
+      "why_not_A": "Cloud Profiler measures computational performance (CPU/memory); it has nothing to do with model fairness or demographic disparities.",
+      "why_not_B": "SHAP feature importance shows which features influence predictions globally but doesn't directly measure fairness disparities between demographic groups.",
+      "why_not_D": "Model Monitoring tracks distribution drift in production data; it doesn't analyze fairness by demographic group or compute fairness metrics."
+    },
+    "concept_ids": ["pmle-responsible-ai"],
+    "tags": ["fairness", "bias", "what-if-tool", "responsible-ai"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-009",
+    "exam_id": "gcp-pmle",
+    "domain_id": "automating-pipelines",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A Vertex AI Pipeline has 5 components: data_validation, feature_engineering, training, evaluation, and deployment. The team wants to run the pipeline again with only a new dataset but avoid re-running feature_engineering if the code hasn't changed. What feature enables this?",
+    "options": [
+      {"id": "A", "text": "Vertex AI Experiments to track and compare pipeline runs", "is_correct": false},
+      {"id": "B", "text": "Pipeline caching: components with identical inputs and code reuse cached outputs from previous runs", "is_correct": true},
+      {"id": "C", "text": "Parallel step execution to skip slow components", "is_correct": false},
+      {"id": "D", "text": "Vertex AI Feature Store to cache feature engineering outputs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Vertex AI Pipelines caching is enabled per component. If a component's inputs (including input data hash, code, and parameters) are identical to a previous run, the component is skipped and outputs from the previous run are reused. If the new dataset is different, data_validation and downstream components run; feature_engineering would run if the dataset changes.",
+      "why_not_A": "Vertex AI Experiments tracks metrics and parameters across runs for comparison; it doesn't reuse intermediate computation results.",
+      "why_not_C": "Parallel execution runs multiple steps simultaneously; it doesn't skip completed steps.",
+      "why_not_D": "Feature Store manages feature values for online/offline serving; it doesn't cache pipeline component execution results."
+    },
+    "concept_ids": ["pmle-vertex-pipelines"],
+    "tags": ["vertex-ai-pipelines", "caching", "pipeline-optimization"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-010",
+    "exam_id": "gcp-pmle",
+    "domain_id": "low-code-ml",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company wants to build a customer support chatbot that can answer questions about their products using their existing product documentation (PDF files). They want to minimize hallucinations. They don't have ML expertise. Which approach is most appropriate?",
+    "options": [
+      {"id": "A", "text": "Fine-tune Gemini on the product documentation using Vertex AI", "is_correct": false},
+      {"id": "B", "text": "Implement Retrieval-Augmented Generation (RAG) using Vertex AI Vector Search and the Gemini API", "is_correct": true},
+      {"id": "C", "text": "Train an AutoML Natural Language model on the documentation", "is_correct": false},
+      {"id": "D", "text": "Use Document AI to extract text and store in Cloud SQL for keyword search", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RAG with Vertex AI Vector Search: embed product documentation chunks into vectors, store in Vector Search, retrieve relevant chunks on user questions, pass retrieved context to Gemini for answer generation. This minimizes hallucinations by grounding responses in actual documentation — and requires minimal ML expertise using GCP-managed services.",
+      "why_not_A": "Fine-tuning adapts model style/behavior but doesn't ground it in specific documents at inference time. The model can still hallucinate about product details not in the training set.",
+      "why_not_C": "AutoML Natural Language is for classification, entity extraction, and sentiment — not question-answering from documents.",
+      "why_not_D": "Keyword search can find relevant documents but can't generate natural language answers. A chatbot requires generative AI capabilities."
+    },
+    "concept_ids": ["pmle-genai-vertex"],
+    "tags": ["rag", "gemini", "vector-search", "chatbot", "hallucination"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-011",
+    "exam_id": "gcp-pmle",
+    "domain_id": "scaling-prototypes",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An ML team trains a binary classification model. The test set accuracy is 92%. The model is deployed but business reports only a 45% true positive rate (recall) for the minority positive class. The positive class is 5% of data. What is the most likely issue?",
+    "options": [
+      {"id": "A", "text": "The model is overfitting to the training data", "is_correct": false},
+      {"id": "B", "text": "Class imbalance: the model optimizes overall accuracy by predicting the majority class, missing minority class examples", "is_correct": true},
+      {"id": "C", "text": "The test set is from a different distribution than production data", "is_correct": false},
+      {"id": "D", "text": "The model needs more training epochs to learn the minority class patterns", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "With 5% positive class, a model that always predicts 'negative' achieves 95% accuracy — but 0% recall for the positive class. 92% accuracy is suspiciously close to this baseline. The model learned to predict the majority class, producing high accuracy but poor recall for the minority (positive) class.",
+      "why_not_A": "Overfitting would show high training accuracy and lower test accuracy. Here the test accuracy is 92% which doesn't indicate overfitting.",
+      "why_not_C": "Distribution mismatch is a valid hypothesis but class imbalance is the most obvious explanation given the 5% positive rate and 92% accuracy pattern.",
+      "why_not_D": "More training on imbalanced data will worsen the imbalance problem. The solution is to address the imbalance (oversampling, class weights, threshold tuning)."
+    },
+    "concept_ids": ["pmle-model-evaluation"],
+    "tags": ["class-imbalance", "recall", "accuracy-trap", "evaluation-metrics"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-012",
+    "exam_id": "gcp-pmle",
+    "domain_id": "scaling-prototypes",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A feature engineering step in a Vertex AI Pipeline uses the same Python code both during training (in the pipeline) and serving (in the prediction endpoint). An analyst notices that the training accuracy is much higher than production accuracy. What is the likely cause?",
+    "options": [
+      {"id": "A", "text": "The model is overfitting to the training data", "is_correct": false},
+      {"id": "B", "text": "Training-serving skew: the feature preprocessing code produces different outputs in training vs serving due to implementation differences", "is_correct": true},
+      {"id": "C", "text": "Concept drift: production data has changed since training", "is_correct": false},
+      {"id": "D", "text": "Insufficient training data: the model needs more examples", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Training-serving skew occurs when the feature computation at training time differs from serving time, even with similar code. Causes include: different library versions, different data types, missing values handled differently, or scaling statistics computed at training being recomputed at serving. The result is the model receives different feature distributions than it was trained on.",
+      "why_not_A": "Overfitting shows high train accuracy and lower test accuracy — detectable during model evaluation before deployment. The scenario describes a production vs training accuracy gap post-deployment.",
+      "why_not_C": "Concept drift causes gradual performance degradation. An immediate accuracy gap at launch indicates a systematic preprocessing difference (skew), not drift.",
+      "why_not_D": "If the model had insufficient data, both training AND production accuracy would be poor. High training accuracy with poor production accuracy points to a data/feature pipeline issue."
+    },
+    "concept_ids": ["pmle-feature-engineering"],
+    "tags": ["training-serving-skew", "feature-engineering", "preprocessing"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-013",
+    "exam_id": "gcp-pmle",
+    "domain_id": "low-code-ml",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A team wants to train a custom image classification model to identify 50 product categories from photos. They have 500 labeled images per category (25,000 total). They have no TensorFlow experience. Which approach provides the best accuracy with least ML engineering effort?",
+    "options": [
+      {"id": "A", "text": "AutoML Vision using Vertex AI with the 25,000 labeled images", "is_correct": true},
+      {"id": "B", "text": "Custom training with ResNet50 from TensorFlow Hub using Vertex AI Training", "is_correct": false},
+      {"id": "C", "text": "BigQuery ML image classification using BQML with Cloud Storage image references", "is_correct": false},
+      {"id": "D", "text": "Cloud Vision API using the pre-trained general label detection", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "AutoML Vision trains high-quality image classification models from labeled images using transfer learning automatically. With 500 images per class (25K total), AutoML can achieve excellent accuracy. The team uploads images and labels, configures the model in the UI, and AutoML handles all the ML engineering.",
+      "why_not_B": "Custom ResNet50 training requires TensorFlow expertise, hyperparameter tuning, and significant development time — exactly what the team lacks.",
+      "why_not_C": "BigQuery ML does not support image classification from raw images. It uses tabular data, not image data.",
+      "why_not_D": "The pre-trained Vision API uses Google's general-purpose model and cannot be customized for 50 specific product categories without fine-tuning."
+    },
+    "concept_ids": ["pmle-automl"],
+    "tags": ["automl-vision", "image-classification", "no-code-ml"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-014",
+    "exam_id": "gcp-pmle",
+    "domain_id": "automating-pipelines",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An ML team at MLOps Level 0 (manual processes) wants to move to Level 1 (automated training pipeline). Which is the MOST important first automation to implement?",
+    "options": [
+      {"id": "A", "text": "Automate model deployment to production", "is_correct": false},
+      {"id": "B", "text": "Automate the training pipeline so model training is triggered and executed without manual steps", "is_correct": true},
+      {"id": "C", "text": "Automate A/B testing between model versions in production", "is_correct": false},
+      {"id": "D", "text": "Automate shadow mode deployment for every model version", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "MLOps Level 1's defining characteristic is an automated training pipeline. The training pipeline can be triggered (by schedule, data changes, or performance degradation) and runs without manual intervention — enabling continuous training (CT). This is the foundation for all subsequent MLOps automation.",
+      "why_not_A": "Automated deployment is MLOps Level 2 (CI/CD for ML). Level 1 focuses on automated training; deployment may still be manual with human approval at Level 1.",
+      "why_not_C": "A/B testing automation builds on automated deployment, which comes after automated training pipelines.",
+      "why_not_D": "Shadow mode deployment is an advanced MLOps practice (Level 2+) for validating models in production. It requires automated training and deployment to already be in place."
+    },
+    "concept_ids": ["pmle-mlops-practices"],
+    "tags": ["mlops", "automated-training", "level-1-mlops"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pmle-015",
+    "exam_id": "gcp-pmle",
+    "domain_id": "serving-scaling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Vertex AI online prediction endpoint is slow — predictions take 800ms when the model computation should take only 50ms. Cloud Monitoring shows the endpoint has adequate CPU and memory. What is the most likely cause?",
+    "options": [
+      {"id": "A", "text": "The model is too large and needs to be distilled to a smaller model", "is_correct": false},
+      {"id": "B", "text": "Cold start latency from scale-to-zero: the endpoint is spinning up new replicas for each request", "is_correct": true},
+      {"id": "C", "text": "Network latency from the client to the Vertex AI endpoint", "is_correct": false},
+      {"id": "D", "text": "The prediction input is too large and needs to be compressed", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "If the endpoint has scale-to-zero or very low min-replicas, it must spin up new containers for requests after idle periods. Container startup + model loading (especially large models) can add 500-1500ms of cold start latency on top of the 50ms model computation, explaining the 800ms total.",
+      "why_not_A": "Model distillation reduces model computation time. If the model only takes 50ms to compute, the model size is not the issue. The 750ms overhead is from infrastructure.",
+      "why_not_C": "Network latency from client to a GCP endpoint in the same region is typically 1-10ms, not 750ms.",
+      "why_not_D": "Large input payloads could add some latency, but 750ms of overhead for a 50ms compute is far more than input serialization would cause."
+    },
+    "concept_ids": ["pmle-model-serving"],
+    "tags": ["cold-start", "model-serving", "latency", "minimum-replicas"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  }
+]

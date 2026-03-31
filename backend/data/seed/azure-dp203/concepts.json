@@ -1,0 +1,428 @@
+[
+  {
+    "id": "dp203-synapse-analytics",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "azure-synapse-analytics",
+    "name": "Azure Synapse Analytics Architecture",
+    "description": "Understanding the architecture of Azure Synapse Analytics including dedicated SQL pools, serverless SQL pools, Spark pools, and Synapse Link.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Synapse Analytics integrates data warehousing (dedicated SQL pool), big data (Spark), and data integration (Synapse Pipelines) in one service",
+      "Dedicated SQL pool uses Massively Parallel Processing (MPP) with a Control node and Compute nodes",
+      "Serverless SQL pool is pay-per-query with no infrastructure to manage; data stays in the lake",
+      "Synapse Link enables near real-time analytics over operational data in Cosmos DB, SQL Server, and Dataverse without ETL",
+      "Distribution types for dedicated pool tables: Hash, Round-Robin, and Replicated; hash on high-cardinality join columns is best for large fact tables"
+    ],
+    "common_misconceptions": [
+      "Teams assume serverless SQL pool is slower than dedicated SQL pool for all queries—for ad-hoc exploration serverless can be faster as there is no warm-up time",
+      "Many believe Synapse Pipelines is just a rebranded Azure Data Factory—while sharing the same engine, Synapse Pipelines integrates directly with Synapse workspace artifacts"
+    ],
+    "azure_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2", "Azure Cosmos DB"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "dp203-data-lake-design", "transfer_weight": 0.35},
+      {"concept_id": "dp203-spark-processing", "transfer_weight": 0.30}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=tDqAqNXVbZk",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/synapse-analytics/overview-what-is"
+  },
+  {
+    "id": "dp203-data-lake-design",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-storage-dp203",
+    "topic_id": "data-lake-storage",
+    "name": "Azure Data Lake Storage Gen2 Design",
+    "description": "Designing and implementing Azure Data Lake Storage Gen2 including hierarchical namespace, access control, and medallion architecture.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "ADLS Gen2 is built on Azure Blob Storage with hierarchical namespace (HNS) enabled for directory operations",
+      "Medallion architecture organizes data in Bronze (raw), Silver (cleaned), and Gold (aggregated/business-ready) layers",
+      "Access control supports both RBAC (coarse-grained, resource level) and POSIX-style ACLs (fine-grained, file/directory level)",
+      "Lifecycle management policies automatically tier or delete blobs based on last-modified or last-accessed date",
+      "Zone-Redundant Storage (ZRS) replicates data synchronously across three availability zones in the same region"
+    ],
+    "common_misconceptions": [
+      "Developers assume ADLS Gen2 ACLs override RBAC—both apply, and the most restrictive permission wins; RBAC Owner always has full access",
+      "Many believe enabling HNS on an existing Blob Storage account is reversible—HNS migration is a one-way process and cannot be undone"
+    ],
+    "azure_services": ["Azure Data Lake Storage Gen2", "Azure Blob Storage", "Azure Storage Explorer"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.30},
+      {"concept_id": "dp203-data-factory", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+azure+data+lake+storage+gen2+design+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/storage/blobs/data-lake-storage-introduction"
+  },
+  {
+    "id": "dp203-data-factory",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "azure-data-factory",
+    "name": "Azure Data Factory Pipelines and Data Flows",
+    "description": "Designing and implementing data ingestion and transformation pipelines using Azure Data Factory, including Mapping Data Flows and Integration Runtimes.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "ADF pipelines orchestrate data movement and transformation using Activities (Copy, Data Flow, Execute Pipeline, etc.)",
+      "Integration Runtimes (IR) are the compute infrastructure: Azure IR (cloud), Self-hosted IR (on-premises), and Azure-SSIS IR (SSIS packages)",
+      "Mapping Data Flows are visually designed transformations that compile to Spark and run on ADF-managed Spark clusters",
+      "Triggers can be schedule-based, tumbling window, storage event, or custom event-based",
+      "Copy Activity supports 90+ source and sink connectors; parallel copy degree and staged copy via Blob improve throughput"
+    ],
+    "common_misconceptions": [
+      "Teams assume Mapping Data Flows and Wrangling Data Flows are interchangeable—Mapping Data Flows are code-generated Spark; Wrangling Data Flows use Power Query M language and are better for non-developers",
+      "Many believe Self-hosted IR can be installed on any machine—it requires Windows and specific outbound network connectivity to ADF control plane endpoints"
+    ],
+    "azure_services": ["Azure Data Factory", "Azure Blob Storage", "Azure Data Lake Storage Gen2", "Azure SQL Database"],
+    "prerequisites": ["dp203-data-lake-design"],
+    "lateral_relations": [
+      {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.25},
+      {"concept_id": "dp203-databricks", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=EpDkxTHAhOs",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/data-factory/introduction"
+  },
+  {
+    "id": "dp203-databricks",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "azure-databricks",
+    "name": "Azure Databricks for Data Engineering",
+    "description": "Using Azure Databricks clusters, notebooks, Delta Lake, and jobs for large-scale data processing and transformation.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Databricks is a managed Apache Spark platform optimized for Azure with AAD integration and VNet injection",
+      "Cluster types: All-purpose (interactive development) and Job clusters (automated pipelines, lower cost, auto-terminate)",
+      "Delta Lake adds ACID transactions, schema enforcement, time travel (versioning), and DML operations to Parquet files",
+      "Delta Live Tables (DLT) is a declarative framework for building reliable, maintainable, and testable data pipelines",
+      "Unity Catalog provides centralized governance for data and AI assets across multiple Databricks workspaces"
+    ],
+    "common_misconceptions": [
+      "Teams assume Azure Databricks and Synapse Spark pools are equivalent—Databricks has more advanced ML features (MLflow, Feature Store) while Synapse integrates more natively with the Azure ecosystem",
+      "Many believe Delta Lake requires Azure Databricks—Delta Lake is open source and can be used with any Spark environment including Synapse Spark"
+    ],
+    "azure_services": ["Azure Databricks", "Azure Data Lake Storage Gen2", "Azure Key Vault", "Azure Data Factory"],
+    "prerequisites": ["dp203-data-lake-design"],
+    "lateral_relations": [
+      {"concept_id": "dp203-spark-processing", "transfer_weight": 0.50},
+      {"concept_id": "dp203-data-factory", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+azure+databricks+delta+lake+data+engineering+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/databricks/introduction/"
+  },
+  {
+    "id": "dp203-spark-processing",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "spark-core-concepts",
+    "name": "Spark Core Concepts for Data Engineering",
+    "description": "Understanding Spark RDDs, DataFrames, Datasets, partitioning, caching, and performance optimization for data engineering workloads.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "DataFrames are the primary abstraction in modern PySpark; they are distributed collections with a schema",
+      "Lazy evaluation defers computation until an action (collect, show, write) is called, enabling optimization",
+      "Partitioning determines parallelism; repartition() causes a full shuffle while coalesce() reduces partitions without shuffle",
+      "Broadcast joins send the smaller table to all executors, eliminating shuffle for large-small table joins",
+      "Tungsten engine uses binary encoding and code generation to minimize JVM overhead and improve CPU efficiency"
+    ],
+    "common_misconceptions": [
+      "Developers assume more partitions always means faster processing—too many small partitions create scheduling overhead that can hurt performance",
+      "Many believe caching is always beneficial—caching large DataFrames that are only used once wastes memory and can cause eviction of other cached data"
+    ],
+    "azure_services": ["Azure Databricks", "Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
+    "prerequisites": ["dp203-databricks"],
+    "lateral_relations": [
+      {"concept_id": "dp203-databricks", "transfer_weight": 0.40}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+apache+spark+dataframes+partitioning+optimization+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/databricks/getting-started/spark/quick-start"
+  },
+  {
+    "id": "dp203-stream-analytics",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "stream-processing",
+    "name": "Azure Stream Analytics Real-Time Processing",
+    "description": "Processing real-time streaming data using Azure Stream Analytics with Event Hub or IoT Hub as inputs and SQL-like query language.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Stream Analytics uses a SQL-like query language (SAQL) to filter, aggregate, and join streaming data",
+      "Windowing functions: Tumbling (non-overlapping), Hopping (overlapping), Sliding (event-driven), Session (activity-based)",
+      "Late arrival tolerance and out-of-order tolerance settings control how late events are handled",
+      "Streaming Units (SUs) represent the compute resources; 6 SUs process roughly 1 MB/s throughput",
+      "Reference data joins enrich stream data with static or slowly-changing data from Blob Storage or SQL Database"
+    ],
+    "common_misconceptions": [
+      "Teams assume Stream Analytics replaces Event Hubs—Event Hubs is the ingestion layer while Stream Analytics is the processing layer; they work together",
+      "Many believe Stream Analytics output is always near real-time—aggregations over long windows introduce latency equal to the window duration"
+    ],
+    "azure_services": ["Azure Stream Analytics", "Azure Event Hubs", "Azure IoT Hub", "Azure Data Lake Storage Gen2"],
+    "prerequisites": ["dp203-data-lake-design"],
+    "lateral_relations": [
+      {"concept_id": "dp203-event-hubs", "transfer_weight": 0.45}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+azure+stream+analytics+real+time+processing+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/stream-analytics/stream-analytics-introduction"
+  },
+  {
+    "id": "dp203-event-hubs",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-storage-dp203",
+    "topic_id": "event-hubs-kafka",
+    "name": "Azure Event Hubs and Kafka Integration",
+    "description": "Ingesting high-throughput streaming data using Azure Event Hubs, including partitions, consumer groups, and Kafka compatibility.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Event Hubs is a fully managed, real-time data ingestion service that can handle millions of events per second",
+      "Partitions enable parallel consumers; partition count cannot be decreased after creation and is set at namespace creation",
+      "Consumer groups allow multiple applications to independently read the same event stream at different offsets",
+      "Event Hubs for Kafka exposes a Kafka-compatible endpoint so Kafka producers/consumers work without code changes",
+      "Capture automatically archives events to Azure Blob Storage or ADLS Gen2 in Avro format"
+    ],
+    "common_misconceptions": [
+      "Teams assume Event Hubs and Service Bus are interchangeable—Event Hubs is for streaming/telemetry (pull model) while Service Bus is for transactional messaging (push/pull with competing consumers)",
+      "Many believe adding more consumer groups improves throughput—consumer groups provide independent read positions but do not increase partition throughput"
+    ],
+    "azure_services": ["Azure Event Hubs", "Azure Blob Storage", "Azure Stream Analytics", "Azure Databricks"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "dp203-stream-analytics", "transfer_weight": 0.40}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+azure+event+hubs+kafka+partitions+consumer+groups+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-about"
+  },
+  {
+    "id": "dp203-dedicated-sql-pool",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "synapse-dedicated-sql",
+    "name": "Synapse Dedicated SQL Pool Performance Optimization",
+    "description": "Optimizing query performance in Synapse dedicated SQL pools using distribution strategies, indexes, partitioning, and workload management.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Data Warehouse Units (DWUs) scale compute independently from storage; pausing the pool stops compute charges",
+      "Clustered Columnstore Index (CCI) is the default and best index for fact tables; requires good row group quality (1M+ rows per group)",
+      "Table partitioning improves query performance by partition elimination; partition on date columns for time-series data",
+      "Result-set caching caches query results for repeated identical queries; cache is invalidated when underlying data changes",
+      "Workload management uses workload groups and classifiers to allocate resources and prevent query queuing"
+    ],
+    "common_misconceptions": [
+      "Teams assume scaling DWUs linearly improves all queries—complex queries with data skew may not scale linearly",
+      "Many use hash distribution on all large tables—tables joined to a hash-distributed table should be distributed on the join key to avoid data movement"
+    ],
+    "azure_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
+    "prerequisites": ["dp203-synapse-analytics"],
+    "lateral_relations": [
+      {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.50}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+synapse+dedicated+SQL+pool+optimization+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/sql-data-warehouse-overview-what-is"
+  },
+  {
+    "id": "dp203-data-security",
+    "exam_id": "azure-dp203",
+    "domain_id": "secure-monitor-optimize",
+    "topic_id": "data-security",
+    "name": "Data Security and Privacy in Azure Data Services",
+    "description": "Implementing security controls including encryption, dynamic data masking, row-level security, and network isolation for Azure data services.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Transparent Data Encryption (TDE) encrypts data at rest using AES-256; enabled by default in Azure SQL and Synapse",
+      "Dynamic Data Masking (DDM) obfuscates sensitive columns for non-privileged users without changing stored data",
+      "Row-Level Security (RLS) uses filter predicates to restrict row access based on user identity or group membership",
+      "Always Encrypted protects sensitive data by encrypting at the client driver; server never sees plaintext",
+      "Private Endpoints ensure data service traffic stays on the Microsoft backbone network and never traverses the public internet"
+    ],
+    "common_misconceptions": [
+      "Teams assume DDM prevents privileged users from seeing data—users with db_datareader or higher roles can bypass DDM",
+      "Many believe TDE with customer-managed keys (CMK) is automatically more secure—CMK shifts responsibility to the customer who must manage key rotation and availability"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure Synapse Analytics", "Azure Key Vault", "Azure Private Link"],
+    "prerequisites": ["dp203-data-lake-design"],
+    "lateral_relations": [
+      {"concept_id": "dp203-monitoring", "transfer_weight": 0.30}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+azure+data+security+encryption+row+level+security+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/security-overview"
+  },
+  {
+    "id": "dp203-monitoring",
+    "exam_id": "azure-dp203",
+    "domain_id": "secure-monitor-optimize",
+    "topic_id": "data-pipeline-monitoring",
+    "name": "Monitoring and Optimizing Data Pipelines",
+    "description": "Monitoring data pipelines and jobs using Azure Monitor, Synapse Monitor, Log Analytics, and optimizing for performance and cost.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Synapse Monitor hub provides a unified view of pipeline runs, Spark job runs, SQL requests, and integration runtimes",
+      "Azure Monitor Diagnostic settings send ADF/Synapse logs and metrics to Log Analytics, Storage, or Event Hubs",
+      "Activity Runs and Pipeline Runs logs in ADF include input, output, and duration for each activity execution",
+      "Databricks jobs expose metrics via Ganglia UI and can be forwarded to Azure Monitor using the Log Analytics agent",
+      "Cost optimization for Synapse Spark: use auto-scaling clusters, choose appropriate node types, and terminate idle clusters"
+    ],
+    "common_misconceptions": [
+      "Teams assume pipeline failures always trigger email alerts by default—alerts must be explicitly configured in Azure Monitor or ADF trigger alert rules",
+      "Many believe monitoring logs are retained indefinitely—Log Analytics retention defaults to 30 days and must be explicitly extended"
+    ],
+    "azure_services": ["Azure Monitor", "Azure Data Factory", "Azure Synapse Analytics", "Log Analytics"],
+    "prerequisites": ["dp203-data-factory"],
+    "lateral_relations": [
+      {"concept_id": "dp203-data-security", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+azure+monitor+data+factory+synapse+monitoring+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/data-factory/monitor-visually"
+  },
+  {
+    "id": "dp203-cosmos-db-analytics",
+    "exam_id": "azure-dp203",
+    "domain_id": "design-data-solutions",
+    "topic_id": "cosmos-db-analytical",
+    "name": "Azure Cosmos DB Analytical Store and Synapse Link",
+    "description": "Enabling and using Cosmos DB Analytical Store with Synapse Link for no-ETL analytics over operational data.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Analytical Store is a columnar store automatically synced from the Cosmos DB transactional store with no impact on RUs",
+      "Synapse Link connects Synapse Analytics directly to the Cosmos DB Analytical Store for serverless SQL or Spark analysis",
+      "Schema representation can be 'Well-defined schema' (uniform documents) or 'Full fidelity schema' (dynamic/varied documents)",
+      "The Time-To-Live (TTL) for Analytical Store can be set independently from the transactional store TTL",
+      "Synapse Link for Dataverse enables analytics over Microsoft 365 and Power Platform data using the same mechanism"
+    ],
+    "common_misconceptions": [
+      "Teams assume Synapse Link requires data to be copied to the data lake—Synapse Link queries the Cosmos DB Analytical Store directly without data movement",
+      "Many believe Analytical Store queries consume Cosmos DB RUs—Analytical Store operations are billed separately and do not consume transactional RUs"
+    ],
+    "azure_services": ["Azure Cosmos DB", "Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
+    "prerequisites": ["dp203-synapse-analytics"],
+    "lateral_relations": [
+      {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.35}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+cosmos+DB+synapse+link+analytical+store+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/cosmos-db/synapse-link"
+  },
+  {
+    "id": "dp203-serverless-sql",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "serverless-sql-pool",
+    "name": "Synapse Serverless SQL Pool Querying",
+    "description": "Querying data lake files using Synapse serverless SQL pool with OPENROWSET, external tables, and views over Parquet, CSV, and Delta Lake.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "OPENROWSET is the T-SQL function for querying files in ADLS Gen2 directly without loading data",
+      "External tables provide a reusable schema definition over files; data stays in the lake",
+      "CREATE EXTERNAL TABLE AS SELECT (CETAS) writes query results to Parquet or CSV files in the data lake",
+      "Serverless SQL pool supports Parquet, CSV, JSON, and Delta Lake (with DELTA() provider function) formats",
+      "Pricing is $5 per TB of data processed; query optimization via column pruning and predicate pushdown reduces cost"
+    ],
+    "common_misconceptions": [
+      "Teams assume serverless SQL pool can write data back to existing tables—CETAS creates new external files; DML operations are not supported",
+      "Many believe all SQL Server T-SQL syntax works in serverless pool—it supports a subset of T-SQL and lacks features like temp tables created with SELECT INTO"
+    ],
+    "azure_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
+    "prerequisites": ["dp203-synapse-analytics", "dp203-data-lake-design"],
+    "lateral_relations": [
+      {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.40},
+      {"concept_id": "dp203-dedicated-sql-pool", "transfer_weight": 0.30}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+synapse+serverless+SQL+pool+OPENROWSET+external+tables",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/synapse-analytics/sql/on-demand-workspace-overview"
+  },
+  {
+    "id": "dp203-data-modeling",
+    "exam_id": "azure-dp203",
+    "domain_id": "design-data-solutions",
+    "topic_id": "data-warehouse-modeling",
+    "name": "Data Warehouse Modeling Patterns",
+    "description": "Designing star schema, snowflake schema, and slowly changing dimensions for analytical data warehouse workloads.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Star schema has fact tables at center connected to denormalized dimension tables; optimized for query performance",
+      "Snowflake schema normalizes dimension tables into sub-dimensions; saves storage but requires more joins",
+      "Slowly Changing Dimension (SCD) Type 1 overwrites old values, Type 2 adds new rows with effective dates, Type 3 adds columns",
+      "Surrogate keys (integer) are preferred over natural/business keys in dimension tables for join performance",
+      "Fact tables should be narrow (few columns) with many rows; dimension tables wider with descriptive attributes"
+    ],
+    "common_misconceptions": [
+      "Teams assume snowflake schema is always better because it's normalized—in data warehousing, denormalization (star schema) improves analytical query performance",
+      "Many use natural keys from source systems as dimension keys—natural keys change over time in source systems; surrogate keys provide stability"
+    ],
+    "azure_services": ["Azure Synapse Analytics", "Azure SQL Database"],
+    "prerequisites": ["dp203-dedicated-sql-pool"],
+    "lateral_relations": [
+      {"concept_id": "dp203-dedicated-sql-pool", "transfer_weight": 0.40}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+data+warehouse+star+schema+SCD+design+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/sql-data-warehouse-tables-overview"
+  },
+  {
+    "id": "dp203-adf-mapping-dataflows",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "mapping-data-flows",
+    "name": "Azure Data Factory Mapping Data Flows Transformations",
+    "description": "Implementing complex data transformations using ADF Mapping Data Flows with aggregate, join, pivot, window, and conditional split transformations.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Mapping Data Flows are visually designed and compiled to Spark; no Spark coding required",
+      "Transformations: Source, Sink, Join, Lookup, Aggregate, Derived Column, Filter, Select, Pivot, Unpivot, Window",
+      "Data flow debug mode spins up a Spark cluster for interactive row sampling and testing",
+      "The Conditional Split transformation routes rows to different streams based on filter conditions (like WHERE/CASE)",
+      "Parameterizing data flows enables reuse across different sources/sinks by passing values at pipeline runtime"
+    ],
+    "common_misconceptions": [
+      "Teams assume Mapping Data Flows are always faster than Copy Activity for simple moves—for straight file copy without transformation, Copy Activity is more efficient and cheaper",
+      "Many believe Data Flow debug clusters are free—debug mode spins up a Spark cluster billed at the standard ADF Data Flow cluster rate"
+    ],
+    "azure_services": ["Azure Data Factory", "Azure Data Lake Storage Gen2", "Azure SQL Database"],
+    "prerequisites": ["dp203-data-factory"],
+    "lateral_relations": [
+      {"concept_id": "dp203-data-factory", "transfer_weight": 0.50},
+      {"concept_id": "dp203-spark-processing", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+ADF+mapping+data+flows+transformations+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/data-factory/concepts-data-flow-overview"
+  },
+  {
+    "id": "dp203-polybase-external",
+    "exam_id": "azure-dp203",
+    "domain_id": "data-processing",
+    "topic_id": "polybase-data-loading",
+    "name": "PolyBase and COPY INTO for Data Loading",
+    "description": "Loading large volumes of data into Synapse dedicated SQL pool using PolyBase external tables and the COPY INTO command.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "COPY INTO is the recommended method for bulk loading into Synapse; simpler syntax and no external objects needed",
+      "PolyBase requires creating External Data Source, External File Format, and External Table before loading",
+      "Best practice: load into a staging table first, then merge into the production table to minimize locking",
+      "Supported formats for COPY INTO: Parquet, ORC, CSV/delimited text",
+      "Loading data in parallel using multiple files that match partition boundaries dramatically increases throughput"
+    ],
+    "common_misconceptions": [
+      "Teams assume PolyBase and COPY INTO have identical performance—COPY INTO is generally faster and simpler for most scenarios",
+      "Many try to load directly into CCI tables in real time—CCIs work best for bulk loads; use heap or clustered rowstore for frequent small inserts"
+    ],
+    "azure_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2", "Azure Blob Storage"],
+    "prerequisites": ["dp203-dedicated-sql-pool", "dp203-data-lake-design"],
+    "lateral_relations": [
+      {"concept_id": "dp203-dedicated-sql-pool", "transfer_weight": 0.45}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=DP-203+synapse+COPY+INTO+polybase+data+loading+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/synapse-analytics/sql-data-warehouse/load-data-overview"
+  }
+]

@@ -70,7 +70,7 @@ const tiers: Tier[] = [
       { text: "Mock exams for 1 cert", included: true },
       { text: "Readiness score tracking", included: true },
       { text: "6-month access duration", included: true },
-      { text: "All 15 certifications", included: false },
+      { text: "All certifications", included: false },
     ],
     cta: "Buy Now",
     ctaHref: "/register",
@@ -89,7 +89,7 @@ const tiers: Tier[] = [
     badge: "Most Popular",
     showToggle: true,
     features: [
-      { text: "All 15 AWS certifications", included: true },
+      { text: "All 36+ certifications (AWS, Azure, GCP)", included: true },
       { text: "Unlimited practice questions", included: true },
       { text: "AI-powered explanations", included: true },
       { text: "Smart spaced repetition (SM-2)", included: true },

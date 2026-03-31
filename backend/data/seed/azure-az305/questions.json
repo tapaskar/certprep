@@ -1,0 +1,437 @@
+[
+  {
+    "id": "q-az305-001",
+    "exam_id": "azure-az305",
+    "domain_id": "identity-governance-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A large enterprise is designing their Azure identity architecture. They have an on-premises Active Directory with 50,000 users. They require that users can sign in to cloud apps using their existing AD credentials, and if the on-premises AD domain controllers are unavailable, users must still be able to authenticate to Azure services. Which hybrid identity method should the architect recommend?",
+    "options": [
+      {"id": "A", "text": "Pass-Through Authentication (PTA) with Seamless SSO", "is_correct": false},
+      {"id": "B", "text": "Password Hash Synchronization (PHS) with Seamless SSO", "is_correct": true},
+      {"id": "C", "text": "Active Directory Federation Services (ADFS) with Azure AD Connect", "is_correct": false},
+      {"id": "D", "text": "Azure AD External Identities with B2B collaboration", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Password Hash Synchronization (PHS) synchronizes a hash of the password hash to Azure AD. Authentication is performed against Azure AD in the cloud. If on-premises AD domain controllers become unavailable, users can still authenticate because Azure AD has a copy of the credential hashes and does not need to contact on-premises infrastructure. Seamless SSO provides a single sign-on experience from domain-joined devices.",
+      "why_not_A": "Pass-Through Authentication (PTA) validates credentials by forwarding the authentication request to on-premises AD agents in real time. If the on-premises domain controllers are unavailable, PTA agents cannot validate credentials and authentication fails. PTA does not provide cloud-resilient authentication.",
+      "why_not_B": "N/A",
+      "why_not_C": "ADFS is a federation solution that redirects authentication to on-premises ADFS servers. Like PTA, if the on-premises AD/ADFS infrastructure is unavailable, users cannot authenticate. ADFS also has higher complexity and operational overhead than PHS.",
+      "why_not_D": "Azure AD External Identities (B2B) is for collaborating with users from external organizations. It is not a hybrid identity method for synchronizing existing on-premises AD users to Azure AD."
+    },
+    "concept_ids": ["az305-azure-ad-design"],
+    "tags": ["hybrid-identity", "password-hash-sync", "azure-ad-connect", "resilience"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-002",
+    "exam_id": "azure-az305",
+    "domain_id": "identity-governance-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An architect is designing a governance strategy for a large enterprise with 10 business units, each deploying to their own Azure subscription. The security team requires that all VMs must have endpoint protection enabled, and any VM without it must be automatically remediated. Resource tags are required on all resources. Which governance tools should the architect use?",
+    "options": [
+      {"id": "A", "text": "Azure RBAC custom roles to enforce tagging and security configurations at the subscription level", "is_correct": false},
+      {"id": "B", "text": "Azure Policy assignments at the Management Group level using Modify effect for tags and DeployIfNotExists effect for endpoint protection", "is_correct": true},
+      {"id": "C", "text": "Azure Blueprints to package ARM templates that include endpoint protection and tagging, and assign to each subscription manually", "is_correct": false},
+      {"id": "D", "text": "Azure Automation runbooks scheduled to scan subscriptions and add missing tags and install endpoint protection agents", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Policy at the Management Group level inherits to all child subscriptions automatically. The Modify effect can automatically add or correct resource tags on new and existing resources. The DeployIfNotExists effect deploys a remediation template (like the MMA/AMA agent for endpoint protection) if the condition is not met. Together they provide automated, continuous enforcement across all business unit subscriptions.",
+      "why_not_A": "RBAC controls what actions users can perform (authorization), not what configuration resources must have (compliance). RBAC cannot enforce that a VM has endpoint protection installed or that a resource has specific tags.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Blueprints enforce governance at deployment time but require manual assignment to each subscription. They do not continuously remediate existing non-compliant resources. If a VM is deployed without endpoint protection after the Blueprint assignment, Blueprints do not detect and fix it. Azure Policy with DeployIfNotExists provides continuous remediation.",
+      "why_not_D": "Automation runbooks on schedules are a reactive, polling-based approach. They cannot prevent non-compliant resources from being deployed and introduce compliance gaps between scheduled runs. Azure Policy is event-driven and enforces compliance at resource creation time."
+    },
+    "concept_ids": ["az305-rbac-governance"],
+    "tags": ["azure-policy", "management-groups", "governance", "compliance", "remediation"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-003",
+    "exam_id": "azure-az305",
+    "domain_id": "data-storage-az305",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "An architect needs to recommend a database service for an e-commerce application that must support: global distribution across 5 regions, the ability to handle both product catalog queries (requiring strong consistency for prices) and shopping cart operations (requiring low latency and high availability with eventual consistency). Which Azure database service best meets both requirements in a single service?",
+    "options": [
+      {"id": "A", "text": "Azure SQL Database with geo-replication to 4 secondary regions and a read-scale connection string for catalog queries", "is_correct": false},
+      {"id": "B", "text": "Azure Cosmos DB with per-container consistency level configuration, using Strong for product catalog containers and Session for shopping cart containers", "is_correct": true},
+      {"id": "C", "text": "Azure Cache for Redis as a global cache layer in front of Azure SQL Database for low-latency reads", "is_correct": false},
+      {"id": "D", "text": "Azure Table Storage with zone-redundant replication and client-side consistency enforcement", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Cosmos DB uniquely supports configuring consistency levels per request or per container. Strong consistency can be used for product catalog containers where price accuracy is critical, while Session or Eventual consistency can be applied to shopping cart containers where low latency and high availability matter more. Cosmos DB natively supports global multi-region distribution with automatic replication.",
+      "why_not_A": "Azure SQL Database geo-replication provides read replicas in secondary regions, but switching between strong consistency (primary writes) and eventual consistency (replica reads) requires application logic to manage connection strings. SQL Database does not natively support distributing writes across 5 regions for low-latency global writes.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Cache for Redis is a caching layer, not a primary database. It does not provide durable persistence for e-commerce data and requires a backing database. This solution adds operational complexity without addressing the multi-region write requirement.",
+      "why_not_D": "Azure Table Storage has limited query capabilities compared to Cosmos DB and does not support the same level of globally distributed writes. The consistency model is fixed at the account level, and 'client-side consistency enforcement' is not a standard feature that addresses the requirement."
+    },
+    "concept_ids": ["az305-database-design"],
+    "tags": ["cosmos-db", "consistency-levels", "global-distribution", "database-design"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-004",
+    "exam_id": "azure-az305",
+    "domain_id": "business-continuity",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company requires their Azure-hosted trading platform to have an RTO of 15 minutes and an RPO of 5 minutes for a complete Azure region failure. The platform runs on Azure VMs with a SQL Server workload. Which disaster recovery solution meets these stringent requirements?",
+    "options": [
+      {"id": "A", "text": "Azure Backup with daily VM snapshots and weekly full backups stored in a geo-redundant Recovery Services vault", "is_correct": false},
+      {"id": "B", "text": "Azure Site Recovery replicating VMs every 30 seconds to a secondary region combined with Azure SQL auto-failover groups", "is_correct": true},
+      {"id": "C", "text": "Geo-redundant Azure SQL Database with standard replication to a secondary region and manually initiated VM rebuilds from ARM templates", "is_correct": false},
+      {"id": "D", "text": "Azure Traffic Manager with performance routing and active-active deployments in two regions with Azure SQL Database read replicas", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Site Recovery provides continuous replication of VMs with an RPO of approximately 30 seconds, well within the 5-minute requirement. Failover to the secondary region can be initiated within minutes, meeting the 15-minute RTO. Azure SQL auto-failover groups provide synchronous or asynchronous replication for SQL workloads with automatic or manual failover, completing the full platform failover capability.",
+      "why_not_A": "Daily VM snapshots provide an RPO of up to 24 hours (since the last backup), which vastly exceeds the 5-minute RPO requirement. Restoring from backup also typically takes hours, violating the 15-minute RTO. This solution is designed for data protection, not rapid DR.",
+      "why_not_B": "N/A",
+      "why_not_C": "Geo-redundant SQL Database replication can meet the RPO requirement for data, but manually rebuilding VMs from ARM templates takes 20-30 minutes minimum—exceeding the 15-minute RTO. This hybrid approach does not provide a complete automated failover solution.",
+      "why_not_D": "Active-active deployment with Traffic Manager provides high availability during partial failures but is not equivalent to DR for a complete region failure. Active-active requires both regions to be running continuously (doubling cost) and is a HA strategy, not purely a DR solution. Read replicas also cannot accept writes until promoted, requiring application changes during failover."
+    },
+    "concept_ids": ["az305-ha-dr-design"],
+    "tags": ["disaster-recovery", "azure-site-recovery", "rto-rpo", "sql-failover-groups"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-005",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An architect is designing network connectivity for a hub-and-spoke topology with 20 spoke VNets. A security policy requires all inter-spoke traffic to pass through a centralized Azure Firewall in the hub VNet for inspection. VNet peering is already configured between hub and all spokes. What additional configuration is required?",
+    "options": [
+      {"id": "A", "text": "Enable VNet peering gateway transit so spokes can use the hub gateway for transitive routing", "is_correct": false},
+      {"id": "B", "text": "Configure User Defined Routes (UDRs) on each spoke VNet subnet with a default route (0.0.0.0/0) pointing to the Azure Firewall private IP in the hub", "is_correct": true},
+      {"id": "C", "text": "Configure Network Security Groups on the hub VNet to forward inter-spoke traffic to Azure Firewall", "is_correct": false},
+      {"id": "D", "text": "Enable VNet peering 'Allow forwarded traffic' setting between all spoke VNets to enable transitive routing", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VNet peering is non-transitive by default—traffic from Spoke A cannot reach Spoke B through the hub without explicit routing. User Defined Routes (UDRs) on spoke subnets with a route for the destination address space pointing to the Azure Firewall private IP (as the next hop) force all inter-spoke traffic through the firewall in the hub. The route table is applied to each spoke subnet.",
+      "why_not_A": "Gateway transit allows spokes to use the hub's VPN/ExpressRoute gateway for on-premises connectivity. It does not route inter-spoke VNet traffic through Azure Firewall. Gateway transit is for on-premises connectivity, not VNet-to-VNet routing.",
+      "why_not_B": "N/A",
+      "why_not_C": "Network Security Groups filter traffic at the NIC and subnet level but do not route or forward traffic. NSGs cannot redirect traffic to a different network path or appliance. Only UDRs can change the next-hop for routed traffic.",
+      "why_not_D": "'Allow forwarded traffic' in VNet peering settings allows traffic that was forwarded by a network virtual appliance to pass through the peering. It enables the flow of routed traffic but does not itself create routes directing traffic through the firewall. UDRs are still required to specify Azure Firewall as the next hop."
+    },
+    "concept_ids": ["az305-networking-design"],
+    "tags": ["hub-spoke", "udr", "azure-firewall", "vnet-peering", "routing"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-006",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A solution architect is designing an Azure compute solution for a web application that needs autoscaling based on CPU utilization and must support zero-downtime deployments using deployment slots. Which Azure service should be selected?",
+    "options": [
+      {"id": "A", "text": "Azure Virtual Machine Scale Sets with a custom script extension for deployment", "is_correct": false},
+      {"id": "B", "text": "Azure App Service (Standard tier or higher)", "is_correct": true},
+      {"id": "C", "text": "Azure Container Instances with multiple container groups", "is_correct": false},
+      {"id": "D", "text": "Azure Kubernetes Service (AKS) with Horizontal Pod Autoscaler", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure App Service (Standard tier and above) natively supports both autoscaling based on CPU, memory, HTTP queue length, and custom metrics, AND deployment slots for zero-downtime deployments. Deployment slots allow deploying to a staging slot and then swapping to production with instant failover capability. This combination is built in and requires no additional configuration.",
+      "why_not_A": "VM Scale Sets support autoscaling but do not have built-in deployment slot functionality. Zero-downtime deployments with VMSS require additional orchestration (blue-green deployment patterns, rolling upgrades with health probes) that are significantly more complex to implement.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Container Instances does not support autoscaling based on metrics or deployment slots. ACI is for simple, stateless container execution without the PaaS management layer that App Service provides.",
+      "why_not_D": "AKS supports HPA for autoscaling and rolling deployments for zero-downtime updates, but AKS requires cluster management, Kubernetes expertise, and more operational overhead. For a web application that does not need full Kubernetes capabilities, App Service is a simpler and equally capable solution."
+    },
+    "concept_ids": ["az305-compute-design"],
+    "tags": ["app-service", "autoscaling", "deployment-slots", "compute-selection"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.16,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-007",
+    "exam_id": "azure-az305",
+    "domain_id": "data-storage-az305",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to store compliance documents that must be preserved for 7 years and must not be modified or deleted by anyone—including storage administrators—during the retention period. Which Azure Blob Storage feature should the architect configure?",
+    "options": [
+      {"id": "A", "text": "Configure a Lifecycle Management policy to lock blobs after upload", "is_correct": false},
+      {"id": "B", "text": "Enable immutable blob storage with a time-based retention policy of 7 years and lock the policy", "is_correct": true},
+      {"id": "C", "text": "Apply Azure RBAC to remove Delete permissions from all users and administrators", "is_correct": false},
+      {"id": "D", "text": "Enable Soft Delete with a 7-year retention period to recover any deleted blobs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Immutable Blob Storage with a locked time-based retention policy implements WORM (Write Once, Read Many) compliance. Once locked, even storage administrators and the subscription owner cannot modify or delete blobs until the retention period expires. This satisfies regulatory requirements for tamper-proof document retention for compliance standards like SEC 17a-4, FINRA, and CFTC.",
+      "why_not_A": "Lifecycle Management policies manage data tiering and deletion based on age—they are used to reduce costs, not to prevent deletion for compliance. There is no 'lock' feature in Lifecycle Management that prevents deletion by administrators.",
+      "why_not_B": "N/A",
+      "why_not_C": "RBAC role assignments can be modified by subscription owners and Global Administrators. Removing Delete permissions from current users does not prevent future administrators or subscription owners from granting themselves delete access and deleting the documents. RBAC is insufficient for tamper-proof compliance retention.",
+      "why_not_D": "Soft Delete recovers accidentally deleted blobs within the retention window, but it does not prevent deletion in the first place. A storage administrator can still delete blobs, and soft-deleted items only persist for the configured retention period. It is a backup/recovery feature, not a compliance immutability feature."
+    },
+    "concept_ids": ["az305-storage-design"],
+    "tags": ["immutable-storage", "worm", "compliance", "retention-policy"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-008",
+    "exam_id": "azure-az305",
+    "domain_id": "application-architecture",
+    "type": "comparison",
+    "difficulty": 4,
+    "stem": "An architect is designing a messaging system for an order processing application. Order messages must be processed exactly once, in the order they were received, and unprocessed messages must be retained for 14 days. The system processes approximately 5,000 messages per second. Which Azure service should be used?",
+    "options": [
+      {"id": "A", "text": "Azure Event Grid with a retry policy and dead-letter configuration", "is_correct": false},
+      {"id": "B", "text": "Azure Service Bus Premium tier with sessions enabled for ordering and duplicate detection", "is_correct": true},
+      {"id": "C", "text": "Azure Event Hubs with consumer groups and offset management for ordered processing", "is_correct": false},
+      {"id": "D", "text": "Azure Storage Queues with visibility timeout and message TTL of 14 days", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Service Bus Premium tier supports message sessions (for FIFO ordered processing per session), duplicate detection (for exactly-once delivery semantics), and message time-to-live up to 14 days. Service Bus Premium also handles 5,000+ messages per second with its high-throughput capabilities. This combination specifically addresses ordered, exactly-once processing with long retention.",
+      "why_not_A": "Azure Event Grid delivers discrete events for reactive programming and is not designed for ordered transactional message processing. Event Grid does not guarantee ordering and does not provide the queue/topic semantics needed for exactly-once processing with 14-day retention.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Event Hubs is optimized for high-throughput streaming/telemetry data. While partitions provide ordered delivery within a partition, Event Hubs does not natively provide exactly-once delivery semantics. The consumer offset model is more complex to implement for exactly-once processing than Service Bus sessions.",
+      "why_not_D": "Azure Storage Queues support message TTL up to 7 days maximum (not 14 days). They also do not support ordered message processing—messages can be retrieved out of order when multiple consumers compete. Storage Queues lack the session-based ordering and duplicate detection of Service Bus."
+    },
+    "concept_ids": ["az305-app-architecture"],
+    "tags": ["service-bus", "sessions", "ordering", "exactly-once", "messaging"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-009",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company wants to reduce Azure costs for their production workloads that run 24/7. Their workloads run on D-series and E-series VMs. They can predict usage for the next 3 years with confidence. What cost optimization approach provides the greatest savings?",
+    "options": [
+      {"id": "A", "text": "Use Azure Spot VMs for all production workloads to take advantage of up to 90% discount", "is_correct": false},
+      {"id": "B", "text": "Purchase 3-year Reserved Instances for the VM family and size, combined with Azure Hybrid Benefit for Windows Server licenses", "is_correct": true},
+      {"id": "C", "text": "Configure autoscaling to scale down VMs during off-peak hours to reduce compute hours consumed", "is_correct": false},
+      {"id": "D", "text": "Switch from Pay-as-you-go to a 1-year Reserved Instance commitment to save approximately 30%", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "3-year Reserved Instances provide up to 65-72% discount over pay-as-you-go for stable 24/7 workloads with predictable 3-year usage. Combining with Azure Hybrid Benefit (which applies existing Windows Server Software Assurance licenses to Azure VMs at no additional license cost) can deliver an additional 30-40% savings on top of the reservation discount. Together they provide the maximum possible cost reduction.",
+      "why_not_A": "Spot VMs are evicted with 30-second notice when Azure needs the capacity, making them unsuitable for production workloads requiring high availability. The risk of disruption outweighs the cost savings for mission-critical production environments.",
+      "why_not_B": "N/A",
+      "why_not_C": "Production workloads running 24/7 cannot be scaled down significantly during off-peak hours without impacting users. If the workloads truly run 24/7 at capacity, autoscaling provides limited savings. Reserved Instances are the correct tool for 24/7 workloads.",
+      "why_not_D": "1-year reservations save approximately 30-40%, while 3-year reservations save 65-72%. Since the company can predict usage for 3 years, choosing a 1-year reservation leaves significant savings on the table. Option D also ignores Azure Hybrid Benefit, which compounds the savings further."
+    },
+    "concept_ids": ["az305-cost-optimization"],
+    "tags": ["reserved-instances", "hybrid-benefit", "cost-optimization", "savings"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-010",
+    "exam_id": "azure-az305",
+    "domain_id": "identity-governance-monitoring",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "An architect needs to design a monitoring solution where operations teams receive email alerts when the CPU percentage of any VM in a resource group exceeds 90% for more than 5 minutes. Which Azure Monitor component is responsible for evaluating the CPU metric condition and sending the email notification?",
+    "options": [
+      {"id": "A", "text": "Diagnostic Settings to route VM metrics to Log Analytics and a Log Analytics alert rule", "is_correct": false},
+      {"id": "B", "text": "A Metric Alert rule targeting the VM resource group with a CPU Percentage condition, connected to an Action Group configured with an email action", "is_correct": true},
+      {"id": "C", "text": "Application Insights availability test with an alert when CPU exceeds the threshold", "is_correct": false},
+      {"id": "D", "text": "Azure Monitor Workbook with a CPU visualization and an embedded alert rule", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Monitor Metric Alerts evaluate metric conditions (like CPU Percentage > 90%) against Azure Monitor platform metrics in near real-time. The alert rule specifies the resource scope (resource group), the metric, condition, and threshold, plus an evaluation frequency and aggregation window (5 minutes). An Action Group defines what happens when the alert fires—in this case, sending an email to the operations team.",
+      "why_not_A": "Diagnostic Settings route platform logs and metrics to destinations for storage or analysis. While you can create Log Analytics alert rules on custom KQL queries, platform metrics like CPU percentage are available directly for Metric Alerts without needing Diagnostic Settings. Metric Alerts evaluate more frequently and have lower latency than log-based alerts.",
+      "why_not_B": "N/A",
+      "why_not_C": "Application Insights availability tests monitor the availability and responsiveness of external endpoints (URL pings). They do not monitor VM infrastructure metrics like CPU percentage.",
+      "why_not_D": "Azure Monitor Workbooks are interactive report visualizations for analyzing and presenting monitoring data. They are read-only dashboards and do not contain alerting functionality. Alerts are configured separately through Azure Monitor Alert rules."
+    },
+    "concept_ids": ["az305-monitoring-design"],
+    "tags": ["azure-monitor", "metric-alerts", "action-groups", "monitoring"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.16,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-011",
+    "exam_id": "azure-az305",
+    "domain_id": "business-continuity",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "An architect is designing a backup strategy for Azure VMs. The strategy must protect against accidental deletion of backups by administrators and provide a recovery window of 14 days for accidentally deleted backup items. Which Azure Backup features should be enabled?",
+    "options": [
+      {"id": "A", "text": "Enable Cross-Region Restore on the Recovery Services vault and configure geo-redundant storage", "is_correct": false},
+      {"id": "B", "text": "Enable Soft Delete on the Recovery Services vault to retain deleted backup data for 14 days", "is_correct": true},
+      {"id": "C", "text": "Configure a 14-day retention policy in the backup policy to keep daily restore points for 2 weeks", "is_correct": false},
+      {"id": "D", "text": "Enable Azure Backup immutable vault to prevent any modification or deletion of backup items", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Soft Delete on a Recovery Services vault retains backup data for 14 days after a delete operation is performed (even by an administrator). During the soft-delete period, the data is marked as deleted but remains recoverable. This protects against accidental deletion by operations staff and provides the 14-day recovery window specified.",
+      "why_not_A": "Cross-Region Restore enables restoring VMs to a secondary paired region in disaster recovery scenarios. It does not protect against accidental deletion of backup items or provide a recovery window after deletion.",
+      "why_not_B": "N/A",
+      "why_not_C": "A 14-day retention policy keeps backup restore points (daily snapshots) for 14 days before purging. This is about how long backup points are retained before scheduled expiry, not about recovering accidentally deleted backups. Retention policy and Soft Delete serve different purposes.",
+      "why_not_D": "Azure Backup immutable vaults permanently prevent deletion or modification of backup policies and items during the configured period. While this provides strong protection, it also prevents administrators from making legitimate changes (like removing backup of decommissioned VMs). Soft Delete is less restrictive and more appropriate for the 14-day recovery window requirement without permanent immutability."
+    },
+    "concept_ids": ["az305-backup-design"],
+    "tags": ["azure-backup", "soft-delete", "backup-protection", "recovery-services-vault"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-012",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is migrating a legacy application to Azure. The application consists of a web tier running IIS on Windows Server and a SQL Server 2019 database. The web tier is a standard application with no special server features required. The database uses SQL Agent jobs, linked servers, and Service Broker features. Which Azure destination services should the architect recommend for this migration?",
+    "options": [
+      {"id": "A", "text": "Web tier: Azure App Service; Database: Azure SQL Database (Single Database)", "is_correct": false},
+      {"id": "B", "text": "Web tier: Azure App Service; Database: Azure SQL Managed Instance", "is_correct": true},
+      {"id": "C", "text": "Web tier: Azure Virtual Machines; Database: Azure SQL Managed Instance", "is_correct": false},
+      {"id": "D", "text": "Web tier: Azure App Service; Database: Azure Database for PostgreSQL", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure App Service is the right PaaS destination for a standard IIS web application, eliminating VM management overhead. Azure SQL Managed Instance is required for the database because it provides near 100% SQL Server compatibility including SQL Agent jobs (not available in Azure SQL Database), linked servers, and Service Broker. These features are not supported in Azure SQL Database but are supported in SQL Managed Instance.",
+      "why_not_A": "Azure SQL Database (Single Database) does not support SQL Agent jobs, linked servers, or Service Broker. The database migration would fail or require significant application changes to remove these dependencies.",
+      "why_not_B": "N/A",
+      "why_not_C": "Using Azure Virtual Machines for the web tier is a valid lift-and-shift approach but misses the opportunity to modernize to PaaS (App Service). The question asks for a recommended migration, and App Service is more appropriate for a standard IIS web application with lower management overhead.",
+      "why_not_D": "Azure Database for PostgreSQL is an open-source database service and does not support SQL Server features, SQL Agent jobs, T-SQL syntax, or Service Broker. Migrating from SQL Server to PostgreSQL would require a database platform migration project, not just a lift-and-shift."
+    },
+    "concept_ids": ["az305-migration-design", "az305-database-design"],
+    "tags": ["migration", "sql-managed-instance", "app-service", "sql-agent", "lift-and-shift"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-013",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "An architect is designing private connectivity for Azure PaaS services. The organization requires that all traffic to Azure Storage and Azure SQL Database from their VNets must stay on the Microsoft private network and the PaaS services must not be accessible from the public internet. Which solution achieves this?",
+    "options": [
+      {"id": "A", "text": "Enable Service Endpoints for Azure Storage and Azure SQL on the VNet subnets and configure storage/SQL firewall to deny public access", "is_correct": false},
+      {"id": "B", "text": "Deploy Private Endpoints for Azure Storage and Azure SQL Database in the VNet and disable public endpoint access on the PaaS resources", "is_correct": true},
+      {"id": "C", "text": "Configure Azure Firewall in the VNet to block outbound traffic to public Azure service IP ranges", "is_correct": false},
+      {"id": "D", "text": "Enable VNet Integration on Azure Storage and configure network rules to deny all public traffic", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Private Endpoints assign a private IP address from the VNet to each PaaS service instance, fully eliminating the public endpoint. All traffic flows over the Microsoft backbone via the private IP. Disabling public access on the storage account and SQL Database ensures they are only accessible via Private Endpoints, meeting both requirements: private-only traffic and no public internet access.",
+      "why_not_A": "Service Endpoints route traffic over the Microsoft backbone from the VNet to the PaaS service's public endpoint. The PaaS service still has a public IP address and is still accessible from the public internet (with IP restrictions). Service Endpoints restrict access to specific VNets but do not eliminate the public endpoint, so the second requirement (no public internet access) is not fully met.",
+      "why_not_B": "N/A",
+      "why_not_C": "Configuring Azure Firewall to block outbound traffic to Azure service IP ranges would prevent VNet resources from accessing Azure Storage and Azure SQL Database at all, not route the traffic privately. This would break connectivity rather than securing it.",
+      "why_not_D": "'VNet Integration' for Azure Storage is not a standard Azure feature in the way described. Azure Storage does not have VNet Integration like App Service does. Private Endpoints are the correct mechanism for private connectivity to Azure Storage."
+    },
+    "concept_ids": ["az305-private-endpoint-design", "az305-networking-design"],
+    "tags": ["private-endpoints", "private-link", "network-security", "paas-connectivity"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-014",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A global retail company needs to serve a static website from Azure with the lowest possible latency for users in North America, Europe, and Asia. The website contains product images (up to 5 GB total) and HTML/CSS/JS assets that are updated weekly. Which architecture should the architect recommend?",
+    "options": [
+      {"id": "A", "text": "Deploy Azure App Service in three separate regions (North America, Europe, Asia) and use Azure Traffic Manager with performance routing", "is_correct": false},
+      {"id": "B", "text": "Enable static website hosting on Azure Blob Storage and configure Azure Front Door with caching enabled as the global CDN layer", "is_correct": true},
+      {"id": "C", "text": "Deploy Azure Virtual Machines in three regions to host a web server and configure Azure Load Balancer to distribute traffic", "is_correct": false},
+      {"id": "D", "text": "Use Azure App Service with CDN integration limited to the nearest single Azure region", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Static website hosting on Azure Blob Storage is cost-effective and highly scalable for static content. Azure Front Door provides a global anycast network with POPs (Points of Presence) worldwide that cache static content close to users across all three regions. It also provides HTTPS, custom domains, and health probes. This combination provides the lowest latency at the lowest cost for static content serving.",
+      "why_not_A": "Deploying App Service in three separate regions triples the infrastructure cost. App Service is designed for dynamic applications requiring server-side processing. For static websites, it is significantly over-engineered and more expensive than Blob Storage static hosting.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Virtual Machines require the most operational overhead (OS patching, web server management) and are the most expensive option for serving static content. Azure Load Balancer only balances within a region, not globally across three regions.",
+      "why_not_D": "Limiting CDN to a single Azure region would mean users in other regions connect to that one region, negating the global low-latency benefit. Azure Front Door's global network is specifically designed to solve the multi-region low-latency requirement."
+    },
+    "concept_ids": ["az305-storage-design", "az305-compute-design"],
+    "tags": ["static-website", "azure-front-door", "cdn", "blob-storage", "global-distribution"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az305-015",
+    "exam_id": "azure-az305",
+    "domain_id": "identity-governance-monitoring",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An architect is designing a Conditional Access policy for a company that has both corporate-managed devices (enrolled in Microsoft Intune) and personal BYOD devices. Corporate data in Microsoft 365 should only be accessible from compliant corporate devices. BYOD users should be able to access read-only company resources with no download capability. Which Conditional Access configuration achieves this?",
+    "options": [
+      {"id": "A", "text": "Create one policy blocking all access from non-compliant devices and a second policy requiring MFA for BYOD devices", "is_correct": false},
+      {"id": "B", "text": "Create a policy granting access to corporate devices requiring device compliance, and a separate policy for BYOD devices using session controls with app-enforced restrictions to limit downloads", "is_correct": true},
+      {"id": "C", "text": "Create a policy with a single grant control requiring both device compliance AND MFA for all users", "is_correct": false},
+      {"id": "D", "text": "Use Azure AD device registration to register BYOD devices and grant access only to registered devices regardless of management status", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Two Conditional Access policies are needed. Policy 1: Targets compliant (Intune-managed) devices, grants full access. Policy 2: Targets BYOD devices (non-compliant or unmanaged), uses session controls with 'Use app enforced restrictions' or 'Use Conditional Access App Control' through Defender for Cloud Apps to allow read-only access and block downloads. This achieves differentiated access without completely blocking BYOD.",
+      "why_not_A": "Blocking all non-compliant devices would deny BYOD users any access. The requirement explicitly states BYOD should have read-only access with no download capability, not be blocked entirely. Requiring MFA for BYOD without session restrictions does not address the download limitation.",
+      "why_not_B": "N/A",
+      "why_not_C": "Requiring device compliance AND MFA for all users would block BYOD users entirely, since personal devices are not enrolled in Intune and cannot meet the compliance requirement. This violates the requirement to provide read-only access to BYOD users.",
+      "why_not_D": "Azure AD device registration (workplace join) only registers the device identity without enforcing management compliance. Simply being registered does not impose any access restrictions or session controls. The download limitation cannot be enforced through device registration alone."
+    },
+    "concept_ids": ["az305-conditional-access", "az305-azure-ad-design"],
+    "tags": ["conditional-access", "byod", "session-controls", "intune", "mdm"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  }
+]

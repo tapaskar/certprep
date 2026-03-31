@@ -6,7 +6,7 @@ import FAQSection from "@/components/pricing/faq-section";
 export const metadata = {
   title: "Pricing",
   description:
-    "Simple, transparent pricing for AWS certification exam prep. Start free, upgrade when you're ready. Pro plans from $12.50/mo.",
+    "Simple, transparent pricing for cloud certification exam prep. AWS, Azure, and Google Cloud. Start free, upgrade when you're ready.",
   alternates: {
     canonical: "https://sparkupcloud.com/pricing",
   },
@@ -16,7 +16,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Product",
   name: "SparkUpCloud",
-  description: "AI-powered AWS certification exam preparation platform",
+  description: "AI-powered cloud certification exam preparation platform for AWS, Azure, and Google Cloud",
   url: "https://sparkupcloud.com/pricing",
   offers: [
     {
@@ -42,7 +42,7 @@ const jsonLd = {
         "@type": "UnitPriceSpecification",
         billingDuration: "P1M",
       },
-      description: "All 15 AWS certifications, completely unlocked",
+      description: "All 36+ certifications (AWS, Azure, GCP), completely unlocked",
     },
     {
       "@type": "Offer",
@@ -53,7 +53,7 @@ const jsonLd = {
         "@type": "UnitPriceSpecification",
         billingDuration: "P1Y",
       },
-      description: "All 15 AWS certifications, completely unlocked, billed annually",
+      description: "All 36+ certifications (AWS, Azure, GCP), completely unlocked, billed annually",
     },
   ],
 };
@@ -67,8 +67,8 @@ const stats = [
     iconColor: "text-green-600",
   },
   {
-    value: "15",
-    label: "AWS certifications covered",
+    value: "36+",
+    label: "Cloud certifications covered",
     icon: Star,
     iconBg: "bg-amber-100",
     iconColor: "text-amber-500",
@@ -200,7 +200,7 @@ export default function PricingPage() {
         {/* Trust tagline */}
         <section className="pb-16 text-center">
           <p className="text-xs font-medium uppercase tracking-widest text-stone-400">
-            Trusted by professionals preparing for AWS certifications worldwide
+            Trusted by professionals preparing for cloud certifications worldwide
           </p>
         </section>
       </div>

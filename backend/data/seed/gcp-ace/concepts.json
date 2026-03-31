@@ -1,0 +1,392 @@
+[
+  {
+    "id": "ace-compute-engine",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "topic_id": "compute-engine-vms",
+    "name": "Compute Engine Virtual Machines",
+    "description": "Creating and managing virtual machines on Google Cloud, including machine types, images, disks, startup scripts, and instance groups.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Machine types: General-purpose (E2, N2, N4), Compute-optimized (C2, C3), Memory-optimized (M1, M2, M3), GPU (A2, G2)",
+      "Preemptible/Spot VMs offer 60-91% discount but can be reclaimed by Google with 30 seconds notice",
+      "Persistent disks are network-attached and survive VM deletion; local SSDs are ephemeral and attached to the host",
+      "Instance templates define VM configuration and are required for managed instance groups (MIGs)",
+      "Startup scripts (metadata key: startup-script) run as root on boot and can install software or configure the VM"
+    ],
+    "common_misconceptions": [
+      "Stopping a VM stops all billing — stopped VMs still incur charges for attached persistent disks and reserved static IPs",
+      "Preemptible VMs are always preempted after 24 hours — they may be preempted sooner but 24 hours is the maximum runtime"
+    ],
+    "gcp_services": ["Compute Engine", "Cloud Storage", "VPC"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-migs-autoscaling", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=1XH0gLo98jY",
+    "official_doc_url": "https://cloud.google.com/compute/docs/instances/create-start-instance"
+  },
+  {
+    "id": "ace-migs-autoscaling",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "topic_id": "instance-groups",
+    "name": "Managed Instance Groups and Autoscaling",
+    "description": "Managed Instance Groups (MIGs) provide automated VM lifecycle management with autoscaling, autohealing, and rolling updates for high availability.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "MIGs maintain a desired number of identical VM instances using an instance template",
+      "Autoscaling triggers on CPU utilization, HTTP load balancing serving capacity, Cloud Monitoring metrics, or schedules",
+      "Autohealing uses health checks to detect and recreate unhealthy VM instances automatically",
+      "Regional MIGs distribute instances across multiple zones for higher availability than zonal MIGs",
+      "Rolling updates (proactive or opportunistic) replace instances gradually without downtime using max-surge and max-unavailable settings"
+    ],
+    "common_misconceptions": [
+      "MIGs automatically load balance traffic — you still need to attach a Cloud Load Balancer; MIGs only manage instance count",
+      "Autohealing immediately replaces failed instances — there is an initial delay and health check grace period before replacement"
+    ],
+    "gcp_services": ["Compute Engine", "Cloud Load Balancing", "Cloud Monitoring"],
+    "prerequisites": ["ace-compute-engine"],
+    "lateral_relations": [{"concept_id": "ace-load-balancing", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=bknog_3kMkw",
+    "official_doc_url": "https://cloud.google.com/compute/docs/instance-groups/creating-groups-of-managed-instances"
+  },
+  {
+    "id": "ace-gke-basics",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "topic_id": "gke-kubernetes",
+    "name": "Google Kubernetes Engine (GKE) Fundamentals",
+    "description": "Deploying and managing containerized workloads on GKE, including cluster modes, node pools, workload deployment, and cluster upgrades.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "GKE Autopilot manages node provisioning, scaling, and security automatically; Standard mode gives node-level control",
+      "Node pools are groups of nodes within a cluster that share the same configuration (machine type, labels, taints)",
+      "kubectl is the command-line tool for interacting with GKE clusters; gcloud container clusters get-credentials configures kubectl",
+      "Workload Identity is the recommended way to grant GKE workloads access to Google Cloud services without service account keys",
+      "GKE release channels (Rapid, Regular, Stable) control the cadence of Kubernetes version upgrades"
+    ],
+    "common_misconceptions": [
+      "GKE Autopilot has no cost when pods are idle — you pay for pod resource requests even in Autopilot mode",
+      "GKE and Kubernetes are the same — GKE is a managed Kubernetes service; Kubernetes is the open-source orchestrator"
+    ],
+    "gcp_services": ["GKE", "Artifact Registry", "Cloud Load Balancing"],
+    "prerequisites": ["ace-compute-engine"],
+    "lateral_relations": [{"concept_id": "ace-cloud-run", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=Rl5M1CzgEH4",
+    "official_doc_url": "https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview"
+  },
+  {
+    "id": "ace-cloud-run",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "topic_id": "serverless-containers",
+    "name": "Cloud Run Serverless Containers",
+    "description": "Deploying and managing stateless containerized services on Cloud Run with automatic scaling including scale-to-zero and HTTPS endpoint management.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Cloud Run scales from zero to thousands of container instances based on incoming requests automatically",
+      "Containers must listen on the port defined by the PORT environment variable (default 8080)",
+      "Services (HTTP requests) and Jobs (batch tasks) are the two main Cloud Run resource types",
+      "VPC connector allows Cloud Run services to access resources in a VPC, such as Cloud SQL via private IP",
+      "Minimum instances setting prevents cold starts by keeping warm instances ready at all times"
+    ],
+    "common_misconceptions": [
+      "Cloud Run only supports HTTP workloads — Cloud Run Jobs support batch/background processing without HTTP triggers",
+      "Scale-to-zero means no cost when idle — you only pay for request processing time; idle instances cost nothing unless minimum instances is set"
+    ],
+    "gcp_services": ["Cloud Run", "Artifact Registry", "Cloud SQL", "Secret Manager"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-gke-basics", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=1t-GxQonaD8",
+    "official_doc_url": "https://cloud.google.com/run/docs/overview/what-is-cloud-run"
+  },
+  {
+    "id": "ace-iam-roles",
+    "exam_id": "gcp-ace",
+    "domain_id": "access-security",
+    "topic_id": "iam-roles-permissions",
+    "name": "IAM Roles, Service Accounts, and Permissions",
+    "description": "Configuring granular access control using IAM roles and service accounts to implement least privilege across Google Cloud resources.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Basic roles (Owner, Editor, Viewer) are coarse-grained and should be avoided in production; use predefined or custom roles",
+      "Service accounts are identities for non-human workloads; key files should be avoided in favor of Workload Identity or attached service accounts",
+      "IAM conditions allow attribute-based access control based on resource type, name, time, or request attributes",
+      "The gcloud command for granting roles: gcloud projects add-iam-policy-binding PROJECT_ID --member=... --role=...",
+      "Policy troubleshooting and IAM recommender help identify overly permissive roles and suggest least-privilege alternatives"
+    ],
+    "common_misconceptions": [
+      "Deleting a service account key immediately revokes its access — there may be a propagation delay of up to 60 seconds",
+      "Primitive roles are fine for small teams — they grant broad permissions and violate least privilege regardless of team size"
+    ],
+    "gcp_services": ["Cloud IAM", "Cloud Identity", "Resource Manager"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-org-policies", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=NnMFAQHyKjA",
+    "official_doc_url": "https://cloud.google.com/iam/docs/understanding-roles"
+  },
+  {
+    "id": "ace-org-policies",
+    "exam_id": "gcp-ace",
+    "domain_id": "cloud-solution-env",
+    "topic_id": "organization-structure",
+    "name": "Resource Hierarchy and Organization Policies",
+    "description": "Managing Google Cloud's resource hierarchy (Organization > Folders > Projects > Resources) and using organization policies to enforce guardrails.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Resource hierarchy: Organization > Folders > Projects > Resources (VMs, buckets, etc.)",
+      "IAM policies and organization policies inherit downward; child resources cannot override parent deny policies",
+      "Organization policies enforce constraints across the organization (e.g., restrict resource locations, disable service account key creation)",
+      "Projects are the fundamental unit of resource organization, billing, and quota management",
+      "Resource Manager lets you move projects between folders and apply labels for cost attribution"
+    ],
+    "common_misconceptions": [
+      "Project-level IAM policy overrides organization-level policy — inheritance flows downward and more restrictive policies take precedence",
+      "Folders are required in a GCP organization — folders are optional; projects can exist directly under the organization"
+    ],
+    "gcp_services": ["Resource Manager", "Cloud IAM", "Cloud Billing"],
+    "prerequisites": ["ace-iam-roles"],
+    "lateral_relations": [{"concept_id": "ace-iam-roles", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=NOOhDq1JyIM",
+    "official_doc_url": "https://cloud.google.com/resource-manager/docs/cloud-platform-resource-hierarchy"
+  },
+  {
+    "id": "ace-vpc-networking",
+    "exam_id": "gcp-ace",
+    "domain_id": "planning-configuring",
+    "topic_id": "vpc-networking",
+    "name": "VPC Networking and Subnets",
+    "description": "Designing and configuring Virtual Private Cloud networks, subnets, firewall rules, and routes to connect GCP resources securely.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "GCP VPCs are global; subnets are regional and have primary and secondary IP ranges",
+      "Auto-mode VPC creates subnets in each region automatically; custom-mode gives full control over IP ranges",
+      "Firewall rules are stateful and evaluated by priority (0-65534, lower wins) with implied deny-all at the end",
+      "VPC peering connects two VPCs without transitive routing; Shared VPC centralizes networking for multiple projects",
+      "Cloud Router with BGP advertises routes between VPC and on-premises networks for Cloud VPN and Interconnect"
+    ],
+    "common_misconceptions": [
+      "VPC peering is transitive — VPC A peered with B and B peered with C does not mean A can reach C",
+      "GCP firewall rules work like traditional stateless ACLs — GCP firewalls are stateful, tracking connection state"
+    ],
+    "gcp_services": ["VPC", "Cloud Router", "Cloud Firewall", "Cloud NAT"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-load-balancing", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=cNb7xKyya5c",
+    "official_doc_url": "https://cloud.google.com/vpc/docs/vpc"
+  },
+  {
+    "id": "ace-load-balancing",
+    "exam_id": "gcp-ace",
+    "domain_id": "planning-configuring",
+    "topic_id": "load-balancing",
+    "name": "Cloud Load Balancing",
+    "description": "Selecting and configuring the appropriate Google Cloud load balancer type based on protocol, traffic origin (internal/external), and geographic scope.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "External Application Load Balancer (HTTP/S) is global, uses Anycast, and supports Cloud CDN and URL maps",
+      "External Network Load Balancer (TCP/UDP) is regional and preserves client source IP addresses",
+      "Internal Load Balancers route traffic within VPC: Internal Application LB (HTTP/S) and Internal Passthrough NLB (TCP/UDP)",
+      "Backend services configure health checks, session affinity, and traffic distribution to instance groups or NEGs",
+      "Cloud CDN integrates with External Application Load Balancer to cache content at Google's edge PoPs"
+    ],
+    "common_misconceptions": [
+      "HTTP(S) Load Balancer terminates SSL at the backend VMs — it terminates SSL at the load balancer level, decrypting at the edge",
+      "Load balancers are regional — the External Application LB is global with a single anycast IP, serving users from nearest PoP"
+    ],
+    "gcp_services": ["Cloud Load Balancing", "Cloud CDN", "Cloud Armor"],
+    "prerequisites": ["ace-vpc-networking", "ace-migs-autoscaling"],
+    "lateral_relations": [{"concept_id": "ace-migs-autoscaling", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=HUHBq_VGgFg",
+    "official_doc_url": "https://cloud.google.com/load-balancing/docs/choosing-load-balancer"
+  },
+  {
+    "id": "ace-cloud-storage",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "topic_id": "cloud-storage",
+    "name": "Cloud Storage Buckets and Access Control",
+    "description": "Creating and managing Cloud Storage buckets with appropriate storage classes, lifecycle policies, versioning, and access control configurations.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Storage classes: Standard (frequent access), Nearline (30-day min, monthly access), Coldline (90-day min), Archive (365-day min)",
+      "Lifecycle policies automate object transitions between storage classes or deletion based on age or condition",
+      "Object versioning retains overwritten/deleted objects; combined with lifecycle rules to manage version count and cost",
+      "Bucket-level access (uniform) vs object-level ACLs (fine-grained); Google recommends uniform bucket-level access",
+      "Signed URLs grant time-limited access to private objects without requiring Google authentication"
+    ],
+    "common_misconceptions": [
+      "Deleting a bucket is reversible — deleted buckets and objects (without versioning) are permanently gone with no recovery",
+      "Nearline is for cold archival data — Nearline is for monthly access; use Archive for rarely accessed long-term storage"
+    ],
+    "gcp_services": ["Cloud Storage", "Cloud IAM", "Cloud KMS"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-iam-roles", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=vgf_yKZGgB4",
+    "official_doc_url": "https://cloud.google.com/storage/docs/introduction"
+  },
+  {
+    "id": "ace-cloud-sql",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "topic_id": "managed-databases",
+    "name": "Cloud SQL Managed Relational Databases",
+    "description": "Deploying and configuring fully managed MySQL, PostgreSQL, and SQL Server instances on Cloud SQL with high availability, read replicas, and backups.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Cloud SQL supports MySQL, PostgreSQL, and SQL Server with automatic patching and backups",
+      "High availability (HA) uses a standby instance in a different zone with synchronous replication and automatic failover",
+      "Read replicas offload read traffic and can be in the same region or cross-region for disaster recovery",
+      "Private IP access uses VPC peering or Private Service Connect to avoid exposing databases to public internet",
+      "Point-in-time recovery (PITR) enables restoring to any second within the backup retention window using binary logs"
+    ],
+    "common_misconceptions": [
+      "Cloud SQL HA provides zero RPO — a small amount of data loss is possible during failover due to replication lag",
+      "Cloud SQL auto-scales storage and compute — storage can autoscale but compute (vCPUs/RAM) requires manual or scheduled changes"
+    ],
+    "gcp_services": ["Cloud SQL", "Cloud Storage", "VPC"],
+    "prerequisites": ["ace-vpc-networking"],
+    "lateral_relations": [{"concept_id": "ace-cloud-storage", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=UQTZWlxpHmM",
+    "official_doc_url": "https://cloud.google.com/sql/docs/introduction"
+  },
+  {
+    "id": "ace-monitoring-logging",
+    "exam_id": "gcp-ace",
+    "domain_id": "successful-operation",
+    "topic_id": "cloud-operations",
+    "name": "Cloud Monitoring and Logging",
+    "description": "Setting up monitoring dashboards, alert policies, log-based metrics, and log exports using Cloud Monitoring and Cloud Logging.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Cloud Logging automatically collects logs from all GCP services; VM logs require the Ops Agent or legacy Logging agent",
+      "Log sinks export logs to Cloud Storage, BigQuery, Pub/Sub, or other Google Cloud projects for long-term retention",
+      "Log-based metrics create custom metrics from log entries that can trigger alerts in Cloud Monitoring",
+      "Uptime checks test the availability of URLs, TCP ports, or DNS from multiple geographic locations",
+      "Alert policies define conditions, notification channels, and incident creation rules for proactive issue detection"
+    ],
+    "common_misconceptions": [
+      "Cloud Logging retains logs forever by default — default log retention is 30 days for most logs; use log sinks for longer retention",
+      "Cloud Monitoring only monitors GCP resources — it supports monitoring on-premises and multi-cloud via the Ops Agent"
+    ],
+    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Cloud Trace", "Error Reporting"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-compute-engine", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=h7pY5KLNFPY",
+    "official_doc_url": "https://cloud.google.com/monitoring/docs/monitoring_overview"
+  },
+  {
+    "id": "ace-deployment-manager",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "topic_id": "infrastructure-as-code",
+    "name": "Infrastructure as Code with Terraform and Deployment Manager",
+    "description": "Automating GCP infrastructure provisioning using Terraform (Google-recommended) or Cloud Deployment Manager templates.",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Terraform is Google's recommended IaC tool with a Google Cloud provider and state management via Cloud Storage",
+      "Cloud Deployment Manager uses YAML/Jinja2 templates and is GCP-native but less feature-rich than Terraform",
+      "IaC enables repeatable, version-controlled infrastructure; changes are previewed with terraform plan before applying",
+      "Terraform state tracks current infrastructure; remote state in Cloud Storage enables team collaboration",
+      "Cloud Foundation Toolkit provides opinionated Terraform modules aligned with Google's best practices"
+    ],
+    "common_misconceptions": [
+      "Deployment Manager and Terraform achieve identical results — Terraform supports multi-cloud and has a much richer ecosystem",
+      "IaC eliminates all manual configuration — IaC manages provisioning but operational config (OS-level) still needs configuration management tools"
+    ],
+    "gcp_services": ["Cloud Deployment Manager", "Cloud Storage", "Cloud Build"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-org-policies", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=HmXm0ozlSWU",
+    "official_doc_url": "https://cloud.google.com/deployment-manager/docs"
+  },
+  {
+    "id": "ace-billing",
+    "exam_id": "gcp-ace",
+    "domain_id": "cloud-solution-env",
+    "topic_id": "billing-cost",
+    "name": "GCP Billing, Quotas, and Cost Management",
+    "description": "Configuring billing accounts, budgets, alerts, and cost optimization strategies including committed use discounts and sustained use discounts.",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Billing accounts are linked to projects; one billing account can pay for multiple projects",
+      "Sustained Use Discounts (SUD) apply automatically when VMs run more than 25% of a month with no commitment required",
+      "Committed Use Discounts (CUD) offer 1 or 3-year commitments for up to 57% discount on vCPUs and memory",
+      "Budget alerts send notifications when spending reaches configured thresholds (50%, 90%, 100% of budget)",
+      "Labels applied to resources enable cost attribution by team, environment, or project in billing exports"
+    ],
+    "common_misconceptions": [
+      "Sustained use discounts require enrollment — they apply automatically based on usage with no sign-up needed",
+      "Budget alerts stop spending when the budget is exceeded — they only send notifications; you must implement programmatic responses"
+    ],
+    "gcp_services": ["Cloud Billing", "Resource Manager", "BigQuery"],
+    "prerequisites": ["ace-org-policies"],
+    "lateral_relations": [{"concept_id": "ace-org-policies", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=dxLHoJob4dg",
+    "official_doc_url": "https://cloud.google.com/billing/docs"
+  },
+  {
+    "id": "ace-app-engine",
+    "exam_id": "gcp-ace",
+    "domain_id": "deploying-implementing",
+    "topic_id": "app-engine-paas",
+    "name": "App Engine Standard and Flexible Environments",
+    "description": "Deploying web applications on App Engine Standard (language-specific runtimes) vs Flexible (Docker containers) with automatic scaling and traffic splitting.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Standard environment uses sandboxed language runtimes (Python, Java, Go, Node.js) and can scale to zero",
+      "Flexible environment runs Docker containers on Compute Engine VMs and supports any language or runtime",
+      "Traffic splitting routes percentages of traffic to different versions for A/B testing or canary deployments",
+      "Services (formerly modules) allow a single App Engine app to be composed of multiple independently scaled services",
+      "app.yaml defines runtime, scaling configuration, environment variables, and URL routing for each service"
+    ],
+    "common_misconceptions": [
+      "App Engine Flexible is always more capable than Standard — Standard has faster scaling and can reach zero instances; Flexible has minimum 1 instance",
+      "You can use any library in App Engine Standard — Standard uses a sandboxed runtime with restrictions; Flexible has no such limitations"
+    ],
+    "gcp_services": ["App Engine", "Cloud Storage", "Cloud SQL"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-cloud-run", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=2PRciDpqpko",
+    "official_doc_url": "https://cloud.google.com/appengine/docs"
+  },
+  {
+    "id": "ace-gcloud-cli",
+    "exam_id": "gcp-ace",
+    "domain_id": "cloud-solution-env",
+    "topic_id": "gcloud-sdk",
+    "name": "gcloud CLI and Google Cloud SDK",
+    "description": "Using the gcloud command-line tool for GCP resource management, including configuration, authentication, and key commands tested on the ACE exam.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "gcloud init configures the SDK with account, project, and region/zone defaults for a new installation",
+      "gcloud config set and gcloud config configurations manage multiple project/account contexts",
+      "Key patterns: gcloud compute instances create, gcloud container clusters create, gcloud storage cp",
+      "gcloud auth application-default login sets credentials for application-level authentication",
+      "Cloud Shell provides a browser-based terminal with gcloud pre-installed and 5 GB persistent home directory"
+    ],
+    "common_misconceptions": [
+      "gcloud and gsutil are different tools requiring separate installation — gsutil is included in the Cloud SDK alongside gcloud",
+      "Cloud Shell is a permanent VM — Cloud Shell instances are ephemeral; only the home directory persists across sessions"
+    ],
+    "gcp_services": ["Cloud SDK", "Cloud Shell", "Cloud IAM"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "ace-compute-engine", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=j274vq9a2Rs",
+    "official_doc_url": "https://cloud.google.com/sdk/docs"
+  }
+]

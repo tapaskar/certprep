@@ -1,0 +1,422 @@
+[
+  {
+    "id": "az204-azure-functions",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-compute-solutions",
+    "topic_id": "serverless-functions",
+    "name": "Azure Functions Development",
+    "description": "Building event-driven serverless functions in Azure using triggers, bindings, and durable workflows.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Functions are triggered by events: HTTP, Timer, Queue, Event Hub, Blob, Cosmos DB change feed",
+      "Input and output bindings connect functions to data sources and services declaratively in function.json",
+      "Hosting plans: Consumption (pay-per-execution, cold starts), Premium (pre-warmed, VNet), Dedicated (App Service Plan)",
+      "Durable Functions extends Azure Functions with stateful workflows using orchestrator, activity, and entity functions",
+      "Function App settings and connection strings are stored in Application Settings, not in code"
+    ],
+    "common_misconceptions": [
+      "Consumption plan functions do not run continuously; they scale to zero and may have cold start delays",
+      "Bindings are not required; developers can use SDKs directly, but bindings reduce boilerplate code"
+    ],
+    "azure_services": ["Azure Functions", "Azure Durable Functions", "Azure App Service"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-app-service-dev", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview"
+  },
+  {
+    "id": "az204-azure-app-service-dev",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-compute-solutions",
+    "topic_id": "app-service-dev",
+    "name": "Azure App Service Web Apps Development",
+    "description": "Developing and deploying web applications to Azure App Service using CI/CD, configuration, and scaling.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Deployment sources: GitHub Actions, Azure DevOps, local Git, ZIP deploy, FTP",
+      "Application settings override appsettings.json and are exposed as environment variables at runtime",
+      "Deployment slots enable blue/green deployments; swap operation routes traffic without downtime",
+      "Always On setting prevents the app from going idle on Standard or higher plans",
+      "Custom health check endpoint allows App Service to restart unhealthy instances automatically"
+    ],
+    "common_misconceptions": [
+      "Application settings in slots are either slot-specific (stay after swap) or shared (move with swap)",
+      "WebJobs run background tasks within an App Service Plan's compute but are separate from the web app process"
+    ],
+    "azure_services": ["Azure App Service", "Azure App Service Plan", "Azure DevOps"],
+    "prerequisites": ["az204-azure-functions"],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-functions", "transfer_weight": 0.3}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=4BwyqmRTrx8",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/app-service/overview"
+  },
+  {
+    "id": "az204-azure-containers-dev",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-compute-solutions",
+    "topic_id": "containers-dev",
+    "name": "Containers and Azure Container Apps",
+    "description": "Building and deploying containerized applications using Docker, ACR, ACI, and Azure Container Apps.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Dockerfiles define container image builds; multi-stage builds reduce final image size",
+      "Azure Container Registry (ACR) stores and manages private Docker container images",
+      "Azure Container Apps provides serverless container hosting with built-in scale-to-zero and Dapr support",
+      "Container Apps environments group related apps sharing a VNet and Log Analytics workspace",
+      "ACR Tasks enable building and pushing images in the cloud triggered by source code commits"
+    ],
+    "common_misconceptions": [
+      "Azure Container Apps and AKS are different; ACA abstracts Kubernetes, AKS exposes full Kubernetes control",
+      "Container Apps revision management allows multiple versions to run simultaneously with traffic splitting"
+    ],
+    "azure_services": ["Azure Container Apps", "Azure Container Registry", "Azure Container Instances"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-app-service-dev", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/container-apps/overview"
+  },
+  {
+    "id": "az204-azure-blob-dev",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-azure-storage",
+    "topic_id": "blob-storage-dev",
+    "name": "Azure Blob Storage Development",
+    "description": "Programmatically working with Azure Blob Storage to store, retrieve, and manage unstructured data.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Blob Storage SDK supports parallel uploads, chunked transfers via BlockBlobClient for large files",
+      "SAS (Shared Access Signature) tokens delegate specific access rights with expiry to clients",
+      "Blob leases prevent concurrent writes; useful for distributed locking patterns",
+      "Object replication asynchronously copies blobs between source and destination storage accounts",
+      "Blob Storage Events via Event Grid trigger Functions or Logic Apps on blob creation/deletion"
+    ],
+    "common_misconceptions": [
+      "Account SAS and Service SAS are different; User Delegation SAS uses Entra ID credentials for better security",
+      "Blob index tags enable filtering and searching blobs without listing all objects in a container"
+    ],
+    "azure_services": ["Azure Blob Storage", "Azure Data Lake Storage Gen2"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az204-cosmos-db-dev", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction"
+  },
+  {
+    "id": "az204-cosmos-db-dev",
+    "exam_id": "azure-az204",
+    "domain_id": "develop-azure-storage",
+    "topic_id": "cosmos-db-dev",
+    "name": "Azure Cosmos DB Development",
+    "description": "Developing applications with Azure Cosmos DB using the SDK, partitioning, consistency, and change feed.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Partition key choice is critical; it determines data distribution and query efficiency at scale",
+      "Change feed in Cosmos DB captures all inserts and updates in partition key sort order",
+      "Consistency levels: Strong, Bounded Staleness, Session (default), Consistent Prefix, Eventual",
+      "Transactional batch operations execute multiple operations atomically within a single partition",
+      "Time-to-Live (TTL) automatically expires documents after a specified duration in seconds"
+    ],
+    "common_misconceptions": [
+      "Session consistency is the default and provides monotonic reads for a single session, not globally",
+      "Cross-partition queries work but are more expensive in RUs than single-partition queries"
+    ],
+    "azure_services": ["Azure Cosmos DB"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-blob-dev", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/cosmos-db/introduction"
+  },
+  {
+    "id": "az204-managed-identities",
+    "exam_id": "azure-az204",
+    "domain_id": "implement-azure-security",
+    "topic_id": "managed-identities",
+    "name": "Managed Identities and Key Vault Integration",
+    "description": "Using Azure Managed Identities to authenticate to Azure services without storing credentials in code.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "System-assigned managed identity is tied to the resource lifecycle; deleted when resource is deleted",
+      "User-assigned managed identity is a standalone resource that can be shared across multiple services",
+      "Managed identities obtain tokens from the Azure Instance Metadata Service (IMDS) endpoint automatically",
+      "DefaultAzureCredential in Azure SDKs automatically tries multiple credential sources including managed identity",
+      "Key Vault access for managed identities is granted via Azure RBAC roles or Key Vault access policies"
+    ],
+    "common_misconceptions": [
+      "Managed identities work in any Azure compute environment: VMs, App Service, Functions, AKS, Container Apps",
+      "User-assigned identities must be explicitly assigned to resources; they are not automatic"
+    ],
+    "azure_services": ["Azure Managed Identity", "Azure Key Vault", "Microsoft Entra ID"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-ad-security-dev", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview"
+  },
+  {
+    "id": "az204-azure-ad-security-dev",
+    "exam_id": "azure-az204",
+    "domain_id": "implement-azure-security",
+    "topic_id": "app-registration",
+    "name": "Microsoft Entra ID App Registration and OAuth",
+    "description": "Registering applications in Entra ID and implementing OAuth 2.0 authorization flows for secure API access.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "App Registration creates an identity for the application in Entra ID with a client ID and tenant ID",
+      "Client secrets and certificates authenticate the application; certificates are preferred for production",
+      "OAuth flows: Authorization Code (user-delegated), Client Credentials (service-to-service), Device Code (CLI)",
+      "MSAL (Microsoft Authentication Library) handles token acquisition and caching for all platforms",
+      "Scopes define what access a token grants; user consent or admin consent may be required"
+    ],
+    "common_misconceptions": [
+      "Client secrets expire; certificate-based authentication has longer validity and is more secure",
+      "Access tokens are short-lived (1 hour); refresh tokens allow silent token renewal without user re-authentication"
+    ],
+    "azure_services": ["Microsoft Entra ID", "Microsoft Identity Platform", "Microsoft Authentication Library"],
+    "prerequisites": ["az204-managed-identities"],
+    "lateral_relations": [
+      {"concept_id": "az204-managed-identities", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/entra/identity-platform/app-registrations-training-guide-overview"
+  },
+  {
+    "id": "az204-azure-api-management",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "topic_id": "api-management",
+    "name": "Azure API Management",
+    "description": "A managed gateway for publishing, securing, transforming, and monitoring APIs in Azure.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "APIM provides a facade for backend APIs with consistent policies for throttling, caching, and transformation",
+      "Policies are XML configurations applied at gateway, product, API, and operation scopes",
+      "Products group APIs and define subscription terms; consumers subscribe to products to get API keys",
+      "Backend APIs can be Azure Functions, App Service, Logic Apps, or any HTTP endpoint",
+      "Developer portal provides automatically generated API documentation and interactive testing"
+    ],
+    "common_misconceptions": [
+      "APIM subscription keys are different from Entra ID tokens; both can be used depending on policy configuration",
+      "APIM caching is at the gateway level; it reduces backend calls but requires cache-invalidation strategies"
+    ],
+    "azure_services": ["Azure API Management", "Azure Functions", "Azure App Service"],
+    "prerequisites": ["az204-azure-app-service-dev"],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-event-grid", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/api-management/api-management-key-concepts"
+  },
+  {
+    "id": "az204-azure-event-grid",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "topic_id": "event-grid",
+    "name": "Azure Event Grid and Event-Driven Architecture",
+    "description": "Building event-driven applications using Azure Event Grid for reactive programming at scale.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Event Grid routes events from publishers (sources) to subscribers (handlers) using topics and subscriptions",
+      "System topics are built-in for Azure services like Blob Storage, App Service, and Container Registry",
+      "Custom topics allow applications to publish their own events to Event Grid",
+      "Event Grid guarantees at-least-once delivery with retry policies up to 24 hours",
+      "Dead-lettering sends undeliverable events to a Blob Storage container for inspection"
+    ],
+    "common_misconceptions": [
+      "Event Grid is for events (discrete state changes), not messages (commands); use Service Bus for commands",
+      "Event Grid at-least-once delivery means subscribers must be idempotent to handle duplicate events"
+    ],
+    "azure_services": ["Azure Event Grid", "Azure Functions", "Azure Event Hubs"],
+    "prerequisites": ["az204-azure-functions"],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-service-bus", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/event-grid/overview"
+  },
+  {
+    "id": "az204-azure-service-bus",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "topic_id": "messaging",
+    "name": "Azure Service Bus and Storage Queues",
+    "description": "Reliable messaging services for decoupling application components and ensuring guaranteed message delivery.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Service Bus Queues support ordered delivery (FIFO), duplicate detection, dead-lettering, and sessions",
+      "Service Bus Topics provide publish-subscribe with multiple independent subscriptions per topic",
+      "Azure Storage Queues are simpler and cheaper; support up to 64KB messages and 500TB queue size",
+      "Message lock prevents other consumers from processing the same message while being processed",
+      "Dead-letter queue receives messages that exceed max delivery count or are explicitly dead-lettered"
+    ],
+    "common_misconceptions": [
+      "Service Bus and Event Grid serve different patterns; Service Bus for reliable commands, Event Grid for reactive events",
+      "Peek-lock and Receive-and-Delete are two receive modes; Peek-lock is safer but requires explicit completion"
+    ],
+    "azure_services": ["Azure Service Bus", "Azure Storage Queues", "Azure Functions"],
+    "prerequisites": ["az204-azure-event-grid"],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-event-grid", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview"
+  },
+  {
+    "id": "az204-azure-monitoring-dev",
+    "exam_id": "azure-az204",
+    "domain_id": "monitor-troubleshoot-optimize",
+    "topic_id": "app-insights",
+    "name": "Application Insights and Distributed Tracing",
+    "description": "Application performance monitoring and telemetry for cloud applications using Application Insights.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Application Insights provides request rates, failure rates, response times, and custom telemetry",
+      "Auto-instrumentation requires no code changes; SDK instrumentation allows custom events and metrics",
+      "Distributed tracing correlates telemetry across services using operation IDs and parent-child spans",
+      "Live Metrics shows real-time telemetry for running applications without storage overhead",
+      "Smart Detection automatically alerts on anomalous failure rates and performance degradations"
+    ],
+    "common_misconceptions": [
+      "Application Insights data is sampled by default at high volume to control costs; not all requests are recorded",
+      "Application Insights connection string is preferred over iKey; it includes the ingestion endpoint"
+    ],
+    "azure_services": ["Azure Application Insights", "Azure Monitor", "Azure Log Analytics"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-app-service-dev", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview"
+  },
+  {
+    "id": "az204-azure-cache-cdn",
+    "exam_id": "azure-az204",
+    "domain_id": "monitor-troubleshoot-optimize",
+    "topic_id": "caching-cdn",
+    "name": "Azure Cache for Redis and Azure CDN",
+    "description": "Caching strategies using Redis and content delivery networks to reduce latency and backend load.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Cache for Redis supports data structures: strings, lists, sets, sorted sets, and hashes",
+          "Cache-aside pattern: application checks cache first, loads from database on miss, then updates cache",
+      "Redis persistence options: RDB (periodic snapshots) and AOF (append-only file for durability)",
+      "Azure CDN caches static content at edge POP (Point of Presence) locations close to users globally",
+      "CDN rules engine allows custom caching behavior, URL rewriting, and header manipulation"
+    ],
+    "common_misconceptions": [
+      "Azure Cache for Redis is not just for caching; it supports pub/sub messaging and session storage",
+      "CDN caches content at the edge; origin servers still serve cache misses and dynamic content"
+    ],
+    "azure_services": ["Azure Cache for Redis", "Azure CDN", "Azure Front Door"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-monitoring-dev", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-overview"
+  },
+  {
+    "id": "az204-azure-logic-apps",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "topic_id": "logic-apps",
+    "name": "Azure Logic Apps and Integration Services",
+    "description": "Low-code workflow automation for integrating apps, data, and services across cloud and on-premises.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Logic Apps provides 1000+ built-in connectors for popular services without writing integration code",
+      "Workflows start with a trigger (recurrence, HTTP, service event) and consist of actions and conditions",
+      "Standard Logic Apps use single-tenant model with better networking and runtime performance",
+      "Consumption Logic Apps are multi-tenant with per-execution billing; Standard uses App Service Plan",
+      "On-premises Data Gateway enables Logic Apps to connect to on-premises data sources securely"
+    ],
+    "common_misconceptions": [
+      "Logic Apps and Azure Functions overlap but differ; Logic Apps is for workflows, Functions for compute-heavy tasks",
+      "Logic Apps run history stores inputs and outputs; disable this for workflows processing sensitive data"
+    ],
+    "azure_services": ["Azure Logic Apps", "Azure Integration Account", "On-premises Data Gateway"],
+    "prerequisites": ["az204-azure-functions"],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-api-management", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/logic-apps/logic-apps-overview"
+  },
+  {
+    "id": "az204-azure-security-dev",
+    "exam_id": "azure-az204",
+    "domain_id": "implement-azure-security",
+    "topic_id": "app-security",
+    "name": "Secure Application Development in Azure",
+    "description": "Security best practices and Azure services for protecting application data, secrets, and API endpoints.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Key Vault references in App Service and Functions inject secrets without storing them in app settings",
+      "RBAC data plane roles (e.g., Storage Blob Data Reader) are separate from management plane roles",
+      "Always Encrypted in SQL Database encrypts data at column level; keys never leave the client",
+      "Transparent Data Encryption (TDE) encrypts SQL databases and backups at rest automatically",
+      "Microsoft Defender for App Service detects common web attacks and suspicious activities"
+    ],
+    "common_misconceptions": [
+      "Key Vault references fetch secret values at app startup, not on every request; restart updates the value",
+      "Connection string encryption in App Service is not the same as Key Vault; App Service encrypts the setting display"
+    ],
+    "azure_services": ["Azure Key Vault", "Azure App Service", "Azure SQL Database"],
+    "prerequisites": ["az204-managed-identities"],
+    "lateral_relations": [
+      {"concept_id": "az204-managed-identities", "transfer_weight": 0.4}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/security/develop/secure-develop"
+  },
+  {
+    "id": "az204-azure-notification-hubs",
+    "exam_id": "azure-az204",
+    "domain_id": "connect-consume-services",
+    "topic_id": "notifications",
+    "name": "Azure Notification Hubs and Push Notifications",
+    "description": "Scalable push notification infrastructure for sending personalized messages to mobile and web platforms.",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Notification Hubs abstracts individual PNS (Platform Notification Service) APIs: APNs, FCM, WNS",
+      "Tags segment devices for targeted push notifications to specific user groups or topics",
+      "Templates allow sending localized or personalized notifications without platform-specific code",
+      "Installation API (preferred over Registration API) provides better device management at scale",
+      "Notification Hubs does not receive replies from devices; it is a push-only outbound service"
+    ],
+    "common_misconceptions": [
+      "Notification Hubs and Azure SignalR are different; SignalR provides bidirectional real-time connections",
+      "Tags in Notification Hubs can have at most 10 per installation without registration API limitations"
+    ],
+    "azure_services": ["Azure Notification Hubs", "Azure Communication Services"],
+    "prerequisites": ["az204-azure-service-bus"],
+    "lateral_relations": [
+      {"concept_id": "az204-azure-service-bus", "transfer_weight": 0.2}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Vxf-rOEO1q4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/notification-hubs/notification-hubs-push-notification-overview"
+  }
+]

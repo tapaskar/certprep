@@ -9,28 +9,30 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "SparkUpCloud — AI-Powered AWS Certification Exam Prep",
+    default: "SparkUpCloud — AI-Powered Cloud Certification Exam Prep",
     template: "%s | SparkUpCloud",
   },
   description:
-    "Master all 15 AWS certifications with AI-powered adaptive learning, spaced repetition, concept tutorials, practice questions, video lessons, and hands-on labs. 85% pass rate.",
+    "Master 36+ AWS, Azure, and Google Cloud certifications with AI-powered adaptive learning, spaced repetition, concept tutorials, practice questions, video lessons, and hands-on labs. 85% pass rate.",
   keywords: [
     "AWS certification",
+    "Azure certification",
+    "Google Cloud certification",
+    "GCP certification",
     "cloud certification",
     "exam prep",
     "AWS Solutions Architect",
-    "AWS Developer",
-    "AWS DevOps",
-    "cloud practitioner",
+    "Azure Administrator",
+    "GCP Cloud Architect",
     "practice questions",
     "study guide",
     "AI learning",
   ],
   metadataBase: new URL("https://sparkupcloud.com"),
   openGraph: {
-    title: "SparkUpCloud — Master Your AWS Certification",
+    title: "SparkUpCloud — Master Your Cloud Certification",
     description:
-      "AI-powered exam prep for all 15 AWS certifications. Adaptive learning, practice questions, video tutorials, and hands-on labs.",
+      "AI-powered exam prep for 36+ AWS, Azure, and Google Cloud certifications. Adaptive learning, practice questions, video tutorials, and hands-on labs.",
     url: "https://sparkupcloud.com",
     siteName: "SparkUpCloud",
     type: "website",
@@ -38,9 +40,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SparkUpCloud — AI-Powered AWS Certification Prep",
+    title: "SparkUpCloud — AI-Powered Cloud Certification Prep",
     description:
-      "Master all 15 AWS certifications with adaptive learning and practice questions.",
+      "Master 36+ AWS, Azure, and Google Cloud certifications with adaptive learning and practice questions.",
   },
   robots: {
     index: true,

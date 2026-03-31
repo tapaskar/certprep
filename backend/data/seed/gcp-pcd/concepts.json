@@ -1,0 +1,392 @@
+[
+  {
+    "id": "pcd-cloud-native-design",
+    "exam_id": "gcp-pcd",
+    "domain_id": "designing-cloud-native",
+    "topic_id": "cloud-native-principles",
+    "name": "Cloud-Native Application Design Principles",
+    "description": "Designing stateless, containerized applications following 12-factor app methodology for portability, scalability, and resilience on Google Cloud.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "12-factor app: codebase in version control, dependencies declared, config in environment, backing services as attached resources",
+      "Stateless services store session state externally (Memorystore, Firestore) enabling horizontal scaling",
+      "Health checks (liveness and readiness probes) in GKE enable Kubernetes to manage pod lifecycle correctly",
+      "Circuit breaker pattern (via Istio or Resilience4j) prevents cascading failures in microservices",
+      "Idempotency ensures repeated API calls produce the same result, critical for retry logic and at-least-once delivery"
+    ],
+    "common_misconceptions": [
+      "Containerizing an existing app makes it cloud-native — true cloud-native requires redesigning for statelessness, observability, and resilience",
+      "Stateless means no state — stateless services delegate state to external stores; they do not eliminate state"
+    ],
+    "gcp_services": ["Cloud Run", "GKE", "Memorystore", "Firestore"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-gke-deployment", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=9OPP_1eAENg",
+    "official_doc_url": "https://cloud.google.com/architecture/twelve-factor-app-development-on-gcp"
+  },
+  {
+    "id": "pcd-gke-deployment",
+    "exam_id": "gcp-pcd",
+    "domain_id": "deploying-apps",
+    "topic_id": "gke-workloads",
+    "name": "Deploying Workloads to GKE",
+    "description": "Creating Kubernetes Deployments, Services, ConfigMaps, Secrets, and Ingress resources to run production applications on GKE.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Deployments manage stateless workloads; StatefulSets manage stateful applications with stable network identity and persistent storage",
+      "ConfigMaps store non-sensitive configuration; Secrets store sensitive data (use with Secret Manager for GCP-native secrets)",
+      "Kubernetes Ingress exposes HTTP/S routes to services; GKE uses Google Cloud Load Balancer as the ingress controller",
+      "Horizontal Pod Autoscaler (HPA) scales pod replicas based on CPU, memory, or custom metrics via Cloud Monitoring",
+      "Rolling updates with maxUnavailable and maxSurge control deployment speed; kubectl rollout undo reverts deployments"
+    ],
+    "common_misconceptions": [
+      "Kubernetes Secrets are encrypted — base64-encoded by default, not encrypted; use KMS encryption for secrets at rest in GKE",
+      "LoadBalancer Service type is always needed — ClusterIP with Ingress is more efficient for HTTP/S; LoadBalancer is best for non-HTTP protocols"
+    ],
+    "gcp_services": ["GKE", "Artifact Registry", "Cloud Monitoring", "Secret Manager"],
+    "prerequisites": ["pcd-cloud-native-design"],
+    "lateral_relations": [{"concept_id": "pcd-cloud-run-deploy", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=Rl5M1CzgEH4",
+    "official_doc_url": "https://cloud.google.com/kubernetes-engine/docs/how-to/deploying-apps"
+  },
+  {
+    "id": "pcd-cloud-run-deploy",
+    "exam_id": "gcp-pcd",
+    "domain_id": "deploying-apps",
+    "topic_id": "cloud-run-deployment",
+    "name": "Cloud Run Service Deployment and Traffic Management",
+    "description": "Deploying containerized services to Cloud Run with traffic splitting, revision management, custom domains, and environment configuration.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Cloud Run revisions are immutable snapshots; traffic can be split between revisions for canary deployments",
+      "Environment variables and mounted secrets configure Cloud Run services; Secret Manager integration provides version control",
+      "Cloud Run services can be triggered by HTTP, Pub/Sub push, Cloud Scheduler, or Eventarc event sources",
+      "Cloud Run for Anthos extends serverless container deployment to on-premises and multi-cloud environments",
+      "Concurrency setting controls max simultaneous requests per container instance (default 80, max 1000)"
+    ],
+    "common_misconceptions": [
+      "Cloud Run only scales based on HTTP requests — it also scales based on Pub/Sub messages, Eventarc events, and Cloud Scheduler triggers",
+      "Cloud Run revisions are deleted when not receiving traffic — old revisions persist until explicitly deleted, allowing instant traffic restore"
+    ],
+    "gcp_services": ["Cloud Run", "Pub/Sub", "Secret Manager", "Eventarc"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-gke-deployment", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=1t-GxQonaD8",
+    "official_doc_url": "https://cloud.google.com/run/docs/deploying"
+  },
+  {
+    "id": "pcd-cicd-cloud-build",
+    "exam_id": "gcp-pcd",
+    "domain_id": "deploying-apps",
+    "topic_id": "cicd-pipeline",
+    "name": "CI/CD Pipelines with Cloud Build and Cloud Deploy",
+    "description": "Building automated CI/CD pipelines using Cloud Build for testing and building container images, and Cloud Deploy for release management.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "cloudbuild.yaml defines build steps as Docker containers; each step runs sequentially or in parallel using waitFor",
+      "Build triggers connect Cloud Build to source repositories and trigger on push, PR, or tag events",
+      "Cloud Deploy delivery pipelines define promotion sequences (dev -> staging -> prod) with approval gates",
+      "Skaffold defines how to build and deploy applications and is the build tool used by Cloud Deploy",
+      "Binary Authorization enforces container image signing policies before Cloud Deploy can deploy to GKE"
+    ],
+    "common_misconceptions": [
+      "Cloud Build and Cloud Deploy are alternatives — they are complementary; Build creates artifacts, Deploy manages promotion pipelines",
+      "Cloud Build runs only on GCP infrastructure — Cloud Build workers run in isolated ephemeral containers on GCP always"
+    ],
+    "gcp_services": ["Cloud Build", "Cloud Deploy", "Artifact Registry", "GKE", "Cloud Run"],
+    "prerequisites": ["pcd-gke-deployment"],
+    "lateral_relations": [{"concept_id": "pcd-gke-deployment", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=Bvo6jzC7O_4",
+    "official_doc_url": "https://cloud.google.com/build/docs/build-push-docker-image"
+  },
+  {
+    "id": "pcd-pubsub-integration",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "topic_id": "pubsub-messaging",
+    "name": "Pub/Sub Messaging and Event-Driven Patterns",
+    "description": "Integrating applications with Pub/Sub for asynchronous messaging, including push vs pull subscriptions, dead letter topics, and message ordering.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Pull subscriptions: consumers poll for messages and must acknowledge within acknowledgment deadline (default 10s)",
+      "Push subscriptions: Pub/Sub delivers messages to an HTTPS endpoint; simpler for Cloud Run and App Engine",
+      "Dead letter topics capture messages that fail delivery after configurable max delivery attempts",
+      "Message ordering: enable ordering key on publisher and subscription to deliver messages in order per key",
+      "Pub/Sub Lite is a zonal (not global) lower-cost alternative with manual partition management for high-volume, cost-sensitive workloads"
+    ],
+    "common_misconceptions": [
+      "Pub/Sub delivers messages exactly once — it guarantees at-least-once; use deduplication IDs or idempotent consumers for exactly-once",
+      "Unacknowledged messages are lost — unacknowledged messages are redelivered after the acknowledgment deadline expires"
+    ],
+    "gcp_services": ["Pub/Sub", "Cloud Run", "Cloud Functions", "Dataflow"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-cloud-run-deploy", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=MjEam95zaU0",
+    "official_doc_url": "https://cloud.google.com/pubsub/docs/overview"
+  },
+  {
+    "id": "pcd-cloud-functions",
+    "exam_id": "gcp-pcd",
+    "domain_id": "deploying-apps",
+    "topic_id": "cloud-functions-serverless",
+    "name": "Cloud Functions Event-Driven Serverless Computing",
+    "description": "Building event-driven serverless functions triggered by HTTP, Pub/Sub, Cloud Storage, Firestore, and other GCP events using Cloud Functions.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Cloud Functions 2nd gen is built on Cloud Run, supports longer timeouts (up to 60 min) and more memory (up to 32 GB)",
+      "Trigger types: HTTP, Pub/Sub, Cloud Storage, Firestore, Firebase, Cloud Scheduler, Eventarc",
+      "Functions are stateless; use Firestore or Memorystore for state that must persist across invocations",
+      "Concurrency in 2nd gen: single function instance can handle multiple concurrent requests (unlike 1st gen)",
+      "Cold start latency can be reduced with minimum instances or using lighter runtimes (Node.js, Go over Java)"
+    ],
+    "common_misconceptions": [
+      "Cloud Functions and Cloud Run are completely different — Cloud Functions 2nd gen runs on Cloud Run infrastructure internally",
+      "Cloud Functions scale infinitely without limit — there are default concurrency and resource limits per project and region"
+    ],
+    "gcp_services": ["Cloud Functions", "Pub/Sub", "Cloud Storage", "Firestore"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-cloud-run-deploy", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=vM-2O-uKBNQ",
+    "official_doc_url": "https://cloud.google.com/functions/docs/concepts/overview"
+  },
+  {
+    "id": "pcd-firestore",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "topic_id": "firestore-nosql",
+    "name": "Firestore NoSQL Document Database",
+    "description": "Using Firestore as a serverless document database for web and mobile applications with real-time sync, offline support, and hierarchical data modeling.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Firestore stores data as documents in collections; documents can contain nested subcollections for hierarchical data",
+      "Real-time listeners push database changes to connected clients instantly without polling",
+      "Security rules in Firestore (Native mode) control read/write access based on auth state and document fields",
+      "Firestore is available in two modes: Native (Firebase features, real-time) and Datastore mode (Datastore API compatibility)",
+      "Transactions and batched writes ensure atomic operations across multiple documents"
+    ],
+    "common_misconceptions": [
+      "You can run complex joins across collections like SQL — Firestore has no JOIN support; design data to be read in its stored form",
+      "Firestore Datastore mode and Native mode are interchangeable — once a database is created in a mode it cannot be changed"
+    ],
+    "gcp_services": ["Firestore", "Firebase Authentication", "Cloud Functions"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-cloud-native-design", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=v_hR4K4auoQ",
+    "official_doc_url": "https://cloud.google.com/firestore/docs"
+  },
+  {
+    "id": "pcd-app-testing",
+    "exam_id": "gcp-pcd",
+    "domain_id": "building-testing",
+    "topic_id": "testing-strategies",
+    "name": "Application Testing Strategies for Cloud-Native Apps",
+    "description": "Implementing unit, integration, and end-to-end testing strategies for cloud-native applications using GCP testing tools and local emulators.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "GCP emulators for local testing: Pub/Sub emulator, Firestore emulator, Cloud Storage emulator (fake-gcs-server)",
+      "Cloud Build can run test steps in parallel to speed up CI pipeline execution using waitFor: ['-']",
+      "Test-driven development (TDD) for cloud functions: unit tests mock GCP client libraries using sinon or unittest.mock",
+      "Integration testing against real GCP services uses test projects with cleanup teardown to avoid cost accumulation",
+      "Load testing with Cloud Tasks or Locust validates autoscaling behavior before production deployment"
+    ],
+    "common_misconceptions": [
+      "Cloud emulators are 100% compatible with real GCP services — emulators may not support all features or edge cases",
+      "Testing is only needed before deployment — continuous testing in production via canary deployments and synthetic monitoring is also essential"
+    ],
+    "gcp_services": ["Cloud Build", "Cloud Functions", "Pub/Sub", "Firestore"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-cicd-cloud-build", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+application+testing+Cloud+Build+emulators",
+    "official_doc_url": "https://cloud.google.com/build/docs/testing/overview"
+  },
+  {
+    "id": "pcd-api-gateway",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "topic_id": "api-management",
+    "name": "API Management with Cloud Endpoints and API Gateway",
+    "description": "Exposing, securing, and managing APIs for microservices using Cloud Endpoints (OpenAPI/gRPC) and API Gateway with authentication and rate limiting.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Endpoints uses Extensible Service Proxy (ESP) to enforce OpenAPI or gRPC service definitions on backend services",
+      "API Gateway is a fully managed, serverless alternative to Endpoints for managing REST APIs backed by Cloud Run or Cloud Functions",
+      "Authentication options: API keys, Firebase Auth JWT tokens, Google service account JWTs, and Auth0",
+      "Rate limiting and quotas protect backend services from traffic spikes and abuse",
+      "Apigee is enterprise-grade API management with analytics, developer portal, and monetization"
+    ],
+    "common_misconceptions": [
+      "Cloud Endpoints, API Gateway, and Apigee are interchangeable — they serve different scales: Endpoints (simple), API Gateway (serverless), Apigee (enterprise)",
+      "API keys provide authentication — API keys identify the calling application but do not authenticate the user identity"
+    ],
+    "gcp_services": ["Cloud Endpoints", "API Gateway", "Apigee", "Cloud Run"],
+    "prerequisites": ["pcd-cloud-run-deploy"],
+    "lateral_relations": [{"concept_id": "pcd-pubsub-integration", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=c8bA9BNSXZE",
+    "official_doc_url": "https://cloud.google.com/endpoints/docs"
+  },
+  {
+    "id": "pcd-memorystore",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "topic_id": "caching-memorystore",
+    "name": "Caching with Memorystore (Redis and Memcached)",
+    "description": "Implementing in-memory caching with fully managed Memorystore for Redis or Memcached to reduce latency and database load in cloud-native applications.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Memorystore for Redis supports versions 6.x and 7.x with Standard tier for HA and replication across zones",
+      "Redis persistence (RDB snapshots or AOF) provides durability; Memcached is purely in-memory with no persistence",
+      "VPC peering is required to connect Cloud Run or GKE to Memorystore instances (no public IP access)",
+      "Redis is suitable for session storage, leaderboards, pub/sub, and complex data structures; Memcached for simple key-value caching",
+      "Cache-aside pattern: application checks cache first, reads from DB on miss, then populates cache for future requests"
+    ],
+    "common_misconceptions": [
+      "Redis and Memcached are interchangeable — Redis supports rich data types (lists, sets, sorted sets); Memcached is simpler key-value only",
+      "Memorystore is accessible from the public internet — it is VPC-only; applications must be in the same VPC or use VPC peering"
+    ],
+    "gcp_services": ["Memorystore", "VPC", "Cloud Run", "GKE"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-cloud-native-design", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=LxHBSZb8yRM",
+    "official_doc_url": "https://cloud.google.com/memorystore/docs/redis"
+  },
+  {
+    "id": "pcd-error-handling",
+    "exam_id": "gcp-pcd",
+    "domain_id": "managing-deployed",
+    "topic_id": "error-handling-debugging",
+    "name": "Error Handling, Debugging, and Observability",
+    "description": "Implementing structured logging, distributed tracing, error reporting, and profiling for deployed applications on GCP.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Structured logging (JSON format) in GCP allows log-based metrics and alerting on specific log fields",
+      "Cloud Trace automatically instruments latency data for App Engine and Cloud Run; custom spans use OpenTelemetry SDK",
+      "Error Reporting groups and counts distinct errors from logs; integrates with Cloud Monitoring for alerting",
+      "Cloud Profiler continuously profiles CPU and heap usage of production applications with low overhead",
+      "Correlation IDs propagated across service calls enable distributed trace reconstruction in Cloud Trace"
+    ],
+    "common_misconceptions": [
+      "Logging to stdout is not sufficient on GCP — stdout/stderr is captured by Cloud Logging for Cloud Run and GKE automatically",
+      "Profiling always requires code changes — Cloud Profiler uses an agent-based approach with minimal changes for supported languages"
+    ],
+    "gcp_services": ["Cloud Logging", "Cloud Trace", "Error Reporting", "Cloud Profiler"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-gke-deployment", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=h7pY5KLNFPY",
+    "official_doc_url": "https://cloud.google.com/error-reporting/docs"
+  },
+  {
+    "id": "pcd-spanner-cloudsql",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "topic_id": "relational-databases-dev",
+    "name": "Integrating Applications with Cloud SQL and Cloud Spanner",
+    "description": "Connecting cloud-native applications to Cloud SQL (using connection pool and Cloud SQL Connector) and Cloud Spanner (using client libraries and sessions).",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud SQL Auth Proxy (or Cloud SQL Connector) provides secure, IAM-authenticated connections without IP allowlisting",
+      "Connection pooling is critical for serverless environments; pgBouncer or built-in pool settings prevent connection exhaustion",
+      "Cloud Spanner client libraries use multiplexed sessions for efficient connection reuse across multiple requests",
+      "Spanner mutations vs DML: mutations are lower latency for single-row operations; DML supports SQL UPDATE/DELETE",
+      "For Cloud Run: mount the Cloud SQL socket using Cloud SQL Connector sidecar or use the UNIX domain socket"
+    ],
+    "common_misconceptions": [
+      "Cloud SQL connections do not need a proxy — direct IP connections require IP allowlisting; the Auth Proxy is the secure alternative",
+      "Cloud Spanner sessions are like database connections — sessions are lightweight; one session can multiplex many transactions"
+    ],
+    "gcp_services": ["Cloud SQL", "Cloud Spanner", "Cloud Run", "Secret Manager"],
+    "prerequisites": ["pcd-cloud-run-deploy"],
+    "lateral_relations": [{"concept_id": "pcd-memorystore", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=UQTZWlxpHmM",
+    "official_doc_url": "https://cloud.google.com/sql/docs/postgres/connect-run"
+  },
+  {
+    "id": "pcd-security-dev",
+    "exam_id": "gcp-pcd",
+    "domain_id": "building-testing",
+    "topic_id": "security-development",
+    "name": "Security Best Practices for Cloud Developers",
+    "description": "Implementing security in the development lifecycle: secret management, IAM for applications, vulnerability scanning, and secure dependency management.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Secret Manager stores API keys, passwords, and certificates with versioning, rotation, and audit logging",
+      "Never hardcode secrets in code or Docker images; use Secret Manager or environment variables injected at runtime",
+      "Artifact Registry vulnerability scanning scans container images for CVEs using Container Analysis",
+      "Workload Identity Federation allows external identities (GitHub Actions, AWS) to access GCP without service account keys",
+      "Principle of least privilege: Cloud Run service accounts should only have the specific roles needed for that service"
+    ],
+    "common_misconceptions": [
+      "Environment variables are a secure place to store secrets — env vars can be read by any process and may appear in logs; use Secret Manager",
+      "Container images from public registries are safe to use — always scan base images for vulnerabilities with Artifact Analysis"
+    ],
+    "gcp_services": ["Secret Manager", "Artifact Registry", "Cloud IAM", "Binary Authorization"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-cicd-cloud-build", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=0oZ_4EZkgb0",
+    "official_doc_url": "https://cloud.google.com/secret-manager/docs"
+  },
+  {
+    "id": "pcd-app-scaling",
+    "exam_id": "gcp-pcd",
+    "domain_id": "managing-deployed",
+    "topic_id": "scaling-performance",
+    "name": "Application Scaling and Performance Optimization",
+    "description": "Configuring autoscaling for GKE and Cloud Run, optimizing cold start latency, and using Cloud CDN and global load balancing for performance.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Run min-instances prevents cold starts; max-instances caps resource consumption and cost",
+      "GKE Vertical Pod Autoscaler (VPA) adjusts CPU/memory requests; HPA adjusts replica count; cluster autoscaler adjusts node count",
+      "Cloud CDN caches static assets at edge PoPs; Cache-Control headers control TTL for individual resources",
+      "KEDA (Kubernetes Event-Driven Autoscaling) scales GKE workloads based on Pub/Sub queue depth or custom metrics",
+      "Latency percentiles (p50, p95, p99) provide better performance insight than averages for tail latency optimization"
+    ],
+    "common_misconceptions": [
+      "Horizontal scaling always solves performance problems — some workloads are CPU-bound on a single request; vertical scaling or algorithm optimization is needed",
+      "Cloud CDN caches all content automatically — only cacheable responses (correct Cache-Control headers, GET/HEAD methods) are cached"
+    ],
+    "gcp_services": ["Cloud Run", "GKE", "Cloud CDN", "Cloud Load Balancing"],
+    "prerequisites": ["pcd-gke-deployment", "pcd-cloud-run-deploy"],
+    "lateral_relations": [{"concept_id": "pcd-cloud-native-design", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=bknog_3kMkw",
+    "official_doc_url": "https://cloud.google.com/run/docs/configuring/min-instances"
+  },
+  {
+    "id": "pcd-storage-cloud-native",
+    "exam_id": "gcp-pcd",
+    "domain_id": "integrating-gcp",
+    "topic_id": "storage-integration",
+    "name": "Cloud Storage Integration for Applications",
+    "description": "Integrating Cloud Storage into application workflows for object uploads, signed URLs, notifications, and efficient large object handling.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Signed URLs grant time-limited upload/download access to private objects without user authentication",
+      "Resumable uploads are recommended for files over 5 MB to handle network interruptions gracefully",
+      "Cloud Storage FUSE mounts buckets as file systems on Compute Engine or GKE pods for ML training workloads",
+      "Object change notifications via Pub/Sub or Eventarc trigger Cloud Functions or Cloud Run on object creation/deletion",
+      "Parallel composite uploads split large files for faster upload by uploading parts simultaneously and composing them"
+    ],
+    "common_misconceptions": [
+      "Cloud Storage requires authentication for all access — public buckets and signed URLs enable unauthenticated access for specific use cases",
+      "FUSE mounting works well for high-throughput random reads — Cloud Storage FUSE is optimized for sequential reads; use local SSD for random I/O"
+    ],
+    "gcp_services": ["Cloud Storage", "Cloud Functions", "Eventarc", "Pub/Sub"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pcd-pubsub-integration", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=vgf_yKZGgB4",
+    "official_doc_url": "https://cloud.google.com/storage/docs/uploading-objects"
+  }
+]

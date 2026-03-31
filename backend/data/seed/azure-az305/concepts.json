@@ -1,0 +1,429 @@
+[
+  {
+    "id": "az305-azure-ad-design",
+    "exam_id": "azure-az305",
+    "domain_id": "identity-governance-monitoring",
+    "topic_id": "entra-id-design",
+    "name": "Microsoft Entra ID (Azure AD) Identity Design",
+    "description": "Designing identity solutions using Microsoft Entra ID including hybrid identity, external identities, and Managed Identities for Azure resources.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Microsoft Entra ID is the cloud identity provider; on-premises AD DS connects via Entra ID Connect for hybrid identity",
+      "Three sync methods: Password Hash Sync (PHS), Pass-Through Authentication (PTA), and Federation (ADFS)",
+      "Managed Identities (System-assigned and User-assigned) eliminate the need to store credentials in application code",
+      "External Identities enable B2B collaboration with partner organizations and B2C for consumer-facing apps",
+      "Conditional Access policies enforce Zero Trust by requiring MFA, compliant devices, or specific locations before granting access"
+    ],
+    "common_misconceptions": [
+      "Architects assume PTA provides the same resilience as PHS—PTA requires on-premises agents and can fail if agents are down; PHS syncs hashes to the cloud for cloud-only authentication",
+      "Many believe Managed Identities can be used for all Azure services—not all Azure services support Managed Identity as a principal in their access control"
+    ],
+    "azure_services": ["Microsoft Entra ID", "Azure AD Connect", "Azure Key Vault", "Azure Policy"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az305-rbac-governance", "transfer_weight": 0.35},
+      {"concept_id": "az305-conditional-access", "transfer_weight": 0.40}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=Ma7VAQE7ga4",
+    "official_doc_url": "https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/whatis-azure-ad-connect"
+  },
+  {
+    "id": "az305-conditional-access",
+    "exam_id": "azure-az305",
+    "domain_id": "identity-governance-monitoring",
+    "topic_id": "conditional-access-design",
+    "name": "Conditional Access and Zero Trust Architecture",
+    "description": "Designing Conditional Access policies to enforce Zero Trust security including MFA requirements, device compliance, and risk-based access.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Conditional Access policies have Assignments (who/what/where) and Access Controls (grant/session controls)",
+      "Named locations allow IP ranges and countries to be defined for location-based conditions",
+      "Sign-in risk and user risk policies integrate with Entra ID Protection for risk-based Conditional Access",
+      "Report-only mode tests the impact of policies without enforcing them, essential before going live",
+      "Session controls enable app-enforced restrictions, continuous access evaluation, and sign-in frequency"
+    ],
+    "common_misconceptions": [
+      "Architects assume Conditional Access requires Azure AD Premium P2—Conditional Access requires P1; P2 adds risk-based policies and Identity Governance",
+      "Many believe a 'Block all' policy is the most secure starting point—this can lock out administrators; always use break-glass emergency access accounts"
+    ],
+    "azure_services": ["Microsoft Entra ID", "Microsoft Intune", "Microsoft Defender for Cloud Apps"],
+    "prerequisites": ["az305-azure-ad-design"],
+    "lateral_relations": [
+      {"concept_id": "az305-azure-ad-design", "transfer_weight": 0.35}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+conditional+access+zero+trust+design+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview"
+  },
+  {
+    "id": "az305-rbac-governance",
+    "exam_id": "azure-az305",
+    "domain_id": "identity-governance-monitoring",
+    "topic_id": "rbac-management-groups",
+    "name": "Azure RBAC, Management Groups, and Governance",
+    "description": "Designing governance hierarchies using Management Groups, Subscriptions, Azure Policy, Blueprints, and RBAC for large enterprise environments.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Management Groups provide a hierarchy above subscriptions; policies and RBAC at this level inherit down to all subscriptions",
+      "Azure Policy can audit, deny, or automatically remediate non-compliant resources using built-in and custom definitions",
+      "RBAC roles are additive; the most permissive role at any scope applies (deny assignments are an exception)",
+      "Azure Blueprints package policies, RBAC, ARM templates, and resource groups for repeatable, governed environment creation",
+      "Landing Zones use a management group hierarchy with defined policy sets for enterprise-scale governance"
+    ],
+    "common_misconceptions": [
+      "Architects assume Azure Policy stops deployments in real time—Policy effects are: Deny (blocking), Audit (logging only), Append, Modify, DeployIfNotExists (remediation); not all are blocking",
+      "Many believe Blueprints have replaced ARM templates—Blueprints orchestrate multiple artifacts including ARM templates; they are complementary"
+    ],
+    "azure_services": ["Azure Policy", "Azure Blueprints", "Azure Management Groups", "Microsoft Cost Management"],
+    "prerequisites": ["az305-azure-ad-design"],
+    "lateral_relations": [
+      {"concept_id": "az305-azure-ad-design", "transfer_weight": 0.30},
+      {"concept_id": "az305-monitoring-design", "transfer_weight": 0.20}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=xNVIHa04r_M",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/governance/management-groups/overview"
+  },
+  {
+    "id": "az305-monitoring-design",
+    "exam_id": "azure-az305",
+    "domain_id": "identity-governance-monitoring",
+    "topic_id": "azure-monitor-design",
+    "name": "Azure Monitor and Observability Design",
+    "description": "Designing comprehensive monitoring solutions using Azure Monitor, Log Analytics, Application Insights, and Azure Sentinel.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Monitor is the unified monitoring platform collecting metrics (numeric, time-series) and logs (structured records)",
+      "Log Analytics workspaces store and query log data using Kusto Query Language (KQL)",
+      "Application Insights provides APM including distributed tracing, live metrics, and failure analysis for apps",
+      "Diagnostic Settings send platform logs and metrics to Log Analytics, Event Hubs, or Storage Account",
+      "Azure Monitor Alerts trigger actions via Action Groups (email, SMS, webhook, Logic App, Azure Function) based on metric or log conditions"
+    ],
+    "common_misconceptions": [
+      "Architects assume all Azure resources send logs to Azure Monitor automatically—Diagnostic Settings must be explicitly configured per resource",
+      "Many believe Log Analytics and Application Insights are separate services—Application Insights is now workspace-based and stores data in a Log Analytics workspace"
+    ],
+    "azure_services": ["Azure Monitor", "Log Analytics", "Application Insights", "Microsoft Sentinel"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az305-rbac-governance", "transfer_weight": 0.20}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+azure+monitor+log+analytics+observability+design+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-monitor/overview"
+  },
+  {
+    "id": "az305-storage-design",
+    "exam_id": "azure-az305",
+    "domain_id": "data-storage-az305",
+    "topic_id": "azure-storage-account-design",
+    "name": "Azure Storage Account Design and Tiering",
+    "description": "Designing Azure Storage solutions with appropriate account types, redundancy options, access tiers, and lifecycle management for cost and performance requirements.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Redundancy options: LRS (3 copies, 1 DC), ZRS (3 zones, 1 region), GRS (6 copies, 2 regions), GZRS (zones + geo)",
+      "Blob access tiers: Hot (frequent access), Cool (infrequent, 30-day minimum), Cold (rare, 90-day minimum), Archive (offline, 180-day minimum)",
+      "Premium storage accounts use SSDs for low-latency; available for Block Blobs, File Shares, and Page Blobs",
+      "Immutable Blob storage (WORM) supports time-based retention and legal hold policies for compliance",
+      "Azure Files supports SMB and NFS protocols; integrates with on-premises via Azure File Sync for hybrid scenarios"
+    ],
+    "common_misconceptions": [
+      "Architects assume Archive tier data can be read immediately—Archive-tier blobs must be rehydrated to Hot or Cool tier (can take hours) before they can be read",
+      "Many believe GRS guarantees failover will restore all data—GRS offers an RPO of ~1 hour; some recent writes may be lost during failover"
+    ],
+    "azure_services": ["Azure Blob Storage", "Azure Files", "Azure Table Storage", "Azure Queue Storage"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az305-database-design", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=_Qlkvd4ZQuo",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy"
+  },
+  {
+    "id": "az305-database-design",
+    "exam_id": "azure-az305",
+    "domain_id": "data-storage-az305",
+    "topic_id": "database-service-selection",
+    "name": "Azure Database Service Selection and Design",
+    "description": "Selecting and designing appropriate Azure database services (SQL Database, Cosmos DB, PostgreSQL, MySQL) based on workload requirements.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure SQL Database Hyperscale scales to 100 TB and separates compute from storage for independent scaling",
+      "Cosmos DB supports multiple APIs: NoSQL, MongoDB, Cassandra, Gremlin (graph), and Table",
+      "Cosmos DB consistency levels (strongest to weakest): Strong, Bounded Staleness, Session, Consistent Prefix, Eventual",
+      "Azure SQL Managed Instance provides near 100% SQL Server compatibility for lift-and-shift migrations",
+      "Elastic pools enable resource sharing among multiple SQL Databases for bursty workloads at lower cost"
+    ],
+    "common_misconceptions": [
+      "Architects assume Cosmos DB automatic indexing has no cost—all properties are indexed by default; excluding unused properties from the index reduces RU costs",
+      "Many believe Azure SQL MI and Azure SQL Database are equivalent—Managed Instance supports SQL Agent, CLR, linked servers, and Service Broker which Database does not"
+    ],
+    "azure_services": ["Azure SQL Database", "Azure Cosmos DB", "Azure Database for PostgreSQL", "Azure Cache for Redis"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az305-storage-design", "transfer_weight": 0.20},
+      {"concept_id": "az305-ha-dr-design", "transfer_weight": 0.30}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+azure+database+design+selection+tutorial+John+Savill",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/azure-sql/database/sql-database-paas-overview"
+  },
+  {
+    "id": "az305-ha-dr-design",
+    "exam_id": "azure-az305",
+    "domain_id": "business-continuity",
+    "topic_id": "high-availability-disaster-recovery",
+    "name": "High Availability and Disaster Recovery Design",
+    "description": "Designing HA/DR solutions using Availability Zones, Azure Site Recovery, geo-redundant services, and traffic management for RPO/RTO requirements.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Availability Zones (AZs) are physically separate data centers within a region with independent power, cooling, and networking",
+      "Azure Site Recovery replicates VMs, physical servers, and VMware/Hyper-V workloads for DR with RPO ~30 seconds",
+      "Azure SQL auto-failover groups provide transparent failover for SQL databases with a read-write listener endpoint",
+      "Traffic Manager uses DNS-based routing with health probes; failover depends on DNS TTL propagation (not instant)",
+      "Azure Front Door provides global HTTP/S load balancing with instant failover using anycast and active health probes"
+    ],
+    "common_misconceptions": [
+      "Architects assume Traffic Manager provides instant failover—Traffic Manager uses DNS with TTL; failover can take minutes depending on client DNS caching",
+      "Many believe deploying to two AZs doubles cost—zone-redundant services like Azure SQL have no additional cost for AZ redundancy; only the extra compute/storage for active-active configurations adds cost"
+    ],
+    "azure_services": ["Azure Site Recovery", "Azure Traffic Manager", "Azure Front Door", "Azure SQL Database"],
+    "prerequisites": ["az305-storage-design", "az305-database-design"],
+    "lateral_relations": [
+      {"concept_id": "az305-database-design", "transfer_weight": 0.30},
+      {"concept_id": "az305-compute-design", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+high+availability+disaster+recovery+design+azure+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/reliability/availability-zones-overview"
+  },
+  {
+    "id": "az305-compute-design",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "topic_id": "compute-service-design",
+    "name": "Azure Compute Service Selection and Design",
+    "description": "Selecting appropriate Azure compute services (VMs, AKS, App Service, Container Instances, Azure Functions) based on workload requirements.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure App Service Plan tiers: Shared (F/D), Basic (B), Standard (S), Premium (P), Isolated (I for ASE); only Standard+ supports autoscale",
+      "AKS (Azure Kubernetes Service) manages the Kubernetes control plane for free; you pay only for agent node VMs",
+      "Azure Container Instances (ACI) is serverless; suitable for burst workloads and batch jobs without cluster management",
+      "Spot VMs offer up to 90% discount but can be evicted with 30-second notice when Azure needs capacity back",
+      "Virtual Machine Scale Sets (VMSS) provide autoscaling of identical VMs; Flexible orchestration mode supports mixing VM sizes"
+    ],
+    "common_misconceptions": [
+      "Architects assume Azure Functions can run indefinitely—Consumption plan functions timeout at 10 minutes; Premium and Dedicated plans can be configured for unlimited timeout",
+      "Many believe AKS is always more expensive than App Service for containerized workloads—for high-density multi-tenant scenarios AKS can be more cost-effective"
+    ],
+    "azure_services": ["Azure Virtual Machines", "Azure Kubernetes Service", "Azure App Service", "Azure Functions", "Azure Container Instances"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az305-networking-design", "transfer_weight": 0.30},
+      {"concept_id": "az305-ha-dr-design", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+compute+service+selection+design+tutorial+John+Savill",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/architecture/guide/technology-choices/compute-decision-tree"
+  },
+  {
+    "id": "az305-networking-design",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "topic_id": "virtual-network-design",
+    "name": "Azure Virtual Network and Hub-Spoke Design",
+    "description": "Designing VNet architectures including hub-and-spoke topology, peering, ExpressRoute, VPN Gateway, and network security groups.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Hub-spoke topology centralizes shared services (firewall, DNS, monitoring) in hub VNet with spoke VNets peered to it",
+      "VNet peering is non-transitive; traffic from spoke A cannot reach spoke B through hub without additional routing or Azure Firewall",
+      "Azure Virtual WAN automates hub-and-spoke at scale with managed routing and branch connectivity",
+      "ExpressRoute connects on-premises to Azure via private peering through a connectivity provider; bypasses the public internet",
+      "Azure Firewall Premium adds IDPS (Intrusion Detection and Prevention), TLS inspection, and URL filtering over Standard"
+    ],
+    "common_misconceptions": [
+      "Architects assume VNet peering is transitive by default—peering is non-transitive; routing between spokes requires user-defined routes through the hub or Azure Firewall",
+      "Many believe ExpressRoute failover to VPN Gateway is automatic—explicit failover configuration using BGP route preferences and AS path manipulation is required"
+    ],
+    "azure_services": ["Azure Virtual Network", "Azure VPN Gateway", "Azure ExpressRoute", "Azure Firewall", "Azure Virtual WAN"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az305-compute-design", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/watch?v=A1vpiXmkSLM",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke"
+  },
+  {
+    "id": "az305-migration-design",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "topic_id": "migration-strategy",
+    "name": "Azure Migration Strategy and Azure Migrate",
+    "description": "Designing migration strategies using Azure Migrate for discovery, assessment, and migration of on-premises workloads to Azure.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Azure Migrate is the hub for discovery, assessment, and migration of VMs, databases, and web apps",
+      "Migration strategies (5Rs): Rehost (lift-and-shift), Refactor (PaaS migration), Rearchitect, Rebuild, Replace",
+      "Server Assessment creates business cases comparing on-premises TCO versus Azure cost with sizing recommendations",
+      "Azure Migrate supports agentless VMware migration and agent-based migration for Hyper-V and physical servers",
+      "Database Migration Service (DMS) migrates SQL Server, MySQL, PostgreSQL, Oracle, and MongoDB databases to Azure"
+    ],
+    "common_misconceptions": [
+      "Architects assume rehost (lift-and-shift) is always the fastest migration—it is the fastest initially but leaves cost optimization opportunities unrealized compared to refactoring to PaaS",
+      "Many believe Azure Migrate can migrate all workloads without any downtime—most migration methods have a cutover window; only a few support zero-downtime continuous replication"
+    ],
+    "azure_services": ["Azure Migrate", "Azure Site Recovery", "Azure Database Migration Service", "Azure App Service Migration Assistant"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az305-compute-design", "transfer_weight": 0.30},
+      {"concept_id": "az305-ha-dr-design", "transfer_weight": 0.20}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+azure+migrate+migration+strategy+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/migrate/migrate-services-overview"
+  },
+  {
+    "id": "az305-app-architecture",
+    "exam_id": "azure-az305",
+    "domain_id": "application-architecture",
+    "topic_id": "microservices-architecture",
+    "name": "Microservices and Event-Driven Architecture",
+    "description": "Designing microservices and event-driven solutions using Azure Service Bus, Event Grid, API Management, and Azure Service Fabric.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Azure Service Bus supports queues (competing consumers) and topics/subscriptions (publish-subscribe) for reliable messaging",
+      "Event Grid is a serverless event routing service for reactive programming with 24-hour retry and dead-letter support",
+      "API Management provides a facade for backend APIs with rate limiting, caching, transformation, and subscription management",
+      "Azure Service Bus premium tier supports message sessions for FIFO ordering and large messages up to 100 MB",
+      "The Competing Consumer pattern scales message processing by having multiple workers read from the same queue"
+    ],
+    "common_misconceptions": [
+      "Architects confuse Event Grid and Event Hubs—Event Grid routes discrete events (resource state changes) while Event Hubs streams high-volume telemetry data",
+      "Many assume API Management must be internet-facing—APIM can be deployed in internal VNet mode accessible only from private networks"
+    ],
+    "azure_services": ["Azure Service Bus", "Azure Event Grid", "Azure API Management", "Azure Functions"],
+    "prerequisites": ["az305-compute-design"],
+    "lateral_relations": [
+      {"concept_id": "az305-compute-design", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+microservices+event+driven+architecture+azure+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/microservices"
+  },
+  {
+    "id": "az305-cost-optimization",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "topic_id": "cost-optimization-design",
+    "name": "Azure Cost Optimization Design Principles",
+    "description": "Designing cost-efficient Azure solutions using Reserved Instances, Azure Hybrid Benefit, autoscaling, and Azure Cost Management.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Reserved Instances (1 or 3 year) save up to 72% versus pay-as-you-go for stable, predictable workloads",
+      "Azure Hybrid Benefit applies existing Windows Server and SQL Server licenses to Azure VMs and PaaS services",
+      "Autoscaling reduces costs by right-sizing compute to actual demand instead of provisioning for peak capacity",
+      "Azure Advisor analyzes usage and provides cost, security, reliability, and performance recommendations",
+      "Dev/Test pricing provides discounted rates for non-production workloads in EA and MCA subscriptions"
+    ],
+    "common_misconceptions": [
+      "Architects assume Reserved Instances are tied to a specific VM—Reservations are flexible by instance size flexibility within the same VM family and region",
+      "Many believe Spot VMs are suitable for all workloads—Spot VMs are only appropriate for fault-tolerant, interruption-tolerant workloads like batch processing"
+    ],
+    "azure_services": ["Azure Cost Management", "Azure Advisor", "Azure Reserved Instances"],
+    "prerequisites": ["az305-compute-design"],
+    "lateral_relations": [
+      {"concept_id": "az305-compute-design", "transfer_weight": 0.30}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+azure+cost+optimization+reserved+instances+hybrid+benefit",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/cost-management-billing/costs/cost-mgt-best-practices"
+  },
+  {
+    "id": "az305-backup-design",
+    "exam_id": "azure-az305",
+    "domain_id": "business-continuity",
+    "topic_id": "backup-recovery-design",
+    "name": "Azure Backup and Recovery Design",
+    "description": "Designing backup solutions using Azure Backup, Recovery Services Vaults, and backup policies for VMs, SQL, and files.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Recovery Services Vault stores backup data for Azure VMs, SQL in VM, Azure Files, and on-premises workloads",
+      "Azure Backup Center provides a unified management view across multiple vaults and subscriptions",
+      "Soft delete retains deleted backup data for 14 days to protect against accidental or malicious deletion",
+      "Cross-Region Restore (CRR) allows restoring VMs to a paired region from geo-redundant vaults",
+      "Azure Backup Reports uses Log Analytics to provide insights on backup jobs, storage consumption, and compliance"
+    ],
+    "common_misconceptions": [
+      "Architects assume backup and DR serve the same purpose—backup protects against data loss/corruption; DR protects against full site/region failure; both are needed",
+      "Many believe Azure Backup automatically protects new VMs—backup policies must be explicitly assigned to VMs; new VMs are not automatically protected"
+    ],
+    "azure_services": ["Azure Backup", "Recovery Services Vault", "Azure Site Recovery", "Azure Monitor"],
+    "prerequisites": ["az305-ha-dr-design"],
+    "lateral_relations": [
+      {"concept_id": "az305-ha-dr-design", "transfer_weight": 0.45}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+azure+backup+recovery+services+vault+design+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/backup/backup-overview"
+  },
+  {
+    "id": "az305-waf-pillars",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "topic_id": "well-architected-framework",
+    "name": "Azure Well-Architected Framework",
+    "description": "Applying the Azure Well-Architected Framework's five pillars to evaluate and improve architectural decisions.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "The five WAF pillars are: Reliability, Security, Cost Optimization, Operational Excellence, and Performance Efficiency",
+      "Azure Well-Architected Review is an assessment tool that scores workloads against WAF principles",
+      "Reliability pillar focuses on designing for failure, resilience, and meeting defined RTO/RPO targets",
+      "Performance Efficiency pillar emphasizes scaling, caching, and choosing the right service for the workload",
+      "Operational Excellence pillar covers deployment automation, monitoring, and continuous improvement processes"
+    ],
+    "common_misconceptions": [
+      "Teams assume WAF reviews are one-time activities—WAF recommends periodic reviews as architectures and usage patterns evolve",
+      "Many believe WAF is Azure-specific guidance with no cross-cloud relevance—the principles are universal; only specific service recommendations are Azure-specific"
+    ],
+    "azure_services": ["Azure Advisor", "Azure Monitor", "Microsoft Defender for Cloud"],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "az305-cost-optimization", "transfer_weight": 0.25},
+      {"concept_id": "az305-monitoring-design", "transfer_weight": 0.25}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+azure+well+architected+framework+pillars+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/well-architected/"
+  },
+  {
+    "id": "az305-private-endpoint-design",
+    "exam_id": "azure-az305",
+    "domain_id": "infrastructure-solutions",
+    "topic_id": "private-connectivity",
+    "name": "Azure Private Link and Private Endpoints",
+    "description": "Designing private connectivity for Azure PaaS services using Private Endpoints and Private Link Service to eliminate public exposure.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Private Endpoint assigns a private IP from your VNet to a specific Azure PaaS resource instance",
+      "Private DNS Zones must be linked to VNets for name resolution to work; one zone per service type (e.g., privatelink.blob.core.windows.net)",
+      "Private Link Service allows exposing your own services behind a Standard Load Balancer for private consumption",
+      "Service Endpoints route traffic over the Microsoft backbone but the PaaS service still has a public IP; Private Endpoints are more secure",
+      "Network policies for private endpoints must be disabled on the subnet before creating a Private Endpoint"
+    ],
+    "common_misconceptions": [
+      "Architects treat Service Endpoints and Private Endpoints as equivalent security controls—Private Endpoints provide a private IP and fully remove public exposure; Service Endpoints only restrict which VNets can access the public endpoint",
+      "Many assume Private Endpoints work automatically across peered VNets—Private DNS Zone VNet links must include all VNets that need private resolution, including peered VNets"
+    ],
+    "azure_services": ["Azure Private Link", "Azure DNS", "Azure Virtual Network", "Azure Storage", "Azure SQL Database"],
+    "prerequisites": ["az305-networking-design"],
+    "lateral_relations": [
+      {"concept_id": "az305-networking-design", "transfer_weight": 0.40}
+    ],
+    "video_url": "https://www.youtube.com/results?search_query=AZ-305+azure+private+endpoint+private+link+design+tutorial",
+    "official_doc_url": "https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-overview"
+  }
+]

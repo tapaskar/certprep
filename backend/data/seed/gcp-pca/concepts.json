@@ -1,0 +1,392 @@
+[
+  {
+    "id": "pca-architecture-design",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "topic_id": "solution-architecture",
+    "name": "Cloud Solution Architecture Design Principles",
+    "description": "Applying Google Cloud's architectural best practices including the Well-Architected Framework pillars to design reliable, secure, performant, and cost-optimized solutions.",
+    "exam_weight": 0.0700,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Google Cloud Architecture Framework pillars: Operational excellence, Security, Reliability, Cost optimization, Performance optimization",
+      "Design for failure: assume components will fail and architect for graceful degradation and automatic recovery",
+      "Loose coupling via Pub/Sub, Cloud Tasks, or event-driven patterns reduces blast radius of component failures",
+      "The four pillars of HA: Redundancy, Failover, Monitoring, and Testing (chaos engineering / game days)",
+      "Reference architectures for PCA case studies: EHR Healthcare (compliance, hybrid), HRL (streaming analytics), Mountkirk Games (global gaming), TerramEarth (IoT)"
+    ],
+    "common_misconceptions": [
+      "Highest availability always requires multi-region — multi-region adds significant cost and complexity; evaluate RTO/RPO requirements first",
+      "More services always means better architecture — over-engineering increases operational burden; use managed services to reduce complexity"
+    ],
+    "gcp_services": ["Compute Engine", "GKE", "Cloud Spanner", "Pub/Sub"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pca-reliability-sre", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=J_xLkz_uYlU",
+    "official_doc_url": "https://cloud.google.com/architecture/framework"
+  },
+  {
+    "id": "pca-reliability-sre",
+    "exam_id": "gcp-pca",
+    "domain_id": "reliability",
+    "topic_id": "sre-reliability",
+    "name": "SRE Practices and Reliability Design",
+    "description": "Applying Site Reliability Engineering concepts — SLIs, SLOs, SLAs, error budgets — to define and maintain service reliability targets on Google Cloud.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "SLI (Service Level Indicator): specific quantitative measure of service level (e.g., request success rate, latency)",
+      "SLO (Service Level Objective): target value for an SLI (e.g., 99.9% requests succeed within 200ms)",
+      "SLA (Service Level Agreement): contractual commitment to SLO with financial penalties for violation",
+      "Error budget = 100% - SLO target; teams can use error budget for risky deployments; if exhausted, focus shifts to reliability",
+      "Toil is repetitive, manual operational work; SRE teams automate toil to keep it below 50% of engineering time"
+    ],
+    "common_misconceptions": [
+      "SLO of 100% is achievable and desirable — 100% SLOs are impossible and costly; 99.9-99.99% is realistic and allows innovation",
+      "SLA and SLO are interchangeable — SLAs are external contracts; SLOs are internal targets that should be stricter than SLAs"
+    ],
+    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Error Reporting"],
+    "prerequisites": ["pca-architecture-design"],
+    "lateral_relations": [{"concept_id": "pca-architecture-design", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=tEylFyxbDLE",
+    "official_doc_url": "https://sre.google/sre-book/table-of-contents/"
+  },
+  {
+    "id": "pca-network-design",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "topic_id": "network-architecture",
+    "name": "Network Architecture for Scalable Solutions",
+    "description": "Designing VPC architectures including Shared VPC, VPC peering, multi-tier network designs, and hybrid connectivity patterns for enterprise workloads.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Shared VPC allows a host project to share subnets with service projects; all resources share one centralized VPC",
+      "VPC peering connects VPCs with non-overlapping CIDRs; routes are not transitive",
+      "Hub-and-spoke topology using Shared VPC or Network Connectivity Center enables centralized egress and inspection",
+      "Cloud Interconnect (Dedicated or Partner) provides SLA-backed private connectivity from on-premises to GCP",
+      "Private Google Access enables VMs without external IPs to reach Google APIs; Private Service Connect modernizes this with VPC endpoints"
+    ],
+    "common_misconceptions": [
+      "You can have overlapping IP ranges in peered VPCs — peered VPCs must have non-overlapping primary and secondary ranges",
+      "Cloud VPN and Cloud Interconnect offer the same SLA — VPN is best-effort over the internet; Interconnect offers 99.99% SLA"
+    ],
+    "gcp_services": ["VPC", "Cloud Interconnect", "Cloud VPN", "Cloud Router", "Network Connectivity Center"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pca-security-design", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=cNb7xKyya5c",
+    "official_doc_url": "https://cloud.google.com/architecture/best-practices-vpc-design"
+  },
+  {
+    "id": "pca-security-design",
+    "exam_id": "gcp-pca",
+    "domain_id": "security-compliance",
+    "topic_id": "security-architecture",
+    "name": "Security Architecture and Defense in Depth",
+    "description": "Designing layered security across identity, network, data, and application tiers using Google Cloud security services and zero-trust principles.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Defense in depth: layer security controls at identity, network perimeter, application, and data levels",
+      "BeyondCorp Enterprise implements zero-trust access — verify identity and device posture before granting application access",
+      "VPC Service Controls create security perimeters around sensitive GCP resources to prevent data exfiltration",
+      "Cloud Armor provides WAF and DDoS protection for external load balancers with OWASP rule sets",
+      "Security Command Center provides unified threat detection, vulnerability scanning, and compliance monitoring"
+    ],
+    "common_misconceptions": [
+      "A VPN connection to GCP means the network is fully secure — network security is just one layer; IAM, data encryption, and app security are equally critical",
+      "VPC Service Controls replace IAM — they work together; VPC SC adds perimeter controls while IAM controls identity-based access"
+    ],
+    "gcp_services": ["VPC Service Controls", "Cloud Armor", "BeyondCorp Enterprise", "Security Command Center", "Cloud KMS"],
+    "prerequisites": ["pca-network-design"],
+    "lateral_relations": [{"concept_id": "pca-network-design", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=RL2Ln2BPW_E",
+    "official_doc_url": "https://cloud.google.com/architecture/security-foundations"
+  },
+  {
+    "id": "pca-data-storage-selection",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "topic_id": "storage-selection",
+    "name": "Selecting the Right Storage Service",
+    "description": "Matching workload characteristics (consistency, latency, throughput, query patterns) to the optimal GCP storage service across relational, NoSQL, and analytical options.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Spanner: globally distributed relational DB, strong consistency, unlimited scale, use for financial/inventory systems",
+      "Cloud SQL: managed MySQL/PostgreSQL/SQL Server, regional HA, best for existing relational workloads up to a few TB",
+      "Bigtable: wide-column NoSQL, single-digit ms latency, best for time-series, IoT, and high-throughput reads/writes",
+      "Firestore: serverless document DB with real-time sync, best for mobile/web apps needing offline support",
+      "BigQuery: analytical warehouse for OLAP, not suitable for OLTP; use federated queries to join with operational DBs"
+    ],
+    "common_misconceptions": [
+      "Cloud Spanner is just a scaled-up Cloud SQL — Spanner uses a completely different architecture (TrueTime, Paxos) enabling global consistency",
+      "Bigtable supports SQL queries — Bigtable uses a key-value model with no SQL support; use BigQuery for SQL analytics on Bigtable data"
+    ],
+    "gcp_services": ["Cloud Spanner", "Cloud SQL", "Bigtable", "Firestore", "BigQuery"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pca-architecture-design", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=jexja1a5oYo",
+    "official_doc_url": "https://cloud.google.com/products/storage"
+  },
+  {
+    "id": "pca-cost-optimization",
+    "exam_id": "gcp-pca",
+    "domain_id": "analyzing-optimizing",
+    "topic_id": "cost-optimization",
+    "name": "Cost Optimization Strategies",
+    "description": "Identifying and implementing cost optimization techniques across compute, storage, and networking to reduce cloud spend while maintaining performance.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Right-sizing VMs using Cloud Monitoring recommender reduces over-provisioned compute costs",
+      "Preemptible/Spot VMs reduce batch compute costs by 60-91% for fault-tolerant workloads",
+      "Object Lifecycle Management automatically transitions data to cheaper storage classes based on age",
+      "BigQuery slot reservations reduce query costs for consistent high-volume workloads vs on-demand pricing",
+      "Committed Use Discounts (1 or 3 year) offer 37-57% savings on Compute Engine vCPUs and memory"
+    ],
+    "common_misconceptions": [
+      "Deleting unused projects immediately stops all billing — some resources like load balancers have static charges; verify all resources are deleted",
+      "Smaller machine types always cost less — if you need more instances for the same work, the total cost may be higher"
+    ],
+    "gcp_services": ["Cloud Billing", "Recommender", "Cloud Storage", "BigQuery"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pca-reliability-sre", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/watch?v=dxLHoJob4dg",
+    "official_doc_url": "https://cloud.google.com/architecture/framework/cost-optimization"
+  },
+  {
+    "id": "pca-migration-strategy",
+    "exam_id": "gcp-pca",
+    "domain_id": "managing-implementation",
+    "topic_id": "migration-planning",
+    "name": "Cloud Migration Planning and Execution",
+    "description": "Planning and executing large-scale migrations to Google Cloud using the 4-phase migration framework: assess, plan, deploy, and optimize.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Migration phases: Assess (inventory, dependencies) > Plan (migration strategy, architecture) > Deploy (pilot, migrate) > Optimize",
+      "Migrate to Virtual Machines (formerly Velostrata) enables live VM migration from VMware/Hyper-V/AWS to Compute Engine",
+      "Database Migration Service (DMS) handles homogeneous and heterogeneous database migrations with minimal downtime",
+      "Strangler Fig pattern gradually replaces monolith functionality with microservices to reduce migration risk",
+      "Transfer Appliance (offline) and Storage Transfer Service (online) move large datasets to Cloud Storage"
+    ],
+    "common_misconceptions": [
+      "You must migrate everything at once — phased migration with pilot workloads reduces risk and validates architecture decisions",
+      "Cloud migration is purely technical — organizational change management, training, and governance are equally critical to success"
+    ],
+    "gcp_services": ["Migrate to Virtual Machines", "Database Migration Service", "Storage Transfer Service", "Transfer Appliance"],
+    "prerequisites": ["pca-architecture-design"],
+    "lateral_relations": [{"concept_id": "pca-architecture-design", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+migration+strategy+planning+framework",
+    "official_doc_url": "https://cloud.google.com/architecture/migration-to-gcp-getting-started"
+  },
+  {
+    "id": "pca-high-availability",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "topic_id": "high-availability",
+    "name": "High Availability and Disaster Recovery Patterns",
+    "description": "Designing HA architectures with multi-zone and multi-region deployments, defining RPO/RTO, and selecting appropriate DR patterns (warm standby, pilot light, hot standby).",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "RPO (Recovery Point Objective): maximum acceptable data loss measured in time; RTO (Recovery Time Objective): maximum acceptable downtime",
+      "Multi-zone deployments protect against zone failures; multi-region protects against region failures (rare but possible)",
+      "Cloud Spanner offers 99.999% SLA in multi-region configurations; Cloud SQL HA is 99.95% within a region",
+      "Global load balancing with health checks automatically reroutes traffic to healthy regions during a regional outage",
+      "DR patterns by cost/recovery time: Backup-and-restore (cheapest, slowest) < Pilot light < Warm standby < Active-active (expensive, fastest)"
+    ],
+    "common_misconceptions": [
+      "Multi-zone equals multi-region HA — zone failures are common (hardware); region failures are rare; assess if multi-region cost is justified",
+      "Cloud Spanner replaces all HA architecture needs — you still need application-level retry logic and global load balancing"
+    ],
+    "gcp_services": ["Cloud Spanner", "Cloud SQL", "Cloud Load Balancing", "Cloud Storage"],
+    "prerequisites": ["pca-architecture-design"],
+    "lateral_relations": [{"concept_id": "pca-reliability-sre", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=Y_kn1UJuJhM",
+    "official_doc_url": "https://cloud.google.com/architecture/dr-scenarios-planning-guide"
+  },
+  {
+    "id": "pca-microservices",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "topic_id": "microservices-architecture",
+    "name": "Microservices and Event-Driven Architecture",
+    "description": "Designing microservices-based applications on GCP using containers, service meshes, and event-driven patterns with Pub/Sub and Cloud Tasks.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Microservices decompose monoliths into independently deployable, scalable services with bounded contexts",
+      "Pub/Sub decouples services with asynchronous messaging; supports push (HTTP) and pull delivery models",
+      "Cloud Tasks manages distributed task execution with guaranteed delivery and configurable rate limiting",
+      "Cloud Service Mesh (Anthos Service Mesh / Istio) provides traffic management, mTLS security, and observability for microservices",
+      "API Gateway and Apigee manage API lifecycle, authentication, rate limiting, and monetization for microservices"
+    ],
+    "common_misconceptions": [
+      "Microservices always outperform monoliths — microservices add network latency and operational complexity; monoliths can outperform at small scale",
+      "Pub/Sub guarantees exactly-once delivery — Pub/Sub guarantees at-least-once delivery; consumers must implement idempotency"
+    ],
+    "gcp_services": ["Pub/Sub", "Cloud Tasks", "GKE", "Anthos Service Mesh", "Apigee"],
+    "prerequisites": ["pca-architecture-design"],
+    "lateral_relations": [{"concept_id": "pca-high-availability", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=LD-4ib7BYIA",
+    "official_doc_url": "https://cloud.google.com/architecture/microservices-architecture-on-google-cloud"
+  },
+  {
+    "id": "pca-compliance",
+    "exam_id": "gcp-pca",
+    "domain_id": "security-compliance",
+    "topic_id": "compliance-governance",
+    "name": "Compliance and Regulatory Frameworks on GCP",
+    "description": "Implementing compliance controls for HIPAA, PCI DSS, GDPR, and other frameworks using Google Cloud's compliance offerings and configuration tools.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Google Cloud has BAAs for HIPAA; customers must configure services to comply (e.g., enable audit logging, use approved services)",
+      "CMEK (Customer-Managed Encryption Keys) meets data sovereignty requirements by keeping key control with the customer",
+      "VPC Service Controls restrict sensitive data movement to approved perimeters to prevent data exfiltration",
+      "Assured Workloads enforces compliance controls (FedRAMP, IL2/IL4, ITAR) at the project level automatically",
+      "Cloud Audit Logs provide data access, admin activity, and system event logs for compliance and forensics"
+    ],
+    "common_misconceptions": [
+      "Using Google Cloud means you are automatically HIPAA compliant — compliance requires customer-side configuration and a signed BAA",
+      "Compliance frameworks are the same globally — GDPR (EU data residency), HIPAA (US healthcare), and PCI DSS (payment) have different requirements"
+    ],
+    "gcp_services": ["Assured Workloads", "Cloud KMS", "VPC Service Controls", "Cloud Audit Logs"],
+    "prerequisites": ["pca-security-design"],
+    "lateral_relations": [{"concept_id": "pca-security-design", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+compliance+HIPAA+PCI+GDPR+Assured+Workloads",
+    "official_doc_url": "https://cloud.google.com/assured-workloads/docs"
+  },
+  {
+    "id": "pca-devops-cicd",
+    "exam_id": "gcp-pca",
+    "domain_id": "managing-implementation",
+    "topic_id": "cicd-devops",
+    "name": "DevOps and CI/CD Pipeline Architecture",
+    "description": "Designing CI/CD pipelines using Cloud Build, Cloud Deploy, and Artifact Registry to automate testing and deployment of applications to GKE and Cloud Run.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Cloud Build triggers builds from Cloud Source Repositories, GitHub, or Bitbucket on push or PR events",
+      "Artifact Registry stores and manages container images, Maven, npm, and Python packages with IAM integration",
+      "Cloud Deploy manages delivery pipelines with promotion sequences, approval gates, and rollback capabilities",
+      "Binary Authorization enforces a policy requiring signed container images before deployment to GKE or Cloud Run",
+      "SLSA (Supply-chain Levels for Software Artifacts) framework defines levels of software supply chain security"
+    ],
+    "common_misconceptions": [
+      "Cloud Build and Cloud Deploy do the same thing — Build creates artifacts; Deploy manages release pipelines with promotion and rollback",
+      "Container signing is just a best practice — Binary Authorization enforces it as a hard requirement, preventing unsigned image deployment"
+    ],
+    "gcp_services": ["Cloud Build", "Cloud Deploy", "Artifact Registry", "GKE", "Binary Authorization"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pca-microservices", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=Bvo6jzC7O_4",
+    "official_doc_url": "https://cloud.google.com/architecture/devops"
+  },
+  {
+    "id": "pca-data-analytics",
+    "exam_id": "gcp-pca",
+    "domain_id": "analyzing-optimizing",
+    "topic_id": "analytics-architecture",
+    "name": "Analytics Architecture and Lakehouse Design",
+    "description": "Architecting modern data analytics platforms using BigQuery, Dataflow, and Dataplex to support both batch and streaming data processing pipelines.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Lambda architecture has separate batch and speed layers; Kappa architecture uses a single streaming layer for both",
+      "Dataflow (Apache Beam) executes the same code for batch and streaming, simplifying the Kappa architecture on GCP",
+      "BigQuery as a lakehouse: external tables query data directly in Cloud Storage; partitioning and clustering optimize performance",
+      "Dataplex provides data governance, data quality, and data discovery across distributed data assets",
+      "Event-driven analytics: Pub/Sub -> Dataflow -> BigQuery pipeline enables real-time streaming analytics"
+    ],
+    "common_misconceptions": [
+      "A data lake replaces a data warehouse — a lakehouse combines both: raw data storage with warehouse query performance",
+      "BigQuery is only for batch analytics — BigQuery supports streaming inserts and near-real-time queries"
+    ],
+    "gcp_services": ["BigQuery", "Dataflow", "Pub/Sub", "Cloud Storage", "Dataplex"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pca-data-storage-selection", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=rO8jXOSYfVE",
+    "official_doc_url": "https://cloud.google.com/architecture/analytics"
+  },
+  {
+    "id": "pca-managed-services",
+    "exam_id": "gcp-pca",
+    "domain_id": "managing-provisioning",
+    "topic_id": "managed-services",
+    "name": "Managed vs Self-Managed Services Decision Framework",
+    "description": "Evaluating when to use fully managed GCP services versus self-managed infrastructure based on operational overhead, customization needs, and cost.",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Managed services reduce operational burden but may limit customization (e.g., Cloud SQL vs self-managed PostgreSQL on VM)",
+      "For Kafka, self-hosted on GKE offers full control; Pub/Sub is fully managed with different semantics",
+      "GKE Autopilot vs Standard: Autopilot removes node management overhead but restricts some advanced configurations",
+      "Total Cost of Ownership (TCO) for managed services includes service fees but excludes operational personnel costs",
+      "Open-source compatibility: Cloud Bigtable is HBase-compatible; Dataproc is managed Hadoop/Spark"
+    ],
+    "common_misconceptions": [
+      "Managed services are always more expensive than self-managed — when accounting for operational staff time, managed services often cost less overall",
+      "Self-managed gives total control — cloud providers still manage underlying hardware, network fabric, and physical security"
+    ],
+    "gcp_services": ["Cloud SQL", "Bigtable", "Dataproc", "GKE", "Pub/Sub"],
+    "prerequisites": [],
+    "lateral_relations": [{"concept_id": "pca-data-storage-selection", "transfer_weight": 0.2}],
+    "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+managed+services+vs+self+managed+decision",
+    "official_doc_url": "https://cloud.google.com/products"
+  },
+  {
+    "id": "pca-hybrid-multicloud",
+    "exam_id": "gcp-pca",
+    "domain_id": "designing-planning",
+    "topic_id": "hybrid-multicloud",
+    "name": "Hybrid and Multi-Cloud Architecture with Anthos",
+    "description": "Designing hybrid cloud solutions using Anthos to run consistent Kubernetes workloads across on-premises data centers, GCP, AWS, and Azure.",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 4,
+    "key_facts": [
+      "Anthos enables running GKE clusters on-premises (Anthos clusters on VMware/bare metal) and on other clouds",
+      "Config Sync applies Kubernetes configurations from a Git repository consistently across all Anthos clusters",
+      "Anthos Service Mesh (based on Istio) provides unified traffic management, observability, and security across clusters",
+      "Cloud Interconnect and Cloud VPN connect on-premises to GCP; choosing depends on bandwidth and SLA requirements",
+      "Multi-cluster Ingress routes global traffic to the nearest healthy Anthos cluster using Google's global load balancer"
+    ],
+    "common_misconceptions": [
+      "Anthos only works on GCP — Anthos is specifically designed to run on-premises and on other cloud providers (AWS, Azure)",
+      "Hybrid cloud and multi-cloud are the same — hybrid connects on-premises with cloud; multi-cloud uses multiple cloud providers"
+    ],
+    "gcp_services": ["Anthos", "GKE", "Cloud Interconnect", "Cloud VPN", "Anthos Service Mesh"],
+    "prerequisites": ["pca-network-design"],
+    "lateral_relations": [{"concept_id": "pca-microservices", "transfer_weight": 0.3}],
+    "video_url": "https://www.youtube.com/watch?v=42RmVrM7B7E",
+    "official_doc_url": "https://cloud.google.com/anthos/docs/concepts/overview"
+  },
+  {
+    "id": "pca-observability",
+    "exam_id": "gcp-pca",
+    "domain_id": "analyzing-optimizing",
+    "topic_id": "observability-monitoring",
+    "name": "Observability and Cloud Operations Suite",
+    "description": "Designing observability strategies using Cloud Monitoring, Cloud Logging, Cloud Trace, and Cloud Profiler to achieve full-stack visibility for production systems.",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "The three pillars of observability: Metrics (Cloud Monitoring), Logs (Cloud Logging), and Traces (Cloud Trace)",
+      "Custom metrics enable application-level monitoring beyond infrastructure metrics using Cloud Monitoring API or OpenTelemetry",
+      "Log-based metrics convert log entries into metrics for alerting on patterns like error rates or specific log messages",
+      "Cloud Profiler continuously profiles CPU and memory usage in production with minimal overhead (less than 1%)",
+      "Error Reporting automatically aggregates and tracks unhandled exceptions from Cloud Logging entries across services"
+    ],
+    "common_misconceptions": [
+      "Cloud Monitoring only monitors GCP resources — it also supports AWS resources, on-premises hosts, and custom metrics from any source",
+      "Logging everything is always better — high-volume logging increases cost and noise; use log severity levels and sampling for high-throughput services"
+    ],
+    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Cloud Trace", "Cloud Profiler", "Error Reporting"],
+    "prerequisites": ["pca-reliability-sre"],
+    "lateral_relations": [{"concept_id": "pca-reliability-sre", "transfer_weight": 0.4}],
+    "video_url": "https://www.youtube.com/watch?v=MMQZ6gMCFdU",
+    "official_doc_url": "https://cloud.google.com/stackdriver/docs"
+  }
+]

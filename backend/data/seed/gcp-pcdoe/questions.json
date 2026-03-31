@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-pcdoe-001",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "cicd-pipelines",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Cloud Build pipeline must build two Docker images (frontend and backend) that are independent of each other. The pipeline should complete as fast as possible. How should the cloudbuild.yaml be structured?",
+    "options": [
+      {"id": "A", "text": "Build frontend in step 1, then backend in step 2 sequentially", "is_correct": false},
+      {"id": "B", "text": "Build both frontend and backend in the same step using a multi-stage Dockerfile", "is_correct": false},
+      {"id": "C", "text": "Build frontend (waitFor: ['-']) and backend (waitFor: ['-']) as parallel steps", "is_correct": true},
+      {"id": "D", "text": "Create two separate Cloud Build triggers, one for each image", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "waitFor: ['-'] means 'start immediately without waiting for any previous step'. Both build steps start concurrently, completing in max(frontend_build_time, backend_build_time) instead of their sum. This minimizes pipeline duration for independent parallel tasks.",
+      "why_not_A": "Sequential steps make the pipeline take frontend_time + backend_time, which is unnecessarily slow when steps are independent.",
+      "why_not_B": "A multi-stage Dockerfile is for optimizing a single image build, not building two separate independent images.",
+      "why_not_D": "Two separate triggers create two independent pipelines. They can't share build context or be coordinated easily and don't run within a single pipeline."
+    },
+    "concept_ids": ["pcdoe-cloud-build"],
+    "tags": ["cloud-build", "parallel-steps", "pipeline-optimization"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-002",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "sre-practices",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A service has a 99.9% monthly availability SLO. The error budget has been exhausted 3 times this quarter due to deployment-related incidents. The team wants to prevent future SLO violations. What SRE-recommended action addresses this?",
+    "options": [
+      {"id": "A", "text": "Increase the SLO target to 99.99% to set higher standards", "is_correct": false},
+      {"id": "B", "text": "Freeze all new feature deployments until the error budget policy is met; invest error budget in reliability improvements", "is_correct": true},
+      {"id": "C", "text": "Remove the SLO and let the team deploy at their own pace", "is_correct": false},
+      {"id": "D", "text": "Add more monitoring alerts so incidents are detected faster", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "When error budget is exhausted, SRE practice mandates shifting team focus from features to reliability. The error budget policy defines this: if budget is exhausted, halt risky changes and dedicate engineering time to fixing reliability issues (deployment process, testing, rollback speed) until the service regains its reliability posture.",
+      "why_not_A": "Increasing the SLO target to 99.99% makes reliability harder, not easier. With less budget, any incident burns more of the tighter budget.",
+      "why_not_C": "Removing the SLO removes the feedback mechanism that drives reliability. SLOs are the primary tool for balancing reliability and velocity.",
+      "why_not_D": "Faster detection (lower MTTD) helps but doesn't prevent the deployments causing incidents. The error budget enforcement is the structural change needed."
+    },
+    "concept_ids": ["pcdoe-sre-slos"],
+    "tags": ["slo", "error-budget", "reliability", "sre-policy"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-003",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "cicd-pipelines",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team uses Cloud Deploy to promote releases through dev -> staging -> prod. A production deployment fails and needs to be reverted immediately. What is the fastest way to restore production to the previous working state?",
+    "options": [
+      {"id": "A", "text": "Rebuild the previous container image in Cloud Build and create a new Cloud Deploy release", "is_correct": false},
+      {"id": "B", "text": "Use Cloud Deploy to rollback the production target to the previous release", "is_correct": true},
+      {"id": "C", "text": "Modify the Kubernetes deployment manifest to reference the previous image tag and run kubectl apply", "is_correct": false},
+      {"id": "D", "text": "Delete the Cloud Deploy release and re-promote the previous release from staging", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Deploy has a native rollback feature: from the console or CLI (gcloud deploy releases rollback), it re-deploys the previous successful release to the specified target. This is the fastest path as the previous release artifacts already exist.",
+      "why_not_A": "Rebuilding takes time (minutes to hours) and defeats the purpose of immutable release artifacts. Cloud Deploy stores releases; no rebuild is needed.",
+      "why_not_C": "Manually running kubectl apply bypasses Cloud Deploy's audit trail, approval gates, and release management. It's an anti-pattern in a Cloud Deploy workflow.",
+      "why_not_D": "Deleting a release and re-promoting from staging is slower and more complex than using the built-in rollback feature."
+    },
+    "concept_ids": ["pcdoe-cloud-deploy"],
+    "tags": ["cloud-deploy", "rollback", "production-recovery"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-004",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Cloud Run service has an SLI of 'request success rate'. You want to alert when the error budget is burning at a rate that, if sustained, would exhaust the monthly budget within 6 hours. Which alerting approach implements this?",
+    "options": [
+      {"id": "A", "text": "Alert when the error rate exceeds 0.1% in any 1-minute window", "is_correct": false},
+      {"id": "B", "text": "Configure a burn rate alert: fast burn at 14.4x the normal burn rate over a 1-hour window", "is_correct": true},
+      {"id": "C", "text": "Alert when Cloud Monitoring shows response latency above 500ms P99", "is_correct": false},
+      {"id": "D", "text": "Alert when the SLO target (99.9%) is breached for 5 consecutive minutes", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A 6-hour exhaustion means the burn rate is 24/6 = 4× the sustainable rate... actually: monthly budget in 6 hours = 30*24/6 = 120× normal. For a 1-hour window, burn rate alert at ~14.4× the normal error rate (consuming ~5% of monthly budget per hour) catches this. Google's recommended fast burn alert is 14.4× over 1 hour.",
+      "why_not_A": "A fixed 0.1% threshold doesn't account for error budget remaining. At the start of the month, 0.1% error rate uses budget slowly; near month-end, the same rate might exhaust remaining budget in hours.",
+      "why_not_C": "Latency SLI is different from availability SLI. Monitoring the wrong SLI doesn't protect the availability error budget.",
+      "why_not_D": "Alerting on momentary SLO breach doesn't capture burn rate momentum. The budget could be burning fast without a single window showing >0.1% errors."
+    },
+    "concept_ids": ["pcdoe-cloud-monitoring", "pcdoe-sre-slos"],
+    "tags": ["burn-rate", "alert-policy", "error-budget", "slo-monitoring"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-005",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "bootstrapping-org",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team manages GCP infrastructure with Terraform. Two engineers run 'terraform apply' simultaneously on the same resources, causing state corruption. What is the root cause and fix?",
+    "options": [
+      {"id": "A", "text": "Root cause: duplicate resource definitions in Terraform config; Fix: use count parameter", "is_correct": false},
+      {"id": "B", "text": "Root cause: no state locking; Fix: use GCS backend with state locking enabled", "is_correct": true},
+      {"id": "C", "text": "Root cause: engineers are using different Terraform versions; Fix: use Terraform version constraints", "is_correct": false},
+      {"id": "D", "text": "Root cause: missing terraform plan before apply; Fix: enforce plan-then-apply workflow", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Without state locking, two concurrent 'terraform apply' commands read the same state, make changes based on it, and both try to write back — last write wins but the losing write's changes are lost, corrupting the state. GCS backend with state locking prevents concurrent applies; the second engineer gets a lock error and must wait.",
+      "why_not_A": "Duplicate resource definitions would be a configuration error caught at plan time, not a runtime corruption from concurrent applies.",
+      "why_not_C": "Version mismatches can cause plan differences but don't cause state corruption from concurrent applies.",
+      "why_not_D": "Enforcing plan-then-apply is good practice but doesn't prevent concurrent execution. Two engineers could both plan then both apply concurrently."
+    },
+    "concept_ids": ["pcdoe-terraform-iac"],
+    "tags": ["terraform", "state-locking", "gcs-backend", "concurrent-operations"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-006",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-monitoring",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Developers report that the Cloud Logging logs for their Cloud Run service are difficult to query — important fields like request.status and error.message are mixed in the log text string. What change to the application logging improves queryability?",
+    "options": [
+      {"id": "A", "text": "Increase the Cloud Logging log retention period", "is_correct": false},
+      {"id": "B", "text": "Output logs in structured JSON format with named fields matching Cloud Logging's LogEntry schema", "is_correct": true},
+      {"id": "C", "text": "Add a Cloud Logging agent to the Cloud Run container", "is_correct": false},
+      {"id": "D", "text": "Create a log sink to BigQuery and query structured tables", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Logging parses JSON-formatted log entries automatically. Structured JSON with fields like 'severity', 'message', 'httpRequest.status', 'labels' enables Cloud Logging advanced filters (resource.labels.service_name='my-service' AND httpRequest.status>=500), log-based metrics, and targeted alerting.",
+      "why_not_A": "Longer retention keeps more logs but doesn't make existing text logs easier to query.",
+      "why_not_C": "Cloud Run captures stdout/stderr automatically; no agent is needed. The issue is log format, not capture.",
+      "why_not_D": "BigQuery export is for long-term analysis; structured JSON in Cloud Logging provides real-time queryability without the additional setup."
+    },
+    "concept_ids": ["pcdoe-cloud-logging"],
+    "tags": ["structured-logging", "json-logs", "cloud-logging", "observability"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-007",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "sre-practices",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "After a 45-minute production incident where a misconfigured deployment caused 10% error rate, the team conducts a postmortem. What is the most important outcome from a blameless postmortem?",
+    "options": [
+      {"id": "A", "text": "Identify the engineer who deployed the misconfiguration and provide remediation training", "is_correct": false},
+      {"id": "B", "text": "Document actionable items to improve systems and processes to prevent recurrence, with assigned owners and due dates", "is_correct": true},
+      {"id": "C", "text": "Calculate the revenue lost due to the incident and report to executive stakeholders", "is_correct": false},
+      {"id": "D", "text": "Add more monitoring alerts to detect similar issues faster in the future", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Blameless postmortems focus on system improvement, not individual blame. The primary output is concrete action items (e.g., 'add pre-deployment config validation', 'implement canary deployments') with owners and due dates. This directly prevents recurrence by addressing root causes in the system.",
+      "why_not_A": "Blaming individuals is explicitly counter to blameless postmortem culture and doesn't address systemic issues. It also discourages future incident reporting.",
+      "why_not_C": "Revenue calculation is important for business impact but is not the primary SRE postmortem outcome. System improvement is.",
+      "why_not_D": "Adding monitoring alerts is one possible action item but shouldn't be the primary outcome. The incident was caused by misconfiguration, not lack of detection — fixing the deployment process is more impactful."
+    },
+    "concept_ids": ["pcdoe-incident-management"],
+    "tags": ["postmortem", "blameless", "incident-response", "sre"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-008",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "cicd-pipelines",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A GKE application requires that every deployed container image must come from the company's Artifact Registry (not Docker Hub or other public registries). A malicious team member attempts to deploy a workload using a Docker Hub image. What prevents this deployment?",
+    "options": [
+      {"id": "A", "text": "GKE network policy blocking access to Docker Hub", "is_correct": false},
+      {"id": "B", "text": "Binary Authorization policy requiring attestation from an attestor that validates images are from the approved registry", "is_correct": true},
+      {"id": "C", "text": "Artifact Registry remote repository proxying Docker Hub images", "is_correct": false},
+      {"id": "D", "text": "Cloud Armor rule blocking requests from Docker Hub IP ranges", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Binary Authorization enforces deploy-time image policy on GKE. A policy requiring attestations from an approved-registry attestor blocks any image without the attestation — including images from Docker Hub. The attestor only signs images from Artifact Registry after they pass scanning.",
+      "why_not_A": "GKE network policies control pod-to-pod communication within the cluster. They don't prevent image pulls from external registries during deployment.",
+      "why_not_C": "Artifact Registry remote repositories proxy external images — this actually ENABLES Docker Hub image access through Artifact Registry, not blocks it.",
+      "why_not_D": "Cloud Armor is a WAF for external load balancers. It doesn't control container image pull sources for GKE deployments."
+    },
+    "concept_ids": ["pcdoe-security-devops", "pcdoe-artifact-registry"],
+    "tags": ["binary-authorization", "image-policy", "gke", "supply-chain-security"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-009",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-performance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A GKE cluster's nodes are at 90% CPU utilization during peak hours. New pods are stuck in 'Pending' state. The cluster autoscaler is enabled but not adding new nodes. What is the most likely reason the cluster autoscaler is not scaling up?",
+    "options": [
+      {"id": "A", "text": "The cluster autoscaler has a bug and needs to be restarted", "is_correct": false},
+      {"id": "B", "text": "The maximum node count in the node pool has been reached", "is_correct": true},
+      {"id": "C", "text": "The pods have insufficient CPU requests configured", "is_correct": false},
+      {"id": "D", "text": "The autoscaler is waiting for the scale-down cooldown period to expire", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The cluster autoscaler respects the maximum node count configured in the node pool. When max-nodes is reached, the autoscaler cannot add more nodes, leaving new pods in Pending state. The fix is to increase the max-nodes setting in the node pool.",
+      "why_not_A": "The autoscaler is a system component; 'bugs' are rare and shouldn't be the first assumption. Configuration limits are more common.",
+      "why_not_C": "If pods have too few CPU requests, the autoscaler might think they fit on existing nodes (not triggering scale-up). The scenario shows nodes at 90% CPU — requests are being honored, and the cluster is genuinely full.",
+      "why_not_D": "Scale-down cooldown prevents removing nodes; it doesn't affect scale-up events. The cluster is trying to SCALE UP and is blocked, not scale down."
+    },
+    "concept_ids": ["pcdoe-service-performance"],
+    "tags": ["gke", "cluster-autoscaler", "max-nodes", "pending-pods"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-010",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "bootstrapping-org",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A startup wants to set up their first GCP organization. They need a folder structure for dev, staging, and prod environments, with separate billing budgets per environment. What is the correct approach using the GCP resource hierarchy?",
+    "options": [
+      {"id": "A", "text": "Create one project with dev, staging, and prod resources separated by labels", "is_correct": false},
+      {"id": "B", "text": "Create three folders (dev, staging, prod) under the organization; create projects within each folder; set budget alerts at the folder level", "is_correct": true},
+      {"id": "C", "text": "Create three billing accounts (one per environment) and three organizations", "is_correct": false},
+      {"id": "D", "text": "Create three GKE clusters in one project using namespaces for isolation", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The recommended GCP structure uses folders for environment separation. Folders provide IAM policy isolation (prod can have stricter access), organizational clarity, and can receive budgets (budget alerts can be scoped to folders). This is the Cloud Foundation Toolkit best practice.",
+      "why_not_A": "Using labels in one project means dev and prod share IAM policies, quotas, and billing — making it easy to accidentally affect prod from dev operations.",
+      "why_not_C": "GCP allows one organization per domain. Three organizations would require three separate Google Workspace/Cloud Identity domains — operationally complex and unnecessary.",
+      "why_not_D": "GKE namespaces provide resource isolation within a cluster but not IAM policy isolation or billing separation. A compromised dev workload could affect prod in the same cluster."
+    },
+    "concept_ids": ["pcdoe-org-setup"],
+    "tags": ["gcp-organization", "folder-structure", "environment-isolation"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-011",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A microservices application processes user requests through 5 services: API -> Auth -> User -> Order -> Payment. A user reports that checkout fails intermittently taking > 5 seconds. How do you identify which service is the bottleneck?",
+    "options": [
+      {"id": "A", "text": "Review Cloud Logging error logs for each service individually", "is_correct": false},
+      {"id": "B", "text": "Use Cloud Trace to visualize the distributed trace showing span durations for each service in the request path", "is_correct": true},
+      {"id": "C", "text": "Check Cloud Monitoring CPU and memory metrics for each service", "is_correct": false},
+      {"id": "D", "text": "Add timing log statements to each service to capture duration", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Trace captures distributed traces across all services. A trace waterfall shows each service as a span with start time and duration. Identifying which span has the longest duration immediately pinpoints the bottleneck service — exactly what's needed for a 5-service chain.",
+      "why_not_A": "Error logs show failures but not latency distribution across services. A 5-second intermittent issue might not produce errors — just slow responses.",
+      "why_not_C": "CPU/memory metrics show resource utilization per service but don't show the request-level timing chain or which service in the path is slow.",
+      "why_not_D": "Adding timing logs to 5 services requires code changes across each, correlating log entries is manual, and it doesn't provide the visual distributed trace that Cloud Trace gives automatically."
+    },
+    "concept_ids": ["pcdoe-trace-profiler"],
+    "tags": ["cloud-trace", "distributed-tracing", "latency", "microservices"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-012",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "cicd-pipelines",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer pushes a new Docker image to Artifact Registry. They want to verify the image was scanned for vulnerabilities and has no HIGH or CRITICAL CVEs before it can be used. Where can they check this scan result?",
+    "options": [
+      {"id": "A", "text": "Cloud Security Command Center > Findings", "is_correct": false},
+      {"id": "B", "text": "Artifact Registry > Select repository > Select image > Security tab showing vulnerability scan results", "is_correct": true},
+      {"id": "C", "text": "Cloud Build > Build history > Vulnerability report tab", "is_correct": false},
+      {"id": "D", "text": "GKE > Clusters > Security > Container scanning results", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Artifact Registry Container Analysis automatically scans pushed Docker images and displays vulnerability results directly in the Artifact Registry console under the image's Security tab. Results include CVE ID, severity, package, and fix version.",
+      "why_not_A": "SCC aggregates security findings across GCP including container vulnerabilities, but the primary view is in Artifact Registry which is purpose-built for image management and scanning.",
+      "why_not_C": "Cloud Build doesn't have a built-in vulnerability report tab. Scanning results are in Artifact Registry where the image is stored.",
+      "why_not_D": "GKE doesn't store vulnerability scan results for images in its registry. Scanning is done at the registry (Artifact Registry) level."
+    },
+    "concept_ids": ["pcdoe-artifact-registry"],
+    "tags": ["artifact-registry", "vulnerability-scanning", "container-analysis"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-013",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "sre-practices",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A team wants to validate their GKE cluster's resilience to pod failure. They want to randomly terminate pods in the 'payments' namespace to verify the application self-heals within 30 seconds. This should not affect other namespaces. What approach implements this safely?",
+    "options": [
+      {"id": "A", "text": "Manually delete random pods in the payments namespace during a maintenance window", "is_correct": false},
+      {"id": "B", "text": "Run a Cloud Scheduler-triggered Cloud Run job that randomly deletes pods in the payments namespace using the Kubernetes API", "is_correct": true},
+      {"id": "C", "text": "Scale down the GKE node pool to 0 and observe recovery", "is_correct": false},
+      {"id": "D", "text": "Delete the payments namespace and verify pods restart automatically", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A Cloud Run job scheduled via Cloud Scheduler calling the Kubernetes API to delete random pods in the payments namespace is a controlled chaos engineering experiment. It's automated, repeatable, scoped to one namespace, and can be scheduled for low-traffic periods with abort conditions.",
+      "why_not_A": "Manual deletion is not automated or reproducible. Chaos engineering should be systematic and schedulable, not ad-hoc.",
+      "why_not_C": "Scaling down to 0 nodes takes down the ENTIRE cluster, affecting all namespaces — not just payments. This violates the 'should not affect other namespaces' requirement.",
+      "why_not_D": "Deleting a namespace deletes all resources within it permanently, including ConfigMaps, Secrets, and Services — not just pods. This is destructive beyond the scope of the test."
+    },
+    "concept_ids": ["pcdoe-chaos-engineering"],
+    "tags": ["chaos-engineering", "resilience-testing", "gke", "namespace"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-014",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "bootstrapping-org",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company wants to enforce that all GCP resources are tagged with 'environment' and 'team' labels for cost attribution. Untagged resources in the past have made billing analysis difficult. What is the most effective way to enforce this going forward?",
+    "options": [
+      {"id": "A", "text": "Send weekly email reminders to developers about the labeling requirement", "is_correct": false},
+      {"id": "B", "text": "Create a custom organization policy that rejects resource creation requests missing required labels", "is_correct": true},
+      {"id": "C", "text": "Use Cloud Asset Inventory to find unlabeled resources and label them retroactively", "is_correct": false},
+      {"id": "D", "text": "Enable Cloud Billing export to BigQuery and filter by label in reports", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Custom organization policies (using CEL expressions) can validate resource attributes at creation time. A policy requiring specific label keys (environment, team) as conditions for resource creation prevents unlabeled resources from being created — enforcing the requirement at the source.",
+      "why_not_A": "Email reminders are non-technical soft controls; they fail with developer turnover and during time pressure. Technical enforcement is more reliable.",
+      "why_not_C": "Retroactive labeling fixes existing resources but doesn't prevent new unlabeled resources from being created going forward.",
+      "why_not_D": "Billing export and filtering helps with reporting but doesn't enforce labeling. Unlabeled resources still slip through."
+    },
+    "concept_ids": ["pcdoe-org-setup", "pcdoe-terraform-iac"],
+    "tags": ["organization-policy", "labels", "cost-attribution", "governance"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcdoe-015",
+    "exam_id": "gcp-pcdoe",
+    "domain_id": "service-performance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A GKE application consistently uses 10% CPU and 20% memory of its allocated 2 vCPU and 4 GB requests. The team wants to right-size the pod resource requests to reduce wasted cluster capacity. What GKE feature provides data-driven recommendations?",
+    "options": [
+      {"id": "A", "text": "GKE cluster autoscaler, which right-sizes node pools based on workload requirements", "is_correct": false},
+      {"id": "B", "text": "Vertical Pod Autoscaler (VPA) in recommendation mode, which suggests right-sized CPU/memory requests based on observed usage", "is_correct": true},
+      {"id": "C", "text": "Horizontal Pod Autoscaler (HPA), which adjusts the number of replicas based on CPU/memory", "is_correct": false},
+      {"id": "D", "text": "GKE node auto-provisioning, which creates right-sized node pools for pending pods", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Vertical Pod Autoscaler in 'Off' (recommendation-only) mode analyzes historical CPU and memory usage and provides recommended request/limit values without automatically changing the pods. Engineers can review the recommendations and update Deployment specs — safely reducing over-provisioned resources.",
+      "why_not_A": "Cluster autoscaler manages node count based on pod scheduling needs; it doesn't right-size individual pod resource requests.",
+      "why_not_C": "HPA adjusts the NUMBER of pod replicas based on CPU/memory metrics; it doesn't adjust per-pod resource requests.",
+      "why_not_D": "Node auto-provisioning creates node pools with the right machine type for pending pods; it doesn't adjust existing pod resource requests."
+    },
+    "concept_ids": ["pcdoe-service-performance"],
+    "tags": ["vpa", "right-sizing", "resource-requests", "cost-optimization"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  }
+]

@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-pcne-001",
+    "exam_id": "gcp-pcne",
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is designing a GCP network for 10 teams, each needing isolated project environments. All teams need internet access through a central egress point for security inspection. Traffic between teams is not needed. Which architecture achieves this with the least operational overhead?",
+    "options": [
+      {"id": "A", "text": "One custom VPC per team with individual Cloud NAT gateways for each", "is_correct": false},
+      {"id": "B", "text": "Shared VPC with subnets per team and a centralized Cloud NAT in the host project", "is_correct": true},
+      {"id": "C", "text": "VPC peering mesh between all 10 team VPCs with a central egress VPC", "is_correct": false},
+      {"id": "D", "text": "Auto-mode VPC with all teams sharing the same subnet in their projects", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Shared VPC centralizes network management in a host project. The host project team manages the VPC, subnets, and a central Cloud NAT for internet egress. Teams use their own service projects for resources but share the host network. This achieves central egress inspection with minimal per-team network management.",
+      "why_not_A": "Separate VPCs per team create 10 independently managed networks with 10 separate Cloud NAT gateways — high operational overhead and no centralized egress inspection.",
+      "why_not_C": "VPC peering is non-transitive; 10 teams would need 45 peering connections (n*(n-1)/2) for full mesh. This is complex and doesn't support central egress via a hub.",
+      "why_not_D": "Auto-mode VPCs create overlapping CIDRs across regions, preventing peering. Also, all teams sharing a subnet eliminates project isolation."
+    },
+    "concept_ids": ["pcne-vpc-design", "pcne-vpc-peering"],
+    "tags": ["shared-vpc", "central-egress", "network-architecture"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-002",
+    "exam_id": "gcp-pcne",
+    "domain_id": "hybrid-connectivity",
+    "type": "comparison",
+    "difficulty": 4,
+    "stem": "A company needs 10 Gbps of reliable, low-latency private connectivity between their on-premises data center and GCP with a 99.99% SLA. They have a co-location facility adjacent to a Google Interconnect location. Which solution meets these requirements?",
+    "options": [
+      {"id": "A", "text": "HA VPN with two tunnels to GCP, each at 3 Gbps throughput", "is_correct": false},
+      {"id": "B", "text": "Dedicated Interconnect with two 10 Gbps circuits in the same metro, each with a VLAN attachment", "is_correct": false},
+      {"id": "C", "text": "Dedicated Interconnect with four 10 Gbps circuits: two in each of two metros, with VLAN attachments to Cloud Router", "is_correct": true},
+      {"id": "D", "text": "Partner Interconnect with 10 Gbps capacity via a service provider", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "99.99% SLA for Dedicated Interconnect requires 4 circuits: 2 circuits in 2 different metropolitan areas, each with VLAN attachments to Cloud Router. Two metros provide geographic redundancy; two circuits per metro provide redundancy within each metro. This is the published SLA requirement.",
+      "why_not_A": "HA VPN offers 99.99% SLA but maximum throughput is ~6 Gbps (2 × 3 Gbps tunnels), below the 10 Gbps requirement.",
+      "why_not_B": "Two circuits in the same metro only provide 99.9% SLA (not 99.99%). 99.99% requires redundancy across two different metropolitan areas.",
+      "why_not_D": "Partner Interconnect is valid but may not provide the single-metro direct co-location advantage and requires a service provider in the middle."
+    },
+    "concept_ids": ["pcne-cloud-interconnect"],
+    "tags": ["dedicated-interconnect", "sla", "hybrid-connectivity", "99.99"],
+    "estimated_time_seconds": 120,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-003",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company runs a stateful application behind an Internal Passthrough Network Load Balancer. The application must preserve the original client source IP address to implement IP-based rate limiting. Which load balancer configuration ensures this?",
+    "options": [
+      {"id": "A", "text": "Internal Application Load Balancer with HTTP headers forwarding", "is_correct": false},
+      {"id": "B", "text": "Internal Passthrough Network Load Balancer — it passes packets directly to backends without proxy", "is_correct": true},
+      {"id": "C", "text": "Internal Proxy Network Load Balancer with PROXY protocol header", "is_correct": false},
+      {"id": "D", "text": "External Application Load Balancer with X-Forwarded-For header enabled", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Passthrough NLBs (both internal and external) pass packets directly to backend VMs without a proxy layer. The backend VM sees the original client IP in the packet's source IP field. This is the defining characteristic of passthrough vs proxy load balancers.",
+      "why_not_A": "Application LBs are proxy-based; the backend sees the LB's IP as the source, not the client. The X-Forwarded-For header carries the original client IP but requires application code changes to use.",
+      "why_not_C": "Proxy NLB also uses a proxy layer; PROXY protocol adds client info in a header, but it's not transparent source IP preservation.",
+      "why_not_D": "External Application LB is external (internet-facing), not internal, and is proxy-based — source IP is the LB's IP, not the client's."
+    },
+    "concept_ids": ["pcne-load-balancing"],
+    "tags": ["passthrough-nlb", "source-ip-preservation", "load-balancing"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-004",
+    "exam_id": "gcp-pcne",
+    "domain_id": "managing-network-ops",
+    "type": "troubleshooting",
+    "difficulty": 3,
+    "stem": "A VM in subnet-a (10.0.1.0/24) cannot connect to a VM in subnet-b (10.0.2.0/24) in the same VPC. Both VMs have internal IPs. Routing tables show a route for 10.0.2.0/24 via the default VPC gateway. What should you check first?",
+    "options": [
+      {"id": "A", "text": "Check if the VMs are in different availability zones", "is_correct": false},
+      {"id": "B", "text": "Use Network Intelligence Center Connectivity Tests to simulate the path and identify blocking firewall rules", "is_correct": true},
+      {"id": "C", "text": "Check if VPC peering is configured between subnet-a and subnet-b", "is_correct": false},
+      {"id": "D", "text": "Verify that Cloud NAT is configured for both subnets", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Since routing is confirmed correct (route exists), the issue is likely a firewall rule blocking traffic. Network Intelligence Center Connectivity Tests simulate the packet path and explicitly identify which firewall rule (if any) is blocking connectivity — without sending real traffic.",
+      "why_not_A": "GCP subnets are regional (not zone-scoped). VMs in different zones within the same region can communicate within the same VPC subnet with no zone restriction.",
+      "why_not_C": "VPC peering connects separate VPCs. Since both subnets are in the same VPC, no peering is needed — intra-VPC routing is automatic.",
+      "why_not_D": "Cloud NAT provides outbound internet access for VMs without external IPs. It doesn't affect internal VPC communication between two VMs."
+    },
+    "concept_ids": ["pcne-monitoring-network"],
+    "tags": ["network-troubleshooting", "connectivity-tests", "firewall", "vpc"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-005",
+    "exam_id": "gcp-pcne",
+    "domain_id": "hybrid-connectivity",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "A company wants to connect their on-premises network to GCP. Requirements: max 500 Mbps bandwidth, no physical co-location needed, best-effort connectivity is acceptable (no SLA required), and implementation must be done in 1 day. Which option is most appropriate?",
+    "options": [
+      {"id": "A", "text": "Dedicated Interconnect at a co-location facility", "is_correct": false},
+      {"id": "B", "text": "Partner Interconnect with a service provider", "is_correct": false},
+      {"id": "C", "text": "HA VPN over the internet to Cloud VPN", "is_correct": true},
+      {"id": "D", "text": "Cloud Interconnect Direct Peering", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "HA VPN can be configured in hours with just an internet connection and a compatible VPN device. It supports dynamic BGP routing, provides up to ~6 Gbps (well above 500 Mbps), and requires no physical installation. The 99.99% SLA is available if needed, but best-effort is acceptable.",
+      "why_not_A": "Dedicated Interconnect requires physical co-location at a Google facility — taking weeks to months for provisioning, not 1 day.",
+      "why_not_B": "Partner Interconnect requires coordination with a service provider — typically 2-4 weeks for provisioning.",
+      "why_not_D": "Direct Peering is for CDN/content providers to connect to Google's network directly; it's not a general hybrid connectivity option for enterprise workloads."
+    },
+    "concept_ids": ["pcne-cloud-vpn"],
+    "tags": ["cloud-vpn", "hybrid-connectivity", "ha-vpn"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-006",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Compute Engine VMs in a subnet must access google.googleapis.com APIs (Cloud Storage, BigQuery) without external IP addresses and without routing through the internet. What should you enable?",
+    "options": [
+      {"id": "A", "text": "Cloud NAT on the subnet's Cloud Router", "is_correct": false},
+      {"id": "B", "text": "Private Google Access on the subnet", "is_correct": true},
+      {"id": "C", "text": "Private Service Connect endpoint for Google APIs", "is_correct": false},
+      {"id": "D", "text": "VPC peering to Google's API VPC", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Private Google Access (PGA) enables VMs without external IPs to reach Google APIs and services (*.googleapis.com) using internal IP addresses. Traffic goes over Google's private network without touching the public internet. It's a simple subnet-level setting.",
+      "why_not_A": "Cloud NAT provides outbound internet access for VMs without external IPs; it routes through the internet. PGA is the correct choice for private API access.",
+      "why_not_C": "Private Service Connect endpoints also provide private API access but create a VPC endpoint with an internal IP. PGA is simpler for general googleapis.com access; PSC is better for specific service endpoints.",
+      "why_not_D": "VPCs don't peer to Google's infrastructure directly in the traditional VPC peering sense. Private Google Access is the correct feature."
+    },
+    "concept_ids": ["pcne-private-service-connect"],
+    "tags": ["private-google-access", "vpc", "googleapis"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-007",
+    "exam_id": "gcp-pcne",
+    "domain_id": "designing-gcp-network",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A VPC in us-central1 has VPC peering with VPC-A and VPC-A has peering with VPC-B. Can the us-central1 VPC communicate with VPC-B?",
+    "options": [
+      {"id": "A", "text": "Yes, VPC peering is transitive by default", "is_correct": false},
+      {"id": "B", "text": "No, VPC peering is NOT transitive; direct peering between us-central1 VPC and VPC-B is required", "is_correct": true},
+      {"id": "C", "text": "Yes, if the VPCs are in the same organization", "is_correct": false},
+      {"id": "D", "text": "Yes, if Cloud Router is enabled with BGP route exchange", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC peering in GCP is explicitly non-transitive. Traffic from the us-central1 VPC can reach VPC-A, and VPC-A can reach VPC-B, but the us-central1 VPC cannot reach VPC-B through VPC-A. A direct peering between us-central1 VPC and VPC-B is required.",
+      "why_not_A": "This is incorrect. GCP VPC peering is documented as non-transitive.",
+      "why_not_C": "Organization membership doesn't change the non-transitive nature of VPC peering.",
+      "why_not_D": "Cloud Router manages dynamic BGP routes for VPN/Interconnect connections, not for VPC peering. Adding a Cloud Router doesn't enable transitive VPC peering."
+    },
+    "concept_ids": ["pcne-vpc-peering"],
+    "tags": ["vpc-peering", "transitive-routing", "network-design"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-008",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A Cloud Run service needs to call an internal API hosted on a Compute Engine VM with private IP 10.0.1.100. Cloud Run cannot reach private VPC IPs by default. What configuration allows this?",
+    "options": [
+      {"id": "A", "text": "Create a Cloud NAT gateway in the VPC to forward requests from Cloud Run", "is_correct": false},
+      {"id": "B", "text": "Configure Serverless VPC Access connector and set Cloud Run to use it for all traffic", "is_correct": true},
+      {"id": "C", "text": "Assign a public IP to the Compute Engine VM and update Cloud Run to use the public IP", "is_correct": false},
+      {"id": "D", "text": "Create a Cloud VPN tunnel between Cloud Run and the VPC", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Serverless VPC Access connector provides a bridge between Cloud Run and a VPC. When Cloud Run is configured to use the connector, traffic to VPC IP ranges is routed through the connector to the VPC, allowing Cloud Run to access private IPs like 10.0.1.100.",
+      "why_not_A": "Cloud NAT provides outbound internet access for VMs — it doesn't forward incoming requests from Cloud Run to VMs.",
+      "why_not_C": "Assigning a public IP exposes the internal API to the internet — a security anti-pattern when private connectivity is available.",
+      "why_not_D": "Cloud VPN connects entire networks (on-premises to GCP); it doesn't connect Cloud Run serverless functions to a VPC. Serverless VPC Access is the correct tool."
+    },
+    "concept_ids": ["pcne-cloud-nat"],
+    "tags": ["serverless-vpc-access", "cloud-run", "private-ip", "vpc-connector"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-009",
+    "exam_id": "gcp-pcne",
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company needs to inspect east-west traffic between microservices in their GKE cluster for threat detection using a third-party NGFW appliance. They don't want to modify microservice code. What GCP feature supports this?",
+    "options": [
+      {"id": "A", "text": "Cloud Armor security policies on GKE Ingress", "is_correct": false},
+      {"id": "B", "text": "GKE Network Policies for pod-to-pod traffic filtering", "is_correct": false},
+      {"id": "C", "text": "Packet Mirroring to copy east-west traffic to the NGFW appliance for inspection", "is_correct": true},
+      {"id": "D", "text": "VPC Service Controls to restrict inter-pod communications", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Packet Mirroring copies all or filtered network traffic from specified GCP VMs (including GKE node VMs) and sends it to a collector (the NGFW appliance) for inspection. It's passive — original traffic is not interrupted, and microservices don't need code changes.",
+      "why_not_A": "Cloud Armor is for north-south (internet-facing) traffic via HTTP(S) Load Balancer; it doesn't inspect east-west pod-to-pod traffic.",
+      "why_not_B": "GKE Network Policies allow/deny pod connections at Layer 3/4 but don't provide deep packet inspection or threat detection capabilities.",
+      "why_not_D": "VPC Service Controls protect GCP API access perimeters; they don't inspect application-level east-west traffic between pods."
+    },
+    "concept_ids": ["pcne-firewall-security"],
+    "tags": ["packet-mirroring", "ngfw", "east-west", "threat-inspection"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-010",
+    "exam_id": "gcp-pcne",
+    "domain_id": "designing-gcp-network",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A company wants to reduce network egress costs for their Cloud CDN-cached web application. Currently all users download video content directly from Cloud Storage. What architecture reduces egress costs?",
+    "options": [
+      {"id": "A", "text": "Add a regional External Application Load Balancer in each region", "is_correct": false},
+      {"id": "B", "text": "Enable Cloud CDN on the Global External Application Load Balancer backed by Cloud Storage", "is_correct": true},
+      {"id": "C", "text": "Move video content to Nearline Cloud Storage to reduce storage costs", "is_correct": false},
+      {"id": "D", "text": "Enable Cloud NAT for all VM instances that serve video", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud CDN caches video content at Google's global PoPs. Once cached, repeated downloads are served from the PoP rather than fetching from Cloud Storage each time. CDN egress pricing is lower than Cloud Storage direct egress pricing, and cache hits reduce origin (Cloud Storage) requests.",
+      "why_not_A": "Regional load balancers don't provide CDN caching; they just route requests to backends in one region without edge caching.",
+      "why_not_C": "Nearline storage class reduces storage costs for infrequently accessed data but increases retrieval costs and latency. It doesn't reduce network egress costs for frequently accessed video content.",
+      "why_not_D": "Cloud NAT provides outbound internet connectivity for VMs; it doesn't affect CDN caching or reduce video download egress costs."
+    },
+    "concept_ids": ["pcne-cloud-cdn", "pcne-network-cost"],
+    "tags": ["cloud-cdn", "egress-cost", "cloud-storage", "caching"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-011",
+    "exam_id": "gcp-pcne",
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Network engineers notice that several VPC firewall rules created 2 years ago have had zero hits in 90 days. They want to identify and safely remove obsolete rules to simplify the firewall configuration. What tool provides this analysis?",
+    "options": [
+      {"id": "A", "text": "VPC Flow Logs with firewall-rule-id field analysis in BigQuery", "is_correct": false},
+      {"id": "B", "text": "Firewall Insights from Network Intelligence Center showing unused and overly permissive rules", "is_correct": true},
+      {"id": "C", "text": "Cloud Audit Logs filtering for firewall rule creation events", "is_correct": false},
+      {"id": "D", "text": "Security Command Center's security health analytics findings", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Firewall Insights (part of Network Intelligence Center) uses ML to analyze firewall rule hit counts over a 6-week observation period. It identifies unused rules (zero hits), shadowed rules (overridden by other rules), and overly permissive rules — exactly what's needed to safely clean up the firewall configuration.",
+      "why_not_A": "VPC Flow Logs don't include which specific firewall rule allowed/denied traffic (they show allowed/denied but not rule ID). Manual BigQuery analysis is complex and error-prone.",
+      "why_not_C": "Cloud Audit Logs show when rules were created/modified, not whether they've been used to allow/deny traffic.",
+      "why_not_D": "SCC identifies misconfigured rules (e.g., open to 0.0.0.0/0) but doesn't specifically identify unused rules based on traffic analysis."
+    },
+    "concept_ids": ["pcne-monitoring-network"],
+    "tags": ["firewall-insights", "network-intelligence-center", "unused-rules"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-012",
+    "exam_id": "gcp-pcne",
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company's Cloud Router is configured with global dynamic routing. They have Cloud VPN tunnels to on-premises in us-central1. A VM in europe-west1 needs to reach on-premises resources through these VPN tunnels. Is this possible and how?",
+    "options": [
+      {"id": "A", "text": "No, Cloud VPN tunnels are regional and the europe-west1 VM cannot use a us-central1 VPN", "is_correct": false},
+      {"id": "B", "text": "Yes, global routing allows the VPC to learn and use VPN routes from any region for any region's VMs", "is_correct": true},
+      {"id": "C", "text": "Yes, but requires VPC peering between us-central1 and europe-west1 regions", "is_correct": false},
+      {"id": "D", "text": "No, you must create separate Cloud VPN tunnels in europe-west1 for the VM to connect to on-premises", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Router with global dynamic routing enables learned routes from Cloud VPN/Interconnect in one region to be advertised to and used by all regions within the same VPC. The europe-west1 VM can route to on-premises via the us-central1 VPN tunnel using these global routes.",
+      "why_not_A": "VPN tunnels are regional, but with global routing, the routes learned from those tunnels are propagated to all VPC regions. The tunnel is in us-central1, but its routes are available globally.",
+      "why_not_C": "VPC subnets in different regions of the same VPC are already part of the same global VPC. No peering is needed between regions of the same VPC.",
+      "why_not_D": "While creating regional VPN tunnels is a valid approach for lower latency, it's not required when global routing is enabled. Using existing us-central1 tunnels works."
+    },
+    "concept_ids": ["pcne-cloud-router", "pcne-global-routing"],
+    "tags": ["cloud-router", "global-routing", "cloud-vpn", "dynamic-routing"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-013",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A GCP deployment has 100 VMs in a private subnet with no external IPs. They need to download OS updates from the public internet. What service enables this without assigning external IPs to the VMs?",
+    "options": [
+      {"id": "A", "text": "Private Google Access — enables VMs to reach Google APIs without external IPs", "is_correct": false},
+      {"id": "B", "text": "Cloud NAT — provides outbound internet access for VMs without external IPs", "is_correct": true},
+      {"id": "C", "text": "VPC peering — connects the private subnet to an internet-connected VPC", "is_correct": false},
+      {"id": "D", "text": "Cloud Interconnect — provides private connectivity to OS update repositories", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud NAT is specifically designed to provide outbound internet access for VM instances without external IP addresses. It performs network address translation so VMs can initiate connections to the internet (for OS updates, downloads) without being directly reachable from the internet.",
+      "why_not_A": "Private Google Access enables VMs to reach *.googleapis.com (Google Cloud APIs and services) without external IPs — not general internet access for OS update repos.",
+      "why_not_C": "VPC peering connects GCP VPCs; it doesn't provide internet access. Peering is non-transitive and even a peered internet-connected VPC wouldn't route internet traffic for the private subnet.",
+      "why_not_D": "Cloud Interconnect connects on-premises networks to GCP; it doesn't provide internet access to GCP VMs."
+    },
+    "concept_ids": ["pcne-cloud-nat"],
+    "tags": ["cloud-nat", "internet-access", "private-vms", "outbound"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.18,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-014",
+    "exam_id": "gcp-pcne",
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company's SaaS application is hosted in GCP and needs to serve enterprise customers who require private connectivity without their traffic traversing the internet. The company doesn't want to manage peering for each customer's VPC. Which GCP feature enables this?",
+    "options": [
+      {"id": "A", "text": "VPC peering between the provider's VPC and each customer's VPC", "is_correct": false},
+      {"id": "B", "text": "Shared VPC with customer projects as service projects", "is_correct": false},
+      {"id": "C", "text": "Private Service Connect Published Service with a service attachment", "is_correct": true},
+      {"id": "D", "text": "Dedicated Interconnect from each customer to the provider's colocation", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Private Service Connect Published Service allows the SaaS provider to publish a service attachment. Each enterprise customer creates a PSC endpoint in their own VPC with a private IP, connecting to the service attachment. The provider doesn't manage peering for each customer; customers control their own endpoint.",
+      "why_not_A": "VPC peering requires managing individual peering connections per customer and has a 25-peering limit per VPC. PSC is designed to scale to many consumers without these limitations.",
+      "why_not_B": "Shared VPC requires customers to use the provider's subnets — customers lose network isolation. PSC maintains each customer's VPC isolation.",
+      "why_not_D": "Dedicated Interconnect requires physical infrastructure and is designed for on-premises connectivity, not inter-cloud VPC service consumption."
+    },
+    "concept_ids": ["pcne-private-service-connect"],
+    "tags": ["private-service-connect", "saas", "service-publishing"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-pcne-015",
+    "exam_id": "gcp-pcne",
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company wants their internal DNS queries for *.corp.example.com to be resolved by their on-premises DNS server at 192.168.1.53, while all other DNS queries are handled by Cloud DNS. How should this be configured?",
+    "options": [
+      {"id": "A", "text": "Create a Cloud DNS private zone for corp.example.com with NS records pointing to 192.168.1.53", "is_correct": false},
+      {"id": "B", "text": "Configure a Cloud DNS forwarding zone for corp.example.com with the on-premises DNS server as the target", "is_correct": true},
+      {"id": "C", "text": "Set the VPC's custom DNS server to 192.168.1.53 for all queries", "is_correct": false},
+      {"id": "D", "text": "Create CNAME records in a Cloud DNS private zone mapping each *.corp.example.com to on-premises IPs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A Cloud DNS forwarding zone for corp.example.com directs DNS queries for that domain to the specified on-premises DNS server (192.168.1.53). All other queries are handled by Cloud DNS normally. This is the purpose-built feature for hybrid DNS resolution.",
+      "why_not_A": "NS records in a Cloud DNS zone delegate authority to another name server but don't create forwarding semantics within Google's recursive resolver. The VMs' DNS resolver wouldn't use the on-premises server for resolution.",
+      "why_not_C": "Setting the VPC's DNS server to 192.168.1.53 would route ALL DNS queries to on-premises, not just corp.example.com queries. This affects GCP internal DNS name resolution.",
+      "why_not_D": "Creating individual CNAME records requires knowing all hostnames in advance and doesn't scale. CNAME also doesn't handle wildcard resolution dynamically."
+    },
+    "concept_ids": ["pcne-cloud-dns"],
+    "tags": ["cloud-dns", "forwarding-zone", "hybrid-dns"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  }
+]

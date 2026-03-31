@@ -1,0 +1,437 @@
+[
+  {
+    "id": "q-az400-001",
+    "exam_id": "azure-az400",
+    "domain_id": "build-release-pipelines",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps engineer needs to create a YAML Azure Pipeline that automatically triggers when code is pushed to the main branch, but NOT when changes are made only to files in the docs/ folder. Which YAML pipeline configuration correctly implements this trigger behavior?",
+    "options": [
+      {"id": "A", "text": "trigger:\\n  branches:\\n    include:\\n      - main\\n  paths:\\n    include:\\n      - docs/*", "is_correct": false},
+      {"id": "B", "text": "trigger:\\n  branches:\\n    include:\\n      - main\\n  paths:\\n    exclude:\\n      - docs/*", "is_correct": true},
+      {"id": "C", "text": "trigger:\\n  branches:\\n    exclude:\\n      - main\\n  paths:\\n    exclude:\\n      - docs/*", "is_correct": false},
+      {"id": "D", "text": "trigger: none\\npr-trigger:\\n  branches:\\n    include:\\n      - main", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The trigger section with branches.include: main ensures the pipeline only triggers on pushes to the main branch. Adding paths.exclude: docs/* causes the pipeline to NOT trigger when ALL changed files are within the docs/ folder. If any changed file is outside docs/, the pipeline will trigger normally. This is the correct way to suppress documentation-only change triggers.",
+      "why_not_A": "paths.include: docs/* would trigger the pipeline ONLY when files in docs/ are changed—the opposite of the requirement. This option would also prevent the pipeline from running when source code files outside docs/ are changed.",
+      "why_not_B": "N/A",
+      "why_not_C": "branches.exclude: main would prevent the pipeline from triggering on the main branch at all. The requirement is to trigger on main but exclude doc-only changes. This configuration effectively disables the CI trigger for main.",
+      "why_not_D": "trigger: none disables all push-based CI triggers entirely. pr-trigger defines pull request triggers, not push triggers. This configuration would only run on pull requests, not on direct pushes to main, which does not meet the CI requirement."
+    },
+    "concept_ids": ["az400-ci-pipeline"],
+    "tags": ["yaml-pipeline", "triggers", "path-exclusion", "ci"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-002",
+    "exam_id": "azure-az400",
+    "domain_id": "source-control",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A development team using Azure Repos wants to ensure that all pull requests to the main branch must: (1) have at least 2 approved reviewers, (2) have a linked work item, and (3) pass a build validation CI pipeline. Where should these requirements be configured?",
+    "options": [
+      {"id": "A", "text": "Configure these requirements in the Azure Pipeline YAML file as pre-conditions before the build stage", "is_correct": false},
+      {"id": "B", "text": "Configure Branch Policies on the main branch in Azure Repos settings", "is_correct": true},
+      {"id": "C", "text": "Configure these requirements as pull request templates in the .azure/pull_request_template.md file", "is_correct": false},
+      {"id": "D", "text": "Configure Repository Permissions in Azure DevOps to restrict merge access to approved users only", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Repos Branch Policies allow configuring exactly the three requirements described: minimum number of reviewers (configurable count), Work Item Linking requirement, and Build Validation (running a pipeline as a PR gate). These policies are enforced server-side and prevent merging until all conditions are met, regardless of who initiates the merge.",
+      "why_not_A": "Azure Pipeline YAML pre-conditions run during pipeline execution and cannot enforce pull request requirements like reviewer count or linked work items. The pipeline only runs when triggered; it cannot block a merge from happening outside the pipeline context.",
+      "why_not_B": "N/A",
+      "why_not_C": "Pull request templates (markdown files) provide a template for the PR description to fill out. They are informational prompts for the PR author and are not enforced—contributors can ignore the template and still merge if no policies are configured.",
+      "why_not_D": "Repository permissions control who can perform actions (like bypass policies or force push) but do not enforce the specific review count, work item, and CI checks described. Permissions grant or deny access; policies enforce quality gates."
+    },
+    "concept_ids": ["az400-pr-management", "az400-source-control-strategy"],
+    "tags": ["branch-policies", "pull-request", "code-review", "azure-repos"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.16,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-003",
+    "exam_id": "azure-az400",
+    "domain_id": "build-release-pipelines",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps team needs to deploy an application to production using a blue-green deployment strategy on Azure App Service. After deployment to the staging slot, automated tests must run before any traffic shifts to the new version. If tests fail, no traffic should be shifted. Which Azure DevOps and App Service features implement this pattern?",
+    "options": [
+      {"id": "A", "text": "Deploy to the production slot, run tests, and use Azure Pipelines rollback to redeploy the previous build if tests fail", "is_correct": false},
+      {"id": "B", "text": "Deploy to the App Service staging slot, add a pipeline stage with automated tests and a slot swap step that only runs if tests pass using stage dependencies", "is_correct": true},
+      {"id": "C", "text": "Use Azure Traffic Manager weighted routing to shift 0% of traffic to the new deployment and gradually increase after manual approval", "is_correct": false},
+      {"id": "D", "text": "Deploy to a separate App Service plan, configure Azure Front Door to route 0% traffic to new deployment, and run tests before increasing the weight", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "App Service deployment slots allow deploying to a staging slot while production traffic continues to the production slot. In the Azure Pipeline, the staging deployment stage deploys to the staging slot and runs automated tests. The swap stage (which executes AzureAppServiceManage task with swapWithProduction action) is configured with a dependency on the test stage succeeding. If tests fail, the swap stage is skipped and production is unaffected.",
+      "why_not_A": "Deploying directly to production with a rollback plan means users are exposed to the new potentially failing version during the test period. Even if rollback is fast, there is a window of production impact. The blue-green pattern specifically avoids this exposure.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Traffic Manager uses DNS-based routing with TTL propagation delays (minutes). It cannot instantly shift 0% to 100% traffic like App Service slot swap. Also, Traffic Manager requires both environments to be running as separate App Service apps, not slots on the same app.",
+      "why_not_D": "A separate App Service plan with Azure Front Door can implement blue-green but is more complex and expensive than using deployment slots. Deployment slots are the native, purpose-built App Service feature for this exact pattern and are included in Standard tier and above."
+    },
+    "concept_ids": ["az400-cd-release"],
+    "tags": ["blue-green", "deployment-slots", "app-service", "swap", "automated-testing"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-004",
+    "exam_id": "azure-az400",
+    "domain_id": "build-release-pipelines",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A DevOps engineer is configuring Azure Artifacts to host a private NuGet feed for internal .NET libraries. The team also needs to restore packages from NuGet.org during builds without requiring a separate NuGet.org connection. Which Azure Artifacts feature enables consuming packages from NuGet.org through the private feed?",
+    "options": [
+      {"id": "A", "text": "Configure a separate NuGet service connection in Azure DevOps pointing to NuGet.org", "is_correct": false},
+      {"id": "B", "text": "Add NuGet.org as an upstream source to the Azure Artifacts feed", "is_correct": true},
+      {"id": "C", "text": "Download all required NuGet packages from NuGet.org and upload them to the private feed manually", "is_correct": false},
+      {"id": "D", "text": "Configure the pipeline to use two NuGet restore steps: one for the private feed and one for NuGet.org", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Upstream sources in Azure Artifacts allow the private feed to proxy public package registries like NuGet.org. When a package is requested that is not in the private feed, Azure Artifacts retrieves it from the upstream NuGet.org source, caches it in the private feed, and serves it. Teams configure only the private feed in their NuGet.config—all packages (internal and external) come through one feed.",
+      "why_not_A": "A separate NuGet service connection points to NuGet.org directly, requiring pipeline configuration to use two package sources. This adds pipeline complexity and does not benefit from the caching and security scanning that upstream sources provide through Azure Artifacts.",
+      "why_not_B": "N/A",
+      "why_not_C": "Manually uploading all third-party packages is extremely time-consuming and requires ongoing maintenance whenever packages are updated. This defeats the purpose of a package manager and is not a scalable approach.",
+      "why_not_D": "Using two separate NuGet restore steps adds complexity and potential ordering issues. More importantly, it bypasses Azure Artifacts' security scanning and caching benefits for public packages. Upstream sources are the purpose-built solution for this scenario."
+    },
+    "concept_ids": ["az400-artifact-management"],
+    "tags": ["azure-artifacts", "upstream-sources", "nuget", "package-management"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.16,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-005",
+    "exam_id": "azure-az400",
+    "domain_id": "build-release-pipelines",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is adopting Infrastructure as Code using Azure Bicep. Before deploying to production, the team wants to preview all changes that a Bicep deployment would make (additions, modifications, deletions) without actually making any changes to Azure resources. Which command should they run?",
+    "options": [
+      {"id": "A", "text": "az deployment group create --template-file main.bicep --mode Incremental --dry-run", "is_correct": false},
+      {"id": "B", "text": "az deployment group what-if --resource-group rg-prod --template-file main.bicep", "is_correct": true},
+      {"id": "C", "text": "az bicep build --file main.bicep --preview", "is_correct": false},
+      {"id": "D", "text": "az deployment group validate --resource-group rg-prod --template-file main.bicep", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'az deployment group what-if' command performs a What-If analysis of an ARM/Bicep deployment. It evaluates the template against the current state of Azure resources and shows a color-coded preview of what would be created, modified, or deleted without making any actual changes. This is equivalent to Terraform plan and is essential for validating infrastructure changes before applying them.",
+      "why_not_A": "There is no --dry-run flag for 'az deployment group create'. The Incremental mode deploys without deleting unlisted resources but still executes the deployment. Using the wrong flag would cause the deployment to run rather than preview changes.",
+      "why_not_B": "N/A",
+      "why_not_C": "'az bicep build' compiles a .bicep file to ARM JSON template format. It does not preview changes against existing Azure resources. The --preview flag does not exist for the build command.",
+      "why_not_D": "'az deployment group validate' validates the template syntax and resource configuration for correctness but does not show what changes would be made to existing resources. Validate confirms the template is valid; what-if shows the deployment impact."
+    },
+    "concept_ids": ["az400-iac"],
+    "tags": ["bicep", "what-if", "infrastructure-as-code", "deployment-preview"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-006",
+    "exam_id": "azure-az400",
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps engineer needs to integrate Azure Key Vault secrets into an Azure Pipeline without storing any credentials in the pipeline definition or repository. The pipeline runs on Microsoft-hosted agents. What is the recommended authentication approach?",
+    "options": [
+      {"id": "A", "text": "Create an Azure Key Vault service connection in Azure DevOps using a service principal client secret stored as a pipeline variable", "is_correct": false},
+      {"id": "B", "text": "Use an Azure Resource Manager service connection with workload identity federation (OIDC) and a Key Vault variable group linked to the service connection", "is_correct": true},
+      {"id": "C", "text": "Store the Key Vault access policy object ID in a pipeline variable and use az keyvault secret show in a script step", "is_correct": false},
+      {"id": "D", "text": "Hard-code the Key Vault URL in the pipeline YAML and use az login with a service principal in a pipeline script step", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Workload identity federation (OIDC) for Azure Resource Manager service connections eliminates the need to store client secrets or certificates. Azure DevOps exchanges an OIDC token for an Azure AD access token at runtime using federated credentials—no static secrets are stored anywhere. A Key Vault variable group linked to this service connection dynamically retrieves secrets at pipeline runtime without any credentials in the pipeline YAML.",
+      "why_not_A": "Storing a service principal client secret as a pipeline variable introduces a secret into the pipeline configuration. While pipeline secrets are encrypted, they are still static credentials that must be rotated and can be exposed if the pipeline is misconfigured to print variable values.",
+      "why_not_B": "N/A",
+      "why_not_C": "A Key Vault access policy object ID is a configuration identifier, not a credential. The pipeline still needs authentication credentials to access Key Vault—just knowing the Key Vault URL and an object ID does not grant access. This description does not describe a complete or secure authentication solution.",
+      "why_not_D": "Hard-coding the Key Vault URL is acceptable (it is not a secret), but using az login with a service principal requires a client secret or certificate—which must be stored somewhere. This violates the requirement of not storing credentials in the pipeline or repository."
+    },
+    "concept_ids": ["az400-secret-management", "az400-devsecops"],
+    "tags": ["key-vault", "oidc", "workload-identity", "pipeline-secrets", "service-connection"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-007",
+    "exam_id": "azure-az400",
+    "domain_id": "instrumentation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps team notices that their microservices application deployed on AKS is experiencing increased latency. The application uses Azure Application Insights. They need to trace a specific slow request across all microservices to identify which service is introducing the latency. Which Application Insights feature should they use?",
+    "options": [
+      {"id": "A", "text": "Review the Application Insights Performance blade to find the slowest page views and operations", "is_correct": false},
+      {"id": "B", "text": "Use the Application Map and End-to-End Transaction Diagnostics to trace the specific request across service boundaries using the operation_Id correlation", "is_correct": true},
+      {"id": "C", "text": "Review Azure Monitor Metrics for each AKS pod to compare CPU and memory usage across services", "is_correct": false},
+      {"id": "D", "text": "Use Log Analytics KQL to query the requests table and sort by duration descending to find the slowest requests", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Application Insights End-to-End Transaction Diagnostics provides a timeline view of all telemetry items (requests, dependencies, exceptions, traces) that share the same operation_Id across all services in a distributed request. The Application Map shows service topology and dependency performance at a glance. Together they allow identifying exactly which service call in the chain introduced the latency.",
+      "why_not_A": "The Performance blade shows aggregate statistics for all requests and operations. While useful for identifying which operation type is slow, it does not allow tracing a specific individual request end-to-end across multiple microservices with their inter-service call chain.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Monitor Metrics for AKS pods shows infrastructure-level CPU and memory utilization. High CPU might correlate with latency but does not pinpoint which service operation is slow or show the request flow across services. Infrastructure metrics and application traces serve different purposes.",
+      "why_not_D": "Querying the requests table in Log Analytics by duration can find slow requests, but the query results show individual request entries without automatically linking them to the related dependency calls and requests across other services. Manual correlation is required, which is more complex than using End-to-End Transaction Diagnostics."
+    },
+    "concept_ids": ["az400-monitoring-ops"],
+    "tags": ["application-insights", "distributed-tracing", "end-to-end-diagnostics", "microservices"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-008",
+    "exam_id": "azure-az400",
+    "domain_id": "sre-strategy",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "A site reliability engineer is defining service level objectives for a payment API. The API processes 1 million requests per day. The team agrees the service should succeed for 99.9% of requests measured over a rolling 30-day window. If the error rate exceeds 0.1%, new feature deployments are frozen. What is the monthly error budget in minutes for this service?",
+    "options": [
+      {"id": "A", "text": "43.2 minutes", "is_correct": true},
+      {"id": "B", "text": "4.32 minutes", "is_correct": false},
+      {"id": "C", "text": "432 minutes", "is_correct": false},
+      {"id": "D", "text": "8.64 minutes", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Error budget = (1 - SLO) × time period. With a 99.9% SLO, the allowed downtime/error rate is 0.1% of 30 days. 30 days × 24 hours × 60 minutes = 43,200 minutes per month. 0.1% × 43,200 = 43.2 minutes. This is the error budget: if the service accumulates 43.2 minutes of downtime/error time in 30 days, the error budget is exhausted and new deployments should be frozen.",
+      "why_not_A": "N/A",
+      "why_not_B": "4.32 minutes would correspond to a 99.99% SLO (0.01% of 43,200 minutes). The SLO in the question is 99.9%, which gives a 10x larger error budget of 43.2 minutes.",
+      "why_not_C": "432 minutes would correspond to a 99% SLO (1% of 43,200 minutes). The SLO in the question is 99.9% (not 99%), which is stricter with a 10x smaller error budget.",
+      "why_not_D": "8.64 minutes would correspond to 0.02% of 43,200 minutes, which is not a standard SLO calculation. This does not match the 99.9% SLO (0.1% error rate) described in the question."
+    },
+    "concept_ids": ["az400-sre-strategy"],
+    "tags": ["sre", "error-budget", "slo", "reliability"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-009",
+    "exam_id": "azure-az400",
+    "domain_id": "build-release-pipelines",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A DevOps team needs to build and deploy a containerized application to AKS. The pipeline must: build a Docker image, scan it for vulnerabilities, push it to Azure Container Registry, and deploy to AKS using Helm. Vulnerability scan failures must block the deployment. Which pipeline stage order and task sequence implements this?",
+    "options": [
+      {"id": "A", "text": "Build image → Push to ACR → Scan in ACR → Deploy with Helm (if scan passes)", "is_correct": false},
+      {"id": "B", "text": "Build image → Scan image locally → Push to ACR (if scan passes) → Deploy with Helm", "is_correct": true},
+      {"id": "C", "text": "Deploy with Helm → Build image → Scan image → Push to ACR", "is_correct": false},
+      {"id": "D", "text": "Push to ACR → Build image → Scan in ACR → Deploy with Helm", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The correct order is: build the image first (available locally on the agent), scan it before pushing (fail fast, before a potentially vulnerable image enters the registry), push to ACR only if the scan passes (keeping ACR clean), then deploy to AKS using Helm with the verified image. Scanning before push is a security best practice that prevents vulnerable images from ever entering the supply chain.",
+      "why_not_A": "Pushing to ACR before scanning means the vulnerable image enters the registry—even if the deployment is blocked, other pipelines or users could pull and run the unscanned image. Security scanning should block entry into the registry, not just block deployment.",
+      "why_not_B": "N/A",
+      "why_not_C": "Deploying before building is logically impossible—the image must be built before it can be deployed. This order does not make technical sense.",
+      "why_not_D": "Pushing to ACR before building is logically impossible—you must build the image locally before you can push it to a registry. Additionally, this order would never work in practice."
+    },
+    "concept_ids": ["az400-container-devops", "az400-devsecops"],
+    "tags": ["container-security", "vulnerability-scan", "acr", "aks", "helm"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-010",
+    "exam_id": "azure-az400",
+    "domain_id": "source-control",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "A software development team is choosing between trunk-based development and Gitflow for their CI/CD pipeline. The team releases to production multiple times per day. Which branching strategy is better aligned with this release cadence and why?",
+    "options": [
+      {"id": "A", "text": "Gitflow, because release branches allow parallel development of multiple features before each production push", "is_correct": false},
+      {"id": "B", "text": "Trunk-based development, because short-lived feature branches merging frequently to main enable continuous integration and multiple daily releases", "is_correct": true},
+      {"id": "C", "text": "Gitflow, because the develop branch provides a stable integration point before promoting to release branches for each daily deployment", "is_correct": false},
+      {"id": "D", "text": "Both strategies are equally suitable; the choice depends only on team preference", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Trunk-based development uses short-lived feature branches (often less than 1 day) that merge frequently to main/trunk. Each merge to main triggers CI, and main is always in a deployable state. This enables multiple daily deployments with small, low-risk changes. The short integration cycles align perfectly with continuous delivery practices.",
+      "why_not_A": "Gitflow was designed for scheduled releases with longer development cycles. Its long-lived develop, feature, release, and hotfix branches introduce merge complexity and delay integration. Merging multiple long-lived feature branches causes integration conflicts that increase risk, making multiple daily releases impractical.",
+      "why_not_B": "N/A",
+      "why_not_C": "Gitflow's develop branch does provide an integration point, but the additional branch layers (feature → develop → release → main) add pipeline stages and delays. These delays are counterproductive for teams releasing multiple times per day and make the process slower, not faster.",
+      "why_not_D": "The two strategies have fundamentally different tradeoffs. Trunk-based development is measurably better for high-frequency deployments based on research in the DORA State of DevOps reports. Saying they are equally suitable ignores the well-established evidence favoring trunk-based development for continuous delivery."
+    },
+    "concept_ids": ["az400-source-control-strategy"],
+    "tags": ["trunk-based-development", "gitflow", "branching-strategy", "continuous-integration"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-011",
+    "exam_id": "azure-az400",
+    "domain_id": "build-release-pipelines",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A GitHub Actions workflow needs to deploy to an Azure subscription. The security team requires that no static credentials (client secrets or certificates) be stored in GitHub. Which authentication method should the DevOps engineer configure?",
+    "options": [
+      {"id": "A", "text": "Store the Azure service principal client secret as a GitHub Actions encrypted secret and reference it in the workflow", "is_correct": false},
+      {"id": "B", "text": "Configure OpenID Connect (OIDC) federated credentials on the Azure AD service principal and use azure/login action with OIDC in the workflow", "is_correct": true},
+      {"id": "C", "text": "Use a GitHub Personal Access Token stored as a secret to authenticate the GitHub Actions runner to Azure", "is_correct": false},
+      {"id": "D", "text": "Install the Azure CLI on the GitHub-hosted runner and use az login with interactive browser authentication", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "OpenID Connect (OIDC) federated credentials allow GitHub Actions to authenticate to Azure AD without any stored secrets. GitHub acts as an identity provider and issues a short-lived OIDC token for each workflow run. Azure AD exchanges this token for an access token after validating the GitHub issuer, repository, and workflow conditions. The azure/login GitHub Action with client-id, tenant-id, and subscription-id (non-secret values) implements this pattern.",
+      "why_not_A": "Storing a client secret as a GitHub Actions encrypted secret introduces a static credential that must be rotated periodically, can potentially be exposed in logs, and must be managed across repositories and environments. This directly violates the security team's requirement.",
+      "why_not_B": "N/A",
+      "why_not_C": "A GitHub Personal Access Token (PAT) is a GitHub API credential that authenticates to GitHub services (Actions API, Packages, Repos). It cannot be used to authenticate to Azure AD or deploy to Azure subscriptions—it is for GitHub, not Azure.",
+      "why_not_D": "Interactive browser authentication requires a human to complete the login flow and is not automatable in a pipeline. GitHub-hosted runners run in isolated environments without browser access for OAuth flows. This method cannot work in unattended CI/CD pipelines."
+    },
+    "concept_ids": ["az400-github-actions"],
+    "tags": ["github-actions", "oidc", "federated-credentials", "passwordless", "azure-login"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-012",
+    "exam_id": "azure-az400",
+    "domain_id": "build-release-pipelines",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "A Terraform deployment in an Azure Pipeline is failing with 'Error: Error locking state: Error acquiring the state lock.' The pipeline worked yesterday but a previous run was cancelled midway. What is the most likely cause and resolution?",
+    "options": [
+      {"id": "A", "text": "The Azure Storage account storing the Terraform state has been deleted; recreate the storage account and reinitialize Terraform", "is_correct": false},
+      {"id": "B", "text": "A previous interrupted Terraform run left a stale state lock in Azure Blob Storage; run 'terraform force-unlock <LOCK_ID>' to release the lock", "is_correct": true},
+      {"id": "C", "text": "The service principal used by the pipeline has lost Contributor role on the state storage account; re-assign the role", "is_correct": false},
+      {"id": "D", "text": "Terraform state is corrupted by the cancelled run; delete the terraform.tfstate file and run terraform import to rebuild the state", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Terraform uses blob leases on Azure Storage to implement state locking, preventing concurrent modifications. When a Terraform run is cancelled mid-execution, the blob lease (state lock) may not be released, leaving a stale lock. Subsequent runs fail with 'Error acquiring the state lock'. The resolution is to run 'terraform force-unlock <LOCK_ID>' with the lock ID shown in the error message, which releases the stale blob lease.",
+      "why_not_A": "If the storage account were deleted, the error would be a 404 (resource not found), not a lock error. The specific 'Error acquiring the state lock' message indicates the storage account exists and is reachable but the lock cannot be obtained.",
+      "why_not_B": "N/A",
+      "why_not_C": "If the service principal had lost Contributor role, the error would be an authorization/permission error (403 Forbidden), not a state lock error. The lock error occurs when Terraform can read the state file but cannot acquire the blob lease for exclusive access.",
+      "why_not_D": "Deleting the tfstate file is extremely destructive—it removes all tracked resource state, causing Terraform to believe it needs to create everything from scratch on the next apply. This could create duplicate resources. The force-unlock command is the correct, safe resolution for stale locks."
+    },
+    "concept_ids": ["az400-iac"],
+    "tags": ["terraform", "state-lock", "troubleshooting", "azure-storage", "iac"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-013",
+    "exam_id": "azure-az400",
+    "domain_id": "processes-communications",
+    "type": "scenario",
+    "difficulty": 1,
+    "stem": "A Scrum team using Azure Boards wants to track which Azure Repos pull requests and commits are associated with each User Story. They also want to see from the Azure Boards work item view which code changes implement each story. Which Azure DevOps feature enables this bidirectional traceability?",
+    "options": [
+      {"id": "A", "text": "Configure Azure Boards dashboards to show both work items and pipeline run summaries on the same page", "is_correct": false},
+      {"id": "B", "text": "Link pull requests and commits to work items using the AB#[ID] mention syntax in PR descriptions and commit messages", "is_correct": true},
+      {"id": "C", "text": "Configure Azure Repos to automatically create work items for every new pull request using service hooks", "is_correct": false},
+      {"id": "D", "text": "Use Azure DevOps Analytics views to cross-reference pipeline runs with work item history", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The AB#[WorkItemID] syntax (e.g., AB#1234) in pull request titles, descriptions, or commit messages automatically creates a link between the code artifact and the Azure Boards work item. From the work item view, developers can see all related PRs and commits. From the PR view, they can see the linked work item. This provides bidirectional traceability across code and work tracking.",
+      "why_not_A": "Dashboards provide visibility panels but do not create traceability links between specific pull requests/commits and specific work items. A dashboard widget showing pipeline runs is informational, not a link between a PR and a story.",
+      "why_not_B": "N/A",
+      "why_not_C": "Service hooks can trigger Azure DevOps events (like creating a work item) when a PR is created, but this creates a new work item per PR rather than linking PRs to existing User Story work items. It would flood the board with auto-created items rather than associating PRs with planned stories.",
+      "why_not_D": "Analytics views aggregate data for reporting and trend analysis across work items, pipelines, and test results. They do not create traceability links between specific code changes and specific work items."
+    },
+    "concept_ids": ["az400-agile-processes", "az400-azure-devops-overview"],
+    "tags": ["azure-boards", "traceability", "ab-hash-linking", "pull-requests", "work-items"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.06,
+    "bkt_p_transit": 0.22,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-014",
+    "exam_id": "azure-az400",
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps engineer is integrating dependency security scanning into an Azure Pipeline for a Node.js application. The scan must fail the pipeline build if any high-severity CVEs are found in npm packages. Which approach achieves this with minimal custom scripting?",
+    "options": [
+      {"id": "A", "text": "Add a pipeline step running 'npm audit' and parse the JSON output with a custom PowerShell script to fail the build on high severity", "is_correct": false},
+      {"id": "B", "text": "Enable GitHub Advanced Security on the Azure DevOps organization to scan dependencies and configure alert policies to block PRs", "is_correct": true},
+      {"id": "C", "text": "Use the Mend (WhiteSource) Azure DevOps task or OWASP Dependency Check pipeline task which natively supports build failure on high-severity findings", "is_correct": false},
+      {"id": "D", "text": "Schedule a weekly Azure Security Center scan of the application code repository and review findings", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GitHub Advanced Security (GHAS) for Azure DevOps includes dependency scanning (using GitHub Advisory Database) that integrates directly into Azure DevOps. It creates alerts for vulnerable dependencies and can be configured to block PRs when vulnerabilities above a specified severity threshold are detected—without any custom scripting. This is the minimal-scripting, native solution.",
+      "why_not_A": "npm audit with custom PowerShell parsing works functionally but requires writing and maintaining custom script logic to parse the JSON output and determine failure conditions. This adds maintenance burden and is more fragile than purpose-built tools. The question asks for minimal custom scripting.",
+      "why_not_B": "N/A",
+      "why_not_C": "Mend (WhiteSource) and OWASP Dependency Check are also valid purpose-built tools that natively support build failure on high-severity findings with minimal scripting. Both are correct approaches. However, GitHub Advanced Security is a Microsoft-native, integrated option for Azure DevOps that requires no additional vendor relationship.",
+      "why_not_D": "Microsoft Defender for Cloud (formerly Azure Security Center) scans Azure infrastructure resources for security posture, not application source code repositories for dependency vulnerabilities. Scheduling weekly scans also does not provide the pipeline gate needed to block builds on high-severity findings."
+    },
+    "concept_ids": ["az400-devsecops"],
+    "tags": ["dependency-scanning", "github-advanced-security", "supply-chain", "npm", "devsecops"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az400-015",
+    "exam_id": "azure-az400",
+    "domain_id": "instrumentation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps team wants to reduce Application Insights data ingestion costs. Their web application sends 50 GB of telemetry per day. They need to retain statistical accuracy for all telemetry types while reducing the volume sent to Application Insights. Which sampling feature should they configure?",
+    "options": [
+      {"id": "A", "text": "Configure Adaptive Sampling in the Application Insights SDK to automatically adjust the sampling rate based on telemetry volume", "is_correct": true},
+      {"id": "B", "text": "Filter telemetry by removing all dependency tracking and retaining only request and exception telemetry", "is_correct": false},
+      {"id": "C", "text": "Reduce the SDK flush interval from 30 seconds to 5 minutes to batch and reduce the number of API calls", "is_correct": false},
+      {"id": "D", "text": "Use Ingestion Sampling configured in the Azure portal to drop a fixed percentage of telemetry after it reaches Azure", "is_correct": false}
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Adaptive Sampling automatically adjusts the sampling rate to target a specific volume of telemetry per second. It samples at the SDK level (before transmission), reducing network and ingestion costs. Importantly, it uses correlated sampling—when a request is sampled, all related telemetry (dependencies, exceptions, traces) for that request are either all included or all excluded, preserving statistical accuracy across telemetry types.",
+      "why_not_A": "N/A",
+      "why_not_B": "Removing all dependency tracking eliminates an entire category of telemetry permanently. This loses visibility into downstream service call performance and does not provide sampling—it is a coarse filtering approach that reduces observability rather than preserving statistical accuracy at lower volume.",
+      "why_not_C": "The SDK flush interval controls how frequently buffered telemetry is sent to the Application Insights endpoint, not how much data is generated. Reducing flush frequency reduces API call frequency but does not reduce the total volume of telemetry data transmitted or ingested—it only batches the same data into fewer requests.",
+      "why_not_D": "Ingestion Sampling drops telemetry randomly after it arrives at the Application Insights ingestion endpoint—the data is still transmitted over the network, incurring bandwidth costs. SDK-level sampling (Adaptive or Fixed-rate) is more cost-effective because it reduces data transmission from the application, not just storage after ingestion."
+    },
+    "concept_ids": ["az400-monitoring-ops"],
+    "tags": ["application-insights", "adaptive-sampling", "cost-optimization", "telemetry"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.14,
+    "review_status": "approved"
+  }
+]

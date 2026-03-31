@@ -1,0 +1,422 @@
+[
+  {
+    "id": "q-az500-001",
+    "exam_id": "azure-az500",
+    "domain_id": "manage-identity-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A security team discovers that several Global Administrator accounts in Microsoft Entra ID do not have MFA enabled and have been assigned as permanent active administrators. Which two actions should the security engineer take to remediate this? (Choose the MOST appropriate single action from the options below.)",
+    "options": [
+      {"id": "A", "text": "Enable Security Defaults which enforces MFA for all users", "is_correct": false},
+      {"id": "B", "text": "Configure Conditional Access policy requiring MFA for all Global Administrators AND use PIM to convert permanent assignments to eligible assignments", "is_correct": true},
+      {"id": "C", "text": "Delete and recreate the Global Administrator accounts", "is_correct": false},
+      {"id": "D", "text": "Move all admin tasks to a separate subscription with no MFA requirement", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The correct remediation addresses both issues: (1) Conditional Access with MFA requirement for Global Admins ensures authentication is properly secured. (2) PIM converts permanent (always-active) role assignments to eligible assignments requiring just-in-time activation with MFA and justification, eliminating standing privilege.",
+      "why_not_A": "Security Defaults enforce MFA broadly but cannot coexist with Conditional Access policies (which are required for enterprise-grade controls). Security Defaults also do not convert permanent role assignments to eligible JIT assignments in PIM.",
+      "why_not_C": "Deleting and recreating accounts does not fix the underlying problems of no MFA and permanent role assignment. New accounts would still have the same issues without policy changes.",
+      "why_not_D": "Moving admin tasks to a subscription without MFA makes the situation worse, not better. MFA is required for privileged access regardless of which subscription is used."
+    },
+    "concept_ids": ["az500-entra-id-security", "az500-privileged-access"],
+    "tags": ["mfa", "pim", "privileged-access", "conditional-access"],
+    "estimated_time_seconds": 100,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-002",
+    "exam_id": "azure-az500",
+    "domain_id": "manage-identity-access",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A security engineer creates a custom Azure RBAC role. The role definition includes the action 'Microsoft.Storage/storageAccounts/blobServices/containers/read' in NotActions. What is the effect of this configuration?",
+    "options": [
+      {"id": "A", "text": "The role explicitly denies the ability to list containers in blob storage", "is_correct": false},
+      {"id": "B", "text": "The action is subtracted from the Actions list; users with only this role cannot list containers, but a Deny assignment is not created", "is_correct": true},
+      {"id": "C", "text": "Users are permanently blocked from this action regardless of other role assignments", "is_correct": false},
+      {"id": "D", "text": "The role ignores the NotActions section; only Actions matter", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NotActions removes operations from the effective permissions granted by the role. It is NOT an explicit deny. If a user has another role assignment that grants the container read permission, they would still have access because NotActions does not create a deny assignment—only a Deny Assignment (from Blueprints) truly blocks access.",
+      "why_not_A": "NotActions does not create an explicit deny. An explicit deny can only come from a Deny Assignment. NotActions merely removes a permission from this role's effective grant.",
+      "why_not_C": "Since NotActions is not a deny, users can still be granted the action via other role assignments. 'Permanent blocking regardless of other roles' is the behavior of Deny Assignments, not NotActions.",
+      "why_not_D": "NotActions is actively evaluated and subtracts from the permissions granted in Actions. The distinction is that it subtracts from this role's grant, not that the system ignores it."
+    },
+    "concept_ids": ["az500-azure-rbac-advanced"],
+    "tags": ["rbac", "not-actions", "deny-assignments"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.11,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-003",
+    "exam_id": "azure-az500",
+    "domain_id": "secure-networking",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company deploys Azure Firewall Premium in a hub VNet to inspect all HTTPS traffic from spoke VNets to the internet. The security team notices that Azure Firewall is not decrypting and inspecting TLS traffic—it only sees encrypted payloads. What Azure Firewall Premium feature must be enabled?",
+    "options": [
+      {"id": "A", "text": "Threat Intelligence mode set to Deny", "is_correct": false},
+      {"id": "B", "text": "IDPS (Intrusion Detection and Prevention System) in Deny mode", "is_correct": false},
+      {"id": "C", "text": "TLS Inspection with a CA certificate deployed to Azure Key Vault", "is_correct": true},
+      {"id": "D", "text": "DNS Proxy enabled on the Azure Firewall", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Firewall Premium's TLS Inspection feature intercepts TLS traffic, decrypts it using a CA certificate, inspects the plaintext content, then re-encrypts and forwards it. The CA certificate must be stored in Azure Key Vault and referenced in the Firewall Policy. Without TLS Inspection, HTTPS traffic passes through encrypted and cannot be examined.",
+      "why_not_A": "Threat Intelligence mode (Alert or Deny) uses Microsoft's threat intelligence to block known-malicious IPs and FQDNs. It operates on traffic metadata, not on inspecting encrypted TLS payload content.",
+      "why_not_B": "IDPS uses signature-based detection to identify known attack patterns in traffic. While IDPS can detect some patterns in unencrypted traffic, TLS Inspection must be enabled separately for IDPS to see inside HTTPS traffic.",
+      "why_not_D": "DNS Proxy routes DNS queries through the firewall for FQDN-based filtering and logging. It does not decrypt or inspect TLS traffic payloads."
+    },
+    "concept_ids": ["az500-azure-firewall-nsg"],
+    "tags": ["azure-firewall-premium", "tls-inspection", "https-inspection"],
+    "estimated_time_seconds": 95,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-004",
+    "exam_id": "azure-az500",
+    "domain_id": "secure-networking",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company hosts an Azure SQL Database with a public endpoint. The security team requires that only resources within a specific Azure VNet subnet can access the database, and all public internet access must be blocked. What is the most secure approach?",
+    "options": [
+      {"id": "A", "text": "Configure an IP firewall rule for the VNet's IP range", "is_correct": false},
+      {"id": "B", "text": "Enable VNet service endpoint on the subnet and add a VNet firewall rule to SQL, then deny public access", "is_correct": false},
+      {"id": "C", "text": "Deploy a Private Endpoint for the SQL Database in the VNet and enable 'Deny public network access'", "is_correct": true},
+      {"id": "D", "text": "Configure NSG rules to block all inbound traffic to the SQL Database public IP", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Private Endpoint assigns the SQL Database a private IP within the VNet, making it accessible only from within the VNet (and peered VNets) without traversing the internet. Combined with 'Deny public network access' on the SQL server, this eliminates any public internet exposure. Private Endpoint is more secure than service endpoints because the service gets a true private IP.",
+      "why_not_A": "IP firewall rules for a VNet subnet rely on IP addresses, which can be spoofed and are subject to NAT. This does not provide the isolation level of a private endpoint.",
+      "why_not_B": "Service endpoints route traffic to SQL over the Azure backbone but the SQL server still has a public endpoint. The service is accessible from the VNet but the public endpoint exists. Private endpoints are more secure.",
+      "why_not_D": "NSGs cannot be applied to Azure SQL Database public endpoints directly—NSGs apply to VNet resources. SQL Database network access is controlled via its own firewall rules and network settings."
+    },
+    "concept_ids": ["az500-private-endpoints"],
+    "tags": ["private-endpoint", "sql-security", "network-isolation"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-005",
+    "exam_id": "azure-az500",
+    "domain_id": "secure-networking",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "An organization enables Azure DDoS Protection Standard on a VNet that contains 10 public IP addresses. How does DDoS Protection Standard apply to these addresses?",
+    "options": [
+      {"id": "A", "text": "Protection must be enabled individually on each public IP address", "is_correct": false},
+      {"id": "B", "text": "All public IP addresses in the protected VNet are automatically protected", "is_correct": true},
+      {"id": "C", "text": "Only the first 5 public IP addresses are protected; additional IPs require separate purchase", "is_correct": false},
+      {"id": "D", "text": "DDoS Protection Standard only protects the VNet gateway IP, not individual VM public IPs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure DDoS Protection Standard is configured at the VNet level, not per-resource. When enabled on a VNet, it automatically protects ALL public IP addresses associated with resources in that VNet, including VMs, load balancers, Application Gateways, and other resources.",
+      "why_not_A": "DDoS Protection Standard does not require per-IP configuration. Enabling it on the VNet covers all public IPs in the VNet automatically. DDoS Protection Basic (free) provides some per-IP protection, but Standard works at the VNet level.",
+      "why_not_C": "There is no 5-IP limit on DDoS Protection Standard. All public IPs in the protected VNet are covered for the VNet-level price.",
+      "why_not_D": "DDoS Protection Standard protects all public IP resources in the VNet, including VM-associated public IPs, load balancer frontend IPs, and Application Gateway IPs."
+    },
+    "concept_ids": ["az500-azure-ddos-waf"],
+    "tags": ["ddos-protection", "vnet-security", "public-ip"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-006",
+    "exam_id": "azure-az500",
+    "domain_id": "manage-security-operations",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A security analyst needs to investigate a security incident in Microsoft Sentinel. They need to see all alerts related to the same user across multiple Microsoft Defender products in a single consolidated view. Which Sentinel feature groups these related alerts?",
+    "options": [
+      {"id": "A", "text": "Workbooks", "is_correct": false},
+      {"id": "B", "text": "Hunting queries", "is_correct": false},
+      {"id": "C", "text": "Incidents", "is_correct": true},
+      {"id": "D", "text": "Analytics rules", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Sentinel Incidents aggregate multiple related alerts into a single investigation unit. Analytics rules and Microsoft Defender product alerts that involve the same entities (user, IP, device) are correlated and grouped into an incident, providing a unified investigation workspace with all evidence in one place.",
+      "why_not_A": "Workbooks provide visual dashboards and reports for security data. They display aggregated data and metrics but are not the investigation unit that groups alerts about a specific user incident.",
+      "why_not_B": "Hunting queries allow proactive threat searching using KQL. They help find suspicious patterns across data but do not automatically group related alerts into investigation cases.",
+      "why_not_D": "Analytics rules define the detection logic that generates alerts. They do not directly group alerts—that grouping into incidents happens after alerts are generated."
+    },
+    "concept_ids": ["az500-microsoft-sentinel"],
+    "tags": ["sentinel", "incidents", "alert-correlation"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-007",
+    "exam_id": "azure-az500",
+    "domain_id": "manage-security-operations",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "In Microsoft Defender for Cloud, what does the 'Secure Score' represent?",
+    "options": [
+      {"id": "A", "text": "The number of active security alerts in the subscription", "is_correct": false},
+      {"id": "B", "text": "A percentage representing the health and configuration compliance of Azure resources against security recommendations", "is_correct": true},
+      {"id": "C", "text": "The financial risk score based on the potential cost of a data breach", "is_correct": false},
+      {"id": "D", "text": "The number of compliance regulations the organization has passed", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Defender for Cloud Secure Score is a percentage that represents how well your current Azure resource configuration aligns with security recommendations based on the Microsoft Cloud Security Benchmark. Implementing recommendations increases your score, indicating improved security posture.",
+      "why_not_A": "Active security alerts are tracked separately in Defender for Cloud's Alerts section. The Secure Score is not a count of alerts but a posture metric reflecting configuration quality.",
+      "why_not_C": "Defender for Cloud does not calculate financial risk scores for potential breach costs. That type of quantitative risk assessment is a separate process not built into the Secure Score metric.",
+      "why_not_D": "Regulatory compliance is tracked separately in Defender for Cloud's Compliance dashboard, which maps resources to specific frameworks like PCI DSS or CIS Benchmarks. Secure Score is a general security posture metric."
+    },
+    "concept_ids": ["az500-defender-for-cloud"],
+    "tags": ["secure-score", "defender-for-cloud", "security-posture"],
+    "estimated_time_seconds": 70,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.08,
+    "bkt_p_transit": 0.13,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-008",
+    "exam_id": "azure-az500",
+    "domain_id": "secure-compute-storage-databases",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A security engineer wants to ensure that a specific Key Vault secret cannot be permanently deleted until a 90-day retention period has passed, even if an authorized administrator accidentally deletes it. Which two Key Vault features must both be enabled?",
+    "options": [
+      {"id": "A", "text": "Key Vault logging and RBAC access policy", "is_correct": false},
+      {"id": "B", "text": "Soft-delete and Purge Protection", "is_correct": true},
+      {"id": "C", "text": "Private endpoint and firewall restriction", "is_correct": false},
+      {"id": "D", "text": "HSM backing and Customer-Managed Keys", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Soft-delete holds deleted Key Vault objects (secrets, keys, certificates) for a configurable retention period (7-90 days). Purge Protection prevents any user (including administrators) from permanently purging a soft-deleted object before the retention period ends. Both features together ensure a 90-day recovery window.",
+      "why_not_A": "Key Vault logging records access events for auditing but does not protect against deletion or enable recovery. RBAC controls who can access the Key Vault but does not prevent authorized users from deleting secrets.",
+      "why_not_C": "Private endpoints and firewall rules restrict network access to the Key Vault. They prevent unauthorized access but do not prevent an authorized user who has network access from deleting secrets.",
+      "why_not_D": "HSM backing provides hardware protection for keys against key extraction. Customer-Managed Keys allow key rotation control. Neither feature prevents deletion or ensures retention periods."
+    },
+    "concept_ids": ["az500-azure-key-vault-security"],
+    "tags": ["key-vault", "soft-delete", "purge-protection"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-009",
+    "exam_id": "azure-az500",
+    "domain_id": "secure-compute-storage-databases",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A DBA needs to access customer data in Azure SQL Database columns that contain personally identifiable information (PII). Compliance requirements mandate that DBAs should not be able to see plaintext PII values. Which SQL security feature encrypts column data so that even DBAs cannot see the plaintext?",
+    "options": [
+      {"id": "A", "text": "Transparent Data Encryption (TDE)", "is_correct": false},
+      {"id": "B", "text": "Dynamic Data Masking", "is_correct": false},
+      {"id": "C", "text": "Always Encrypted", "is_correct": true},
+      {"id": "D", "text": "Row-Level Security", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Always Encrypted performs client-side column encryption. Encryption and decryption happen in the client driver, and the encryption keys never leave the client. The SQL engine only sees ciphertext, so even DBAs with full database access cannot see plaintext PII values—they see only encrypted bytes.",
+      "why_not_A": "TDE encrypts database files at rest (database, log, backup files). When the database is online and a DBA queries PII columns, TDE transparently decrypts the data and the DBA sees plaintext values.",
+      "why_not_B": "Dynamic Data Masking displays masked values (e.g., 'XXXX-1234') in query results for specified columns. However, users with elevated privileges (db_owner, db_datamaskreader) can bypass masking and see real data. It does not truly prevent privileged users from accessing actual values.",
+      "why_not_D": "Row-Level Security restricts which rows a user can access based on security predicates. It controls row visibility, not column value encryption."
+    },
+    "concept_ids": ["az500-azure-sql-security"],
+    "tags": ["always-encrypted", "column-encryption", "sql-security"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-010",
+    "exam_id": "azure-az500",
+    "domain_id": "manage-security-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A security team wants to automatically isolate a compromised virtual machine (remove it from network communication) within 5 minutes of a high-severity alert being triggered in Microsoft Sentinel, without manual intervention. Which Sentinel feature should be configured?",
+    "options": [
+      {"id": "A", "text": "Sentinel Workbook with automated export", "is_correct": false},
+      {"id": "B", "text": "Sentinel Hunting query with scheduled execution", "is_correct": false},
+      {"id": "C", "text": "Sentinel Analytics rule triggering a Playbook (Logic App) that calls Azure REST API to apply NSG deny rules", "is_correct": true},
+      {"id": "D", "text": "Sentinel UEBA baseline with alert suppression", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Sentinel Analytics rules generate alerts/incidents. A Playbook (Azure Logic App) can be triggered automatically on incident creation. The Logic App can call the Azure REST API or use an Azure connector to apply NSG deny-all rules to the compromised VM's NIC, effectively isolating it from network traffic—all automated within seconds of the alert.",
+      "why_not_A": "Sentinel Workbooks provide dashboards for visualizing data. They do not trigger automated actions or integrate with Azure Resource Management APIs for response automation.",
+      "why_not_B": "Hunting queries enable proactive threat searching but are not triggered automatically on alerts. They require manual execution by analysts and do not perform automated response actions.",
+      "why_not_D": "UEBA baselining analyzes user and entity behavior to detect anomalies. Alert suppression would reduce noise but cannot perform active network isolation of compromised resources."
+    },
+    "concept_ids": ["az500-microsoft-sentinel"],
+    "tags": ["sentinel-playbooks", "automated-response", "soar"],
+    "estimated_time_seconds": 100,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-011",
+    "exam_id": "azure-az500",
+    "domain_id": "manage-identity-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Microsoft Entra Identity Protection shows a 'High Risk' sign-in alert for a user's account. The security engineer wants to force the user to reset their password immediately and verify with MFA during the next sign-in. Which action should be taken in Identity Protection?",
+    "options": [
+      {"id": "A", "text": "Dismiss the risk and monitor for additional alerts", "is_correct": false},
+      {"id": "B", "text": "Confirm user compromise and reset the user's password, which will clear risk and force password change", "is_correct": true},
+      {"id": "C", "text": "Block the user account permanently in Entra ID", "is_correct": false},
+      {"id": "D", "text": "Delete all refresh tokens from the user's account without addressing the risk", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Confirming user compromise in Identity Protection marks the risk as confirmed and the admin can then reset the user's password. The user will be required to complete MFA and set a new password on next sign-in. This both remediates the compromised account and clears the risk signal once remediated.",
+      "why_not_A": "Dismissing the risk without action leaves the potentially compromised account unprotected and does not force the user to re-authenticate securely.",
+      "why_not_C": "Permanently blocking the user prevents them from ever signing in. This is appropriate for terminated employees but not for an active user who may have a legitimate compromised session. The goal is to force secure re-authentication, not permanent lockout.",
+      "why_not_D": "Revoking refresh tokens (Revoke Sessions) logs out active sessions, but without addressing the risk and forcing a password reset, the attacker who knows the current password can re-authenticate."
+    },
+    "concept_ids": ["az500-entra-id-security"],
+    "tags": ["identity-protection", "risky-user", "incident-response"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-012",
+    "exam_id": "azure-az500",
+    "domain_id": "secure-compute-storage-databases",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A security engineer wants to enable Just-in-Time (JIT) VM Access for all virtual machines in a subscription to restrict RDP and SSH exposure. Which Microsoft Defender for Cloud plan is required?",
+    "options": [
+      {"id": "A", "text": "Defender for Cloud free tier (CSPM)", "is_correct": false},
+      {"id": "B", "text": "Microsoft Defender for Servers Plan 1", "is_correct": false},
+      {"id": "C", "text": "Microsoft Defender for Servers Plan 2", "is_correct": true},
+      {"id": "D", "text": "Microsoft Defender for Identity", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Just-in-Time VM Access is a feature included in Microsoft Defender for Servers Plan 2. It temporarily opens management ports (RDP 3389, SSH 22) for a specific IP address for a limited time window, reducing the attack surface from always-open management ports.",
+      "why_not_A": "The free CSPM tier provides security recommendations and Secure Score but does not include JIT VM Access or other CWPP features.",
+      "why_not_B": "Defender for Servers Plan 1 includes Defender for Endpoint integration and some server security features but does not include JIT VM Access. Plan 2 adds JIT, file integrity monitoring, and other advanced capabilities.",
+      "why_not_D": "Microsoft Defender for Identity monitors Active Directory for identity-based attacks. It is a separate product and does not provide JIT VM Access functionality."
+    },
+    "concept_ids": ["az500-vm-security"],
+    "tags": ["jit-vm-access", "defender-servers", "management-ports"],
+    "estimated_time_seconds": 75,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-013",
+    "exam_id": "azure-az500",
+    "domain_id": "secure-data-applications",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "A security engineer needs to restrict access to an Azure Storage account so that only requests from a specific Azure VNet subnet can read blobs. Public internet access should be completely blocked. Which storage account network configuration should be applied?",
+    "options": [
+      {"id": "A", "text": "Configure IP network rules to allow the VNet's CIDR range", "is_correct": false},
+      {"id": "B", "text": "Enable the 'Allow all networks' setting and rely on RBAC for authorization", "is_correct": false},
+      {"id": "C", "text": "Configure the default action to Deny, add the specific VNet subnet to network rules, and enable service endpoint on the subnet", "is_correct": true},
+      {"id": "D", "text": "Disable shared key access and use only SAS tokens for authentication", "is_correct": false}
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Setting the default network action to Deny blocks all network access by default. Adding the specific VNet subnet as a virtual network rule (with service endpoint enabled on the subnet) allows only traffic from that subnet. This achieves the desired result of VNet-only access with public internet blocked.",
+      "why_not_A": "IP network rules use public IP addresses for filtering. VNets use private IP ranges (RFC 1918) that are not routable on the internet and cannot be used in IP firewall rules for VNet access—VNet rules require service endpoints or private endpoints.",
+      "why_not_B": "'Allow all networks' permits access from the public internet, which violates the requirement to block public access.",
+      "why_not_D": "Disabling shared key access and using SAS tokens changes the authentication method but does not restrict network access origin. SAS tokens can still be used from any network if the network rules allow access."
+    },
+    "concept_ids": ["az500-azure-storage-security"],
+    "tags": ["storage-security", "network-rules", "service-endpoints"],
+    "estimated_time_seconds": 85,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.09,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-014",
+    "exam_id": "azure-az500",
+    "domain_id": "manage-security-operations",
+    "type": "troubleshooting",
+    "difficulty": 4,
+    "stem": "A security team reviews Azure Activity Logs and finds that a specific administrator performed unauthorized resource deletions 10 days ago. The Activity Log in the portal only shows the last 7 days. Where can the security team find the older Activity Log events?",
+    "options": [
+      {"id": "A", "text": "Azure Service Health history", "is_correct": false},
+      {"id": "B", "text": "Microsoft Sentinel if Activity Log data connector was previously enabled and connected", "is_correct": true},
+      {"id": "C", "text": "Azure Security Center (Defender for Cloud) recommendations history", "is_correct": false},
+      {"id": "D", "text": "The events are gone permanently; Activity Logs only retain 7 days", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Activity Logs are retained for 90 days in Azure Monitor, not 7 days. The portal default view shows 7 days but you can extend the query range. Additionally, if the Azure Activity data connector was enabled in Microsoft Sentinel, events are ingested into the Log Analytics workspace where retention is configurable (30 days free, up to 730 days billable). 10 days ago would be within the 90-day retention period.",
+      "why_not_A": "Azure Service Health shows the health of Azure platform services. It does not record individual administrator actions like resource deletions.",
+      "why_not_C": "Defender for Cloud recommendations track security posture and resource compliance. It does not log individual administrator actions or audit trail events.",
+      "why_not_D": "Activity Logs are not permanently deleted after 7 days. The default portal view shows 7 days, but the data is retained for 90 days by default and can be retained longer with diagnostic settings to Log Analytics or Storage."
+    },
+    "concept_ids": ["az500-azure-monitor-security"],
+    "tags": ["activity-log", "audit-trail", "log-retention"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-az500-015",
+    "exam_id": "azure-az500",
+    "domain_id": "manage-identity-access",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A security engineer needs to ensure that users in the Marketing department can only access Azure resources tagged with 'Department: Marketing'. Which Azure feature enables this attribute-based access control approach?",
+    "options": [
+      {"id": "A", "text": "Azure Policy with Deny effect based on resource tags", "is_correct": false},
+      {"id": "B", "text": "Azure RBAC role assignment conditions using resource tags", "is_correct": true},
+      {"id": "C", "text": "Azure Management Groups with tag-based scope", "is_correct": false},
+      {"id": "D", "text": "Microsoft Entra Dynamic Groups filtered by user attributes", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure RBAC Conditions implement Attribute-Based Access Control (ABAC). Conditions can be added to role assignments to restrict access based on resource attributes (like tags). A condition 'StringEquals @Resource[Microsoft.Resources/subscriptions/resourceGroups/resources/tags/Department, Marketing]' restricts the role to only resources tagged with 'Department: Marketing'.",
+      "why_not_A": "Azure Policy Deny effect prevents resource creation/modification that doesn't meet conditions. It does not control who can access existing resources based on tags—that is RBAC's domain.",
+      "why_not_C": "Management Groups organize subscriptions and apply governance hierarchically. They do not filter resource access based on resource-level attributes like tags.",
+      "why_not_D": "Entra Dynamic Groups assign users to groups based on user attributes (like the user's department attribute). This controls group membership, not which specific tagged Azure resources those group members can access."
+    },
+    "concept_ids": ["az500-azure-rbac-advanced"],
+    "tags": ["rbac-conditions", "abac", "attribute-based-access"],
+    "estimated_time_seconds": 90,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  }
+]

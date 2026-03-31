@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock } from "lucide-react";
+import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive } from "lucide-react";
+import { CertTabs } from "@/components/landing/cert-tabs";
 
 const features = [
   {
@@ -40,7 +41,9 @@ interface CertCard {
   borderColor: string;
 }
 
-const certifications: Record<string, CertCard[]> = {
+export type { CertCard };
+
+export const awsCertifications: Record<string, CertCard[]> = {
   Foundational: [
     { code: "CLF-C02", name: "AWS Certified Cloud Practitioner", shortName: "Cloud Practitioner", icon: Cloud, questions: 65, time: 90, passingPct: 70, color: "bg-sky-50 text-sky-700", borderColor: "hover:border-sky-400" },
     { code: "AIF-C01", name: "AWS Certified AI Practitioner", shortName: "AI Practitioner", icon: Bot, questions: 65, time: 90, passingPct: 70, color: "bg-violet-50 text-violet-700", borderColor: "hover:border-violet-400" },
@@ -65,11 +68,44 @@ const certifications: Record<string, CertCard[]> = {
   ],
 };
 
-const levelColors: Record<string, string> = {
-  Foundational: "text-sky-600",
-  Associate: "text-amber-600",
-  Professional: "text-violet-600",
-  Specialty: "text-red-600",
+export const azureCertifications: Record<string, CertCard[]> = {
+  Fundamentals: [
+    { code: "AZ-900", name: "Microsoft Azure Fundamentals", shortName: "Azure Fundamentals", icon: Cloud, questions: 45, time: 85, passingPct: 70, color: "bg-blue-50 text-blue-700", borderColor: "hover:border-blue-400" },
+    { code: "AI-900", name: "Microsoft Azure AI Fundamentals", shortName: "AI Fundamentals", icon: Bot, questions: 45, time: 85, passingPct: 70, color: "bg-violet-50 text-violet-700", borderColor: "hover:border-violet-400" },
+    { code: "DP-900", name: "Microsoft Azure Data Fundamentals", shortName: "Data Fundamentals", icon: Database, questions: 45, time: 85, passingPct: 70, color: "bg-cyan-50 text-cyan-700", borderColor: "hover:border-cyan-400" },
+    { code: "SC-900", name: "Microsoft Security Fundamentals", shortName: "Security Fundamentals", icon: Shield, questions: 45, time: 85, passingPct: 70, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+  ],
+  Associate: [
+    { code: "AZ-104", name: "Microsoft Azure Administrator", shortName: "Administrator", icon: Server, questions: 50, time: 120, passingPct: 70, color: "bg-blue-50 text-blue-700", borderColor: "hover:border-blue-400" },
+    { code: "AZ-204", name: "Microsoft Azure Developer", shortName: "Developer", icon: Code, questions: 50, time: 120, passingPct: 70, color: "bg-indigo-50 text-indigo-700", borderColor: "hover:border-indigo-400" },
+    { code: "AZ-500", name: "Microsoft Azure Security Engineer", shortName: "Security Engineer", icon: Lock, questions: 50, time: 120, passingPct: 70, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "DP-300", name: "Microsoft Azure Database Administrator", shortName: "Database Admin", icon: Database, questions: 50, time: 120, passingPct: 70, color: "bg-emerald-50 text-emerald-700", borderColor: "hover:border-emerald-400" },
+    { code: "AI-102", name: "Microsoft Azure AI Engineer", shortName: "AI Engineer", icon: Brain, questions: 50, time: 120, passingPct: 70, color: "bg-purple-50 text-purple-700", borderColor: "hover:border-purple-400" },
+    { code: "DP-203", name: "Microsoft Azure Data Engineer", shortName: "Data Engineer", icon: Workflow, questions: 50, time: 120, passingPct: 70, color: "bg-orange-50 text-orange-700", borderColor: "hover:border-orange-400" },
+  ],
+  Expert: [
+    { code: "AZ-305", name: "Microsoft Azure Solutions Architect Expert", shortName: "Solutions Architect", icon: Server, questions: 50, time: 120, passingPct: 70, color: "bg-blue-50 text-blue-700", borderColor: "hover:border-blue-400" },
+    { code: "AZ-400", name: "Microsoft Azure DevOps Engineer Expert", shortName: "DevOps Engineer", icon: Container, questions: 50, time: 120, passingPct: 70, color: "bg-teal-50 text-teal-700", borderColor: "hover:border-teal-400" },
+  ],
+};
+
+export const gcpCertifications: Record<string, CertCard[]> = {
+  Foundational: [
+    { code: "CDL", name: "Google Cloud Digital Leader", shortName: "Cloud Digital Leader", icon: Globe, questions: 50, time: 90, passingPct: 70, color: "bg-blue-50 text-blue-700", borderColor: "hover:border-blue-400" },
+  ],
+  Associate: [
+    { code: "ACE", name: "Google Associate Cloud Engineer", shortName: "Cloud Engineer", icon: Server, questions: 50, time: 120, passingPct: 70, color: "bg-green-50 text-green-700", borderColor: "hover:border-green-400" },
+  ],
+  Professional: [
+    { code: "PCA", name: "Google Professional Cloud Architect", shortName: "Cloud Architect", icon: Server, questions: 50, time: 120, passingPct: 70, color: "bg-blue-50 text-blue-700", borderColor: "hover:border-blue-400" },
+    { code: "PCD", name: "Google Professional Cloud Developer", shortName: "Cloud Developer", icon: Code, questions: 50, time: 120, passingPct: 70, color: "bg-indigo-50 text-indigo-700", borderColor: "hover:border-indigo-400" },
+    { code: "PDE", name: "Google Professional Data Engineer", shortName: "Data Engineer", icon: Database, questions: 50, time: 120, passingPct: 70, color: "bg-orange-50 text-orange-700", borderColor: "hover:border-orange-400" },
+    { code: "PCSE", name: "Google Professional Cloud Security Engineer", shortName: "Security Engineer", icon: Lock, questions: 50, time: 120, passingPct: 70, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "PCNE", name: "Google Professional Cloud Network Engineer", shortName: "Network Engineer", icon: Network, questions: 50, time: 120, passingPct: 70, color: "bg-cyan-50 text-cyan-700", borderColor: "hover:border-cyan-400" },
+    { code: "PCDE", name: "Google Professional Cloud Database Engineer", shortName: "Database Engineer", icon: HardDrive, questions: 50, time: 120, passingPct: 70, color: "bg-emerald-50 text-emerald-700", borderColor: "hover:border-emerald-400" },
+    { code: "PMLE", name: "Google Professional ML Engineer", shortName: "ML Engineer", icon: Brain, questions: 50, time: 120, passingPct: 70, color: "bg-purple-50 text-purple-700", borderColor: "hover:border-purple-400" },
+    { code: "PCDOE", name: "Google Professional Cloud DevOps Engineer", shortName: "DevOps Engineer", icon: Activity, questions: 50, time: 120, passingPct: 70, color: "bg-teal-50 text-teal-700", borderColor: "hover:border-teal-400" },
+  ],
 };
 
 const jsonLd = {
@@ -78,7 +114,7 @@ const jsonLd = {
   name: "SparkUpCloud",
   url: "https://sparkupcloud.com",
   description:
-    "AI-powered certification exam preparation platform for all 15 AWS certifications",
+    "AI-powered certification exam preparation platform for AWS, Azure, and Google Cloud certifications",
   applicationCategory: "EducationalApplication",
   operatingSystem: "Web",
   offers: {
@@ -114,7 +150,7 @@ export default function LandingPage() {
           Exam
         </h1>
         <p className="mt-8 max-w-xl text-lg leading-8 text-stone-600">
-          AI-powered adaptive learning for all 15 AWS certifications.
+          AI-powered adaptive learning for AWS, Azure, and Google Cloud certifications.
           Concept tutorials, practice questions, and hands-on labs — all in one place.
         </p>
         <div className="mt-10 flex flex-col items-center gap-3">
@@ -132,7 +168,7 @@ export default function LandingPage() {
           </Link>
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-stone-500 sm:gap-6">
-          <span>15 Certifications</span>
+          <span>36+ Certifications</span>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
           <span>500+ Questions</span>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
@@ -142,49 +178,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* AWS Certifications */}
-      <section className="mx-auto max-w-6xl px-6 pb-20">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
-            All AWS Certifications
-          </h2>
-          <p className="mt-3 text-base text-stone-500">
-            From Cloud Practitioner to Professional and Specialty — we cover them all.
-          </p>
-        </div>
-
-        {Object.entries(certifications).map(([level, certs]) => (
-          <div key={level} className="mb-10">
-            <h3 className={`mb-4 text-sm font-bold uppercase tracking-widest ${levelColors[level]}`}>
-              {level}
-            </h3>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {certs.map((cert) => (
-                <Link
-                  key={cert.code}
-                  href="/register"
-                  className={`group rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02] ${cert.borderColor}`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${cert.color.split(" ")[0]}`}>
-                      <cert.icon className={`h-5 w-5 ${cert.color.split(" ")[1]}`} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-stone-900">{cert.shortName}</p>
-                      <p className="text-xs text-stone-400">{cert.code}</p>
-                    </div>
-                  </div>
-                  <div className="mt-4 flex items-center gap-4 text-xs text-stone-500">
-                    <span>{cert.questions} Qs</span>
-                    <span>{cert.time} min</span>
-                    <span>{cert.passingPct}% pass</span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section>
+      {/* Certifications with Provider Tabs */}
+      <CertTabs />
 
       {/* Features */}
       <section className="mx-auto max-w-5xl px-6 pb-24">
@@ -217,7 +212,7 @@ export default function LandingPage() {
       {/* Trust tagline */}
       <section className="pb-20 text-center">
         <p className="text-xs font-medium uppercase tracking-widest text-stone-400">
-          Trusted by professionals preparing for AWS certifications worldwide
+          Trusted by professionals preparing for cloud certifications worldwide
         </p>
       </section>
     </div>
