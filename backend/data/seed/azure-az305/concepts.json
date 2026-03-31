@@ -19,7 +19,7 @@
       "Architects assume PTA provides the same resilience as PHS—PTA requires on-premises agents and can fail if agents are down; PHS syncs hashes to the cloud for cloud-only authentication",
       "Many believe Managed Identities can be used for all Azure services—not all Azure services support Managed Identity as a principal in their access control"
     ],
-    "azure_services": ["Microsoft Entra ID", "Azure AD Connect", "Azure Key Vault", "Azure Policy"],
+    "aws_services": ["Microsoft Entra ID", "Azure AD Connect", "Azure Key Vault", "Azure Policy"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az305-rbac-governance", "transfer_weight": 0.35},
@@ -48,7 +48,7 @@
       "Architects assume Conditional Access requires Azure AD Premium P2—Conditional Access requires P1; P2 adds risk-based policies and Identity Governance",
       "Many believe a 'Block all' policy is the most secure starting point—this can lock out administrators; always use break-glass emergency access accounts"
     ],
-    "azure_services": ["Microsoft Entra ID", "Microsoft Intune", "Microsoft Defender for Cloud Apps"],
+    "aws_services": ["Microsoft Entra ID", "Microsoft Intune", "Microsoft Defender for Cloud Apps"],
     "prerequisites": ["az305-azure-ad-design"],
     "lateral_relations": [
       {"concept_id": "az305-azure-ad-design", "transfer_weight": 0.35}
@@ -76,7 +76,7 @@
       "Architects assume Azure Policy stops deployments in real time—Policy effects are: Deny (blocking), Audit (logging only), Append, Modify, DeployIfNotExists (remediation); not all are blocking",
       "Many believe Blueprints have replaced ARM templates—Blueprints orchestrate multiple artifacts including ARM templates; they are complementary"
     ],
-    "azure_services": ["Azure Policy", "Azure Blueprints", "Azure Management Groups", "Microsoft Cost Management"],
+    "aws_services": ["Azure Policy", "Azure Blueprints", "Azure Management Groups", "Microsoft Cost Management"],
     "prerequisites": ["az305-azure-ad-design"],
     "lateral_relations": [
       {"concept_id": "az305-azure-ad-design", "transfer_weight": 0.30},
@@ -105,7 +105,7 @@
       "Architects assume all Azure resources send logs to Azure Monitor automatically—Diagnostic Settings must be explicitly configured per resource",
       "Many believe Log Analytics and Application Insights are separate services—Application Insights is now workspace-based and stores data in a Log Analytics workspace"
     ],
-    "azure_services": ["Azure Monitor", "Log Analytics", "Application Insights", "Microsoft Sentinel"],
+    "aws_services": ["Azure Monitor", "Log Analytics", "Application Insights", "Microsoft Sentinel"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az305-rbac-governance", "transfer_weight": 0.20}
@@ -133,7 +133,7 @@
       "Architects assume Archive tier data can be read immediately—Archive-tier blobs must be rehydrated to Hot or Cool tier (can take hours) before they can be read",
       "Many believe GRS guarantees failover will restore all data—GRS offers an RPO of ~1 hour; some recent writes may be lost during failover"
     ],
-    "azure_services": ["Azure Blob Storage", "Azure Files", "Azure Table Storage", "Azure Queue Storage"],
+    "aws_services": ["Azure Blob Storage", "Azure Files", "Azure Table Storage", "Azure Queue Storage"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az305-database-design", "transfer_weight": 0.25}
@@ -161,7 +161,7 @@
       "Architects assume Cosmos DB automatic indexing has no cost—all properties are indexed by default; excluding unused properties from the index reduces RU costs",
       "Many believe Azure SQL MI and Azure SQL Database are equivalent—Managed Instance supports SQL Agent, CLR, linked servers, and Service Broker which Database does not"
     ],
-    "azure_services": ["Azure SQL Database", "Azure Cosmos DB", "Azure Database for PostgreSQL", "Azure Cache for Redis"],
+    "aws_services": ["Azure SQL Database", "Azure Cosmos DB", "Azure Database for PostgreSQL", "Azure Cache for Redis"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az305-storage-design", "transfer_weight": 0.20},
@@ -190,7 +190,7 @@
       "Architects assume Traffic Manager provides instant failover—Traffic Manager uses DNS with TTL; failover can take minutes depending on client DNS caching",
       "Many believe deploying to two AZs doubles cost—zone-redundant services like Azure SQL have no additional cost for AZ redundancy; only the extra compute/storage for active-active configurations adds cost"
     ],
-    "azure_services": ["Azure Site Recovery", "Azure Traffic Manager", "Azure Front Door", "Azure SQL Database"],
+    "aws_services": ["Azure Site Recovery", "Azure Traffic Manager", "Azure Front Door", "Azure SQL Database"],
     "prerequisites": ["az305-storage-design", "az305-database-design"],
     "lateral_relations": [
       {"concept_id": "az305-database-design", "transfer_weight": 0.30},
@@ -219,7 +219,7 @@
       "Architects assume Azure Functions can run indefinitely—Consumption plan functions timeout at 10 minutes; Premium and Dedicated plans can be configured for unlimited timeout",
       "Many believe AKS is always more expensive than App Service for containerized workloads—for high-density multi-tenant scenarios AKS can be more cost-effective"
     ],
-    "azure_services": ["Azure Virtual Machines", "Azure Kubernetes Service", "Azure App Service", "Azure Functions", "Azure Container Instances"],
+    "aws_services": ["Azure Virtual Machines", "Azure Kubernetes Service", "Azure App Service", "Azure Functions", "Azure Container Instances"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az305-networking-design", "transfer_weight": 0.30},
@@ -248,7 +248,7 @@
       "Architects assume VNet peering is transitive by default—peering is non-transitive; routing between spokes requires user-defined routes through the hub or Azure Firewall",
       "Many believe ExpressRoute failover to VPN Gateway is automatic—explicit failover configuration using BGP route preferences and AS path manipulation is required"
     ],
-    "azure_services": ["Azure Virtual Network", "Azure VPN Gateway", "Azure ExpressRoute", "Azure Firewall", "Azure Virtual WAN"],
+    "aws_services": ["Azure Virtual Network", "Azure VPN Gateway", "Azure ExpressRoute", "Azure Firewall", "Azure Virtual WAN"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az305-compute-design", "transfer_weight": 0.25}
@@ -276,7 +276,7 @@
       "Architects assume rehost (lift-and-shift) is always the fastest migration—it is the fastest initially but leaves cost optimization opportunities unrealized compared to refactoring to PaaS",
       "Many believe Azure Migrate can migrate all workloads without any downtime—most migration methods have a cutover window; only a few support zero-downtime continuous replication"
     ],
-    "azure_services": ["Azure Migrate", "Azure Site Recovery", "Azure Database Migration Service", "Azure App Service Migration Assistant"],
+    "aws_services": ["Azure Migrate", "Azure Site Recovery", "Azure Database Migration Service", "Azure App Service Migration Assistant"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az305-compute-design", "transfer_weight": 0.30},
@@ -305,7 +305,7 @@
       "Architects confuse Event Grid and Event Hubs—Event Grid routes discrete events (resource state changes) while Event Hubs streams high-volume telemetry data",
       "Many assume API Management must be internet-facing—APIM can be deployed in internal VNet mode accessible only from private networks"
     ],
-    "azure_services": ["Azure Service Bus", "Azure Event Grid", "Azure API Management", "Azure Functions"],
+    "aws_services": ["Azure Service Bus", "Azure Event Grid", "Azure API Management", "Azure Functions"],
     "prerequisites": ["az305-compute-design"],
     "lateral_relations": [
       {"concept_id": "az305-compute-design", "transfer_weight": 0.25}
@@ -333,7 +333,7 @@
       "Architects assume Reserved Instances are tied to a specific VM—Reservations are flexible by instance size flexibility within the same VM family and region",
       "Many believe Spot VMs are suitable for all workloads—Spot VMs are only appropriate for fault-tolerant, interruption-tolerant workloads like batch processing"
     ],
-    "azure_services": ["Azure Cost Management", "Azure Advisor", "Azure Reserved Instances"],
+    "aws_services": ["Azure Cost Management", "Azure Advisor", "Azure Reserved Instances"],
     "prerequisites": ["az305-compute-design"],
     "lateral_relations": [
       {"concept_id": "az305-compute-design", "transfer_weight": 0.30}
@@ -361,7 +361,7 @@
       "Architects assume backup and DR serve the same purpose—backup protects against data loss/corruption; DR protects against full site/region failure; both are needed",
       "Many believe Azure Backup automatically protects new VMs—backup policies must be explicitly assigned to VMs; new VMs are not automatically protected"
     ],
-    "azure_services": ["Azure Backup", "Recovery Services Vault", "Azure Site Recovery", "Azure Monitor"],
+    "aws_services": ["Azure Backup", "Recovery Services Vault", "Azure Site Recovery", "Azure Monitor"],
     "prerequisites": ["az305-ha-dr-design"],
     "lateral_relations": [
       {"concept_id": "az305-ha-dr-design", "transfer_weight": 0.45}
@@ -389,7 +389,7 @@
       "Teams assume WAF reviews are one-time activities—WAF recommends periodic reviews as architectures and usage patterns evolve",
       "Many believe WAF is Azure-specific guidance with no cross-cloud relevance—the principles are universal; only specific service recommendations are Azure-specific"
     ],
-    "azure_services": ["Azure Advisor", "Azure Monitor", "Microsoft Defender for Cloud"],
+    "aws_services": ["Azure Advisor", "Azure Monitor", "Microsoft Defender for Cloud"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az305-cost-optimization", "transfer_weight": 0.25},
@@ -418,7 +418,7 @@
       "Architects treat Service Endpoints and Private Endpoints as equivalent security controls—Private Endpoints provide a private IP and fully remove public exposure; Service Endpoints only restrict which VNets can access the public endpoint",
       "Many assume Private Endpoints work automatically across peered VNets—Private DNS Zone VNet links must include all VNets that need private resolution, including peered VNets"
     ],
-    "azure_services": ["Azure Private Link", "Azure DNS", "Azure Virtual Network", "Azure Storage", "Azure SQL Database"],
+    "aws_services": ["Azure Private Link", "Azure DNS", "Azure Virtual Network", "Azure Storage", "Azure SQL Database"],
     "prerequisites": ["az305-networking-design"],
     "lateral_relations": [
       {"concept_id": "az305-networking-design", "transfer_weight": 0.40}

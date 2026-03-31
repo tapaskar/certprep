@@ -19,7 +19,7 @@
       "Identity Protection risk detections are signals, not guarantees; some may be false positives",
       "Security Defaults are free but less customizable than Conditional Access; cannot coexist with CA policies"
     ],
-    "azure_services": ["Microsoft Entra ID", "Microsoft Entra Identity Protection", "Microsoft Entra Conditional Access"],
+    "aws_services": ["Microsoft Entra ID", "Microsoft Entra Identity Protection", "Microsoft Entra Conditional Access"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az500-privileged-access", "transfer_weight": 0.4}
@@ -47,7 +47,7 @@
       "PIM eligible assignments do not grant active access; users must activate the role before it is effective",
       "PIM access reviews are separate from Entra ID Governance access reviews; both must be configured"
     ],
-    "azure_services": ["Microsoft Entra Privileged Identity Management", "Microsoft Entra ID"],
+    "aws_services": ["Microsoft Entra Privileged Identity Management", "Microsoft Entra ID"],
     "prerequisites": ["az500-entra-id-security"],
     "lateral_relations": [
       {"concept_id": "az500-entra-id-security", "transfer_weight": 0.4}
@@ -75,7 +75,7 @@
       "NotActions do not explicitly deny; they only remove from Actions; Deny assignments override NotActions",
       "DataActions control data plane operations (e.g., read blob data) separate from management plane Actions"
     ],
-    "azure_services": ["Azure RBAC", "Azure Policy", "Microsoft Entra ID"],
+    "aws_services": ["Azure RBAC", "Azure Policy", "Microsoft Entra ID"],
     "prerequisites": ["az500-privileged-access"],
     "lateral_relations": [
       {"concept_id": "az500-privileged-access", "transfer_weight": 0.3}
@@ -103,7 +103,7 @@
       "Azure Firewall Premium IDPS operates in alert mode by default; Deny mode requires explicit configuration",
       "User-Defined Routes must force traffic through Azure Firewall; simply deploying it does not redirect traffic"
     ],
-    "azure_services": ["Azure Firewall", "Azure Firewall Manager", "Azure Virtual Network"],
+    "aws_services": ["Azure Firewall", "Azure Firewall Manager", "Azure Virtual Network"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az500-azure-ddos-waf", "transfer_weight": 0.3}
@@ -131,7 +131,7 @@
       "DDoS Protection Standard is per VNet, not per resource; all public IPs in the VNet benefit from it",
       "WAF CRS rules protect against OWASP Top 10; custom rules address organization-specific requirements"
     ],
-    "azure_services": ["Azure DDoS Protection", "Azure Web Application Firewall", "Azure Application Gateway"],
+    "aws_services": ["Azure DDoS Protection", "Azure Web Application Firewall", "Azure Application Gateway"],
     "prerequisites": ["az500-azure-firewall-nsg"],
     "lateral_relations": [
       {"concept_id": "az500-azure-firewall-nsg", "transfer_weight": 0.3}
@@ -159,7 +159,7 @@
       "Service endpoints and private endpoints are different; service endpoints route traffic over Azure backbone but the service still has a public IP",
       "Private endpoints require DNS configuration; without it, clients may still resolve to the public IP"
     ],
-    "azure_services": ["Azure Private Link", "Azure Private Endpoints", "Azure DNS Private Zones"],
+    "aws_services": ["Azure Private Link", "Azure Private Endpoints", "Azure DNS Private Zones"],
     "prerequisites": ["az500-azure-firewall-nsg"],
     "lateral_relations": [
       {"concept_id": "az500-azure-firewall-nsg", "transfer_weight": 0.2}
@@ -187,7 +187,7 @@
       "Defender for Cloud Secure Score reflects configuration posture, not actual threat activity",
       "Enabling all Defender plans incurs per-resource costs; evaluate which plans are needed for your environment"
     ],
-    "azure_services": ["Microsoft Defender for Cloud", "Azure Policy", "Azure Monitor"],
+    "aws_services": ["Microsoft Defender for Cloud", "Azure Policy", "Azure Monitor"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az500-microsoft-sentinel", "transfer_weight": 0.4}
@@ -215,7 +215,7 @@
       "Sentinel incidents are not the same as alerts; alerts are detection results, incidents group alerts for investigation",
       "UEBA requires enabling and a data collection period before producing meaningful behavior baselines"
     ],
-    "azure_services": ["Microsoft Sentinel", "Azure Log Analytics", "Azure Logic Apps"],
+    "aws_services": ["Microsoft Sentinel", "Azure Log Analytics", "Azure Logic Apps"],
     "prerequisites": ["az500-defender-for-cloud"],
     "lateral_relations": [
       {"concept_id": "az500-defender-for-cloud", "transfer_weight": 0.4}
@@ -243,7 +243,7 @@
       "Access policies and RBAC on Key Vault serve the same purpose but differently; RBAC is more granular",
       "Soft-delete is enabled by default on new vaults; purge protection must be explicitly enabled"
     ],
-    "azure_services": ["Azure Key Vault", "Azure Managed HSM", "Azure Private Link"],
+    "aws_services": ["Azure Key Vault", "Azure Managed HSM", "Azure Private Link"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "az500-defender-for-cloud", "transfer_weight": 0.2}
@@ -271,7 +271,7 @@
       "HTTPS enforcement at storage account level prevents HTTP access but does not enforce encryption at rest",
       "Customer-managed keys (CMK) require Key Vault and increase operational responsibility vs Microsoft-managed keys"
     ],
-    "azure_services": ["Azure Blob Storage", "Microsoft Defender for Storage", "Azure Key Vault"],
+    "aws_services": ["Azure Blob Storage", "Microsoft Defender for Storage", "Azure Key Vault"],
     "prerequisites": ["az500-azure-key-vault-security"],
     "lateral_relations": [
       {"concept_id": "az500-azure-key-vault-security", "transfer_weight": 0.3}
@@ -299,7 +299,7 @@
       "TDE and Always Encrypted are complementary; TDE protects files at rest, Always Encrypted protects column data from DBAs",
       "SQL Auditing generates large volumes of data; filter audit actions to essential events to control costs"
     ],
-    "azure_services": ["Azure SQL Database", "Microsoft Defender for SQL", "Azure Key Vault"],
+    "aws_services": ["Azure SQL Database", "Microsoft Defender for SQL", "Azure Key Vault"],
     "prerequisites": ["az500-azure-storage-security"],
     "lateral_relations": [
       {"concept_id": "az500-azure-storage-security", "transfer_weight": 0.2}
@@ -327,7 +327,7 @@
       "Policy compliance percentage reflects how many resources pass; 100% does not mean no vulnerabilities",
       "Policy remediation tasks fix existing non-compliant resources; new resources are handled at deployment"
     ],
-    "azure_services": ["Azure Policy", "Microsoft Defender for Cloud", "Azure Management Groups"],
+    "aws_services": ["Azure Policy", "Microsoft Defender for Cloud", "Azure Management Groups"],
     "prerequisites": ["az500-defender-for-cloud"],
     "lateral_relations": [
       {"concept_id": "az500-defender-for-cloud", "transfer_weight": 0.3}
@@ -355,7 +355,7 @@
       "JIT VM Access requires Defender for Servers Plan 2; it is not available in the free tier",
       "Azure Bastion and JIT are complementary; Bastion removes public RDP/SSH, JIT controls who and when"
     ],
-    "azure_services": ["Microsoft Defender for Servers", "Azure Bastion", "Azure Update Manager"],
+    "aws_services": ["Microsoft Defender for Servers", "Azure Bastion", "Azure Update Manager"],
     "prerequisites": ["az500-defender-for-cloud"],
     "lateral_relations": [
       {"concept_id": "az500-defender-for-cloud", "transfer_weight": 0.3}
@@ -383,7 +383,7 @@
       "Activity Log is enabled by default but retention is only 90 days; archive to storage for longer retention",
       "Diagnostic settings per resource must be configured; they do not automatically flow to Log Analytics"
     ],
-    "azure_services": ["Azure Monitor", "Azure Log Analytics", "Microsoft Sentinel"],
+    "aws_services": ["Azure Monitor", "Azure Log Analytics", "Microsoft Sentinel"],
     "prerequisites": ["az500-defender-for-cloud"],
     "lateral_relations": [
       {"concept_id": "az500-microsoft-sentinel", "transfer_weight": 0.4}
@@ -411,7 +411,7 @@
       "App Service Easy Auth does not encrypt data; it only handles authentication at the platform level",
       "VNet integration routes outbound traffic from the app into the VNet; it is not inbound access restriction"
     ],
-    "azure_services": ["Azure App Service", "Azure API Management", "Microsoft Defender for App Service"],
+    "aws_services": ["Azure App Service", "Azure API Management", "Microsoft Defender for App Service"],
     "prerequisites": ["az500-azure-key-vault-security"],
     "lateral_relations": [
       {"concept_id": "az500-defender-for-cloud", "transfer_weight": 0.2}
