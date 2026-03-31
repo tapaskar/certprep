@@ -258,19 +258,19 @@ async def delete_user(user_id: str, admin: AdminUser, db: DB):
             detail="Cannot delete an admin user. Remove admin status first.",
         )
 
-    # Delete related data first (enrollments, sessions, answers)
-    await db.execute(
-        text("DELETE FROM user_answers WHERE user_id = :uid"), {"uid": user_id}
-    )
-    await db.execute(
-        text("DELETE FROM study_sessions WHERE user_id = :uid"), {"uid": user_id}
-    )
-    await db.execute(
-        text("DELETE FROM user_exam_enrollments WHERE user_id = :uid"), {"uid": user_id}
-    )
-    await db.execute(
-        text("DELETE FROM user_concept_mastery WHERE user_id = :uid"), {"uid": user_id}
-    )
+    # Delete related data first
+    for table in [
+        "user_answers",
+        "study_sessions",
+        "user_concept_mastery",
+        "streak_history",
+        "weekly_reports",
+        "notifications",
+        "user_exam_enrollment",
+    ]:
+        await db.execute(
+            text(f"DELETE FROM {table} WHERE user_id = :uid"), {"uid": user_id}
+        )
     await db.delete(user)
     await db.commit()
 
