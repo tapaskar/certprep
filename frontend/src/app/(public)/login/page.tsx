@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
@@ -8,6 +8,12 @@ import { useAuthStore } from "@/stores/auth-store";
 export default function LoginPage() {
   const router = useRouter();
   const login = useAuthStore((s) => s.login);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRedirectTo(params.get("redirect"));
+  }, []);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +27,16 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      router.push("/dashboard");
+      // Check for redirect param or stored plan intent
+      const savedPlan = sessionStorage.getItem("sparkupcloud_selected_plan");
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else if (savedPlan) {
+        sessionStorage.removeItem("sparkupcloud_selected_plan");
+        router.push(`/onboarding?plan=${savedPlan}`);
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Login failed. Please try again.";

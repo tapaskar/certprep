@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
@@ -8,6 +8,17 @@ import { useAuthStore } from "@/stores/auth-store";
 export default function RegisterPage() {
   const router = useRouter();
   const register = useAuthStore((s) => s.register);
+  const [plan, setPlan] = useState<string | null>(null);
+
+  // Persist plan intent through auth flow
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const p = params.get("plan");
+    if (p) {
+      setPlan(p);
+      sessionStorage.setItem("sparkupcloud_selected_plan", p);
+    }
+  }, []);
 
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -148,7 +159,7 @@ export default function RegisterPage() {
       <div className="mt-6 border-t border-stone-200 pt-4 text-center text-sm text-stone-500">
         Already have an account?{" "}
         <Link
-          href="/login"
+          href={plan ? `/login?redirect=${encodeURIComponent("/onboarding?plan=" + plan)}` : "/login"}
           className="font-medium text-amber-600 hover:text-amber-700"
         >
           Sign in
