@@ -19,7 +19,7 @@
       "Teams assume serverless SQL pool is slower than dedicated SQL pool for all queries—for ad-hoc exploration serverless can be faster as there is no warm-up time",
       "Many believe Synapse Pipelines is just a rebranded Azure Data Factory—while sharing the same engine, Synapse Pipelines integrates directly with Synapse workspace artifacts"
     ],
-    "azure_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2", "Azure Cosmos DB"],
+    "aws_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2", "Azure Cosmos DB"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "dp203-data-lake-design", "transfer_weight": 0.35},
@@ -48,7 +48,7 @@
       "Developers assume ADLS Gen2 ACLs override RBAC—both apply, and the most restrictive permission wins; RBAC Owner always has full access",
       "Many believe enabling HNS on an existing Blob Storage account is reversible—HNS migration is a one-way process and cannot be undone"
     ],
-    "azure_services": ["Azure Data Lake Storage Gen2", "Azure Blob Storage", "Azure Storage Explorer"],
+    "aws_services": ["Azure Data Lake Storage Gen2", "Azure Blob Storage", "Azure Storage Explorer"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.30},
@@ -77,7 +77,7 @@
       "Teams assume Mapping Data Flows and Wrangling Data Flows are interchangeable—Mapping Data Flows are code-generated Spark; Wrangling Data Flows use Power Query M language and are better for non-developers",
       "Many believe Self-hosted IR can be installed on any machine—it requires Windows and specific outbound network connectivity to ADF control plane endpoints"
     ],
-    "azure_services": ["Azure Data Factory", "Azure Blob Storage", "Azure Data Lake Storage Gen2", "Azure SQL Database"],
+    "aws_services": ["Azure Data Factory", "Azure Blob Storage", "Azure Data Lake Storage Gen2", "Azure SQL Database"],
     "prerequisites": ["dp203-data-lake-design"],
     "lateral_relations": [
       {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.25},
@@ -106,7 +106,7 @@
       "Teams assume Azure Databricks and Synapse Spark pools are equivalent—Databricks has more advanced ML features (MLflow, Feature Store) while Synapse integrates more natively with the Azure ecosystem",
       "Many believe Delta Lake requires Azure Databricks—Delta Lake is open source and can be used with any Spark environment including Synapse Spark"
     ],
-    "azure_services": ["Azure Databricks", "Azure Data Lake Storage Gen2", "Azure Key Vault", "Azure Data Factory"],
+    "aws_services": ["Azure Databricks", "Azure Data Lake Storage Gen2", "Azure Key Vault", "Azure Data Factory"],
     "prerequisites": ["dp203-data-lake-design"],
     "lateral_relations": [
       {"concept_id": "dp203-spark-processing", "transfer_weight": 0.50},
@@ -135,7 +135,7 @@
       "Developers assume more partitions always means faster processing—too many small partitions create scheduling overhead that can hurt performance",
       "Many believe caching is always beneficial—caching large DataFrames that are only used once wastes memory and can cause eviction of other cached data"
     ],
-    "azure_services": ["Azure Databricks", "Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
+    "aws_services": ["Azure Databricks", "Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
     "prerequisites": ["dp203-databricks"],
     "lateral_relations": [
       {"concept_id": "dp203-databricks", "transfer_weight": 0.40}
@@ -163,7 +163,7 @@
       "Teams assume Stream Analytics replaces Event Hubs—Event Hubs is the ingestion layer while Stream Analytics is the processing layer; they work together",
       "Many believe Stream Analytics output is always near real-time—aggregations over long windows introduce latency equal to the window duration"
     ],
-    "azure_services": ["Azure Stream Analytics", "Azure Event Hubs", "Azure IoT Hub", "Azure Data Lake Storage Gen2"],
+    "aws_services": ["Azure Stream Analytics", "Azure Event Hubs", "Azure IoT Hub", "Azure Data Lake Storage Gen2"],
     "prerequisites": ["dp203-data-lake-design"],
     "lateral_relations": [
       {"concept_id": "dp203-event-hubs", "transfer_weight": 0.45}
@@ -191,7 +191,7 @@
       "Teams assume Event Hubs and Service Bus are interchangeable—Event Hubs is for streaming/telemetry (pull model) while Service Bus is for transactional messaging (push/pull with competing consumers)",
       "Many believe adding more consumer groups improves throughput—consumer groups provide independent read positions but do not increase partition throughput"
     ],
-    "azure_services": ["Azure Event Hubs", "Azure Blob Storage", "Azure Stream Analytics", "Azure Databricks"],
+    "aws_services": ["Azure Event Hubs", "Azure Blob Storage", "Azure Stream Analytics", "Azure Databricks"],
     "prerequisites": [],
     "lateral_relations": [
       {"concept_id": "dp203-stream-analytics", "transfer_weight": 0.40}
@@ -219,7 +219,7 @@
       "Teams assume scaling DWUs linearly improves all queries—complex queries with data skew may not scale linearly",
       "Many use hash distribution on all large tables—tables joined to a hash-distributed table should be distributed on the join key to avoid data movement"
     ],
-    "azure_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
+    "aws_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
     "prerequisites": ["dp203-synapse-analytics"],
     "lateral_relations": [
       {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.50}
@@ -247,7 +247,7 @@
       "Teams assume DDM prevents privileged users from seeing data—users with db_datareader or higher roles can bypass DDM",
       "Many believe TDE with customer-managed keys (CMK) is automatically more secure—CMK shifts responsibility to the customer who must manage key rotation and availability"
     ],
-    "azure_services": ["Azure SQL Database", "Azure Synapse Analytics", "Azure Key Vault", "Azure Private Link"],
+    "aws_services": ["Azure SQL Database", "Azure Synapse Analytics", "Azure Key Vault", "Azure Private Link"],
     "prerequisites": ["dp203-data-lake-design"],
     "lateral_relations": [
       {"concept_id": "dp203-monitoring", "transfer_weight": 0.30}
@@ -275,7 +275,7 @@
       "Teams assume pipeline failures always trigger email alerts by default—alerts must be explicitly configured in Azure Monitor or ADF trigger alert rules",
       "Many believe monitoring logs are retained indefinitely—Log Analytics retention defaults to 30 days and must be explicitly extended"
     ],
-    "azure_services": ["Azure Monitor", "Azure Data Factory", "Azure Synapse Analytics", "Log Analytics"],
+    "aws_services": ["Azure Monitor", "Azure Data Factory", "Azure Synapse Analytics", "Log Analytics"],
     "prerequisites": ["dp203-data-factory"],
     "lateral_relations": [
       {"concept_id": "dp203-data-security", "transfer_weight": 0.25}
@@ -303,7 +303,7 @@
       "Teams assume Synapse Link requires data to be copied to the data lake—Synapse Link queries the Cosmos DB Analytical Store directly without data movement",
       "Many believe Analytical Store queries consume Cosmos DB RUs—Analytical Store operations are billed separately and do not consume transactional RUs"
     ],
-    "azure_services": ["Azure Cosmos DB", "Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
+    "aws_services": ["Azure Cosmos DB", "Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
     "prerequisites": ["dp203-synapse-analytics"],
     "lateral_relations": [
       {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.35}
@@ -331,7 +331,7 @@
       "Teams assume serverless SQL pool can write data back to existing tables—CETAS creates new external files; DML operations are not supported",
       "Many believe all SQL Server T-SQL syntax works in serverless pool—it supports a subset of T-SQL and lacks features like temp tables created with SELECT INTO"
     ],
-    "azure_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
+    "aws_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2"],
     "prerequisites": ["dp203-synapse-analytics", "dp203-data-lake-design"],
     "lateral_relations": [
       {"concept_id": "dp203-synapse-analytics", "transfer_weight": 0.40},
@@ -360,7 +360,7 @@
       "Teams assume snowflake schema is always better because it's normalized—in data warehousing, denormalization (star schema) improves analytical query performance",
       "Many use natural keys from source systems as dimension keys—natural keys change over time in source systems; surrogate keys provide stability"
     ],
-    "azure_services": ["Azure Synapse Analytics", "Azure SQL Database"],
+    "aws_services": ["Azure Synapse Analytics", "Azure SQL Database"],
     "prerequisites": ["dp203-dedicated-sql-pool"],
     "lateral_relations": [
       {"concept_id": "dp203-dedicated-sql-pool", "transfer_weight": 0.40}
@@ -388,7 +388,7 @@
       "Teams assume Mapping Data Flows are always faster than Copy Activity for simple moves—for straight file copy without transformation, Copy Activity is more efficient and cheaper",
       "Many believe Data Flow debug clusters are free—debug mode spins up a Spark cluster billed at the standard ADF Data Flow cluster rate"
     ],
-    "azure_services": ["Azure Data Factory", "Azure Data Lake Storage Gen2", "Azure SQL Database"],
+    "aws_services": ["Azure Data Factory", "Azure Data Lake Storage Gen2", "Azure SQL Database"],
     "prerequisites": ["dp203-data-factory"],
     "lateral_relations": [
       {"concept_id": "dp203-data-factory", "transfer_weight": 0.50},
@@ -417,7 +417,7 @@
       "Teams assume PolyBase and COPY INTO have identical performance—COPY INTO is generally faster and simpler for most scenarios",
       "Many try to load directly into CCI tables in real time—CCIs work best for bulk loads; use heap or clustered rowstore for frequent small inserts"
     ],
-    "azure_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2", "Azure Blob Storage"],
+    "aws_services": ["Azure Synapse Analytics", "Azure Data Lake Storage Gen2", "Azure Blob Storage"],
     "prerequisites": ["dp203-dedicated-sql-pool", "dp203-data-lake-design"],
     "lateral_relations": [
       {"concept_id": "dp203-dedicated-sql-pool", "transfer_weight": 0.45}

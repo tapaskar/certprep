@@ -38,11 +38,16 @@ async def seed_exam(db: AsyncSession, data_dir: str) -> dict[str, int]:
         with open(concepts_file) as f:
             concepts_data = json.load(f)
 
+        # Known Concept model columns
+        concept_columns = {c.key for c in Concept.__table__.columns}
+
         for cd in concepts_data:
             existing = await db.get(Concept, cd["id"])
             if not existing:
                 cd["exam_weight"] = Decimal(str(cd["exam_weight"]))
-                concept = Concept(**cd)
+                # Strip any extra keys not in the model (e.g. video_url, official_doc_url)
+                filtered = {k: v for k, v in cd.items() if k in concept_columns}
+                concept = Concept(**filtered)
                 db.add(concept)
                 counts["concepts"] += 1
 

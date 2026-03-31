@@ -19,7 +19,7 @@
       "Cloud Build is only for containerized applications — it can build any artifact (JARs, Python packages) by using appropriate builder images",
       "Cloud Build steps must run sequentially — steps can run in parallel using waitFor: ['-'] for faster pipeline execution"
     ],
-    "gcp_services": ["Cloud Build", "Artifact Registry", "Cloud Source Repositories"],
+    "aws_services": ["Cloud Build", "Artifact Registry", "Cloud Source Repositories"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-cloud-deploy", "transfer_weight": 0.4}],
     "video_url": "https://www.youtube.com/watch?v=Bvo6jzC7O_4",
@@ -45,7 +45,7 @@
       "Cloud Deploy automatically runs tests before promotion — tests must be configured as separate verification jobs or Cloud Build steps",
       "Rollback in Cloud Deploy creates a new deployment of the previous version — rollback re-deploys the prior release without creating a new one"
     ],
-    "gcp_services": ["Cloud Deploy", "GKE", "Cloud Run", "Cloud Build"],
+    "aws_services": ["Cloud Deploy", "GKE", "Cloud Run", "Cloud Build"],
     "prerequisites": ["pcdoe-cloud-build"],
     "lateral_relations": [{"concept_id": "pcdoe-cloud-build", "transfer_weight": 0.4}],
     "video_url": "https://www.youtube.com/watch?v=u5vn5mUBmj4",
@@ -71,7 +71,7 @@
       "SLOs should always be 99.999% — 'five nines' is expensive; choose SLOs based on actual user expectations and business impact",
       "Exceeding the SLO target is always good — spending error budget means less reliability margin; aim for target, not above"
     ],
-    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Error Reporting"],
+    "aws_services": ["Cloud Monitoring", "Cloud Logging", "Error Reporting"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-incident-management", "transfer_weight": 0.4}],
     "video_url": "https://www.youtube.com/watch?v=tEylFyxbDLE",
@@ -97,7 +97,7 @@
       "Alerts should be set for every metric — alert only on actionable signals; too many alerts cause alert fatigue and ignored notifications",
       "Cloud Monitoring only works with GCP resources — it monitors on-premises and multi-cloud resources with the Ops Agent"
     ],
-    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Pub/Sub"],
+    "aws_services": ["Cloud Monitoring", "Cloud Logging", "Pub/Sub"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-sre-slos", "transfer_weight": 0.4}],
     "video_url": "https://www.youtube.com/watch?v=h7pY5KLNFPY",
@@ -123,7 +123,7 @@
       "All logs are retained forever by default — Cloud Logging retains most logs for 30 days; use sinks to Cloud Storage for longer retention",
       "Cloud Logging handles log ingestion automatically for all workloads — VMs require the Ops Agent to stream application and system logs"
     ],
-    "gcp_services": ["Cloud Logging", "Cloud Monitoring", "BigQuery", "Cloud Storage"],
+    "aws_services": ["Cloud Logging", "Cloud Monitoring", "BigQuery", "Cloud Storage"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-cloud-monitoring", "transfer_weight": 0.3}],
     "video_url": "https://www.youtube.com/watch?v=gyDpKBbFOIQ",
@@ -149,7 +149,7 @@
       "Postmortems are only needed for major outages — even minor incidents provide learning opportunities; document all P1-P3 incidents",
       "Fast MTTR means the team is good at firefighting — reducing MTTD and improving automation reduces the need for firefighting"
     ],
-    "gcp_services": ["Cloud Monitoring", "Cloud Logging", "Cloud Trace"],
+    "aws_services": ["Cloud Monitoring", "Cloud Logging", "Cloud Trace"],
     "prerequisites": ["pcdoe-sre-slos"],
     "lateral_relations": [{"concept_id": "pcdoe-sre-slos", "transfer_weight": 0.4}],
     "video_url": "https://www.youtube.com/watch?v=Q_1pXDZ7w6w",
@@ -175,7 +175,7 @@
       "GKE Autopilot requires no operational effort — you still need to manage workloads, RBAC, and networking; Autopilot only manages nodes",
       "GKE auto-upgrade always happens immediately — auto-upgrades follow the release channel cadence and maintenance windows"
     ],
-    "gcp_services": ["GKE", "Anthos Config Management", "Artifact Registry"],
+    "aws_services": ["GKE", "Anthos Config Management", "Artifact Registry"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-cloud-deploy", "transfer_weight": 0.3}],
     "video_url": "https://www.youtube.com/watch?v=Rl5M1CzgEH4",
@@ -201,7 +201,7 @@
       "terraform apply is always safe to run — always review terraform plan output before applying; misconfigurations can delete production resources",
       "IaC eliminates all configuration drift — runtime changes outside Terraform cause drift; use terraform plan regularly to detect and remediate"
     ],
-    "gcp_services": ["Cloud Storage", "Cloud Build", "Resource Manager"],
+    "aws_services": ["Cloud Storage", "Cloud Build", "Resource Manager"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-org-setup", "transfer_weight": 0.3}],
     "video_url": "https://www.youtube.com/watch?v=HmXm0ozlSWU",
@@ -227,7 +227,7 @@
       "A GCP organization can be set up without Cloud Identity — an org node requires a Cloud Identity or Workspace domain",
       "All projects must be under folders — projects can exist directly under the organization; folders add optional grouping"
     ],
-    "gcp_services": ["Resource Manager", "Cloud Identity", "Cloud Billing", "Cloud Logging"],
+    "aws_services": ["Resource Manager", "Cloud Identity", "Cloud Billing", "Cloud Logging"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-terraform-iac", "transfer_weight": 0.4}],
     "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+organization+landing+zone+bootstrap+setup",
@@ -253,7 +253,7 @@
       "Distributed tracing requires rewriting all services — OpenTelemetry auto-instrumentation handles common frameworks without code changes",
       "High latency in traces is always a database query issue — traces reveal all bottlenecks including serialization, lock contention, and network"
     ],
-    "gcp_services": ["Cloud Trace", "Cloud Profiler", "Cloud Monitoring"],
+    "aws_services": ["Cloud Trace", "Cloud Profiler", "Cloud Monitoring"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-cloud-monitoring", "transfer_weight": 0.3}],
     "video_url": "https://www.youtube.com/watch?v=GQ8-tYIjeMo",
@@ -279,7 +279,7 @@
       "Chaos engineering means randomly breaking production systems — chaos engineering is controlled experiments with clear hypotheses and abort conditions",
       "Chaos engineering is only for Netflix-scale companies — any production system benefits from controlled failure testing"
     ],
-    "gcp_services": ["Cloud Monitoring", "Cloud Scheduler", "GKE", "Cloud Deploy"],
+    "aws_services": ["Cloud Monitoring", "Cloud Scheduler", "GKE", "Cloud Deploy"],
     "prerequisites": ["pcdoe-incident-management"],
     "lateral_relations": [{"concept_id": "pcdoe-sre-slos", "transfer_weight": 0.3}],
     "video_url": "https://www.youtube.com/results?search_query=Google+Cloud+SRE+chaos+engineering+reliability+testing",
@@ -305,7 +305,7 @@
       "Container Registry and Artifact Registry are the same — Artifact Registry supersedes Container Registry with multi-format support and better IAM",
       "Public Docker Hub images don't need scanning — images from public registries should always be scanned before use in production"
     ],
-    "gcp_services": ["Artifact Registry", "Cloud Build", "GKE", "Binary Authorization"],
+    "aws_services": ["Artifact Registry", "Cloud Build", "GKE", "Binary Authorization"],
     "prerequisites": ["pcdoe-cloud-build"],
     "lateral_relations": [{"concept_id": "pcdoe-cloud-build", "transfer_weight": 0.3}],
     "video_url": "https://www.youtube.com/watch?v=742uQFGUqM0",
@@ -331,7 +331,7 @@
       "Cost optimization is only the platform team's responsibility — DevOps engineers influence costs through build efficiency, resource sizing, and cleanup automation",
       "Labels automatically reduce costs — labels only enable cost attribution; cost reduction requires action based on the insights"
     ],
-    "gcp_services": ["Cloud Billing", "Cloud Build", "GKE", "Recommender"],
+    "aws_services": ["Cloud Billing", "Cloud Build", "GKE", "Recommender"],
     "prerequisites": [],
     "lateral_relations": [{"concept_id": "pcdoe-gke-operations", "transfer_weight": 0.2}],
     "video_url": "https://www.youtube.com/watch?v=dxLHoJob4dg",
@@ -357,7 +357,7 @@
       "Security scanning in CI/CD slows down pipelines too much — most scanning tools take under 5 minutes; this is acceptable for production protection",
       "DevSecOps means the security team runs CI/CD — DevSecOps integrates security tooling; developers own fixing the findings"
     ],
-    "gcp_services": ["Binary Authorization", "Artifact Registry", "Cloud Build", "Secret Manager"],
+    "aws_services": ["Binary Authorization", "Artifact Registry", "Cloud Build", "Secret Manager"],
     "prerequisites": ["pcdoe-cloud-build", "pcdoe-artifact-registry"],
     "lateral_relations": [{"concept_id": "pcdoe-artifact-registry", "transfer_weight": 0.3}],
     "video_url": "https://www.youtube.com/watch?v=G9OM-7TBMpM",
@@ -383,7 +383,7 @@
       "Setting resource limits too high is a safe default — oversized limits waste cluster capacity and increase cost; right-size with VPA recommendations",
       "Load testing in staging is sufficient — production traffic patterns often differ; use gradual rollouts to test under real conditions"
     ],
-    "gcp_services": ["GKE", "Cloud Run", "Cloud Monitoring", "Cloud Trace"],
+    "aws_services": ["GKE", "Cloud Run", "Cloud Monitoring", "Cloud Trace"],
     "prerequisites": ["pcdoe-gke-operations"],
     "lateral_relations": [{"concept_id": "pcdoe-gke-operations", "transfer_weight": 0.3}],
     "video_url": "https://www.youtube.com/results?search_query=GKE+performance+optimization+autoscaling+VPA+HPA+KEDA",
