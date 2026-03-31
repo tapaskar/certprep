@@ -89,9 +89,12 @@ export default function AuthLayout({
 
           <div className="flex items-center gap-3">
             {user && (
-              <span className="hidden text-sm text-stone-500 sm:inline">
+              <Link
+                href="/profile"
+                className="hidden text-sm text-stone-500 transition-colors hover:text-stone-900 sm:inline"
+              >
                 {user.display_name || user.email}
-              </span>
+              </Link>
             )}
             <button
               onClick={handleLogout}
