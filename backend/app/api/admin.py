@@ -22,6 +22,10 @@ class QuestionStatusUpdate(BaseModel):
     review_status: str
 
 
+class UserPlanUpdate(BaseModel):
+    plan: str
+
+
 # ── Dashboard Stats ──────────────────────────────────────────────
 
 
@@ -200,6 +204,31 @@ async def toggle_admin(user_id: str, admin: AdminUser, db: DB):
         "id": str(user.id),
         "email": user.email,
         "is_admin": user.is_admin,
+    }
+
+
+@router.put("/users/{user_id}/plan")
+async def update_user_plan(user_id: str, body: UserPlanUpdate, admin: AdminUser, db: DB):
+    """Update a user's subscription plan."""
+    valid_plans = {"free", "pro", "team"}
+    if body.plan not in valid_plans:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid plan. Must be one of: {', '.join(valid_plans)}",
+        )
+
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.plan = body.plan
+    await db.commit()
+
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "plan": user.plan,
     }
 
 
