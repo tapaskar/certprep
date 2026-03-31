@@ -28,7 +28,7 @@ cd backend
 source .venv/bin/activate
 pip install -e "." -q
 python -m app.cli create-tables  # idempotent
-python -m app.cli seed --exam aws-sap-c02 --data-dir data/seed/aws-sap  # idempotent
+python -m app.cli seed-all       # seeds all exams (idempotent)
 
 # Restart service
 sudo systemctl restart certprep
