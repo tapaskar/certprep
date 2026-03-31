@@ -58,7 +58,8 @@ export const useAuthStore = create<AuthState>((set, get) => {
         isAuthenticated: true,
         isLoading: false,
       });
-      // loadUser will be called from the layout to fetch full profile including is_admin
+      // Immediately load full profile (includes is_admin, enrolled_exams)
+      await get().loadUser();
     },
 
     register: async (name: string, email: string, password: string) => {

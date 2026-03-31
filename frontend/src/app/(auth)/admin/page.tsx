@@ -128,6 +128,20 @@ export default function AdminPage() {
     []
   );
 
+  // Change user plan
+  const handleChangePlan = async (userId: string, plan: string) => {
+    try {
+      const result = await api.updateUserPlan(userId, plan);
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.id === userId ? { ...u, plan: result.plan } : u
+        )
+      );
+    } catch (err) {
+      console.error("Failed to update plan:", err);
+    }
+  };
+
   // Toggle admin
   const handleToggleAdmin = async (userId: string) => {
     try {
@@ -276,9 +290,15 @@ export default function AdminPage() {
                       {u.display_name || "-"}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium capitalize text-amber-700">
-                        {u.plan}
-                      </span>
+                      <select
+                        value={u.plan}
+                        onChange={(e) => handleChangePlan(u.id, e.target.value)}
+                        className="rounded-lg border border-stone-200 bg-white px-2 py-1 text-xs font-medium text-stone-700 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      >
+                        <option value="free">Free</option>
+                        <option value="pro">Pro</option>
+                        <option value="team">Team</option>
+                      </select>
                     </td>
                     <td className="px-4 py-3">
                       {u.is_email_verified ? (

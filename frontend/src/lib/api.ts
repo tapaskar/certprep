@@ -288,6 +288,16 @@ class ApiClient {
     });
   }
 
+  async updateUserPlan(
+    userId: string,
+    plan: string
+  ): Promise<{ id: string; email: string; plan: string }> {
+    return this.request(`/admin/users/${userId}/plan`, {
+      method: "PUT",
+      body: JSON.stringify({ plan }),
+    });
+  }
+
   async getAdminExams(): Promise<
     Array<{
       id: string;
