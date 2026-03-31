@@ -22,6 +22,7 @@ from app.models.user import User
 logger = logging.getLogger(__name__)
 
 SENDER = f"SparkUpCloud <{settings.ses_sender_email}>"
+ADMIN_EMAILS = {"tapas.eric@gmail.com"}
 
 
 def _send_email(to: str, subject: str, body_html: str, body_text: str) -> bool:
@@ -186,8 +187,7 @@ async def login(body: LoginRequest, db: DB):
         )
 
     # Auto-promote admin emails
-    admin_emails = {"tapas.eric@gmail.com"}
-    if user.email in admin_emails and not user.is_admin:
+    if user.email in ADMIN_EMAILS and not user.is_admin:
         user.is_admin = True
 
     # Update last login
@@ -326,6 +326,11 @@ async def get_me(user: CurrentUser, db: DB):
     from sqlalchemy import and_
 
     from app.models.exam import Exam
+
+    # Auto-promote admin emails
+    if user.email in ADMIN_EMAILS and not user.is_admin:
+        user.is_admin = True
+        await db.commit()
 
     # Get all active enrollments
     enrollment_result = await db.execute(
