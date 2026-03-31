@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Check, X, Shield, Zap, BookOpen, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -106,6 +106,12 @@ const tiers: Tier[] = [
 
 export default function PricingCards() {
   const [billing, setBilling] = useState<Billing>("annual");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("sparkupcloud_token");
+    setIsLoggedIn(!!token);
+  }, []);
 
   return (
     <section className="mx-auto max-w-6xl px-6 pb-20">
@@ -233,11 +239,17 @@ export default function PricingCards() {
 
               {/* CTA */}
               <Link
-                href={
-                  tier.showToggle
+                href={(() => {
+                  const planParam = tier.showToggle
+                    ? `${tier.ctaHref.split("?plan=")[1]}-${billing}`
+                    : tier.ctaHref.split("?plan=")[1] || "free";
+                  if (isLoggedIn && planParam !== "free") {
+                    return `/dashboard?upgrade=${planParam}`;
+                  }
+                  return tier.showToggle
                     ? `${tier.ctaHref}-${billing}`
-                    : tier.ctaHref
-                }
+                    : tier.ctaHref;
+                })()}
                 className={cn(
                   "flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all",
                   tier.ctaStyle === "primary" &&

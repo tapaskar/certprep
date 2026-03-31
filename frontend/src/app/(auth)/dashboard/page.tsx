@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useProgressStore } from "@/stores/progress-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { ReadinessCard } from "@/components/dashboard/readiness-card";
 import { StreakCard } from "@/components/dashboard/streak-card";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { WeakConcepts } from "@/components/dashboard/weak-concepts";
-import { BookOpen, Plus } from "lucide-react";
+import { BookOpen, Plus, Crown, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -34,9 +34,61 @@ export default function DashboardPage() {
   }
 
   const activeExam = enrolledExams.find((e) => e.exam_id === examId);
+  const userPlan = user?.plan ?? "free";
+  const isFreePlan = userPlan === "free";
+
+  // Check for upgrade param from pricing page
+  const [upgradeParam, setUpgradeParam] = useState<string | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const upgrade = params.get("upgrade");
+    if (upgrade) setUpgradeParam(upgrade);
+  }, []);
 
   return (
     <div className="space-y-6">
+      {/* Upgrade prompt from pricing page */}
+      {upgradeParam && (
+        <div className="flex items-center justify-between rounded-xl border border-amber-300 bg-amber-50 p-5">
+          <div className="flex items-center gap-3">
+            <Crown className="h-6 w-6 text-amber-500" />
+            <div>
+              <p className="font-bold text-stone-900">
+                Upgrade to {upgradeParam.replace("_", " ").replace("pro", "Pro")}
+              </p>
+              <p className="text-sm text-stone-500">
+                Payment integration coming soon. Contact admin@sparkupcloud.com to activate your plan.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setUpgradeParam(null)}
+            className="text-sm text-stone-400 hover:text-stone-600"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* Free plan upgrade banner */}
+      {isFreePlan && !upgradeParam && (
+        <Link
+          href="/pricing"
+          className="flex items-center justify-between rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-white p-4 transition-all hover:shadow-md"
+        >
+          <div className="flex items-center gap-3">
+            <Zap className="h-5 w-5 text-amber-500" />
+            <div>
+              <p className="text-sm font-bold text-stone-900">Unlock full access</p>
+              <p className="text-xs text-stone-500">Upgrade to Pro for unlimited questions, mock exams, and AI study plans</p>
+            </div>
+          </div>
+          <span className="shrink-0 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-white">
+            View Plans
+          </span>
+        </Link>
+      )}
+
       {/* Exam selector */}
       <div className="flex flex-wrap items-center gap-3">
         {enrolledExams.map((exam) => (
