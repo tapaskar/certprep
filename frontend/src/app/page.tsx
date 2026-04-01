@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive } from "lucide-react";
+import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive, LogIn } from "lucide-react";
 import { CertTabs } from "@/components/landing/cert-tabs";
 
 const features = [
@@ -138,8 +138,38 @@ export default function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
+      {/* Navigation Header */}
+      <nav className="sticky top-0 z-50 border-b border-stone-200/60 bg-white/80 backdrop-blur-lg">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+          {/* Logo & Brand */}
+          <Link href="/" className="flex items-center gap-2.5">
+            <img src="/logo.svg" alt="SparkUpCloud" className="h-8 w-auto" />
+            <span className="text-lg font-bold text-stone-900">
+              Spark<span className="text-amber-500">Up</span>Cloud
+            </span>
+          </Link>
+
+          {/* Auth Actions */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 shadow-sm transition-all hover:border-amber-400 hover:text-amber-600 hover:shadow-md"
+            >
+              <LogIn className="h-4 w-4" />
+              Log In
+            </Link>
+            <Link
+              href="/register"
+              className="inline-flex items-center rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition-all hover:scale-105 hover:shadow-md"
+            >
+              Get Started Free
+            </Link>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero */}
-      <section className="flex flex-col items-center justify-center px-6 pt-20 pb-24 text-center">
+      <section className="flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center">
         <img src="/logo.svg" alt="SparkUpCloud" className="mb-10 h-40 w-auto" />
         <h1 className="max-w-3xl text-5xl font-bold tracking-tight text-stone-900 sm:text-6xl lg:text-7xl">
           Master Your{" "}
@@ -209,18 +239,58 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Trust tagline */}
-      <section className="pb-20 text-center space-y-4">
-        <p className="text-xs font-medium uppercase tracking-widest text-stone-400">
-          Trusted by professionals preparing for cloud certifications worldwide
-        </p>
-        <Link
-          href="/contact"
-          className="inline-block text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
-        >
-          Contact Us
-        </Link>
+      {/* CTA Banner */}
+      <section className="mx-auto max-w-4xl px-6 pb-16">
+        <div className="rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 px-8 py-12 text-center shadow-lg sm:px-12">
+          <h2 className="text-2xl font-bold text-white sm:text-3xl">
+            Ready to ace your certification?
+          </h2>
+          <p className="mt-3 text-base text-amber-100">
+            Join thousands of professionals preparing with AI-powered learning.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <Link
+              href="/register"
+              className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-8 text-base font-bold text-amber-600 shadow-md transition-all hover:scale-105"
+            >
+              Create Free Account
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex h-12 items-center gap-2 justify-center rounded-lg border-2 border-white/40 px-8 text-base font-semibold text-white transition-all hover:bg-white/10"
+            >
+              <LogIn className="h-4 w-4" />
+              Sign In to Your Account
+            </Link>
+          </div>
+        </div>
       </section>
+
+      {/* Footer */}
+      <footer className="border-t border-stone-200 bg-white/60">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
+          <div className="flex items-center gap-2">
+            <img src="/logo.svg" alt="SparkUpCloud" className="h-6 w-auto" />
+            <span className="text-sm font-semibold text-stone-700">
+              Spark<span className="text-amber-500">Up</span>Cloud
+            </span>
+          </div>
+          <p className="text-xs text-stone-400">
+            Trusted by professionals preparing for cloud certifications worldwide
+          </p>
+          <div className="flex items-center gap-6 text-sm font-medium">
+            <Link href="/login" className="text-stone-500 transition-colors hover:text-amber-600">
+              Log In
+            </Link>
+            <Link href="/register" className="text-stone-500 transition-colors hover:text-amber-600">
+              Register
+            </Link>
+            <Link href="/contact" className="text-stone-500 transition-colors hover:text-amber-600">
+              Contact
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
     </>
   );
