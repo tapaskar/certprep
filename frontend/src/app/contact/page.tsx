@@ -6,7 +6,7 @@ export const metadata = {
   description:
     "Get in touch with the SparkUpCloud team. We're here to help with your cloud certification journey.",
   alternates: {
-    canonical: "https://sparkupcloud.com/contact",
+    canonical: "https://www.sparkupcloud.com/contact",
   },
 };
 

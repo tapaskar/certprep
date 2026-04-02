@@ -28,12 +28,12 @@ export const metadata: Metadata = {
     "study guide",
     "AI learning",
   ],
-  metadataBase: new URL("https://sparkupcloud.com"),
+  metadataBase: new URL("https://www.sparkupcloud.com"),
   openGraph: {
     title: "SparkUpCloud — Master Your Cloud Certification",
     description:
       "AI-powered exam prep for 36+ AWS, Azure, and Google Cloud certifications. Adaptive learning, practice questions, video tutorials, and hands-on labs.",
-    url: "https://sparkupcloud.com",
+    url: "https://www.sparkupcloud.com",
     siteName: "SparkUpCloud",
     type: "website",
     locale: "en_US",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     google: "Yie--gyH-JTjcM1URDOUskfB1ndrn0Z2LIYQuSy4mIU",
   },
   alternates: {
-    canonical: "https://sparkupcloud.com",
+    canonical: "https://www.sparkupcloud.com",
   },
   manifest: "/manifest.json",
 };

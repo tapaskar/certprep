@@ -112,7 +112,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "SparkUpCloud",
-  url: "https://sparkupcloud.com",
+  url: "https://www.sparkupcloud.com",
   description:
     "AI-powered certification exam preparation platform for AWS, Azure, and Google Cloud certifications",
   applicationCategory: "EducationalApplication",

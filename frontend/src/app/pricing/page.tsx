@@ -8,7 +8,7 @@ export const metadata = {
   description:
     "Simple, transparent pricing for cloud certification exam prep. AWS, Azure, and Google Cloud. Start free, upgrade when you're ready.",
   alternates: {
-    canonical: "https://sparkupcloud.com/pricing",
+    canonical: "https://www.sparkupcloud.com/pricing",
   },
 };
 
@@ -17,7 +17,7 @@ const jsonLd = {
   "@type": "Product",
   name: "SparkUpCloud",
   description: "AI-powered cloud certification exam preparation platform for AWS, Azure, and Google Cloud",
-  url: "https://sparkupcloud.com/pricing",
+  url: "https://www.sparkupcloud.com/pricing",
   offers: [
     {
       "@type": "Offer",
