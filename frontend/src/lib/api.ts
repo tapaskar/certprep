@@ -350,6 +350,26 @@ class ApiClient {
     });
   }
 
+  // ── Engagement (Badges, Leagues, Challenges) ────────────────
+
+  async getBadges(): Promise<{ badges: import("./api-types").Badge[] }> {
+    return this.request("/progress/badges/list");
+  }
+
+  async getLeague(): Promise<import("./api-types").LeagueData> {
+    return this.request("/progress/league/current");
+  }
+
+  async getChallenges(): Promise<{ challenges: import("./api-types").ChallengeData[] }> {
+    return this.request("/progress/challenges/active");
+  }
+
+  async claimChallengeReward(challengeId: string): Promise<{ status: string }> {
+    return this.request(`/progress/challenges/${challengeId}/claim`, {
+      method: "POST",
+    });
+  }
+
   // ── Contact ──────────────────────────────────────────────────
 
   async sendContactMessage(data: {

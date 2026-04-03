@@ -9,6 +9,7 @@ from sqlalchemy import and_, func, select
 
 from app.api.deps import DB, CurrentUser
 from app.models.exam import Concept, Question
+from app.models.engagement import Badge, Challenge, League, LeagueMembership, UserChallenge
 from app.models.progress import (
     StudySession,
     UserAnswer,
@@ -397,12 +398,167 @@ async def end_session(
     enrollment = enrollment.scalar_one_or_none()
 
     streak_days = 0
+    new_badges: list[dict] = []
+    session_xp = 0
+
     if enrollment:
         enrollment.last_active_date = date.today()
         enrollment.current_streak_days += 1
         if enrollment.current_streak_days > enrollment.longest_streak_days:
             enrollment.longest_streak_days = enrollment.current_streak_days
         streak_days = enrollment.current_streak_days
+
+        # --- XP Persistence (Layer 2) ---
+        concept_xp = session.concepts_explored * 10
+        correct_xp = session.questions_correct * 5
+        completion_xp = 20
+        session_xp = concept_xp + correct_xp + completion_xp
+        enrollment.total_xp += session_xp
+        enrollment.weekly_xp += session_xp
+
+        # --- League XP update (Layer 2) ---
+        from datetime import timedelta
+
+        today = date.today()
+        week_start = today - timedelta(days=today.weekday())
+        week_end = week_start + timedelta(days=6)
+
+        membership_result = await db.execute(
+            select(LeagueMembership)
+            .join(League, LeagueMembership.league_id == League.id)
+            .where(
+                and_(
+                    LeagueMembership.user_id == user.id,
+                    League.week_start == week_start,
+                )
+            )
+        )
+        membership = membership_result.scalar_one_or_none()
+
+        if membership:
+            membership.weekly_xp += session_xp
+        else:
+            # Auto-assign to a league
+            league_result = await db.execute(
+                select(League)
+                .where(League.week_start == week_start)
+                .order_by(League.created_at.desc())
+                .limit(1)
+            )
+            league = league_result.scalar_one_or_none()
+
+            # Check if league is full (20 members)
+            need_new = True
+            if league:
+                count_result = await db.execute(
+                    select(func.count())
+                    .select_from(LeagueMembership)
+                    .where(LeagueMembership.league_id == league.id)
+                )
+                member_count = count_result.scalar() or 0
+                if member_count < 20:
+                    need_new = False
+
+            if need_new:
+                league = League(
+                    name="Bronze",
+                    tier=1,
+                    week_start=week_start,
+                    week_end=week_end,
+                )
+                db.add(league)
+                await db.flush()
+
+            new_membership = LeagueMembership(
+                user_id=user.id,
+                league_id=league.id,
+                weekly_xp=session_xp,
+                display_name=user.display_name,
+            )
+            db.add(new_membership)
+
+        # --- Badge checks (Layer 1) ---
+        streak_milestones = {7: "streak_7", 14: "streak_14", 30: "streak_30", 60: "streak_60", 100: "streak_100"}
+        for milestone, badge_type in streak_milestones.items():
+            if streak_days >= milestone:
+                existing = await db.execute(
+                    select(Badge).where(
+                        and_(Badge.user_id == user.id, Badge.badge_type == badge_type)
+                    )
+                )
+                if not existing.scalar_one_or_none():
+                    badge = Badge(user_id=user.id, badge_type=badge_type, badge_data={"streak": streak_days})
+                    db.add(badge)
+                    new_badges.append({"type": badge_type, "streak": streak_days})
+
+        # First session badge
+        first_session_result = await db.execute(
+            select(func.count()).select_from(StudySession).where(
+                and_(StudySession.user_id == user.id, StudySession.completed)
+            )
+        )
+        total_sessions_count = (first_session_result.scalar() or 0) + 1  # +1 for current
+        if total_sessions_count == 1:
+            existing = await db.execute(
+                select(Badge).where(and_(Badge.user_id == user.id, Badge.badge_type == "first_session"))
+            )
+            if not existing.scalar_one_or_none():
+                db.add(Badge(user_id=user.id, badge_type="first_session", badge_data={}))
+                new_badges.append({"type": "first_session"})
+
+        # Questions milestones
+        from app.models.progress import UserAnswer as UA
+        total_q_result = await db.execute(
+            select(func.count()).select_from(UA).where(UA.user_id == user.id)
+        )
+        total_questions_ever = total_q_result.scalar() or 0
+        for threshold, badge_type in [(100, "questions_100"), (500, "questions_500")]:
+            if total_questions_ever >= threshold:
+                existing = await db.execute(
+                    select(Badge).where(and_(Badge.user_id == user.id, Badge.badge_type == badge_type))
+                )
+                if not existing.scalar_one_or_none():
+                    db.add(Badge(user_id=user.id, badge_type=badge_type, badge_data={"total": total_questions_ever}))
+                    new_badges.append({"type": badge_type})
+
+        # --- Challenge progress (Layer 3) ---
+        active_challenges = await db.execute(
+            select(Challenge).where(
+                and_(
+                    Challenge.is_active,
+                    Challenge.starts_at <= now,
+                    Challenge.ends_at >= now,
+                )
+            )
+        )
+        for challenge in active_challenges.scalars():
+            uc_result = await db.execute(
+                select(UserChallenge).where(
+                    and_(
+                        UserChallenge.user_id == user.id,
+                        UserChallenge.challenge_id == challenge.id,
+                    )
+                )
+            )
+            uc = uc_result.scalar_one_or_none()
+            if not uc:
+                uc = UserChallenge(user_id=user.id, challenge_id=challenge.id, progress_value=0)
+                db.add(uc)
+                await db.flush()
+
+            if not uc.completed:
+                if challenge.challenge_type == "questions_answered":
+                    uc.progress_value += session.questions_answered
+                elif challenge.challenge_type == "study_minutes":
+                    uc.progress_value += (session.duration_seconds or 0) // 60
+                elif challenge.challenge_type == "streak_days":
+                    uc.progress_value = streak_days
+
+                if uc.progress_value >= challenge.goal_value:
+                    uc.completed = True
+                    uc.completed_at = now
+
+    await db.commit()
 
     accuracy = (
         round(session.questions_correct / session.questions_answered * 100)
@@ -426,6 +582,7 @@ async def end_session(
             ),
             streak_days=streak_days,
             streak_status="maintained" if streak_days > 0 else "none",
+            achievements_unlocked=new_badges,
         )
     )
 

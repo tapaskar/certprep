@@ -148,3 +148,62 @@ class ProgressResponse(BaseModel):
 
 class ProgressHistoryResponse(BaseModel):
     data_points: list[dict]
+
+
+# --- Badges ---
+
+
+class BadgeResponse(BaseModel):
+    badge_type: str
+    earned_at: str
+    badge_data: dict = {}
+
+
+class BadgesListResponse(BaseModel):
+    badges: list[BadgeResponse]
+
+
+# --- Leagues ---
+
+
+class LeagueMemberResponse(BaseModel):
+    display_name: str
+    weekly_xp: int
+    rank: int
+    is_current_user: bool = False
+
+
+class LeagueResponse(BaseModel):
+    league_name: str
+    tier: int
+    week_start: str
+    week_end: str
+    user_xp: int
+    user_rank: int
+    total_members: int
+    leaderboard: list[LeagueMemberResponse]
+    days_remaining: int
+
+
+# --- Challenges ---
+
+
+class ChallengeResponse(BaseModel):
+    id: str
+    title: str
+    description: str
+    challenge_type: str
+    goal_value: int
+    reward_type: str
+    reward_value: str
+    starts_at: str
+    ends_at: str
+    user_progress: int = 0
+    completed: bool = False
+    reward_claimed: bool = False
+    days_remaining: int = 0
+    participants_count: int = 0
+
+
+class ChallengesListResponse(BaseModel):
+    challenges: list[ChallengeResponse]

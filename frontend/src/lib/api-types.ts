@@ -204,6 +204,54 @@ export interface DiagnosticAnswer {
   time_seconds: number;
 }
 
+// ── Badges ─────────────────────────────────────────────────────
+
+export interface Badge {
+  badge_type: string;
+  earned_at: string;
+  badge_data: Record<string, unknown>;
+}
+
+// ── Leagues ────────────────────────────────────────────────────
+
+export interface LeagueMember {
+  display_name: string;
+  weekly_xp: number;
+  rank: number;
+  is_current_user: boolean;
+}
+
+export interface LeagueData {
+  league_name: string;
+  tier: number;
+  week_start: string;
+  week_end: string;
+  user_xp: number;
+  user_rank: number;
+  total_members: number;
+  leaderboard: LeagueMember[];
+  days_remaining: number;
+}
+
+// ── Challenges ─────────────────────────────────────────────────
+
+export interface ChallengeData {
+  id: string;
+  title: string;
+  description: string;
+  challenge_type: string;
+  goal_value: number;
+  reward_type: string;
+  reward_value: string;
+  starts_at: string;
+  ends_at: string;
+  user_progress: number;
+  completed: boolean;
+  reward_claimed: boolean;
+  days_remaining: number;
+  participants_count: number;
+}
+
 export interface DiagnosticSubmitResponse {
   score_pct: number;
   domain_scores: Record<string, number>;

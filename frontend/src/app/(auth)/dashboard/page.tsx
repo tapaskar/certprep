@@ -7,6 +7,9 @@ import { ReadinessCard } from "@/components/dashboard/readiness-card";
 import { StreakCard } from "@/components/dashboard/streak-card";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { WeakConcepts } from "@/components/dashboard/weak-concepts";
+import { BadgesCard } from "@/components/dashboard/badges-card";
+import { LeagueCard } from "@/components/dashboard/league-card";
+import { ChallengeCard } from "@/components/dashboard/challenge-card";
 import { BookOpen, Plus, Crown, Zap } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -185,6 +188,15 @@ export default function DashboardPage() {
               longestDays={progress.streak.longest_days}
               freezesRemaining={progress.streak.freezes_remaining}
             />
+          </div>
+
+          {/* Badges */}
+          <BadgesCard />
+
+          {/* League & Challenge */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <LeagueCard />
+            <ChallengeCard />
           </div>
 
           {/* Quick actions */}

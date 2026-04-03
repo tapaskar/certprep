@@ -56,6 +56,10 @@ class UserExamEnrollment(Base, UUIDPrimaryKey):
     concepts_mastered: Mapped[int] = mapped_column(Integer, default=0)
     concepts_total: Mapped[int] = mapped_column(Integer, default=0)
 
+    # XP
+    total_xp: Mapped[int] = mapped_column(Integer, default=0)
+    weekly_xp: Mapped[int] = mapped_column(Integer, default=0)
+
     # Streak
     current_streak_days: Mapped[int] = mapped_column(Integer, default=0)
     longest_streak_days: Mapped[int] = mapped_column(Integer, default=0)
