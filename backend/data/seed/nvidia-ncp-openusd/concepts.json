@@ -1,0 +1,262 @@
+[
+  {
+    "id": "nvidia-ncp-ousd-usd-basics",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "usd-fundamentals",
+    "topic_id": "basics",
+    "name": "OpenUSD Core Concepts",
+    "description": "Fundamental concepts of Universal Scene Description including prims, properties, and stage hierarchy",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "USD (Universal Scene Description) is an open-source framework for describing, composing, and rendering 3D scenes",
+      "A USD Stage is the top-level container that holds the composed scene graph from one or more layers",
+      "Prims (primitives) are the primary container objects in USD that form a hierarchical namespace",
+      "Properties on prims include attributes (typed data values) and relationships (connections to other prims)",
+      "USD files use .usda (ASCII text), .usdc (binary crate), and .usdz (zip archive) file formats"
+    ],
+    "common_misconceptions": [
+      "USD is just a 3D file format (it is a complete scene description framework with composition, schemas, and rendering capabilities)",
+      "USD can only represent static geometry (USD supports time-varying data through time-sampled attributes)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-usd-paths", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-usd-paths",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "usd-fundamentals",
+    "topic_id": "addressing",
+    "name": "USD Paths and Namespaces",
+    "description": "Understanding prim paths, property paths, and namespace hierarchy in USD",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Prim paths use forward-slash notation like /World/Characters/Hero to address prims in the hierarchy",
+      "Property paths append a dot-separated name to the prim path like /World/Characters/Hero.xformOp:translate",
+      "The pseudo-root prim at path / is the implicit root of every USD stage",
+      "Namespace operations like renaming or reparenting prims change their path and all descendant paths",
+      "Prim paths must be unique within a stage, enforcing a tree structure"
+    ],
+    "common_misconceptions": [
+      "USD paths work like file system paths in every way (USD paths have additional semantics like variant selections)",
+      "Renaming a prim only changes its name (it changes the path of all descendants and invalidates any relationships pointing to the old path)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ousd-usd-basics"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-usd-basics", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-usd-variants",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "usd-fundamentals",
+    "topic_id": "variants",
+    "name": "USD Variant Sets",
+    "description": "Using variant sets to represent multiple variations of a prim within a single asset",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Variant sets provide a way to package multiple variations (e.g., colors, LODs) of a prim in a single asset",
+      "A variant set contains named variants, and exactly one variant is selected at any time",
+      "Variant selections can be authored on any layer and participate in the composition arc ordering",
+      "Multiple variant sets can exist on a single prim for independent variation dimensions",
+      "Variant sets are commonly used for material assignments, geometric LODs, and regional variations"
+    ],
+    "common_misconceptions": [
+      "Variants duplicate all data for each variation (variants only override the properties that change between variations)",
+      "Variant selections are baked into the asset (selections can be overridden in stronger layers)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ousd-usd-basics"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-composition-arcs", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-composition-arcs",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "composition-layering",
+    "topic_id": "composition",
+    "name": "USD Composition Arcs",
+    "description": "The six composition arc types and their strength ordering in the LIVRPS rule",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "USD has six composition arcs ordered by strength: Local, Inherits, VariantSets, References, Payloads, Specializes (LIVRPS)",
+      "References compose one USD prim or layer into another, commonly used for asset assembly",
+      "Payloads are deferred references that can be unloaded to reduce memory usage for large scenes",
+      "Inherits provide class-based sharing where changes to the base class propagate to all inheriting prims",
+      "Specializes is the weakest arc, allowing a prim to provide fallback opinions that can be overridden"
+    ],
+    "common_misconceptions": [
+      "References and payloads are identical (payloads can be selectively loaded/unloaded, references are always loaded)",
+      "Composition order is arbitrary (the LIVRPS strength ordering is deterministic and critical for correct scene resolution)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ousd-usd-basics"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-layer-stack", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-layer-stack",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "composition-layering",
+    "topic_id": "layering",
+    "name": "USD Layer Stack and Opinions",
+    "description": "How USD layers stack opinions and resolve values through the composition engine",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "A USD layer is a file that contains authored opinions about prims and their properties",
+      "The layer stack determines opinion strength: sublayers listed earlier are stronger than later ones",
+      "The session layer is the strongest non-local layer, typically used for temporary edits that should not be saved",
+      "Value resolution traverses the composed layer stack and returns the strongest authored opinion",
+      "Sparse overrides allow layers to change only specific properties without reproducing the entire prim definition"
+    ],
+    "common_misconceptions": [
+      "Stronger layers delete weaker opinions (weaker opinions still exist and take effect if the stronger opinion is removed)",
+      "All layers must contain complete prim definitions (layers can contain sparse overrides affecting only specific properties)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ousd-composition-arcs"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-composition-arcs", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-typed-schemas",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "schema-data-modeling",
+    "topic_id": "schemas",
+    "name": "USD Typed and API Schemas",
+    "description": "Schema types in USD including typed schemas, API schemas, and custom schema creation",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Typed schemas (IsA schemas) define the type of a prim, such as UsdGeomMesh, UsdGeomXform, or UsdLuxDomeLight",
+      "API schemas add additional interfaces to prims without changing their type, such as UsdShadeMaterialBindingAPI",
+      "Single-apply API schemas can be applied once per prim; multi-apply API schemas can be applied multiple times with different instance names",
+      "Schema definitions are written in USD schema files and generate C++ and Python code via usdGenSchema",
+      "Fallback values in schemas provide default property values when no opinion is authored"
+    ],
+    "common_misconceptions": [
+      "A prim can have multiple typed schemas (each prim has exactly one type; additional behaviors come from API schemas)",
+      "Custom schemas require modifying the USD core (custom schemas are defined externally and registered as plugins)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ousd-usd-basics"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-asset-modeling", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-asset-modeling",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "schema-data-modeling",
+    "topic_id": "modeling",
+    "name": "Asset Structure and Data Modeling",
+    "description": "Best practices for structuring USD assets including model hierarchy, kind, and purpose",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Model hierarchy uses Kind metadata to organize assets into assembly, group, component, and subcomponent levels",
+      "Components are the basic building blocks; assemblies compose components and groups into larger structures",
+      "Purpose metadata (default, render, guide, proxy) controls visibility for different workflows",
+      "Asset info metadata records authoring information like asset name, version, and identifier",
+      "Default prim designation specifies which prim should be used when the layer is referenced without a target path"
+    ],
+    "common_misconceptions": [
+      "Kind metadata affects rendering behavior (Kind is for organizational hierarchy; Purpose affects rendering visibility)",
+      "Every prim needs a Kind assignment (Kind is primarily used on model roots and key organizational prims)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ousd-typed-schemas"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-typed-schemas", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-python-api",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "pipeline-development",
+    "topic_id": "scripting",
+    "name": "USD Python API Development",
+    "description": "Using the USD Python API for scene manipulation, asset processing, and pipeline tools",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Usd.Stage.Open() and Usd.Stage.CreateNew() are the primary entry points for working with USD stages in Python",
+      "UsdGeom module provides geometry-related schemas including Mesh, Xform, BasisCurves, and Camera",
+      "Sdf.Path class represents and manipulates USD prim and property paths",
+      "Stage traversal using Usd.PrimRange iterates over prims in the scene graph",
+      "Edit targets control which layer receives new opinions when modifying a composed stage"
+    ],
+    "common_misconceptions": [
+      "Changes to a composed stage are automatically saved (stages must be explicitly saved with stage.GetRootLayer().Save())",
+      "Python USD operations are slow for large scenes (many operations are implemented in C++ and called through Python bindings)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ousd-usd-basics"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-pipeline-tools", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-pipeline-tools",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "pipeline-development",
+    "topic_id": "tools",
+    "name": "USD Pipeline Integration",
+    "description": "Integrating USD into production pipelines for content creation, simulation, and rendering",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "USD plugins extend functionality through file format plugins, schema plugins, and resolver plugins",
+      "Asset resolvers (ArResolver) customize how asset paths are resolved to actual file locations",
+      "USD Hydra is the rendering architecture that connects USD scene data to renderers like RenderMan, Arnold, and RTX",
+      "usdview is the reference USD viewer for inspecting and debugging USD scene composition",
+      "usdchecker validates USD files against schema compliance and best practices"
+    ],
+    "common_misconceptions": [
+      "USD requires a specific renderer (USD's Hydra architecture supports multiple renderers through render delegate plugins)",
+      "Pipeline integration requires rewriting existing tools (USD plugins and resolvers can bridge to existing asset management systems)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ousd-python-api"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-python-api", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ousd-omniverse",
+    "exam_id": "nvidia-ncp-ousd",
+    "domain_id": "omniverse-integration",
+    "topic_id": "omniverse",
+    "name": "NVIDIA Omniverse Platform",
+    "description": "NVIDIA Omniverse platform for building USD-based 3D workflows and collaborative applications",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA Omniverse is a platform built on OpenUSD for building and operating industrial metaverse applications",
+      "Omniverse Nucleus provides a centralized server for real-time collaboration and live syncing of USD stages",
+      "Omniverse Kit is the SDK for building extensions and applications on the Omniverse platform",
+      "Omniverse Connectors bridge third-party DCC tools (Maya, Blender, 3ds Max) with Omniverse via USD",
+      "Omniverse RTX renderer provides real-time ray tracing and path tracing for USD scenes on NVIDIA GPUs"
+    ],
+    "common_misconceptions": [
+      "Omniverse replaces existing DCC tools (it connects and extends them through USD-based interoperability)",
+      "Omniverse requires cloud connectivity (it can run entirely on-premises with local Nucleus servers)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ousd-pipeline-tools", "transfer_weight": 0.25}
+    ]
+  }
+]

@@ -1,0 +1,262 @@
+[
+  {
+    "id": "nvidia-ncp-aii-dgx-architecture",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "dgx-systems",
+    "topic_id": "hardware",
+    "name": "DGX System Architecture",
+    "description": "Detailed architecture of NVIDIA DGX systems including GPU topology, memory, and interconnects",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "DGX H100 contains 8 H100 SXM GPUs with 80 GB HBM3 each, totaling 640 GB of GPU memory",
+      "All 8 GPUs are connected via four NVSwitch chips enabling 900 GB/s per GPU bidirectional bandwidth",
+      "DGX H100 includes dual x86 CPUs, 2 TB system memory, and high-speed NVMe storage",
+      "The baseboard management controller (BMC) provides out-of-band system management and monitoring",
+      "DGX OS is a customized Ubuntu Linux distribution optimized for AI workloads with pre-installed drivers and tools"
+    ],
+    "common_misconceptions": [
+      "DGX systems use consumer-grade GPUs (they use data center SXM form factor GPUs with higher bandwidth and NVLink)",
+      "Upgrading individual GPUs in a DGX system is straightforward (GPUs are tightly integrated with NVSwitch and thermal design)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-dgx-superpod", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-dgx-superpod",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "dgx-systems",
+    "topic_id": "scaling",
+    "name": "DGX SuperPOD Design",
+    "description": "Architecture and deployment of DGX SuperPOD clusters for large-scale AI training",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "DGX SuperPOD is a scalable AI infrastructure unit composed of multiple DGX nodes connected via InfiniBand fabric",
+      "A DGX H100 SuperPOD reference design starts with 32 DGX H100 nodes (256 GPUs) and scales further",
+      "InfiniBand NDR (400 Gb/s) switches provide the inter-node network fabric in SuperPOD deployments",
+      "NVIDIA Base Command Manager handles provisioning, scheduling, and management of SuperPOD resources",
+      "Shared parallel file systems like NVIDIA GPUDirect Storage and Lustre provide high-throughput data access"
+    ],
+    "common_misconceptions": [
+      "SuperPOD is a single monolithic system (it is a scalable cluster architecture built from individual DGX nodes)",
+      "Any network fabric works for SuperPOD (InfiniBand with specific topology requirements is essential for training performance)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aii-dgx-architecture"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-dgx-architecture", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-gpu-topology",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "gpu-cluster-design",
+    "topic_id": "topology",
+    "name": "GPU Cluster Topology Design",
+    "description": "Network topology patterns and GPU placement strategies for AI training clusters",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Fat-tree topology provides full bisection bandwidth and is the standard for InfiniBand AI clusters",
+      "Rail-optimized topology reduces switch cost by connecting each GPU rail to its own network rail",
+      "GPU affinity ensures that communicating GPUs are placed on nodes with optimal network proximity",
+      "Non-blocking switch fabrics ensure that any pair of ports can communicate at full bandwidth simultaneously",
+      "Multi-tier switch architectures use leaf, spine, and core switches to scale cluster size"
+    ],
+    "common_misconceptions": [
+      "Any switch topology works for AI training (suboptimal topologies create network bottlenecks that severely degrade training performance)",
+      "More switches always means better bandwidth (oversubscription ratios determine actual available bandwidth)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-network-fabric", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-power-cooling",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "gpu-cluster-design",
+    "topic_id": "facilities",
+    "name": "Power and Cooling for GPU Clusters",
+    "description": "Power delivery and thermal management strategies for high-density GPU infrastructure",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "A single DGX H100 system consumes up to 10.2 kW of power at peak load",
+      "Direct liquid cooling is recommended for high-density GPU deployments exceeding 40 kW per rack",
+      "Uninterruptible Power Supply (UPS) and backup generators protect against power failures during long training runs",
+      "Hot-aisle/cold-aisle containment improves cooling efficiency in air-cooled GPU data centers",
+      "Power distribution units (PDUs) must be rated for the high amperage demands of GPU clusters"
+    ],
+    "common_misconceptions": [
+      "Standard data center cooling handles GPU racks (GPU racks generate 2-5x more heat than traditional compute racks)",
+      "Power efficiency improves linearly with more GPUs (power overhead from cooling and networking increases non-linearly)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-gpu-topology", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-network-fabric",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "high-speed-networking",
+    "topic_id": "infiniband",
+    "name": "InfiniBand Network Fabric",
+    "description": "InfiniBand architecture, configuration, and management for AI training clusters",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "InfiniBand NDR provides 400 Gb/s per port with sub-microsecond latency",
+      "Subnet Manager (SM) configures routing tables and manages the InfiniBand fabric",
+      "NVIDIA Quantum-2 switches provide up to 64 ports of NDR InfiniBand connectivity",
+      "Adaptive routing dynamically selects paths to avoid congestion in the InfiniBand fabric",
+      "SHARP (Scalable Hierarchical Aggregation and Reduction Protocol) offloads collective operations to network switches"
+    ],
+    "common_misconceptions": [
+      "InfiniBand is just faster Ethernet (InfiniBand has fundamentally different architecture with lossless fabric and RDMA built-in)",
+      "A single subnet manager is always sufficient (large fabrics benefit from standby SMs for high availability)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-gpu-topology", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-gpudirect",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "high-speed-networking",
+    "topic_id": "data-transfer",
+    "name": "GPUDirect Technologies",
+    "description": "NVIDIA GPUDirect RDMA, Storage, and peer-to-peer technologies for efficient data movement",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "GPUDirect RDMA enables network adapters to directly read/write GPU memory without CPU involvement",
+      "GPUDirect Storage provides a direct data path between NVMe storage and GPU memory, bypassing system memory",
+      "GPUDirect Peer-to-Peer allows GPUs in the same system to directly access each other's memory over NVLink or PCIe",
+      "GPUDirect technologies reduce latency and CPU overhead for data transfers involving GPUs",
+      "NCCL uses GPUDirect RDMA for efficient inter-node collective communication during distributed training"
+    ],
+    "common_misconceptions": [
+      "GPUDirect only helps with training (it also significantly improves inference data loading and preprocessing performance)",
+      "GPUDirect RDMA works with any network adapter (it requires NVIDIA ConnectX or compatible InfiniBand/Ethernet adapters)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aii-network-fabric"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-network-fabric", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-parallel-filesystems",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "storage-data-mgmt",
+    "topic_id": "storage",
+    "name": "Parallel File Systems for AI",
+    "description": "High-performance parallel file systems and storage solutions for AI training data",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Lustre and GPFS/Spectrum Scale are widely used parallel file systems for AI training data",
+      "Parallel file systems stripe data across multiple storage servers for aggregate throughput",
+      "NVMe-oF (NVMe over Fabrics) extends NVMe performance across the network for shared storage access",
+      "Data pipeline performance depends on achieving sufficient read throughput to keep GPUs saturated",
+      "Caching layers (local NVMe, in-memory) reduce repeated reads of frequently accessed training data"
+    ],
+    "common_misconceptions": [
+      "Network-attached storage (NAS) is sufficient for AI training (NAS typically lacks the throughput needed for multi-GPU data loading)",
+      "Storage performance only matters for data loading (checkpointing during training also requires high write throughput)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-data-pipeline", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-data-pipeline",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "storage-data-mgmt",
+    "topic_id": "data-pipeline",
+    "name": "AI Data Pipeline Design",
+    "description": "Designing efficient data pipelines for feeding training data to GPU clusters",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA DALI (Data Loading Library) provides GPU-accelerated data preprocessing and augmentation pipelines",
+      "Prefetching overlaps data loading with GPU computation to hide I/O latency",
+      "Data format choices (TFRecord, WebDataset, Parquet) impact both I/O efficiency and preprocessing overhead",
+      "Multi-worker data loading parallelizes data read, decode, and transform operations across CPU cores",
+      "Object storage (S3-compatible) is commonly used for large-scale training datasets with streaming access"
+    ],
+    "common_misconceptions": [
+      "Data pipeline performance is limited by storage speed alone (CPU preprocessing and data format overhead are often the bottleneck)",
+      "GPU-accelerated data loading is only for image workloads (DALI supports tabular, audio, and video data as well)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aii-parallel-filesystems"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-parallel-filesystems", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-benchmarking",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "perf-optimization",
+    "topic_id": "benchmarking",
+    "name": "AI Infrastructure Benchmarking",
+    "description": "Tools and methodologies for benchmarking AI infrastructure performance",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "MLPerf is the industry-standard benchmark suite for measuring AI training and inference performance",
+      "NVIDIA NCCL tests measure inter-GPU and inter-node communication bandwidth and latency",
+      "GPU memory bandwidth can be benchmarked using NVIDIA's bandwidthTest and STREAM benchmarks",
+      "Training throughput is measured in samples per second or tokens per second for language models",
+      "Inference benchmarks measure latency (P50, P95, P99) and throughput under varying concurrency levels"
+    ],
+    "common_misconceptions": [
+      "Peak theoretical performance reflects real-world throughput (actual performance is typically 40-70% of theoretical peak)",
+      "A single benchmark number captures system performance (different workloads stress different components)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-profiling-tuning", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aii-profiling-tuning",
+    "exam_id": "nvidia-ncp-aii",
+    "domain_id": "perf-optimization",
+    "topic_id": "profiling",
+    "name": "Performance Profiling and Tuning",
+    "description": "Tools and techniques for profiling and optimizing AI workload performance on GPU infrastructure",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "NVIDIA Nsight Systems provides system-wide profiling of CPU, GPU, and network activity with timeline visualization",
+      "Nsight Compute provides detailed kernel-level GPU profiling including occupancy and memory throughput analysis",
+      "Common bottlenecks include CPU-GPU data transfer, memory bandwidth, kernel launch overhead, and synchronization",
+      "Mixed-precision training uses FP16 or BF16 for most operations with FP32 for critical accumulations",
+      "CUDA graph capture reduces kernel launch overhead by recording and replaying sequences of GPU operations"
+    ],
+    "common_misconceptions": [
+      "High GPU utilization means the workload is well optimized (the GPU may be busy with inefficient kernels)",
+      "Profiling is only needed during development (production workloads benefit from periodic profiling to catch regressions)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aii-benchmarking"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aii-benchmarking", "transfer_weight": 0.3}
+    ]
+  }
+]

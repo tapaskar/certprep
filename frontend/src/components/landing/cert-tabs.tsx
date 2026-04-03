@@ -7,21 +7,27 @@ import {
   awsCertifications,
   azureCertifications,
   gcpCertifications,
+  comptiaCertifications,
+  nvidiaCertifications,
 } from "@/app/page";
 import type { CertCard } from "@/app/page";
 
-type Provider = "aws" | "azure" | "gcp";
+type Provider = "aws" | "azure" | "gcp" | "comptia" | "nvidia";
 
 const providers: { key: Provider; label: string; color: string; activeColor: string }[] = [
   { key: "aws", label: "AWS", color: "text-amber-600", activeColor: "bg-amber-500 text-white" },
   { key: "azure", label: "Azure", color: "text-blue-600", activeColor: "bg-blue-500 text-white" },
   { key: "gcp", label: "Google Cloud", color: "text-green-600", activeColor: "bg-green-500 text-white" },
+  { key: "comptia", label: "CompTIA", color: "text-teal-600", activeColor: "bg-teal-500 text-white" },
+  { key: "nvidia", label: "NVIDIA", color: "text-green-600", activeColor: "bg-green-600 text-white" },
 ];
 
 const certData: Record<Provider, Record<string, CertCard[]>> = {
   aws: awsCertifications,
   azure: azureCertifications,
   gcp: gcpCertifications,
+  comptia: comptiaCertifications,
+  nvidia: nvidiaCertifications,
 };
 
 const levelColors: Record<string, string> = {
@@ -31,18 +37,25 @@ const levelColors: Record<string, string> = {
   Professional: "text-violet-600",
   Specialty: "text-red-600",
   Expert: "text-violet-600",
+  Entry: "text-sky-600",
+  Intermediate: "text-amber-600",
+  Advanced: "text-red-600",
 };
 
 const sectionTitles: Record<Provider, string> = {
   aws: "AWS Certifications",
   azure: "Microsoft Azure Certifications",
   gcp: "Google Cloud Certifications",
+  comptia: "CompTIA Certifications",
+  nvidia: "NVIDIA AI Certifications",
 };
 
 const sectionSubtitles: Record<Provider, string> = {
   aws: "From Cloud Practitioner to Professional and Specialty — 14 certifications.",
   azure: "From Azure Fundamentals to Expert — 12 certifications.",
   gcp: "From Cloud Digital Leader to Professional — 10 certifications.",
+  comptia: "From A+ to SecurityX — 9 certifications covering IT fundamentals, networking, security, and more.",
+  nvidia: "From Associate to Professional — 10 AI certifications covering GenAI, infrastructure, and operations.",
 };
 
 export function CertTabs() {
@@ -53,10 +66,10 @@ export function CertTabs() {
     <section className="mx-auto max-w-6xl px-6 pb-20">
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
-          All Cloud Certifications
+          All Certifications
         </h2>
         <p className="mt-3 text-base text-stone-500">
-          AWS, Azure, and Google Cloud — 36+ certifications in one platform.
+          AWS, Azure, Google Cloud, CompTIA, and NVIDIA — 55+ certifications in one platform.
         </p>
       </div>
 

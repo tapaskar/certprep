@@ -1,0 +1,262 @@
+[
+  {
+    "id": "nvidia-ncp-aio-cluster-provisioning",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "cluster-management",
+    "topic_id": "provisioning",
+    "name": "GPU Cluster Provisioning",
+    "description": "Setting up and configuring GPU clusters for AI workloads including hardware, OS, and software stack deployment",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA Base Command Manager automates OS provisioning, driver installation, and software stack deployment on DGX clusters",
+      "PXE boot enables network-based OS installation across many cluster nodes simultaneously",
+      "Ansible and other configuration management tools automate consistent software deployment across GPU nodes",
+      "NVIDIA GPU Operator installs and manages GPU drivers, container toolkit, and device plugins in Kubernetes",
+      "Firmware updates for GPUs, NVSwitches, and ConnectX adapters should be coordinated to maintain compatibility"
+    ],
+    "common_misconceptions": [
+      "GPU driver installation is a one-time task (drivers must be regularly updated for security patches and performance improvements)",
+      "Standard OS provisioning tools handle GPU nodes without modification (GPU-specific drivers and libraries require additional configuration)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-user-management", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-user-management",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "cluster-management",
+    "topic_id": "users",
+    "name": "Multi-Tenant User Management",
+    "description": "Managing multiple users and teams sharing GPU cluster resources",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Namespaces in Kubernetes isolate resources between different teams and projects",
+      "GPU quotas limit the maximum number of GPUs each team or user can consume",
+      "LDAP and Active Directory integration provides centralized authentication for cluster access",
+      "RBAC (Role-Based Access Control) restricts user permissions based on their role in the organization",
+      "Fair-share scheduling ensures equitable GPU access across teams based on configured priorities"
+    ],
+    "common_misconceptions": [
+      "GPU quotas guarantee GPU availability (quotas set limits but don't reserve resources; reservation requires separate mechanisms)",
+      "A single admin account is sufficient for cluster management (RBAC and per-user accounts are essential for security and accountability)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aio-cluster-provisioning"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-cluster-provisioning", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-slurm-scheduling",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "job-scheduling",
+    "topic_id": "schedulers",
+    "name": "Slurm Job Scheduling for GPU Clusters",
+    "description": "Using Slurm workload manager for scheduling and managing GPU-accelerated AI jobs",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Slurm is the most widely used job scheduler for HPC and AI GPU clusters",
+      "GRES (Generic Resources) in Slurm enables GPU-aware scheduling with --gres=gpu:N syntax",
+      "Slurm partitions organize nodes into groups with different access policies and priorities",
+      "Job arrays enable launching multiple similar training runs with different hyperparameters",
+      "Slurm's accounting system tracks GPU-hours consumed by each user and project"
+    ],
+    "common_misconceptions": [
+      "Slurm automatically optimizes GPU utilization (jobs must be correctly configured to fully use allocated GPUs)",
+      "Interactive and batch jobs compete equally for resources (partitions and QOS settings typically prioritize production workloads)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-k8s-scheduling", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-k8s-scheduling",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "job-scheduling",
+    "topic_id": "kubernetes",
+    "name": "Kubernetes GPU Scheduling",
+    "description": "GPU-aware scheduling in Kubernetes for AI training and inference workloads",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA device plugin for Kubernetes exposes GPU resources that pods can request via resource limits",
+      "NVIDIA Run:ai provides GPU orchestration with fractional GPU allocation, fairness, and queueing",
+      "Time-slicing allows multiple pods to share a single GPU by dividing GPU time between containers",
+      "MIG (Multi-Instance GPU) support in Kubernetes enables partitioning a single GPU into isolated instances for pods",
+      "Node affinity and taints/tolerations control which pods get scheduled on GPU nodes"
+    ],
+    "common_misconceptions": [
+      "Kubernetes natively understands GPU resources (the NVIDIA device plugin is required to expose GPUs as schedulable resources)",
+      "GPU time-slicing provides the same isolation as MIG (time-slicing shares GPU memory and provides no memory isolation)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aio-slurm-scheduling"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-slurm-scheduling", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-dcgm-monitoring",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "monitoring-troubleshooting",
+    "topic_id": "monitoring",
+    "name": "DCGM GPU Monitoring",
+    "description": "Comprehensive GPU monitoring and diagnostics using NVIDIA DCGM",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "DCGM provides GPU health monitoring, diagnostics, and telemetry collection for data center environments",
+      "DCGM Exporter exposes GPU metrics in Prometheus format for integration with Grafana dashboards",
+      "Key DCGM metrics include GPU utilization, memory usage, temperature, power draw, PCIe throughput, and NVLink throughput",
+      "DCGM health checks detect GPU issues including ECC errors, thermal throttling, and hardware failures",
+      "DCGM supports policy-based actions that can trigger alerts or node draining when GPU health degrades"
+    ],
+    "common_misconceptions": [
+      "nvidia-smi provides the same capabilities as DCGM (DCGM adds health diagnostics, group management, and integration with monitoring systems)",
+      "GPU memory errors always indicate hardware failure (transient single-bit ECC errors are normal and automatically corrected)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-troubleshooting", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-troubleshooting",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "monitoring-troubleshooting",
+    "topic_id": "debugging",
+    "name": "GPU Cluster Troubleshooting",
+    "description": "Diagnosing and resolving common GPU cluster issues including hardware failures, driver problems, and performance degradation",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Xid errors in the kernel log (dmesg) indicate GPU hardware or driver issues with specific error codes for each type",
+      "Double-bit ECC (uncorrectable) errors require replacing the affected GPU as data integrity is compromised",
+      "NVLink errors can cause training hangs and are diagnosed using nvidia-smi nvlink --status",
+      "GPU fallen off the bus errors typically indicate hardware failure, overheating, or power delivery issues",
+      "NCCL communication failures are often caused by InfiniBand link issues, firewall rules, or incorrect NCCL environment variables"
+    ],
+    "common_misconceptions": [
+      "All GPU errors require hardware replacement (many issues are resolved by driver updates, firmware upgrades, or configuration changes)",
+      "Training hangs are always caused by GPU issues (network problems, storage I/O, and software deadlocks are common causes)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aio-dcgm-monitoring"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-dcgm-monitoring", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-container-mgmt",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "container-orchestration",
+    "topic_id": "containers",
+    "name": "GPU Container Management",
+    "description": "Managing GPU-enabled containers for AI workloads including runtime configuration and registry management",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA Container Toolkit configures Docker and containerd to pass GPU devices into containers",
+      "NGC private registries allow organizations to host custom GPU container images securely",
+      "Container environment variables like NVIDIA_VISIBLE_DEVICES control which GPUs are accessible inside a container",
+      "Multi-stage Docker builds reduce container image size by separating build and runtime dependencies",
+      "Container health checks validate that GPUs are accessible and functional when containers start"
+    ],
+    "common_misconceptions": [
+      "GPU containers need the NVIDIA driver installed inside the container (drivers are provided by the host; only CUDA toolkit is needed in the container)",
+      "Docker alone supports GPU passthrough (the NVIDIA Container Toolkit runtime is required to expose GPU devices)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-k8s-gpu-operator", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-k8s-gpu-operator",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "container-orchestration",
+    "topic_id": "kubernetes-ops",
+    "name": "NVIDIA GPU Operator for Kubernetes",
+    "description": "Automating GPU software stack deployment and management in Kubernetes using the GPU Operator",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "GPU Operator automates deployment of NVIDIA drivers, container toolkit, device plugin, and DCGM in Kubernetes",
+      "It uses Kubernetes Operator pattern with CRDs to manage the lifecycle of GPU software components",
+      "GPU Operator supports pre-installed drivers or can install drivers as container workloads",
+      "Node Feature Discovery (NFD) automatically labels GPU nodes with hardware capabilities",
+      "GPU Operator simplifies upgrades by managing driver and toolkit versions through the ClusterPolicy CRD"
+    ],
+    "common_misconceptions": [
+      "GPU Operator replaces manual GPU management entirely (custom configurations may still require manual intervention)",
+      "GPU Operator only works with specific Kubernetes distributions (it supports standard Kubernetes, OpenShift, Rancher, and others)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aio-container-mgmt"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-container-mgmt", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-gpu-utilization",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "resource-optimization",
+    "topic_id": "efficiency",
+    "name": "GPU Utilization Optimization",
+    "description": "Strategies for maximizing GPU utilization and minimizing idle GPU time in shared clusters",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "MIG partitioning allows running multiple small workloads on a single GPU to improve utilization",
+      "GPU time-slicing enables sharing a GPU across multiple containers with round-robin scheduling",
+      "Preemptable workloads can be interrupted to make room for higher-priority jobs, improving overall utilization",
+      "Job packing strategies fill GPU gaps by scheduling smaller jobs alongside large multi-GPU jobs",
+      "Average GPU utilization across a cluster is a key metric for assessing infrastructure efficiency"
+    ],
+    "common_misconceptions": [
+      "100% GPU allocation equals 100% GPU utilization (allocated GPUs may sit idle due to I/O bottlenecks or poor workload design)",
+      "Oversubscription always improves efficiency (excessive oversubscription degrades performance for all workloads)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-cost-management", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-aio-cost-management",
+    "exam_id": "nvidia-ncp-aio",
+    "domain_id": "resource-optimization",
+    "topic_id": "cost",
+    "name": "GPU Infrastructure Cost Management",
+    "description": "Managing and optimizing the costs of GPU infrastructure for AI operations",
+    "exam_weight": 0.0400,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "GPU-hour tracking per team and project enables chargeback and cost allocation",
+      "Idle GPU detection and automated reclamation prevent wasted resources",
+      "Right-sizing GPU allocations matches job requirements to available GPU types (MIG, full GPU, multi-GPU)",
+      "Scheduled scaling powers down or reduces GPU nodes during off-peak hours",
+      "Total cost of ownership (TCO) for GPU infrastructure includes hardware, power, cooling, networking, and software licensing"
+    ],
+    "common_misconceptions": [
+      "GPU hardware cost is the dominant expense (power, cooling, and networking can exceed hardware cost over the system lifetime)",
+      "Cloud GPUs are always more expensive than on-premises (for bursty workloads, cloud GPUs can be more cost-effective)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-aio-gpu-utilization"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-aio-gpu-utilization", "transfer_weight": 0.3}
+    ]
+  }
+]

@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive, LogIn } from "lucide-react";
+import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive, LogIn, BookOpen, Zap, Target, Star, Layers, Monitor, Wifi, HardHat, Lightbulb, Palette } from "lucide-react";
 import { CertTabs } from "@/components/landing/cert-tabs";
+import { HomepageFAQ } from "@/components/landing/homepage-faq";
 
 const features = [
   {
@@ -26,6 +27,48 @@ const features = [
       "Track mastery across every domain and concept with live readiness scores and pass predictions.",
     iconBg: "bg-green-100",
     iconColor: "text-green-600",
+  },
+  {
+    icon: BookOpen,
+    title: "Exam & Learning Modes",
+    description:
+      "Switch between Learn & Practice mode for concept-first study, or Quick Quiz mode for timed exam simulation.",
+    iconBg: "bg-blue-100",
+    iconColor: "text-blue-600",
+  },
+  {
+    icon: Target,
+    title: "Free Readiness Assessment",
+    description:
+      "Take a free diagnostic quiz to identify your strengths and weaknesses before you start studying.",
+    iconBg: "bg-rose-100",
+    iconColor: "text-rose-500",
+  },
+  {
+    icon: Layers,
+    title: "Flashcards",
+    description:
+      "Review key facts and common misconceptions with flip-card flashcards for every certification concept.",
+    iconBg: "bg-cyan-100",
+    iconColor: "text-cyan-600",
+  },
+];
+
+const testimonials = [
+  {
+    quote: "I passed the AWS Solutions Architect Professional exam on my first try. The adaptive learning and mock exams made all the difference.",
+    name: "Sarah K.",
+    role: "AWS Solutions Architect Professional",
+  },
+  {
+    quote: "The spaced repetition system helped me retain complex Azure networking concepts. Passed AZ-104 with a score well above the passing threshold.",
+    name: "James R.",
+    role: "Azure Administrator",
+  },
+  {
+    quote: "SparkUpCloud's concept-first approach helped me understand why answers were correct, not just memorize them. Passed GCP Cloud Architect first attempt.",
+    name: "Priya M.",
+    role: "Google Cloud Professional Architect",
   },
 ];
 
@@ -108,13 +151,48 @@ export const gcpCertifications: Record<string, CertCard[]> = {
   ],
 };
 
+export const comptiaCertifications: Record<string, CertCard[]> = {
+  Entry: [
+    { code: "220-1201", name: "CompTIA A+ Core 1", shortName: "A+ Core 1", icon: Monitor, questions: 90, time: 90, passingPct: 75, color: "bg-green-50 text-green-700", borderColor: "hover:border-green-400" },
+    { code: "220-1202", name: "CompTIA A+ Core 2", shortName: "A+ Core 2", icon: Monitor, questions: 90, time: 90, passingPct: 75, color: "bg-green-50 text-green-700", borderColor: "hover:border-green-400" },
+  ],
+  Intermediate: [
+    { code: "N10-009", name: "CompTIA Network+", shortName: "Network+", icon: Wifi, questions: 90, time: 90, passingPct: 72, color: "bg-blue-50 text-blue-700", borderColor: "hover:border-blue-400" },
+    { code: "SY0-701", name: "CompTIA Security+", shortName: "Security+", icon: Shield, questions: 90, time: 90, passingPct: 75, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "XK0-005", name: "CompTIA Linux+", shortName: "Linux+", icon: Code, questions: 90, time: 90, passingPct: 72, color: "bg-orange-50 text-orange-700", borderColor: "hover:border-orange-400" },
+    { code: "CV0-004", name: "CompTIA Cloud+", shortName: "Cloud+", icon: Cloud, questions: 90, time: 90, passingPct: 75, color: "bg-sky-50 text-sky-700", borderColor: "hover:border-sky-400" },
+    { code: "CS0-003", name: "CompTIA CySA+", shortName: "CySA+", icon: Lock, questions: 85, time: 165, passingPct: 75, color: "bg-violet-50 text-violet-700", borderColor: "hover:border-violet-400" },
+    { code: "PT0-003", name: "CompTIA PenTest+", shortName: "PenTest+", icon: Target, questions: 85, time: 165, passingPct: 75, color: "bg-rose-50 text-rose-700", borderColor: "hover:border-rose-400" },
+  ],
+  Advanced: [
+    { code: "CAS-005", name: "CompTIA SecurityX (CASP+)", shortName: "SecurityX", icon: Shield, questions: 90, time: 165, passingPct: 75, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+  ],
+};
+
+export const nvidiaCertifications: Record<string, CertCard[]> = {
+  Associate: [
+    { code: "NCA-GENL", name: "NVIDIA Certified Associate: GenAI LLMs", shortName: "GenAI LLMs", icon: Bot, questions: 50, time: 60, passingPct: 70, color: "bg-green-50 text-green-700", borderColor: "hover:border-green-400" },
+    { code: "NCA-GENM", name: "NVIDIA Certified Associate: GenAI Multimodal", shortName: "GenAI Multimodal", icon: Palette, questions: 50, time: 60, passingPct: 70, color: "bg-violet-50 text-violet-700", borderColor: "hover:border-violet-400" },
+    { code: "NCA-AIIO", name: "NVIDIA Certified Associate: AI Infra & Ops", shortName: "AI Infra & Ops", icon: Server, questions: 50, time: 60, passingPct: 70, color: "bg-cyan-50 text-cyan-700", borderColor: "hover:border-cyan-400" },
+  ],
+  Professional: [
+    { code: "NCP-AAI", name: "NVIDIA Certified Professional: Agentic AI", shortName: "Agentic AI", icon: Bot, questions: 50, time: 120, passingPct: 70, color: "bg-green-50 text-green-700", borderColor: "hover:border-green-400" },
+    { code: "NCP-GENL", name: "NVIDIA Certified Professional: GenAI LLMs", shortName: "GenAI LLMs Pro", icon: Brain, questions: 50, time: 120, passingPct: 70, color: "bg-purple-50 text-purple-700", borderColor: "hover:border-purple-400" },
+    { code: "NCP-AII", name: "NVIDIA Certified Professional: AI Infrastructure", shortName: "AI Infrastructure", icon: Server, questions: 50, time: 120, passingPct: 70, color: "bg-blue-50 text-blue-700", borderColor: "hover:border-blue-400" },
+    { code: "NCP-ADS", name: "NVIDIA Certified Professional: Data Science", shortName: "Data Science", icon: BarChart3, questions: 50, time: 120, passingPct: 70, color: "bg-orange-50 text-orange-700", borderColor: "hover:border-orange-400" },
+    { code: "NCP-AIO", name: "NVIDIA Certified Professional: AI Operations", shortName: "AI Operations", icon: Activity, questions: 50, time: 120, passingPct: 70, color: "bg-teal-50 text-teal-700", borderColor: "hover:border-teal-400" },
+    { code: "NCP-AIN", name: "NVIDIA Certified Professional: AI Networking", shortName: "AI Networking", icon: Network, questions: 50, time: 120, passingPct: 70, color: "bg-indigo-50 text-indigo-700", borderColor: "hover:border-indigo-400" },
+    { code: "NCP-OUSD", name: "NVIDIA Certified Professional: OpenUSD Dev", shortName: "OpenUSD Dev", icon: Lightbulb, questions: 50, time: 120, passingPct: 70, color: "bg-amber-50 text-amber-700", borderColor: "hover:border-amber-400" },
+  ],
+};
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "SparkUpCloud",
   url: "https://www.sparkupcloud.com",
   description:
-    "AI-powered certification exam preparation platform for AWS, Azure, and Google Cloud certifications",
+    "AI-powered certification exam preparation platform for AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications",
   applicationCategory: "EducationalApplication",
   operatingSystem: "Web",
   offers: {
@@ -130,12 +208,55 @@ const jsonLd = {
   },
 };
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "How does SparkUpCloud's adaptive learning work?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "SparkUpCloud uses Bayesian Knowledge Tracing and a multi-armed bandit algorithm to identify your weakest concepts. Questions are selected to maximize your learning at the edge of your knowledge. As you improve, the system adapts in real time.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "What certifications are available on SparkUpCloud?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "SparkUpCloud covers 55+ certifications across AWS (14 certs), Microsoft Azure (12 certs), Google Cloud (10 certs), CompTIA (9 certs including Security+, Network+, A+), and NVIDIA AI (10 certs including Agentic AI, GenAI LLMs, and AI Infrastructure).",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Is there a free plan for SparkUpCloud?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yes. The free plan gives you access to 50% of the content for one certification exam, up to 10 practice questions per day, basic progress tracking, and a free readiness assessment. You can upgrade at any time to unlock full access.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How is SparkUpCloud different from other exam prep platforms?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "SparkUpCloud combines concept-first learning with AI-powered question selection and spaced repetition. Instead of just drilling questions, you learn the underlying concepts first, then practice. The system tracks mastery at the concept level and schedules reviews at optimal intervals based on cognitive science research.",
+      },
+    },
+  ],
+};
+
 export default function LandingPage() {
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
       {/* Navigation Header */}
@@ -149,8 +270,20 @@ export default function LandingPage() {
             </span>
           </Link>
 
-          {/* Auth Actions */}
+          {/* Nav Links + Auth Actions */}
           <div className="flex items-center gap-3">
+            <Link
+              href="/blog"
+              className="hidden sm:inline text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors"
+            >
+              Blog
+            </Link>
+            <Link
+              href="/pricing"
+              className="hidden sm:inline text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors"
+            >
+              Pricing
+            </Link>
             <Link
               href="/login"
               className="inline-flex items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 shadow-sm transition-all hover:border-amber-400 hover:text-amber-600 hover:shadow-md"
@@ -180,7 +313,7 @@ export default function LandingPage() {
           Exam
         </h1>
         <p className="mt-8 max-w-xl text-lg leading-8 text-stone-600">
-          AI-powered adaptive learning for AWS, Azure, and Google Cloud certifications.
+          AI-powered adaptive learning for AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications.
           Concept tutorials, practice questions, and hands-on labs — all in one place.
         </p>
         <div className="mt-10 flex flex-col items-center gap-3">
@@ -198,7 +331,7 @@ export default function LandingPage() {
           </Link>
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-stone-500 sm:gap-6">
-          <span>36+ Certifications</span>
+          <span>55+ Certifications</span>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
           <span>500+ Questions</span>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
@@ -238,6 +371,45 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* Testimonials */}
+      <section className="mx-auto max-w-5xl px-6 pb-24">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+            Trusted by Certified Professionals
+          </h2>
+          <p className="mt-3 text-base text-stone-500">
+            See what our users say about their certification journey.
+          </p>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-3">
+          {testimonials.map((t) => (
+            <div
+              key={t.name}
+              className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm"
+            >
+              <div className="flex gap-1 mb-4">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star
+                    key={s}
+                    className="h-4 w-4 fill-amber-400 text-amber-400"
+                  />
+                ))}
+              </div>
+              <p className="text-sm italic leading-relaxed text-stone-600">
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <div className="mt-4 border-t border-stone-100 pt-4">
+                <p className="text-sm font-bold text-stone-900">{t.name}</p>
+                <p className="text-xs text-stone-400">{t.role}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <HomepageFAQ />
 
       {/* CTA Banner */}
       <section className="mx-auto max-w-4xl px-6 pb-16">
@@ -279,6 +451,12 @@ export default function LandingPage() {
             Trusted by professionals preparing for cloud certifications worldwide
           </p>
           <div className="flex items-center gap-6 text-sm font-medium">
+            <Link href="/blog" className="text-stone-500 transition-colors hover:text-amber-600">
+              Blog
+            </Link>
+            <Link href="/pricing" className="text-stone-500 transition-colors hover:text-amber-600">
+              Pricing
+            </Link>
             <Link href="/login" className="text-stone-500 transition-colors hover:text-amber-600">
               Log In
             </Link>

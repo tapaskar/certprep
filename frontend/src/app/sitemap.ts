@@ -1,24 +1,15 @@
 import { MetadataRoute } from "next";
+import { blogPosts } from "@/lib/blog-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.sparkupcloud.com";
 
-  const certifications = [
-    { code: "clf-c02", name: "cloud-practitioner" },
-    { code: "aif-c01", name: "ai-practitioner" },
-    { code: "saa-c03", name: "solutions-architect-associate" },
-    { code: "dva-c02", name: "developer-associate" },
-    { code: "soa-c02", name: "sysops-administrator" },
-    { code: "dea-c01", name: "data-engineer" },
-    { code: "mla-c01", name: "ml-engineer" },
-    { code: "sap-c02", name: "solutions-architect-professional" },
-    { code: "dop-c02", name: "devops-engineer-professional" },
-    { code: "aip-c01", name: "genai-developer-professional" },
-    { code: "scs-c02", name: "security-specialty" },
-    { code: "dbs-c01", name: "database-specialty" },
-    { code: "ans-c01", name: "advanced-networking-specialty" },
-    { code: "mls-c01", name: "machine-learning-specialty" },
-  ];
+  const blogUrls: MetadataRoute.Sitemap = blogPosts.map((post) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
 
   return [
     {
@@ -33,6 +24,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    ...blogUrls,
     {
       url: `${baseUrl}/register`,
       lastModified: new Date(),

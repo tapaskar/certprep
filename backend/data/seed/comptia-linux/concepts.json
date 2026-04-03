@@ -1,0 +1,263 @@
+[
+  {
+    "id": "comptia-linux-file-system",
+    "exam_id": "comptia-linux",
+    "domain_id": "system-management",
+    "topic_id": "filesystem",
+    "name": "Linux File System Hierarchy",
+    "description": "Linux directory structure, file system types, and mounting concepts",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "FHS root directories: /etc (configuration), /var (variable data/logs), /home (user dirs), /tmp (temporary)",
+      "/bin and /sbin contain essential system binaries; /usr/bin contains user programs",
+      "Common file systems: ext4 (default), XFS (high performance), Btrfs (snapshots/checksums)",
+      "mount command attaches a file system to a directory; /etc/fstab defines persistent mounts",
+      "Inodes store file metadata (permissions, owner, timestamps) but not the filename"
+    ],
+    "common_misconceptions": [
+      "Deleting files from /tmp is always safe (running processes may have open handles to temp files)",
+      "Linux has drive letters like Windows (Linux uses a single root hierarchy with mount points)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-permissions", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "comptia-linux-permissions",
+    "exam_id": "comptia-linux",
+    "domain_id": "system-management",
+    "topic_id": "access-control",
+    "name": "File Permissions and Ownership",
+    "description": "Linux file permissions, ownership, special permissions, and ACLs",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Permission notation: rwx (read=4, write=2, execute=1) for owner, group, others",
+      "chmod changes permissions (chmod 755 file); chown changes ownership (chown user:group file)",
+      "SUID (4xxx) runs a file as the file owner; SGID (2xxx) runs as the group owner or inherits group on directories",
+      "Sticky bit (1xxx) on a directory prevents users from deleting files they do not own (e.g., /tmp)",
+      "ACLs (setfacl/getfacl) provide fine-grained permissions beyond the standard owner/group/others model"
+    ],
+    "common_misconceptions": [
+      "Root is subject to file permissions (root can read/write any file regardless of permissions)",
+      "chmod 777 is a quick fix (it creates a serious security vulnerability by granting everyone full access)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["comptia-linux-file-system"],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-file-system", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "comptia-linux-process-mgmt",
+    "exam_id": "comptia-linux",
+    "domain_id": "system-management",
+    "topic_id": "processes",
+    "name": "Process and Service Management",
+    "description": "Managing processes, services, and system resources in Linux",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "systemd is the default init system on modern Linux; systemctl manages services",
+      "ps aux lists all running processes; top/htop show real-time system resource usage",
+      "kill sends signals to processes: SIGTERM (15) for graceful shutdown, SIGKILL (9) for forced termination",
+      "nice and renice set process priority; lower values mean higher priority (range -20 to 19)",
+      "Background processes: command & runs in background; nohup keeps it running after logout"
+    ],
+    "common_misconceptions": [
+      "kill always terminates a process (kill sends SIGTERM by default, which can be caught and ignored; kill -9 forces termination)",
+      "All processes are visible to all users (process visibility depends on kernel configuration and namespaces)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-file-system", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "comptia-linux-package-mgmt",
+    "exam_id": "comptia-linux",
+    "domain_id": "system-management",
+    "topic_id": "software",
+    "name": "Package Management",
+    "description": "Installing, updating, and managing software packages on different Linux distributions",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "Debian/Ubuntu: apt (apt-get, apt-cache) uses .deb packages; dpkg for local package management",
+      "RHEL/Fedora: dnf (replaces yum) uses .rpm packages; rpm for local package management",
+      "Repositories are configured in /etc/apt/sources.list (Debian) or /etc/yum.repos.d/ (RHEL)",
+      "apt update refreshes package lists; apt upgrade installs available updates",
+      "Dependency resolution is handled automatically by apt and dnf"
+    ],
+    "common_misconceptions": [
+      "apt and yum packages are interchangeable (.deb and .rpm are different formats for different distributions)",
+      "apt update installs updates (apt update only refreshes the package list; apt upgrade installs them)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-process-mgmt", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "comptia-linux-user-mgmt",
+    "exam_id": "comptia-linux",
+    "domain_id": "security",
+    "topic_id": "users",
+    "name": "User and Group Management",
+    "description": "Creating and managing user accounts, groups, and authentication in Linux",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "useradd creates users; usermod modifies users; userdel removes users",
+      "/etc/passwd stores user account info; /etc/shadow stores hashed passwords",
+      "UID 0 is root; UIDs 1-999 are typically system accounts; 1000+ are regular users",
+      "sudo grants temporary elevated privileges; /etc/sudoers configured with visudo",
+      "PAM (Pluggable Authentication Modules) provides a flexible authentication framework"
+    ],
+    "common_misconceptions": [
+      "Users should log in as root for administrative tasks (sudo provides controlled elevated access without exposing the root password)",
+      "/etc/passwd contains passwords (passwords are stored as hashes in /etc/shadow)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["comptia-linux-permissions"],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-permissions", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "comptia-linux-firewall-security",
+    "exam_id": "comptia-linux",
+    "domain_id": "security",
+    "topic_id": "network-security",
+    "name": "Linux Firewalls and Security Hardening",
+    "description": "Firewall configuration, SELinux/AppArmor, and system hardening practices",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "iptables and nftables filter network traffic using chains: INPUT, OUTPUT, FORWARD",
+      "firewalld provides a dynamic frontend with zones and services for easier management",
+      "SELinux uses mandatory access control with contexts (enforcing, permissive, disabled modes)",
+      "AppArmor uses path-based mandatory access control profiles",
+      "SSH hardening: disable root login, use key-based authentication, change default port, use fail2ban"
+    ],
+    "common_misconceptions": [
+      "Disabling SELinux fixes permission problems (it removes a security layer; the correct approach is to configure proper contexts)",
+      "Firewalls are unnecessary on internal servers (defense in depth requires firewalls on all systems)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-user-mgmt", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "comptia-linux-shell-scripting",
+    "exam_id": "comptia-linux",
+    "domain_id": "scripting-automation",
+    "topic_id": "scripting",
+    "name": "Shell Scripting Basics",
+    "description": "Bash scripting fundamentals including variables, loops, conditionals, and common utilities",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Shebang line (#!/bin/bash) specifies the interpreter for the script",
+      "Variables: VAR=value (no spaces); accessed with $VAR or ${VAR}",
+      "Control structures: if/then/fi, for/do/done, while/do/done, case/esac",
+      "Exit codes: 0 means success; non-zero means failure; $? holds the last exit code",
+      "Common text processing: grep (search), sed (stream edit), awk (pattern processing), cut (extract columns)"
+    ],
+    "common_misconceptions": [
+      "Shell scripts are always slower than compiled programs (for system administration tasks, shell scripts are often the most efficient tool)",
+      "Spaces around the = in variable assignment are fine (VAR = value causes an error; it must be VAR=value)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-containers", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "comptia-linux-containers",
+    "exam_id": "comptia-linux",
+    "domain_id": "scripting-automation",
+    "topic_id": "containers",
+    "name": "Containers and Orchestration",
+    "description": "Container concepts, Docker basics, and container orchestration with Kubernetes",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Containers share the host OS kernel, making them lighter than VMs",
+      "Docker images are built from Dockerfiles and stored in registries",
+      "docker run creates and starts a container; docker ps lists running containers",
+      "Kubernetes orchestrates container deployment, scaling, and management across clusters",
+      "Podman is a daemonless alternative to Docker that can run rootless containers"
+    ],
+    "common_misconceptions": [
+      "Containers are small VMs (containers share the host kernel and do not run a separate OS)",
+      "Docker and Kubernetes compete (Docker creates containers; Kubernetes orchestrates them)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-shell-scripting", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "comptia-linux-log-analysis",
+    "exam_id": "comptia-linux",
+    "domain_id": "troubleshooting",
+    "topic_id": "logging",
+    "name": "Log Management and Analysis",
+    "description": "System logging, journal management, and log analysis for troubleshooting",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "journalctl queries the systemd journal; journalctl -u sshd shows logs for a specific service",
+      "Traditional log files are stored in /var/log: syslog, messages, auth.log, kern.log",
+      "rsyslog and syslog-ng collect and forward log messages; configuration in /etc/rsyslog.conf",
+      "Log rotation (logrotate) manages log file sizes with compression and deletion policies",
+      "dmesg shows kernel ring buffer messages, useful for hardware and boot-time troubleshooting"
+    ],
+    "common_misconceptions": [
+      "All logs are in /var/log (applications may log to custom locations; systemd journal stores binary logs)",
+      "journald replaces rsyslog completely (both can coexist and complement each other)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-process-mgmt", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "comptia-linux-storage-troubleshooting",
+    "exam_id": "comptia-linux",
+    "domain_id": "troubleshooting",
+    "topic_id": "storage",
+    "name": "Storage and Network Troubleshooting",
+    "description": "Diagnosing disk, LVM, RAID, and network connectivity issues in Linux",
+    "exam_weight": 0.0600,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "df -h shows file system disk space usage; du -sh shows directory sizes",
+      "LVM (Logical Volume Manager) allows dynamic resizing of partitions: PV, VG, LV layers",
+      "fsck checks and repairs file system errors (must be run on unmounted file systems)",
+      "ss (replaces netstat) shows socket statistics; ss -tlnp lists listening TCP ports",
+      "ip command replaces ifconfig: ip addr show, ip route show, ip link set"
+    ],
+    "common_misconceptions": [
+      "Running fsck on a mounted file system is safe (it can corrupt data; unmount first or boot into rescue mode)",
+      "ifconfig is still the standard tool (ip command is the modern replacement on all current distributions)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "comptia-linux-log-analysis", "transfer_weight": 0.2},
+      {"concept_id": "comptia-linux-file-system", "transfer_weight": 0.25}
+    ]
+  }
+]

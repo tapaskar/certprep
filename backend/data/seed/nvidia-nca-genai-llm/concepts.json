@@ -1,0 +1,264 @@
+[
+  {
+    "id": "nvidia-nca-genl-transformer-arch",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "llm-fundamentals",
+    "topic_id": "architecture",
+    "name": "Transformer Architecture",
+    "description": "Core transformer architecture including self-attention, positional encoding, and encoder-decoder structures used in LLMs",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "Transformers use self-attention mechanisms to weigh the importance of different tokens in a sequence",
+      "Positional encodings are added to input embeddings since transformers have no inherent sense of token order",
+      "Decoder-only architectures (like GPT) generate text autoregressively, predicting one token at a time",
+      "Multi-head attention allows the model to attend to information from different representation subspaces simultaneously",
+      "Layer normalization and residual connections stabilize training in deep transformer networks"
+    ],
+    "common_misconceptions": [
+      "Transformers process tokens sequentially like RNNs (they process all tokens in parallel during training)",
+      "More attention heads always means better performance (there are diminishing returns and computational trade-offs)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-tokenization", "transfer_weight": 0.3},
+      {"concept_id": "nvidia-nca-genl-pretraining", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-tokenization",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "llm-fundamentals",
+    "topic_id": "data-processing",
+    "name": "Tokenization and Embeddings",
+    "description": "Methods for converting text into numerical representations for LLM processing",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "Byte Pair Encoding (BPE) iteratively merges the most frequent pairs of characters or subwords to build a vocabulary",
+      "SentencePiece is a language-independent tokenizer used by many LLMs including LLaMA and T5",
+      "Token embeddings map discrete tokens to dense continuous vector representations",
+      "Vocabulary size affects model size, training speed, and ability to handle rare words",
+      "WordPiece tokenization is used by BERT and splits unknown words into known subword units"
+    ],
+    "common_misconceptions": [
+      "Each word always corresponds to exactly one token (common words may be one token, but many words are split into multiple subword tokens)",
+      "Larger vocabularies are always better (they increase embedding table size and can reduce training efficiency)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-transformer-arch", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-pretraining",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "llm-fundamentals",
+    "topic_id": "training",
+    "name": "LLM Pre-training",
+    "description": "Pre-training objectives, data requirements, and scaling laws for large language models",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Causal language modeling (next-token prediction) is the primary pre-training objective for decoder-only models",
+      "Masked language modeling (MLM) is used by encoder models like BERT to predict randomly masked tokens",
+      "Scaling laws show predictable relationships between model size, dataset size, compute, and loss",
+      "Pre-training typically requires large diverse text corpora spanning web data, books, and code",
+      "NVIDIA NeMo Framework provides tools for large-scale LLM pre-training on multi-GPU and multi-node setups"
+    ],
+    "common_misconceptions": [
+      "Pre-training teaches a model specific tasks (it learns general language patterns; task-specific behavior comes from fine-tuning or prompting)",
+      "Larger models always perform better (performance depends on training data quality and compute budget, not just parameter count)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-genl-transformer-arch"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-transformer-arch", "transfer_weight": 0.25},
+      {"concept_id": "nvidia-nca-genl-lora-peft", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-prompt-basics",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "prompt-engineering",
+    "topic_id": "prompting-techniques",
+    "name": "Prompt Engineering Fundamentals",
+    "description": "Core techniques for crafting effective prompts including zero-shot, few-shot, and chain-of-thought prompting",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "Zero-shot prompting provides only a task description without examples",
+      "Few-shot prompting includes example input-output pairs to guide the model's response format",
+      "Chain-of-thought (CoT) prompting encourages step-by-step reasoning for complex tasks",
+      "System prompts set the overall behavior and persona for chat-based LLMs",
+      "Temperature controls randomness in token selection: lower values produce more deterministic outputs"
+    ],
+    "common_misconceptions": [
+      "More examples in few-shot prompts always improve results (too many examples can exceed context length and introduce noise)",
+      "Prompt engineering is not needed for large models (even the largest models benefit significantly from well-crafted prompts)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-advanced-prompting", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-advanced-prompting",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "prompt-engineering",
+    "topic_id": "prompting-techniques",
+    "name": "Advanced Prompting Strategies",
+    "description": "Advanced prompting methods including structured output, self-consistency, and prompt chaining",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Self-consistency generates multiple reasoning paths and selects the most common answer",
+      "Prompt chaining breaks complex tasks into sequential subtasks with intermediate outputs",
+      "Structured output formatting (JSON, XML) can be enforced through careful prompt design",
+      "ReAct prompting combines reasoning traces with action steps for tool-using agents",
+      "Top-k and top-p (nucleus) sampling control the diversity of generated outputs"
+    ],
+    "common_misconceptions": [
+      "Self-consistency requires a single correct reasoning path (it works by sampling multiple paths and taking majority vote)",
+      "Structured output prompts guarantee valid JSON (output parsing and validation are still needed)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-genl-prompt-basics"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-prompt-basics", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-rag-fundamentals",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "rag-pipelines",
+    "topic_id": "retrieval",
+    "name": "RAG Pipeline Fundamentals",
+    "description": "Core concepts of Retrieval-Augmented Generation including document chunking, embedding, retrieval, and generation",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "RAG combines information retrieval with text generation to ground LLM responses in external knowledge",
+      "Documents are split into chunks, embedded into vectors, and stored in a vector database for similarity search",
+      "Cosine similarity and dot product are common metrics for matching query embeddings to document embeddings",
+      "NVIDIA NeMo Retriever provides optimized embedding and retrieval microservices for RAG",
+      "Chunk size and overlap significantly affect retrieval quality and generation accuracy"
+    ],
+    "common_misconceptions": [
+      "RAG eliminates all hallucinations (it reduces them but the model can still generate inaccurate information from retrieved context)",
+      "Larger chunks always provide better context (overly large chunks dilute relevant information and can exceed context limits)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-vector-databases", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-vector-databases",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "rag-pipelines",
+    "topic_id": "storage",
+    "name": "Vector Databases and Embedding Models",
+    "description": "Vector storage solutions and embedding models used in RAG pipelines",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Vector databases like Milvus, FAISS, and Pinecone store high-dimensional embeddings for fast similarity search",
+      "Approximate Nearest Neighbor (ANN) algorithms like HNSW and IVF trade exactness for speed",
+      "Embedding models convert text into fixed-size dense vectors that capture semantic meaning",
+      "NVIDIA NeMo Retriever Embedding provides GPU-accelerated embedding generation",
+      "Hybrid search combines dense vector retrieval with sparse keyword matching (BM25) for better results"
+    ],
+    "common_misconceptions": [
+      "All embedding models produce vectors of the same dimension (dimensions vary by model, e.g., 384, 768, 1024)",
+      "Vector databases are just regular databases with a vector column (they use specialized indexing algorithms optimized for similarity search)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-genl-rag-fundamentals"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-rag-fundamentals", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-lora-peft",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "fine-tuning",
+    "topic_id": "efficient-finetuning",
+    "name": "LoRA and Parameter-Efficient Fine-tuning",
+    "description": "Parameter-efficient fine-tuning methods including LoRA, QLoRA, and adapter-based approaches",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "LoRA (Low-Rank Adaptation) adds small trainable rank-decomposition matrices to frozen pre-trained weights",
+      "QLoRA combines 4-bit quantization of the base model with LoRA for memory-efficient fine-tuning",
+      "PEFT methods train less than 1% of total parameters while achieving results close to full fine-tuning",
+      "Adapter layers insert small neural network modules between existing transformer layers",
+      "NVIDIA NeMo Framework supports LoRA, P-tuning, and adapter-based fine-tuning for LLMs"
+    ],
+    "common_misconceptions": [
+      "LoRA changes the original model weights (it freezes them and adds separate low-rank matrices)",
+      "PEFT always matches full fine-tuning quality (for some tasks, full fine-tuning still outperforms PEFT methods)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-genl-pretraining"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-pretraining", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-trt-llm",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "deployment-inference",
+    "topic_id": "optimization",
+    "name": "TensorRT-LLM and Inference Optimization",
+    "description": "NVIDIA TensorRT-LLM for optimizing LLM inference performance on GPUs",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "TensorRT-LLM compiles and optimizes LLM models for high-performance GPU inference",
+      "In-flight batching (continuous batching) processes new requests without waiting for an entire batch to complete",
+      "KV cache optimization reduces redundant computation by caching key-value pairs from previous tokens",
+      "Quantization (FP8, INT8, INT4) reduces model memory footprint and increases inference throughput",
+      "Tensor parallelism splits model layers across multiple GPUs for serving large models"
+    ],
+    "common_misconceptions": [
+      "Quantization always significantly degrades model quality (modern quantization techniques like FP8 preserve most accuracy)",
+      "TensorRT-LLM only works with NVIDIA proprietary models (it supports open-source models like LLaMA, Mistral, and GPT-J)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-nim-triton", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-nca-genl-nim-triton",
+    "exam_id": "nvidia-nca-genl",
+    "domain_id": "deployment-inference",
+    "topic_id": "serving",
+    "name": "NVIDIA NIM and Triton Inference Server",
+    "description": "NVIDIA inference microservices and Triton Inference Server for deploying LLMs in production",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA NIM (NVIDIA Inference Microservices) provides pre-built optimized containers for deploying AI models",
+      "Triton Inference Server supports multiple frameworks (TensorRT, PyTorch, ONNX, TensorFlow) simultaneously",
+      "Triton supports dynamic batching, model ensembles, and concurrent model execution",
+      "NIM containers include TensorRT-LLM optimization and expose OpenAI-compatible API endpoints",
+      "Model repositories in Triton organize model artifacts with versioning and configuration"
+    ],
+    "common_misconceptions": [
+      "NIM is only for cloud deployment (NIM containers can run on-premises, in the cloud, or at the edge)",
+      "Triton only serves one model at a time (it can serve multiple models concurrently with dynamic resource allocation)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-genl-trt-llm"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-genl-trt-llm", "transfer_weight": 0.35}
+    ]
+  }
+]

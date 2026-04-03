@@ -8,6 +8,7 @@ import {
   BarChart3,
   Settings,
   GraduationCap,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProgressStore } from "@/stores/progress-store";
@@ -15,6 +16,7 @@ import { useProgressStore } from "@/stores/progress-store";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/study", label: "Study", icon: BookOpen },
+  { href: "/flashcards", label: "Flashcards", icon: Layers },
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

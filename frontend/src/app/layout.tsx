@@ -13,12 +13,18 @@ export const metadata: Metadata = {
     template: "%s | SparkUpCloud",
   },
   description:
-    "Master 36+ AWS, Azure, and Google Cloud certifications with AI-powered adaptive learning, spaced repetition, concept tutorials, practice questions, video lessons, and hands-on labs. 85% pass rate.",
+    "Master 55+ AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications with AI-powered adaptive learning, spaced repetition, concept tutorials, practice questions, video lessons, and hands-on labs. 85% pass rate.",
   keywords: [
     "AWS certification",
     "Azure certification",
     "Google Cloud certification",
     "GCP certification",
+    "CompTIA certification",
+    "CompTIA Security+",
+    "CompTIA A+",
+    "CompTIA Network+",
+    "NVIDIA certification",
+    "NVIDIA AI certification",
     "cloud certification",
     "exam prep",
     "AWS Solutions Architect",
@@ -27,12 +33,14 @@ export const metadata: Metadata = {
     "practice questions",
     "study guide",
     "AI learning",
+    "flashcards",
+    "spaced repetition",
   ],
   metadataBase: new URL("https://www.sparkupcloud.com"),
   openGraph: {
     title: "SparkUpCloud — Master Your Cloud Certification",
     description:
-      "AI-powered exam prep for 36+ AWS, Azure, and Google Cloud certifications. Adaptive learning, practice questions, video tutorials, and hands-on labs.",
+      "AI-powered exam prep for 55+ AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications. Adaptive learning, practice questions, flashcards, and hands-on labs.",
     url: "https://www.sparkupcloud.com",
     siteName: "SparkUpCloud",
     type: "website",
@@ -42,7 +50,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SparkUpCloud — AI-Powered Cloud Certification Prep",
     description:
-      "Master 36+ AWS, Azure, and Google Cloud certifications with adaptive learning and practice questions.",
+      "Master 55+ AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications with adaptive learning and practice questions.",
   },
   robots: {
     index: true,
@@ -57,6 +65,7 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "Yie--gyH-JTjcM1URDOUskfB1ndrn0Z2LIYQuSy4mIU",
+    other: { "msvalidate.01": "C2229EE7DEBC7B1A894243C9CD44EC27" },
   },
   alternates: {
     canonical: "https://www.sparkupcloud.com",

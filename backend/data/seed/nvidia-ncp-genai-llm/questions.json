@@ -1,0 +1,562 @@
+[
+  {
+    "id": "q-nvidia-ncp-genl-001",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "advanced-llm-arch",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "What is the primary advantage of Grouped-Query Attention (GQA) over standard Multi-Head Attention (MHA)?",
+    "options": [
+      {"id": "A", "text": "GQA uses more parameters for better accuracy", "is_correct": false},
+      {"id": "B", "text": "GQA reduces KV cache memory by sharing key-value heads across groups of query heads", "is_correct": true},
+      {"id": "C", "text": "GQA eliminates the need for attention mechanisms entirely", "is_correct": false},
+      {"id": "D", "text": "GQA only works with encoder models", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GQA groups query heads to share a smaller number of key-value heads, significantly reducing KV cache memory during inference while achieving near-MHA quality. This is a key optimization for serving large models.",
+      "why_not_A": "GQA uses fewer KV parameters than MHA, not more. The benefit is efficiency, not increased capacity.",
+      "why_not_C": "GQA is a variant of attention, not a replacement for it.",
+      "why_not_D": "GQA is widely used in decoder-only models like LLaMA 2 and Mistral."
+    },
+    "concept_ids": ["nvidia-ncp-genl-attention-mechanisms"],
+    "tags": ["gqa", "attention", "kv-cache"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-002",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "advanced-llm-arch",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What does FlashAttention optimize without changing the mathematical result of attention?",
+    "options": [
+      {"id": "A", "text": "The number of attention heads", "is_correct": false},
+      {"id": "B", "text": "Memory access patterns by tiling computation to avoid materializing the full attention matrix", "is_correct": true},
+      {"id": "C", "text": "The vocabulary size of the model", "is_correct": false},
+      {"id": "D", "text": "The training data preprocessing pipeline", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "FlashAttention computes exact attention using tiling and recomputation strategies that minimize GPU HBM reads and writes. It avoids materializing the full N x N attention matrix in GPU memory, achieving significant speedups and memory savings.",
+      "why_not_A": "FlashAttention does not change the number of attention heads. It optimizes how attention is computed.",
+      "why_not_C": "Vocabulary size is a model architecture decision unrelated to attention computation optimization.",
+      "why_not_D": "FlashAttention optimizes GPU memory access during attention computation, not data preprocessing."
+    },
+    "concept_ids": ["nvidia-ncp-genl-attention-mechanisms"],
+    "tags": ["flash-attention", "memory-optimization"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-003",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "advanced-llm-arch",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "In Mixture of Experts (MoE) models, what happens when a token is processed?",
+    "options": [
+      {"id": "A", "text": "All expert networks process every token", "is_correct": false},
+      {"id": "B", "text": "A router selects a subset of experts to process each token, reducing compute per token", "is_correct": true},
+      {"id": "C", "text": "Tokens are duplicated across all experts", "is_correct": false},
+      {"id": "D", "text": "The smallest expert always processes the token", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In MoE, a gating/routing network selects a small subset of expert FFN layers (typically 1-2 out of many) for each token. This allows the model to have many parameters while only activating a fraction per token.",
+      "why_not_A": "The key efficiency gain of MoE is that NOT all experts activate for every token. Only selected experts process each token.",
+      "why_not_C": "Tokens are routed to selected experts, not duplicated across all of them.",
+      "why_not_D": "Expert selection is based on learned routing weights, not expert size."
+    },
+    "concept_ids": ["nvidia-ncp-genl-scaling-architectures"],
+    "tags": ["moe", "mixture-of-experts"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-004",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "What is the key difference between data parallelism and tensor parallelism in distributed training?",
+    "options": [
+      {"id": "A", "text": "Data parallelism uses more GPUs than tensor parallelism", "is_correct": false},
+      {"id": "B", "text": "Data parallelism replicates the model and splits data, while tensor parallelism splits individual layer computations across GPUs", "is_correct": true},
+      {"id": "C", "text": "Tensor parallelism only works with CPUs", "is_correct": false},
+      {"id": "D", "text": "Data parallelism requires no communication between GPUs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Data parallelism replicates the entire model on each GPU and distributes training data across replicas, synchronizing gradients. Tensor parallelism splits individual layer operations (like attention heads or FFN columns) across GPUs within a node.",
+      "why_not_A": "Both strategies can use any number of GPUs. The difference is in what gets distributed.",
+      "why_not_C": "Tensor parallelism is specifically designed for GPUs with fast interconnects like NVLink.",
+      "why_not_D": "Data parallelism requires gradient synchronization (AllReduce) across all replicas."
+    },
+    "concept_ids": ["nvidia-ncp-genl-distributed-training"],
+    "tags": ["data-parallelism", "tensor-parallelism", "distributed"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-005",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What does DPO (Direct Preference Optimization) eliminate compared to RLHF?",
+    "options": [
+      {"id": "A", "text": "The need for human preference data", "is_correct": false},
+      {"id": "B", "text": "The separate reward model, by directly optimizing on preference pairs", "is_correct": true},
+      {"id": "C", "text": "The need for a pre-trained language model", "is_correct": false},
+      {"id": "D", "text": "All fine-tuning computation", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DPO reformulates the RLHF objective to directly optimize the language model on preference pairs without training a separate reward model, simplifying the alignment pipeline while achieving comparable results.",
+      "why_not_A": "DPO still requires human preference data (chosen vs. rejected response pairs). It eliminates the reward model, not the data.",
+      "why_not_C": "DPO fine-tunes an existing pre-trained model. It cannot work without one.",
+      "why_not_D": "DPO is itself a fine-tuning process that requires computation."
+    },
+    "concept_ids": ["nvidia-ncp-genl-sft-rlhf"],
+    "tags": ["dpo", "alignment", "rlhf"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-006",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What tool does NVIDIA provide for GPU-accelerated training data curation including filtering, deduplication, and quality scoring?",
+    "options": [
+      {"id": "A", "text": "NVIDIA DALI", "is_correct": false},
+      {"id": "B", "text": "NVIDIA NeMo Curator", "is_correct": true},
+      {"id": "C", "text": "NVIDIA TensorRT", "is_correct": false},
+      {"id": "D", "text": "NVIDIA Nsight", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA NeMo Curator provides GPU-accelerated data curation tools for large-scale text datasets, including exact and fuzzy deduplication, quality filtering, language identification, and PII redaction.",
+      "why_not_A": "DALI is a data loading and augmentation library for training pipelines, not a text data curation tool.",
+      "why_not_C": "TensorRT is an inference optimization toolkit, not a data curation tool.",
+      "why_not_D": "Nsight provides GPU profiling and debugging tools, not data curation capabilities."
+    },
+    "concept_ids": ["nvidia-ncp-genl-data-curation"],
+    "tags": ["nemo-curator", "data-curation"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-007",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "inference-optimization",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "What is the key advantage of FP8 quantization on NVIDIA Hopper GPUs?",
+    "options": [
+      {"id": "A", "text": "It doubles the model's parameter count", "is_correct": false},
+      {"id": "B", "text": "It provides near-FP16 accuracy with approximately 2x throughput improvement", "is_correct": true},
+      {"id": "C", "text": "It eliminates the need for GPUs", "is_correct": false},
+      {"id": "D", "text": "It only works with models under 1 billion parameters", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "FP8 quantization on Hopper's Transformer Engine reduces memory per weight from 16 bits to 8 bits while the hardware maintains accuracy through automatic mixed-precision management, resulting in roughly 2x throughput improvement.",
+      "why_not_A": "FP8 reduces the memory per parameter, it does not change the number of parameters.",
+      "why_not_C": "FP8 is a GPU-specific optimization utilizing Hopper's Tensor Core hardware.",
+      "why_not_D": "FP8 works with models of any size and is particularly beneficial for large models."
+    },
+    "concept_ids": ["nvidia-ncp-genl-quantization"],
+    "tags": ["fp8", "quantization", "hopper"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-008",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "inference-optimization",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What does PagedAttention solve in LLM serving?",
+    "options": [
+      {"id": "A", "text": "Model training convergence", "is_correct": false},
+      {"id": "B", "text": "KV cache memory fragmentation by managing cache in non-contiguous pages", "is_correct": true},
+      {"id": "C", "text": "Tokenizer vocabulary expansion", "is_correct": false},
+      {"id": "D", "text": "Network bandwidth bottlenecks", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PagedAttention manages KV cache memory in non-contiguous memory pages (similar to OS virtual memory), eliminating memory waste from internal fragmentation that occurs when pre-allocating contiguous memory blocks for variable-length sequences.",
+      "why_not_A": "PagedAttention is an inference optimization, not a training technique.",
+      "why_not_C": "Tokenizer vocabulary is fixed during model development. PagedAttention addresses runtime memory management.",
+      "why_not_D": "PagedAttention optimizes GPU memory usage, not network bandwidth."
+    },
+    "concept_ids": ["nvidia-ncp-genl-serving-optimization"],
+    "tags": ["paged-attention", "kv-cache", "memory"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-009",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "inference-optimization",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "How does speculative decoding accelerate LLM inference?",
+    "options": [
+      {"id": "A", "text": "By using a larger model for faster generation", "is_correct": false},
+      {"id": "B", "text": "By using a smaller draft model to predict multiple tokens, verified by the larger model in one pass", "is_correct": true},
+      {"id": "C", "text": "By skipping attention computation for some tokens", "is_correct": false},
+      {"id": "D", "text": "By reducing the model's vocabulary size", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Speculative decoding uses a small, fast draft model to generate several candidate tokens. The larger target model then verifies all candidates in a single forward pass, accepting correct predictions and only regenerating incorrect ones.",
+      "why_not_A": "Speculative decoding uses a smaller (faster) draft model, not a larger one.",
+      "why_not_C": "Attention is still computed for all tokens. The speedup comes from generating multiple tokens per verification pass.",
+      "why_not_D": "Vocabulary size remains unchanged. The optimization is in the generation process."
+    },
+    "concept_ids": ["nvidia-ncp-genl-serving-optimization"],
+    "tags": ["speculative-decoding", "inference"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-010",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "production-deployment",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What deployment strategy enables safe model version updates by running old and new versions simultaneously and gradually shifting traffic?",
+    "options": [
+      {"id": "A", "text": "Hot swapping", "is_correct": false},
+      {"id": "B", "text": "Canary deployment", "is_correct": true},
+      {"id": "C", "text": "Direct replacement", "is_correct": false},
+      {"id": "D", "text": "Cold start deployment", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Canary deployment routes a small percentage of traffic to the new model version while the majority continues using the old version. If the new version performs well, traffic is gradually shifted. If issues arise, traffic is routed back to the old version.",
+      "why_not_A": "Hot swapping replaces the model in-place, which risks downtime if the new version has issues.",
+      "why_not_C": "Direct replacement immediately switches all traffic, providing no safety net if the new version has problems.",
+      "why_not_D": "Cold start refers to the initial latency when a model is first loaded, not a deployment strategy."
+    },
+    "concept_ids": ["nvidia-ncp-genl-nim-deployment"],
+    "tags": ["canary", "deployment-strategy"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-011",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "production-deployment",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What are the two primary latency metrics for LLM serving?",
+    "options": [
+      {"id": "A", "text": "Training loss and validation loss", "is_correct": false},
+      {"id": "B", "text": "Time to First Token (TTFT) and tokens per second", "is_correct": true},
+      {"id": "C", "text": "GPU utilization and CPU utilization", "is_correct": false},
+      {"id": "D", "text": "Request count and error rate", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TTFT measures the latency from request to the first generated token (user-perceived responsiveness). Tokens per second measures the throughput of ongoing generation. Together they capture both initial responsiveness and sustained generation speed.",
+      "why_not_A": "Training and validation loss are model quality metrics during training, not serving latency metrics.",
+      "why_not_C": "GPU and CPU utilization are infrastructure metrics, not latency metrics for the user experience.",
+      "why_not_D": "Request count and error rate are availability metrics, not latency metrics."
+    },
+    "concept_ids": ["nvidia-ncp-genl-monitoring-observability"],
+    "tags": ["ttft", "latency", "serving-metrics"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-012",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "safety-alignment",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What technique compares LLM outputs against retrieved facts to detect potential inaccuracies?",
+    "options": [
+      {"id": "A", "text": "Gradient clipping", "is_correct": false},
+      {"id": "B", "text": "Hallucination detection", "is_correct": true},
+      {"id": "C", "text": "Batch normalization", "is_correct": false},
+      {"id": "D", "text": "Dropout regularization", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Hallucination detection techniques compare model outputs against retrieved facts or known ground truth to identify statements that are not supported by evidence, flagging potential inaccuracies.",
+      "why_not_A": "Gradient clipping prevents exploding gradients during training, not output verification.",
+      "why_not_C": "Batch normalization is a training technique for stabilizing neural network training.",
+      "why_not_D": "Dropout regularization prevents overfitting during training, not hallucination in outputs."
+    },
+    "concept_ids": ["nvidia-ncp-genl-safety-alignment"],
+    "tags": ["hallucination", "safety", "verification"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-013",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "What does FSDP (Fully Sharded Data Parallelism) shard across GPUs?",
+    "options": [
+      {"id": "A", "text": "Only the training data", "is_correct": false},
+      {"id": "B", "text": "Model parameters, gradients, and optimizer states", "is_correct": true},
+      {"id": "C", "text": "Only the model's output logits", "is_correct": false},
+      {"id": "D", "text": "The tokenizer vocabulary", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "FSDP shards model parameters, gradients, and optimizer states across all participating GPUs. Each GPU only stores a fraction of these, reducing per-GPU memory requirements and enabling training of larger models.",
+      "why_not_A": "Standard data parallelism already distributes training data. FSDP additionally shards the model state.",
+      "why_not_C": "Output logits are computed during the forward pass, not sharded as a memory optimization.",
+      "why_not_D": "The tokenizer vocabulary is a small data structure that does not need sharding."
+    },
+    "concept_ids": ["nvidia-ncp-genl-distributed-training"],
+    "tags": ["fsdp", "sharding", "distributed-training"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-014",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "Which NVIDIA tool provides workflows for SFT, RLHF, DPO, and SteerLM alignment?",
+    "options": [
+      {"id": "A", "text": "NVIDIA TensorRT", "is_correct": false},
+      {"id": "B", "text": "NVIDIA NeMo Aligner", "is_correct": true},
+      {"id": "C", "text": "NVIDIA RAPIDS", "is_correct": false},
+      {"id": "D", "text": "NVIDIA Omniverse", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA NeMo Aligner provides tools and workflows for all major alignment techniques including Supervised Fine-Tuning (SFT), RLHF, DPO, and SteerLM within the NeMo Framework ecosystem.",
+      "why_not_A": "TensorRT is focused on inference optimization, not model alignment or training.",
+      "why_not_C": "RAPIDS provides GPU-accelerated data science libraries, not LLM alignment tools.",
+      "why_not_D": "Omniverse is a 3D collaboration platform, not an LLM alignment tool."
+    },
+    "concept_ids": ["nvidia-ncp-genl-sft-rlhf"],
+    "tags": ["nemo-aligner", "alignment"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-015",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "inference-optimization",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "What is the difference between Post-Training Quantization (PTQ) and Quantization-Aware Training (QAT)?",
+    "options": [
+      {"id": "A", "text": "PTQ is faster but QAT is always more accurate", "is_correct": false},
+      {"id": "B", "text": "PTQ reduces precision of a pre-trained model without retraining, while QAT simulates low-precision during training", "is_correct": true},
+      {"id": "C", "text": "QAT works only with INT8 while PTQ supports all precisions", "is_correct": false},
+      {"id": "D", "text": "PTQ requires more GPU memory than QAT", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PTQ applies quantization to an already-trained model using calibration data but no gradient updates. QAT incorporates quantization simulation during the training process, allowing the model to learn to compensate for quantization errors.",
+      "why_not_A": "While PTQ is faster to apply, QAT does not always outperform well-calibrated PTQ, especially for moderate quantization levels.",
+      "why_not_C": "Both PTQ and QAT can target various precision levels including INT4, INT8, and FP8.",
+      "why_not_D": "PTQ typically requires less memory since it does not involve training."
+    },
+    "concept_ids": ["nvidia-ncp-genl-quantization"],
+    "tags": ["ptq", "qat", "quantization"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-016",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "production-deployment",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "Why is drift detection important for deployed LLM systems?",
+    "options": [
+      {"id": "A", "text": "It detects hardware failures in GPUs", "is_correct": false},
+      {"id": "B", "text": "It identifies when model performance degrades due to changing input distributions", "is_correct": true},
+      {"id": "C", "text": "It measures network bandwidth", "is_correct": false},
+      {"id": "D", "text": "It tracks user login patterns", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Drift detection monitors whether the distribution of production inputs diverges from the training data distribution, which can cause degraded model performance over time and signal the need for model updates.",
+      "why_not_A": "Hardware failure detection is handled by monitoring tools like DCGM, not drift detection.",
+      "why_not_C": "Network bandwidth monitoring is an infrastructure concern unrelated to model drift.",
+      "why_not_D": "User authentication tracking is a security function, not model performance monitoring."
+    },
+    "concept_ids": ["nvidia-ncp-genl-monitoring-observability"],
+    "tags": ["drift-detection", "monitoring"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-017",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "advanced-llm-arch",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What framework does NVIDIA provide for efficient training of large transformer models with data, tensor, and pipeline parallelism?",
+    "options": [
+      {"id": "A", "text": "NVIDIA cuDNN", "is_correct": false},
+      {"id": "B", "text": "NVIDIA Megatron-LM", "is_correct": true},
+      {"id": "C", "text": "NVIDIA DALI", "is_correct": false},
+      {"id": "D", "text": "NVIDIA cuGraph", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Megatron-LM is NVIDIA's research framework for training large transformer models with efficient 3D parallelism combining data, tensor, and pipeline parallelism strategies.",
+      "why_not_A": "cuDNN is a low-level GPU-accelerated library for neural network primitives, not a training framework.",
+      "why_not_C": "DALI is a data loading and augmentation library, not a distributed training framework.",
+      "why_not_D": "cuGraph is a GPU-accelerated graph analytics library, not related to LLM training."
+    },
+    "concept_ids": ["nvidia-ncp-genl-scaling-architectures"],
+    "tags": ["megatron", "distributed-training"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-018",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "safety-alignment",
+    "type": "comparison",
+    "difficulty": 2,
+    "stem": "What is a model card in the context of responsible AI?",
+    "options": [
+      {"id": "A", "text": "A GPU specification sheet", "is_correct": false},
+      {"id": "B", "text": "A document describing model capabilities, limitations, training data, and intended use cases", "is_correct": true},
+      {"id": "C", "text": "A credit card used for cloud GPU billing", "is_correct": false},
+      {"id": "D", "text": "A physical card shipped with GPU hardware", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Model cards are structured documents that describe a model's intended use, performance characteristics, limitations, training data properties, ethical considerations, and evaluation results, promoting transparency and responsible deployment.",
+      "why_not_A": "GPU specifications are separate from model documentation. Model cards describe AI models, not hardware.",
+      "why_not_C": "Model cards have nothing to do with billing or payment methods.",
+      "why_not_D": "Model cards are digital documentation, not physical products."
+    },
+    "concept_ids": ["nvidia-ncp-genl-safety-alignment"],
+    "tags": ["model-card", "responsible-ai"],
+    "estimated_time_seconds": 30,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-019",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "inference-optimization",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "Why does static batching waste GPU resources in LLM serving?",
+    "options": [
+      {"id": "A", "text": "Static batching uses too little GPU memory", "is_correct": false},
+      {"id": "B", "text": "The GPU waits for the longest sequence in the batch to complete before processing new requests", "is_correct": true},
+      {"id": "C", "text": "Static batching does not use Tensor Cores", "is_correct": false},
+      {"id": "D", "text": "It always produces incorrect outputs", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In static batching, all requests in a batch must complete before any new requests can be processed. Short sequences finish early but the GPU waits idle until the longest sequence completes, wasting compute cycles.",
+      "why_not_A": "The issue is idle compute time, not memory usage.",
+      "why_not_C": "Tensor Core usage depends on the model operations, not the batching strategy.",
+      "why_not_D": "Static batching produces correct outputs; the issue is efficiency, not correctness."
+    },
+    "concept_ids": ["nvidia-ncp-genl-serving-optimization"],
+    "tags": ["static-batching", "gpu-utilization"],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.20,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-genl-020",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "Why is data deduplication important when preparing LLM training datasets?",
+    "options": [
+      {"id": "A", "text": "It makes the dataset larger", "is_correct": false},
+      {"id": "B", "text": "It prevents models from memorizing repeated content, improving generalization", "is_correct": true},
+      {"id": "C", "text": "It converts text to images", "is_correct": false},
+      {"id": "D", "text": "It removes all non-English text", "is_correct": false}
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Data deduplication removes duplicate or near-duplicate content from training corpora, preventing the model from memorizing specific passages and improving its ability to generalize to new inputs.",
+      "why_not_A": "Deduplication reduces dataset size by removing redundant content.",
+      "why_not_C": "Deduplication removes duplicate text; it does not perform modality conversion.",
+      "why_not_D": "Language filtering is a separate data curation step. Deduplication removes duplicates regardless of language."
+    },
+    "concept_ids": ["nvidia-ncp-genl-data-curation"],
+    "tags": ["deduplication", "data-quality"],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.10,
+    "bkt_p_transit": 0.10,
+    "review_status": "approved"
+  }
+]

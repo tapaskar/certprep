@@ -1,0 +1,262 @@
+[
+  {
+    "id": "nvidia-ncp-ain-ib-architecture",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "topic_id": "architecture",
+    "name": "InfiniBand Architecture",
+    "description": "Core InfiniBand architecture including protocol layers, addressing, and fabric management",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "InfiniBand uses a layered architecture with Physical, Link, Network, and Transport layers",
+      "Each device on the InfiniBand fabric has a unique GUID (Globally Unique Identifier) and is assigned a LID (Local ID) by the Subnet Manager",
+      "InfiniBand subnets are managed by a Subnet Manager (SM) that configures routing and assigns addresses",
+      "Queue Pairs (QPs) are the fundamental communication abstraction in InfiniBand, providing reliable or unreliable connections",
+      "NVIDIA Quantum-2 InfiniBand switches support NDR (400 Gb/s) speeds with adaptive routing"
+    ],
+    "common_misconceptions": [
+      "InfiniBand addressing works like IP networking (IB uses LIDs for intra-subnet and GIDs for inter-subnet routing)",
+      "InfiniBand requires manual routing configuration (the Subnet Manager automatically computes and distributes routing tables)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-ib-subnet-mgmt", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-ib-subnet-mgmt",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "topic_id": "management",
+    "name": "InfiniBand Subnet Management",
+    "description": "Subnet Manager configuration, high availability, and fabric discovery",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "OpenSM is the open-source Subnet Manager implementation commonly used with NVIDIA InfiniBand",
+      "The SM performs fabric discovery, LID assignment, routing table computation, and distribution",
+      "Standby SMs provide high availability; they take over if the active SM fails",
+      "SM priority determines which SM becomes active when multiple SMs are present on the fabric",
+      "Periodic light sweeps detect topology changes without performing full fabric rediscovery"
+    ],
+    "common_misconceptions": [
+      "Each switch needs its own Subnet Manager (one SM manages the entire subnet; additional SMs serve as standbys)",
+      "SM failover is instantaneous (there is a brief disruption during handover as the new SM performs a sweep)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ain-ib-architecture"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-ib-architecture", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-ib-speeds",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "topic_id": "performance",
+    "name": "InfiniBand Speed Grades and Encoding",
+    "description": "InfiniBand speed tiers, lane configurations, and data encoding schemes",
+    "exam_weight": 0.0450,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NDR (Next Data Rate) provides 100 Gb/s per lane with 4x lanes for 400 Gb/s aggregate per port",
+      "HDR (High Data Rate) provides 50 Gb/s per lane for 200 Gb/s per port",
+      "InfiniBand uses 1x, 4x, and 12x lane widths, with 4x being the most common for AI clusters",
+      "64b/66b encoding in NDR provides 97% encoding efficiency, a significant improvement over HDR's PAM4",
+      "Effective data throughput is less than signaling rate due to protocol overhead and encoding"
+    ],
+    "common_misconceptions": [
+      "InfiniBand speed grades are backward compatible without bandwidth impact (mixing speeds requires speed negotiation, reducing to the slower rate)",
+      "Doubling the port speed doubles real application throughput (protocol overhead and software bottlenecks limit actual gains)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ain-ib-architecture"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-ib-architecture", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-ethernet-ai",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "ethernet-for-ai",
+    "topic_id": "ethernet",
+    "name": "Ethernet Networking for AI",
+    "description": "Ethernet-based networking solutions for AI infrastructure including high-speed switches and NICs",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA Spectrum-4 Ethernet switches provide 400 GbE and 800 GbE port speeds for AI clusters",
+      "NVIDIA ConnectX-7 SmartNICs support 400 GbE with hardware-accelerated RoCE for GPU networking",
+      "Priority Flow Control (PFC) enables lossless Ethernet required for RDMA over Converged Ethernet",
+      "ECN (Explicit Congestion Notification) helps manage congestion in lossless Ethernet fabrics",
+      "Ethernet provides a lower-cost alternative to InfiniBand for inference and smaller training workloads"
+    ],
+    "common_misconceptions": [
+      "Standard Ethernet switches work for AI training (AI training requires lossless Ethernet with PFC and ECN configuration)",
+      "Ethernet can never match InfiniBand performance for AI (with RoCE and proper tuning, Ethernet approaches InfiniBand for many workloads)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-roce-config", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-bluefield-dpu",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "ethernet-for-ai",
+    "topic_id": "smartnic",
+    "name": "NVIDIA BlueField DPU",
+    "description": "NVIDIA BlueField Data Processing Unit for network acceleration and infrastructure offload",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "BlueField DPUs combine a SmartNIC with Arm CPU cores for running infrastructure services independently from the host",
+      "DPUs offload networking, storage, and security functions from host CPUs, freeing them for AI compute",
+      "BlueField supports hardware-accelerated OVS (Open Virtual Switch) for high-performance virtual networking",
+      "DOCA (Data Center Infrastructure on a Chip Architecture) is the SDK for programming BlueField DPUs",
+      "BlueField provides hardware root of trust and secure boot for data center security"
+    ],
+    "common_misconceptions": [
+      "DPUs are just fancy NICs (DPUs have their own OS and compute capabilities independent of the host)",
+      "DPUs are only useful for networking (they also accelerate storage, security, and telemetry functions)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-ethernet-ai", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-rdma-fundamentals",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "rdma-roce",
+    "topic_id": "rdma",
+    "name": "RDMA Fundamentals",
+    "description": "Remote Direct Memory Access technology for low-latency, high-throughput data transfer",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "RDMA allows direct memory access between machines without involving the CPU in the data path",
+      "RDMA operations include Send/Receive, Read, Write, and Atomic operations",
+      "RDMA verbs API (libibverbs) provides the programming interface for RDMA communication",
+      "RDMA achieves microsecond-level latency compared to millisecond latency in traditional TCP/IP networking",
+      "Memory regions must be registered with the RDMA adapter before they can be used for RDMA operations"
+    ],
+    "common_misconceptions": [
+      "RDMA eliminates all network overhead (connection setup, memory registration, and completion handling still have overhead)",
+      "RDMA is only available over InfiniBand (RoCE enables RDMA over standard Ethernet infrastructure)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-roce-config", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-roce-config",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "rdma-roce",
+    "topic_id": "roce",
+    "name": "RoCE Configuration and Deployment",
+    "description": "Configuring and deploying RDMA over Converged Ethernet for AI workloads",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "RoCEv2 encapsulates RDMA over UDP/IP, enabling routing across L3 networks",
+      "PFC (Priority Flow Control) must be configured on both NICs and switches for lossless RoCE operation",
+      "DSCP-based QoS maps RDMA traffic to the correct priority queue for proper PFC behavior",
+      "ECN (Explicit Congestion Notification) and DCQCN congestion control prevent PFC storms",
+      "GPUDirect RDMA with RoCE enables direct NIC-to-GPU memory transfers over Ethernet"
+    ],
+    "common_misconceptions": [
+      "RoCE works without any special switch configuration (PFC, ECN, and QoS must be configured on all switches in the path)",
+      "RoCEv1 and RoCEv2 are interchangeable (RoCEv1 is L2-only while RoCEv2 supports L3 routing)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ain-rdma-fundamentals"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-rdma-fundamentals", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-fabric-management",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "network-management",
+    "topic_id": "management-tools",
+    "name": "Network Fabric Management",
+    "description": "Tools and practices for managing AI network infrastructure including NVIDIA UFM",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA UFM (Unified Fabric Manager) provides centralized InfiniBand fabric management and monitoring",
+      "UFM performs fabric discovery, health monitoring, event logging, and topology visualization",
+      "NVIDIA NetQ provides network monitoring and troubleshooting for Ethernet-based AI networks",
+      "Fabric health checks validate link integrity, port errors, and congestion across the network",
+      "Firmware management across switches and NICs ensures consistent behavior and security patching"
+    ],
+    "common_misconceptions": [
+      "Standard network monitoring tools work for InfiniBand (InfiniBand requires specialized tools like UFM that understand IB-specific protocols)",
+      "Network management is only needed during initial setup (ongoing monitoring is critical for detecting degradation and failures)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-telemetry", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-telemetry",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "network-management",
+    "topic_id": "telemetry",
+    "name": "Network Telemetry and Analytics",
+    "description": "Collecting and analyzing network performance data for AI infrastructure",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "In-band telemetry embeds performance data directly into network packets for real-time monitoring",
+      "Port counters track bytes, packets, errors, and discards on each switch port",
+      "Congestion detection uses ECN marking rates and PFC pause frame counts to identify bottlenecks",
+      "Histogram-based latency monitoring provides distribution analysis of network delay",
+      "Integration with Prometheus and Grafana enables centralized visualization of network metrics"
+    ],
+    "common_misconceptions": [
+      "Network monitoring adds significant overhead to AI training (modern telemetry collection has negligible impact on data plane performance)",
+      "High bandwidth utilization means the network is healthy (high error rates or latency spikes indicate problems despite high throughput)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-ain-fabric-management"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-fabric-management", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-ain-nccl-tuning",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "performance-tuning",
+    "topic_id": "tuning",
+    "name": "NCCL and Collective Communication Tuning",
+    "description": "Tuning NVIDIA Collective Communications Library for optimal distributed training performance",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "NCCL implements optimized collective operations (AllReduce, AllGather, ReduceScatter) for multi-GPU training",
+      "NCCL_ALGO selects the communication algorithm (ring, tree, or collnet) based on message size and topology",
+      "NCCL_IB_HCA specifies which InfiniBand HCA ports to use for inter-node communication",
+      "NCCL topology detection automatically selects optimal communication paths based on GPU and network topology",
+      "SHARP offloads collective operations to InfiniBand switches, reducing network traffic and host CPU usage"
+    ],
+    "common_misconceptions": [
+      "Default NCCL settings are optimal for all configurations (tuning NCCL variables can improve distributed training performance by 10-30%)",
+      "NCCL only works with InfiniBand (NCCL supports both InfiniBand and Ethernet with appropriate transports)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-ain-telemetry", "transfer_weight": 0.2}
+    ]
+  }
+]

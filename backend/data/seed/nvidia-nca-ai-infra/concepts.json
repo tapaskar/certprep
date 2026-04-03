@@ -1,0 +1,262 @@
+[
+  {
+    "id": "nvidia-nca-aiio-gpu-arch",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "gpu-arch-basics",
+    "topic_id": "gpu-hardware",
+    "name": "GPU Architecture Fundamentals",
+    "description": "Core GPU architecture concepts including CUDA cores, Tensor Cores, and memory hierarchy",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "NVIDIA GPUs use Streaming Multiprocessors (SMs) each containing CUDA cores for parallel computation",
+      "Tensor Cores are specialized hardware units that accelerate matrix multiply-and-accumulate operations for AI workloads",
+      "GPU memory hierarchy includes registers, shared memory, L1/L2 cache, and global HBM (High Bandwidth Memory)",
+      "The NVIDIA Hopper architecture (H100) introduced the Transformer Engine for mixed-precision training",
+      "PCIe and NVLink are the two primary interconnects for GPU-to-host and GPU-to-GPU communication"
+    ],
+    "common_misconceptions": [
+      "More CUDA cores always means better AI performance (Tensor Cores and memory bandwidth are often the bottleneck for AI workloads)",
+      "All GPU memory types have the same speed (registers are fastest, followed by shared memory, then global HBM)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-gpu-generations", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-gpu-generations",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "gpu-arch-basics",
+    "topic_id": "gpu-hardware",
+    "name": "NVIDIA GPU Generations for AI",
+    "description": "Key NVIDIA GPU architectures and their capabilities for AI workloads",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "NVIDIA Ampere (A100) introduced third-generation Tensor Cores with TF32 and structural sparsity support",
+      "NVIDIA Hopper (H100) features fourth-generation Tensor Cores with FP8 support and the Transformer Engine",
+      "NVLink in Hopper provides up to 900 GB/s bidirectional GPU-to-GPU bandwidth",
+      "Multi-Instance GPU (MIG) on A100 and H100 partitions a single GPU into up to 7 isolated instances",
+      "NVIDIA Blackwell (B200) is the successor to Hopper, designed for even larger AI model training and inference"
+    ],
+    "common_misconceptions": [
+      "MIG reduces overall GPU performance (MIG partitions resources but each partition runs at full speed for its allocation)",
+      "All NVIDIA data center GPUs support MIG (MIG is only available on A100, H100, and newer architectures)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-aiio-gpu-arch"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-gpu-arch", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-datacenter-design",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "datacenter-fundamentals",
+    "topic_id": "infrastructure",
+    "name": "AI Data Center Design",
+    "description": "Fundamentals of designing data centers for AI workloads including power, cooling, and rack configurations",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "NVIDIA DGX systems are purpose-built servers designed for AI training and inference workloads",
+      "GPU-accelerated data centers require significantly higher power density than traditional compute facilities",
+      "Liquid cooling is increasingly necessary for high-density GPU deployments to manage thermal output",
+      "A DGX H100 system contains 8 H100 GPUs connected via NVLink in a fully connected topology",
+      "Power Usage Effectiveness (PUE) measures data center energy efficiency as total facility power divided by IT equipment power"
+    ],
+    "common_misconceptions": [
+      "Standard air cooling is sufficient for all GPU configurations (high-density GPU racks often require liquid cooling)",
+      "DGX systems are just regular servers with GPUs added (they are custom-designed with optimized interconnects, cooling, and software)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-dgx-overview", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-dgx-overview",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "datacenter-fundamentals",
+    "topic_id": "systems",
+    "name": "DGX and HGX Systems Overview",
+    "description": "NVIDIA DGX and HGX platform capabilities and configurations",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "DGX H100 systems include DGX OS (Ubuntu-based), NVIDIA Base Command, and pre-installed AI software",
+      "HGX is a reference GPU computing platform used by OEMs to build their own AI servers",
+      "DGX SuperPOD aggregates multiple DGX nodes into a scalable AI training cluster",
+      "DGX Cloud provides DGX infrastructure as a managed cloud service through partner cloud providers",
+      "Each DGX H100 node delivers approximately 32 petaflops of FP8 AI performance"
+    ],
+    "common_misconceptions": [
+      "DGX and HGX are the same product (DGX is a complete system; HGX is a reference platform for OEM server builders)",
+      "DGX Cloud runs on NVIDIA's own data centers (it is hosted by cloud partners like Microsoft Azure, Google Cloud, and Oracle)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-aiio-datacenter-design"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-datacenter-design", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-networking-fundamentals",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "networking-basics",
+    "topic_id": "network-tech",
+    "name": "AI Networking Fundamentals",
+    "description": "Basic networking technologies for AI infrastructure including InfiniBand, Ethernet, and NVLink",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "InfiniBand provides low-latency, high-bandwidth interconnect used for GPU-to-GPU communication across nodes",
+      "NVIDIA ConnectX SmartNICs provide hardware-accelerated networking for AI data center workloads",
+      "NVLink connects GPUs within a node with much higher bandwidth than PCIe",
+      "NVSwitch enables all-to-all GPU communication within a DGX system at full NVLink bandwidth",
+      "RDMA (Remote Direct Memory Access) allows direct memory access between nodes bypassing the CPU"
+    ],
+    "common_misconceptions": [
+      "Ethernet is always sufficient for AI training clusters (InfiniBand provides lower latency critical for distributed training)",
+      "NVLink and InfiniBand serve the same purpose (NVLink is intra-node GPU-to-GPU; InfiniBand is inter-node)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-nvlink-nvswitch", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-nvlink-nvswitch",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "networking-basics",
+    "topic_id": "interconnect",
+    "name": "NVLink and NVSwitch",
+    "description": "High-bandwidth GPU interconnect technologies for intra-node communication",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVLink 4.0 in Hopper provides 900 GB/s bidirectional bandwidth per GPU",
+      "NVSwitch enables a fully connected topology where every GPU can communicate with every other GPU at full bandwidth",
+      "NVLink supports GPU direct memory access, allowing GPUs to read/write each other's memory without CPU involvement",
+      "The NVLink domain in a DGX H100 connects all 8 GPUs through NVSwitch for unified memory addressing",
+      "NVLink significantly outperforms PCIe Gen5 (128 GB/s) for GPU-to-GPU data transfers"
+    ],
+    "common_misconceptions": [
+      "NVLink replaces PCIe entirely (PCIe is still used for CPU-to-GPU and I/O device communication)",
+      "All GPUs with NVLink have the same bandwidth (bandwidth varies by architecture generation)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-aiio-networking-fundamentals"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-networking-fundamentals", "transfer_weight": 0.35}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-cuda-stack",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "software-stack",
+    "topic_id": "software",
+    "name": "CUDA and AI Software Stack",
+    "description": "NVIDIA CUDA platform and AI software ecosystem including drivers, libraries, and frameworks",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "CUDA is NVIDIA's parallel computing platform providing APIs for GPU-accelerated computation",
+      "cuDNN is a GPU-accelerated library for deep neural network primitives like convolutions and normalization",
+      "The NVIDIA AI software stack layers include drivers, CUDA toolkit, cuDNN/cuBLAS, frameworks, and applications",
+      "NVIDIA NGC (NVIDIA GPU Cloud) provides a catalog of pre-built GPU-optimized containers for AI workflows",
+      "NCCL (NVIDIA Collective Communications Library) handles multi-GPU and multi-node communication for distributed training"
+    ],
+    "common_misconceptions": [
+      "CUDA is a programming language (it is a parallel computing platform with extensions for C, C++, and Fortran)",
+      "Installing CUDA drivers is sufficient for deep learning (frameworks also need cuDNN and other libraries for optimal performance)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-containers-ngc", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-containers-ngc",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "software-stack",
+    "topic_id": "containers",
+    "name": "NGC Containers and NVIDIA Container Toolkit",
+    "description": "GPU-accelerated container ecosystem including NGC catalog and container runtime",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA Container Toolkit enables Docker containers to access GPU hardware resources",
+      "NGC provides pre-built, tested, and optimized containers for frameworks like PyTorch, TensorFlow, and TensorRT",
+      "Container images from NGC include matched versions of CUDA, cuDNN, and framework dependencies",
+      "NVIDIA GPU Operator automates GPU driver and toolkit deployment in Kubernetes clusters",
+      "Multi-process service (MPS) allows multiple containers to share a single GPU efficiently"
+    ],
+    "common_misconceptions": [
+      "Standard Docker containers automatically use GPUs (the NVIDIA Container Toolkit runtime is required to expose GPUs)",
+      "NGC containers only work on NVIDIA DGX systems (they work on any system with NVIDIA GPUs and the container toolkit)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-aiio-cuda-stack"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-cuda-stack", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-gpu-monitoring",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "ops-monitoring",
+    "topic_id": "monitoring",
+    "name": "GPU Monitoring and Management",
+    "description": "Tools and techniques for monitoring GPU health, utilization, and performance",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 1,
+    "key_facts": [
+      "nvidia-smi is the primary command-line tool for monitoring GPU status, memory usage, and temperature",
+      "DCGM (Data Center GPU Manager) provides comprehensive GPU telemetry, health monitoring, and diagnostics",
+      "Key GPU metrics include SM utilization, memory utilization, temperature, power draw, and ECC error counts",
+      "DCGM integrates with Prometheus and Grafana for GPU metric visualization in Kubernetes environments",
+      "GPU throttling occurs when temperature or power consumption exceeds configured thresholds"
+    ],
+    "common_misconceptions": [
+      "High GPU utilization always means the workload is optimized (the GPU may be bottlenecked by memory bandwidth or data loading)",
+      "nvidia-smi is sufficient for production monitoring (DCGM provides richer telemetry, health checks, and integration with monitoring systems)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-base-command", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "nvidia-nca-aiio-base-command",
+    "exam_id": "nvidia-nca-aiio",
+    "domain_id": "ops-monitoring",
+    "topic_id": "management",
+    "name": "NVIDIA Base Command and Fleet Management",
+    "description": "NVIDIA management tools for operating AI infrastructure at scale",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA Base Command Manager provides cluster provisioning, job scheduling, and user management for DGX systems",
+      "Base Command Platform is a cloud-hosted service for managing AI training workflows on DGX Cloud",
+      "Job scheduling ensures fair sharing of GPU resources across multiple users and teams",
+      "Fleet Command enables remote deployment and management of AI applications at edge locations",
+      "NVIDIA Run:ai provides GPU orchestration and workload management on Kubernetes clusters"
+    ],
+    "common_misconceptions": [
+      "Base Command Manager and Base Command Platform are the same product (Manager is on-premises software; Platform is a cloud service)",
+      "GPU clusters do not need a job scheduler (without scheduling, GPU resources are easily wasted through poor utilization)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-nca-aiio-gpu-monitoring"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-nca-aiio-gpu-monitoring", "transfer_weight": 0.25}
+    ]
+  }
+]

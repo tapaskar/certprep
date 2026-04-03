@@ -1,0 +1,262 @@
+[
+  {
+    "id": "nvidia-ncp-genl-attention-mechanisms",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "advanced-llm-arch",
+    "topic_id": "architecture",
+    "name": "Advanced Attention Mechanisms",
+    "description": "Efficient attention variants including MQA, GQA, FlashAttention, and sparse attention for large language models",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Multi-Query Attention (MQA) shares a single set of key-value heads across all query heads, reducing KV cache memory",
+      "Grouped-Query Attention (GQA) is a compromise between MHA and MQA, grouping query heads to share KV heads",
+      "FlashAttention computes attention in a memory-efficient way by tiling and avoiding materialization of the full attention matrix",
+      "Sliding window attention limits each token to attend to a fixed-size local window, reducing complexity from O(n^2) to O(n)",
+      "Rotary Position Embeddings (RoPE) encode relative position information directly into the attention computation"
+    ],
+    "common_misconceptions": [
+      "FlashAttention changes the mathematical result of attention (it computes the exact same result, just more efficiently)",
+      "Reducing KV heads always degrades model quality (GQA achieves near-MHA quality with significantly less memory)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-scaling-architectures", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-scaling-architectures",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "advanced-llm-arch",
+    "topic_id": "scaling",
+    "name": "Scaling LLM Architectures",
+    "description": "Mixture of Experts, model scaling strategies, and architectural innovations for larger models",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Mixture of Experts (MoE) routes each token to a subset of expert networks, enabling larger models without proportional compute increase",
+      "Chinchilla scaling laws suggest that model size and training data should be scaled proportionally for optimal compute efficiency",
+      "Pipeline parallelism splits model layers across different GPUs to train models that exceed single-GPU memory",
+      "Expert parallelism distributes MoE experts across GPUs so each GPU handles a subset of experts",
+      "NVIDIA Megatron-LM is a framework for efficient training of large transformer models with various parallelism strategies"
+    ],
+    "common_misconceptions": [
+      "MoE models activate all parameters for every token (only a subset of experts are activated per token, reducing compute)",
+      "Scaling model size is the only way to improve performance (data quality, training methodology, and architecture choices also matter significantly)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-genl-attention-mechanisms"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-attention-mechanisms", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-distributed-training",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "topic_id": "distributed",
+    "name": "Distributed Training Strategies",
+    "description": "Data parallelism, model parallelism, and hybrid strategies for training LLMs across multiple GPUs",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Data parallelism replicates the model on each GPU and splits training data across replicas, synchronizing gradients",
+      "Tensor parallelism splits individual layer computations (e.g., attention heads) across GPUs within a node",
+      "Pipeline parallelism divides model layers across GPUs and processes micro-batches in a pipeline fashion",
+      "FSDP (Fully Sharded Data Parallelism) shards model parameters, gradients, and optimizer states across GPUs",
+      "NVIDIA NeMo Framework uses a 3D parallelism strategy combining data, tensor, and pipeline parallelism"
+    ],
+    "common_misconceptions": [
+      "Data parallelism alone can train arbitrarily large models (models exceeding single-GPU memory require model parallelism)",
+      "More GPUs always provide linear speedup (communication overhead limits scaling efficiency, especially across nodes)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-sft-rlhf", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-sft-rlhf",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "topic_id": "alignment",
+    "name": "SFT, RLHF, and DPO",
+    "description": "Supervised fine-tuning and alignment techniques including RLHF and Direct Preference Optimization",
+    "exam_weight": 0.0550,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Supervised Fine-Tuning (SFT) trains the model on curated instruction-response pairs to follow instructions",
+      "RLHF (Reinforcement Learning from Human Feedback) uses a reward model trained on human preferences to optimize the LLM policy",
+      "DPO (Direct Preference Optimization) eliminates the separate reward model by directly optimizing on preference pairs",
+      "Constitutional AI uses a set of principles to generate self-critiques and revisions for alignment",
+      "NVIDIA NeMo Aligner provides tools for SFT, RLHF, DPO, and SteerLM alignment workflows"
+    ],
+    "common_misconceptions": [
+      "RLHF and DPO produce identical results (they optimize different objectives and can lead to different model behaviors)",
+      "SFT alone is sufficient for alignment (SFT teaches format but RLHF/DPO are needed to align values and preferences)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-genl-distributed-training"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-distributed-training", "transfer_weight": 0.25}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-data-curation",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "training-finetuning",
+    "topic_id": "data",
+    "name": "Training Data Curation",
+    "description": "Data preparation, filtering, and quality assurance for LLM training and fine-tuning",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA NeMo Curator provides GPU-accelerated data curation tools for filtering, deduplication, and quality scoring",
+      "Exact and fuzzy deduplication prevents models from memorizing repeated content in training data",
+      "Quality filters remove low-quality, toxic, or irrelevant content from training corpora",
+      "Data mixing ratios across domains (code, web, books, scientific papers) significantly impact model capabilities",
+      "Synthetic data generation using existing LLMs can augment training data for specialized domains"
+    ],
+    "common_misconceptions": [
+      "More training data is always better (low-quality or duplicated data can degrade model performance)",
+      "Data curation is a one-time process (iterative refinement based on model evaluation is typically necessary)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-sft-rlhf", "transfer_weight": 0.2}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-quantization",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "inference-optimization",
+    "topic_id": "compression",
+    "name": "Model Quantization Techniques",
+    "description": "Quantization methods for reducing model size and improving inference throughput",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Post-Training Quantization (PTQ) reduces precision of pre-trained model weights without retraining",
+      "Quantization-Aware Training (QAT) simulates low-precision arithmetic during training for better quantized accuracy",
+      "FP8 quantization on NVIDIA Hopper GPUs provides near-FP16 accuracy with 2x throughput improvement",
+      "GPTQ and AWQ are popular weight-only quantization methods that preserve activation precision",
+      "TensorRT-LLM supports INT4, INT8, FP8, and mixed-precision quantization for deployment"
+    ],
+    "common_misconceptions": [
+      "All quantization methods produce the same quality-speed trade-off (different methods excel for different model architectures and sizes)",
+      "INT4 quantization always makes models unusable (with proper calibration, INT4 models can retain most of their original capability)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-serving-optimization", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-serving-optimization",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "inference-optimization",
+    "topic_id": "serving",
+    "name": "LLM Serving Optimization",
+    "description": "Techniques for optimizing LLM inference latency, throughput, and cost in production",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 3,
+    "key_facts": [
+      "Continuous (in-flight) batching processes new requests as soon as existing requests complete, maximizing GPU utilization",
+      "PagedAttention manages KV cache memory in non-contiguous pages, reducing memory waste from fragmentation",
+      "Speculative decoding uses a smaller draft model to predict multiple tokens, verified by the larger model in one pass",
+      "Prefix caching stores KV cache entries for common prompt prefixes to avoid recomputation",
+      "Time to First Token (TTFT) and tokens-per-second are the primary latency metrics for LLM serving"
+    ],
+    "common_misconceptions": [
+      "Static batching is sufficient for LLM serving (static batching wastes GPU time waiting for the longest sequence to complete)",
+      "KV cache memory is negligible (for long sequences, KV cache can consume more memory than the model weights themselves)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-genl-quantization"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-quantization", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-nim-deployment",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "production-deployment",
+    "topic_id": "deployment",
+    "name": "Production LLM Deployment with NIM",
+    "description": "Deploying and managing LLMs in production using NVIDIA NIM and container orchestration",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA NIM containers provide pre-optimized, production-ready LLM serving with auto-tuned TensorRT-LLM backends",
+      "Kubernetes-based deployment enables auto-scaling LLM inference based on request queue depth",
+      "Health checks and readiness probes ensure traffic is only sent to fully loaded model instances",
+      "Blue-green and canary deployment strategies enable safe model version updates in production",
+      "GPU resource requests in Kubernetes ensure LLM pods are scheduled on nodes with appropriate GPU hardware"
+    ],
+    "common_misconceptions": [
+      "LLM deployment is just serving a REST API (production requires load balancing, monitoring, scaling, and version management)",
+      "A single NIM container configuration works for all models (configuration must be tuned for model size, GPU hardware, and workload patterns)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-monitoring-observability", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-monitoring-observability",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "production-deployment",
+    "topic_id": "monitoring",
+    "name": "LLM Monitoring and Observability",
+    "description": "Monitoring deployed LLM systems for performance, quality, and cost",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "Key inference metrics include request latency (P50, P95, P99), throughput (tokens/second), and queue depth",
+      "GPU utilization, memory usage, and thermal metrics should be monitored via DCGM or nvidia-smi",
+      "Prompt and response logging enables quality monitoring and debugging of production LLM behavior",
+      "Token usage tracking is essential for cost management in production LLM deployments",
+      "Drift detection identifies when model performance degrades over time due to changing input distributions"
+    ],
+    "common_misconceptions": [
+      "GPU utilization alone indicates serving efficiency (high utilization with poor batching can still mean low throughput)",
+      "LLM monitoring only needs infrastructure metrics (output quality monitoring is equally critical for production systems)"
+    ],
+    "aws_services": [],
+    "prerequisites": ["nvidia-ncp-genl-nim-deployment"],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-nim-deployment", "transfer_weight": 0.3}
+    ]
+  },
+  {
+    "id": "nvidia-ncp-genl-safety-alignment",
+    "exam_id": "nvidia-ncp-genl",
+    "domain_id": "safety-alignment",
+    "topic_id": "safety",
+    "name": "LLM Safety and Responsible AI",
+    "description": "Safety techniques, guardrails, and responsible deployment practices for LLMs",
+    "exam_weight": 0.0500,
+    "difficulty_tier": 2,
+    "key_facts": [
+      "NVIDIA NeMo Guardrails provides programmable safety rails for controlling LLM input and output",
+      "Content filtering classifiers detect and block harmful, biased, or inappropriate model outputs",
+      "Red teaming systematically probes models for vulnerabilities including jailbreaks and harmful outputs",
+      "Model cards document model capabilities, limitations, training data characteristics, and intended use cases",
+      "Hallucination detection techniques compare model outputs against retrieved facts or known ground truth"
+    ],
+    "common_misconceptions": [
+      "RLHF alignment makes models completely safe (aligned models can still be jailbroken or produce harmful outputs)",
+      "Safety measures only need to be applied at inference time (safety starts with training data curation and continues through deployment)"
+    ],
+    "aws_services": [],
+    "prerequisites": [],
+    "lateral_relations": [
+      {"concept_id": "nvidia-ncp-genl-sft-rlhf", "transfer_weight": 0.2}
+    ]
+  }
+]
