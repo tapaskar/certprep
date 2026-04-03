@@ -271,29 +271,29 @@ export default function LandingPage() {
           </Link>
 
           {/* Nav Links + Auth Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
             <Link
               href="/blog"
-              className="hidden sm:inline text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors"
+              className="hidden sm:inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
             >
               Blog
             </Link>
             <Link
               href="/pricing"
-              className="hidden sm:inline text-sm font-medium text-stone-500 hover:text-amber-600 transition-colors"
+              className="hidden sm:inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
             >
               Pricing
             </Link>
+            <div className="hidden sm:block h-5 w-px bg-stone-200 mx-2" />
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 shadow-sm transition-all hover:border-amber-400 hover:text-amber-600 hover:shadow-md"
+              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
             >
-              <LogIn className="h-4 w-4" />
               Log In
             </Link>
             <Link
               href="/register"
-              className="inline-flex items-center rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-2 text-sm font-bold text-white shadow-sm transition-all hover:scale-105 hover:shadow-md"
+              className="inline-flex items-center rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-stone-800"
             >
               Get Started Free
             </Link>
