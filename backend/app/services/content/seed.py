@@ -42,11 +42,16 @@ async def seed_exam(db: AsyncSession, data_dir: str) -> dict[str, int]:
         concept_columns = {c.key for c in Concept.__table__.columns}
 
         for cd in concepts_data:
+            cd["exam_weight"] = Decimal(str(cd["exam_weight"]))
+            filtered = {k: v for k, v in cd.items() if k in concept_columns}
             existing = await db.get(Concept, cd["id"])
-            if not existing:
-                cd["exam_weight"] = Decimal(str(cd["exam_weight"]))
-                # Strip any extra keys not in the model (e.g. video_url, official_doc_url)
-                filtered = {k: v for k, v in cd.items() if k in concept_columns}
+            if existing:
+                # Update existing concept with corrected data (domain_id, exam_weight, etc.)
+                for key, value in filtered.items():
+                    if key != "id":
+                        setattr(existing, key, value)
+                counts["concepts"] += 1
+            else:
                 concept = Concept(**filtered)
                 db.add(concept)
                 counts["concepts"] += 1
@@ -57,13 +62,21 @@ async def seed_exam(db: AsyncSession, data_dir: str) -> dict[str, int]:
         with open(questions_file) as f:
             questions_data = json.load(f)
 
+        question_columns = {c.key for c in Question.__table__.columns}
+
         for qd in questions_data:
+            for field in ["bkt_p_guess", "bkt_p_slip", "bkt_p_transit"]:
+                if field in qd and qd[field] is not None:
+                    qd[field] = Decimal(str(qd[field]))
+            filtered = {k: v for k, v in qd.items() if k in question_columns}
             existing = await db.get(Question, qd["id"])
-            if not existing:
-                for field in ["bkt_p_guess", "bkt_p_slip", "bkt_p_transit"]:
-                    if field in qd and qd[field] is not None:
-                        qd[field] = Decimal(str(qd[field]))
-                question = Question(**qd)
+            if existing:
+                for key, value in filtered.items():
+                    if key != "id":
+                        setattr(existing, key, value)
+                counts["questions"] += 1
+            else:
+                question = Question(**filtered)
                 db.add(question)
                 counts["questions"] += 1
 

@@ -55,7 +55,7 @@ export function WeakConcepts({ concepts }: WeakConceptsProps) {
                   {Math.round(concept.mastery_pct)}%
                 </span>
                 <span className="text-xs text-stone-500">
-                  {concept.exam_weight}% weight
+                  {Math.round(concept.exam_weight * 100)}% weight
                 </span>
               </div>
             </button>

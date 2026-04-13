@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { api } from "@/lib/api";
 
 export interface EnrolledExam {
@@ -26,6 +27,7 @@ interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  _hasHydrated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -34,75 +36,34 @@ interface AuthState {
   setActiveExam: (examId: string) => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => {
-  // On init: check localStorage for existing token
-  if (typeof window !== "undefined") {
-    const savedToken = localStorage.getItem("sparkupcloud_token");
-    if (savedToken) {
-      api.setToken(savedToken);
-    }
-  }
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      token: null,
+      user: null,
+      isAuthenticated: false,
+      isLoading: true,
+      _hasHydrated: false,
 
-  return {
-    token: typeof window !== "undefined" ? localStorage.getItem("sparkupcloud_token") : null,
-    user: null,
-    isAuthenticated: false,
-    isLoading: true,
-
-    login: async (email: string, password: string) => {
-      const data = await api.login(email, password);
-      localStorage.setItem("sparkupcloud_token", data.access_token);
-      api.setToken(data.access_token);
-      set({
-        token: data.access_token,
-        user: { ...data.user, is_admin: false, plan: "free", active_exam_id: null, enrolled_exams: [] },
-        isAuthenticated: true,
-        isLoading: false,
-      });
-      // Immediately load full profile (includes is_admin, enrolled_exams)
-      await get().loadUser();
-    },
-
-    register: async (name: string, email: string, password: string) => {
-      await api.register(name, email, password);
-    },
-
-    logout: () => {
-      localStorage.removeItem("sparkupcloud_token");
-      api.setToken(null);
-      set({
-        token: null,
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-      });
-    },
-
-    loadUser: async () => {
-      const token = typeof window !== "undefined" ? localStorage.getItem("sparkupcloud_token") : null;
-      if (!token) {
-        set({ isLoading: false, isAuthenticated: false });
-        return;
-      }
-      api.setToken(token);
-      try {
-        const me = await api.getMe();
+      login: async (email: string, password: string) => {
+        const data = await api.login(email, password);
+        localStorage.setItem("sparkupcloud_token", data.access_token);
+        api.setToken(data.access_token);
         set({
-          token,
-          user: {
-            id: me.id,
-            email: me.email,
-            display_name: me.display_name,
-            is_admin: me.is_admin,
-            plan: me.plan ?? "free",
-            active_exam_id: me.active_exam_id ?? null,
-            enrolled_exams: me.enrolled_exams ?? [],
-          },
+          token: data.access_token,
+          user: { ...data.user, is_admin: false, plan: "free", active_exam_id: null, enrolled_exams: [] },
           isAuthenticated: true,
           isLoading: false,
         });
-      } catch {
-        // Token is invalid or expired
+        // Immediately load full profile (includes is_admin, enrolled_exams)
+        await get().loadUser();
+      },
+
+      register: async (name: string, email: string, password: string) => {
+        await api.register(name, email, password);
+      },
+
+      logout: () => {
         localStorage.removeItem("sparkupcloud_token");
         api.setToken(null);
         set({
@@ -111,25 +72,86 @@ export const useAuthStore = create<AuthState>((set, get) => {
           isAuthenticated: false,
           isLoading: false,
         });
-      }
-    },
+      },
 
-    setAuthFromToken: (token: string, user: AuthUser) => {
-      localStorage.setItem("sparkupcloud_token", token);
-      api.setToken(token);
-      set({
-        token,
-        user,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    },
+      loadUser: async () => {
+        const token = get().token ?? (typeof window !== "undefined" ? localStorage.getItem("sparkupcloud_token") : null);
+        if (!token) {
+          set({ isLoading: false, isAuthenticated: false });
+          return;
+        }
+        api.setToken(token);
+        try {
+          const me = await api.getMe();
+          set({
+            token,
+            user: {
+              id: me.id,
+              email: me.email,
+              display_name: me.display_name,
+              is_admin: me.is_admin,
+              plan: me.plan ?? "free",
+              active_exam_id: me.active_exam_id ?? null,
+              enrolled_exams: me.enrolled_exams ?? [],
+            },
+            isAuthenticated: true,
+            isLoading: false,
+          });
+        } catch {
+          // Token is invalid or expired
+          localStorage.removeItem("sparkupcloud_token");
+          api.setToken(null);
+          set({
+            token: null,
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+          });
+        }
+      },
 
-    setActiveExam: (examId: string) => {
-      const { user } = get();
-      if (user) {
-        set({ user: { ...user, active_exam_id: examId } });
-      }
-    },
-  };
-});
+      setAuthFromToken: (token: string, user: AuthUser) => {
+        localStorage.setItem("sparkupcloud_token", token);
+        api.setToken(token);
+        set({
+          token,
+          user,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      },
+
+      setActiveExam: (examId: string) => {
+        const { user } = get();
+        if (user) {
+          set({ user: { ...user, active_exam_id: examId } });
+        }
+      },
+    }),
+    {
+      name: "sparkupcloud-auth",
+      storage: createJSONStorage(() => localStorage),
+      // Only persist auth-critical fields — not loading states or methods
+      partialize: (state) => ({
+        token: state.token,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
+      onRehydrateStorage: () => {
+        return (state) => {
+          if (state) {
+            // Hydration complete — restore the API client token and mark hydrated
+            if (state.token) {
+              api.setToken(state.token);
+            }
+            // Trust the persisted auth state immediately — loadUser() will
+            // re-validate with the backend in the background. This prevents
+            // the flash-redirect-to-login on every page load.
+            state.isLoading = !state.isAuthenticated;
+            state._hasHydrated = true;
+          }
+        };
+      },
+    }
+  )
+);

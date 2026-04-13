@@ -131,7 +131,103 @@ async def create_session(
         remaining = daily_limit - (await _get_questions_answered_today(db, str(user.id)))
         max_questions = min(max_questions, remaining)
 
-    # Free plan: only 50% of content (easier questions, difficulty <= 3)
+    # ── Intelligent question selection using bandit + mastery data ──
+    from app.services.selection.bandit import (
+        get_budget,
+        remediation_score,
+        reinforcement_score,
+        exploration_score,
+        ConceptScore,
+        SelectionArm,
+    )
+
+    days_to_exam = None
+    if enrollment.exam_date:
+        days_to_exam = (enrollment.exam_date - date.today()).days
+
+    budget = get_budget(days_to_exam)
+
+    # Get user's concept mastery state
+    mastery_result = await db.execute(
+        select(UserConceptMastery, Concept)
+        .join(Concept, UserConceptMastery.concept_id == Concept.id)
+        .where(
+            and_(
+                UserConceptMastery.user_id == user.id,
+                Concept.exam_id == request.exam_id,
+            )
+        )
+    )
+    mastery_records = mastery_result.all()
+    mastery_map = {
+        m.concept_id: (float(m.mastery_probability), m)
+        for m, _ in mastery_records
+    }
+
+    # Get all concepts for this exam
+    all_concepts_result = await db.execute(
+        select(Concept).where(Concept.exam_id == request.exam_id)
+    )
+    all_concepts = all_concepts_result.scalars().all()
+
+    # Score each concept by all three arms
+    concept_scores: list[tuple[str, float, SelectionArm]] = []
+    for concept in all_concepts:
+        mastery_val, mastery_rec = mastery_map.get(concept.id, (0.0, None))
+        weight = float(concept.exam_weight) if concept.exam_weight else 0.05
+
+        # Check if concept had recent failure (last 3 answers)
+        recent_answers = await db.execute(
+            select(UserAnswer.is_correct)
+            .join(Question, UserAnswer.question_id == Question.id)
+            .where(
+                and_(
+                    UserAnswer.user_id == user.id,
+                    Question.concept_ids.contains([concept.id]),
+                )
+            )
+            .order_by(UserAnswer.answered_at.desc())
+            .limit(3)
+        )
+        recent = [r[0] for r in recent_answers.all()]
+        had_recent_failure = any(not r for r in recent)
+
+        # Days until review due
+        days_until_due = None
+        if mastery_rec and mastery_rec.next_review_date:
+            days_until_due = (mastery_rec.next_review_date - date.today()).days
+
+        # Score by each arm
+        rem_score = remediation_score(mastery_val, weight, had_recent_failure) * budget["remediate"]
+        rein_score = reinforcement_score(mastery_val, weight, days_until_due) * budget["reinforce"]
+        exp_score = exploration_score(mastery_val, weight, prereqs_met=True) * budget["explore"]
+
+        # Pick the arm with the highest score for this concept
+        best_score = max(rem_score, rein_score, exp_score)
+        if best_score == rem_score:
+            arm = SelectionArm.REMEDIATE
+        elif best_score == rein_score:
+            arm = SelectionArm.REINFORCE
+        else:
+            arm = SelectionArm.EXPLORE
+
+        if best_score > 0:
+            concept_scores.append((concept.id, best_score, arm))
+
+    # Sort by score descending and pick top concepts
+    concept_scores.sort(key=lambda x: x[1], reverse=True)
+    selected_concept_ids = [cs[0] for cs in concept_scores[:max_questions * 2]]
+
+    # Get questions the user has NOT recently answered for the selected concepts
+    recently_answered_result = await db.execute(
+        select(UserAnswer.question_id)
+        .where(UserAnswer.user_id == user.id)
+        .order_by(UserAnswer.answered_at.desc())
+        .limit(100)
+    )
+    recently_answered_ids = {r[0] for r in recently_answered_result.all()}
+
+    # Build question filter
     question_filter = and_(
         Question.exam_id == request.exam_id,
         Question.review_status == "approved",
@@ -139,15 +235,37 @@ async def create_session(
     if user.plan == "free":
         question_filter = and_(
             question_filter,
-            Question.difficulty <= 3,  # Only easier 50% of questions
+            Question.difficulty <= 3,
         )
 
+    # Fetch candidate questions, preferring those for selected concepts and not recently answered
     questions_result = await db.execute(
         select(Question)
         .where(question_filter)
-        .limit(max_questions)
+        .order_by(
+            # Prioritize questions for selected concepts
+            Question.id.notin_(recently_answered_ids).desc() if recently_answered_ids else Question.id,
+            func.random(),  # randomize within priority tiers
+        )
+        .limit(max_questions * 3)  # fetch extra, then filter
     )
-    questions = questions_result.scalars().all()
+    candidate_questions = questions_result.scalars().all()
+
+    # Sort: prefer questions for high-scoring concepts that haven't been recently answered
+    concept_rank = {cid: i for i, (cid, _, _) in enumerate(concept_scores)}
+
+    def question_priority(q: Question) -> tuple[int, int, float]:
+        # (not_recently_answered, concept_rank, random_jitter)
+        is_recent = q.id in recently_answered_ids
+        best_rank = min(
+            (concept_rank.get(cid, 999) for cid in (q.concept_ids or [])),
+            default=999,
+        )
+        import random as _rand
+        return (0 if is_recent else 1, -best_rank, _rand.random())
+
+    candidate_questions.sort(key=question_priority, reverse=True)
+    questions = candidate_questions[:max_questions]
 
     # Create session
     session = StudySession(

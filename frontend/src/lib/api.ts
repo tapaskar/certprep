@@ -17,7 +17,7 @@ import type {
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
 
 class ApiClient {
-  private token: string | null = "dev_user"; // Default for development
+  private token: string | null = null;
 
   setToken(token: string | null) {
     this.token = token;

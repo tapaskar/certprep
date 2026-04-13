@@ -21,18 +21,26 @@ export default function AuthLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isAuthenticated, isLoading, user, loadUser, logout } = useAuthStore();
+  const { isAuthenticated, isLoading, user, loadUser, logout, _hasHydrated } = useAuthStore();
+
+  // After Zustand hydrates persisted state, re-validate the token with the backend.
+  // The user sees the app immediately (no flash to login) because hydration restores
+  // isAuthenticated=true from localStorage. If the token turns out to be expired,
+  // loadUser() will set isAuthenticated=false and the redirect fires.
+  useEffect(() => {
+    if (_hasHydrated) {
+      loadUser();
+    }
+  }, [_hasHydrated, loadUser]);
 
   useEffect(() => {
-    loadUser();
-  }, [loadUser]);
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    // Only redirect AFTER hydration is complete — never during SSR or before
+    // the persisted state has been restored from localStorage.
+    if (_hasHydrated && !isLoading && !isAuthenticated) {
       const redirect = pathname !== "/dashboard" ? `?redirect=${encodeURIComponent(pathname)}` : "";
       router.push(`/login${redirect}`);
     }
-  }, [isLoading, isAuthenticated, router, pathname]);
+  }, [_hasHydrated, isLoading, isAuthenticated, router, pathname]);
 
   const navItems = user?.is_admin
     ? [...baseNavItems, { label: "Admin", href: "/admin", icon: Shield }]
@@ -43,8 +51,8 @@ export default function AuthLayout({
     router.push("/login");
   };
 
-  // Show loading while checking auth
-  if (isLoading) {
+  // Show loading while hydrating persisted state or validating token
+  if (!_hasHydrated || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-stone-100">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-amber-500 border-t-transparent" />
