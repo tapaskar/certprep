@@ -118,21 +118,26 @@ def generate_exam(exam_dir_name):
         print(f"  Domain: {domain_name} ({target} questions)")
         remaining = target
 
+        batch_num = 0
         while remaining > 0:
             batch = min(BATCH_SIZE, remaining)
+            # Cycle difficulty across batches: 2, 3, 4, 3, 5, ...
+            difficulty_cycle = [2, 3, 4, 3, 5]
+            difficulty = difficulty_cycle[batch_num % len(difficulty_cycle)]
+            batch_num += 1
 
             prompt = f"""You are a JSON API. Output ONLY valid JSON, no markdown, no explanation.
 
 Generate {batch} {exam_code} ({exam_name}) certification exam questions for domain: {domain_name}.
 
 Rules:
-- Scenario-based, difficulty 4/5
+- Scenario-based, difficulty {difficulty}/5
 - 4 options (A-D), exactly ONE correct
 - Each question tests a DIFFERENT concept within this domain
 - Include detailed explanations for why correct AND why each wrong option is wrong
 - Questions must be challenging and realistic, testing deep understanding
 
-{{"questions": [{{"domain_id":"{domain_id}","type":"scenario","difficulty":4,"stem":"A company...","options":[{{"id":"A","text":"...","is_correct":false}},{{"id":"B","text":"...","is_correct":true}},{{"id":"C","text":"...","is_correct":false}},{{"id":"D","text":"...","is_correct":false}}],"correct_answer":"B","explanation":{{"why_correct":"...","why_not_A":"...","why_not_C":"...","why_not_D":"..."}},"tags":["service1","concept1"],"estimated_time_seconds":120}}]}}"""
+{{"questions": [{{"domain_id":"{domain_id}","type":"scenario","difficulty":{difficulty},"stem":"A company...","options":[{{"id":"A","text":"...","is_correct":false}},{{"id":"B","text":"...","is_correct":true}},{{"id":"C","text":"...","is_correct":false}},{{"id":"D","text":"...","is_correct":false}}],"correct_answer":"B","explanation":{{"why_correct":"...","why_not_A":"...","why_not_C":"...","why_not_D":"..."}},"tags":["service1","concept1"],"estimated_time_seconds":120}}]}}"""
 
             try:
                 text = call_ollama(prompt)

@@ -11,7 +11,7 @@ interface ExamPickerProps {
 }
 
 type Level = "Foundational" | "Fundamentals" | "Associate" | "Professional" | "Specialty" | "Expert";
-type Provider = "all" | "aws" | "azure" | "gcp";
+type Provider = "all" | "aws" | "azure" | "gcp" | "comptia" | "nvidia";
 
 const levelByCode: Record<string, Level> = {
   // AWS
@@ -53,6 +53,27 @@ const levelByCode: Record<string, Level> = {
   "PCDE": "Professional",
   "PMLE": "Professional",
   "PCDOE": "Professional",
+  // CompTIA
+  "220-1201": "Foundational",
+  "220-1202": "Foundational",
+  "SY0-701": "Associate",
+  "N10-009": "Associate",
+  "XK0-005": "Associate",
+  "CV0-004": "Associate",
+  "CS0-003": "Professional",
+  "PT0-003": "Professional",
+  "CAS-005": "Expert",
+  // NVIDIA
+  "NCA-AIIO": "Associate",
+  "NCA-GENL": "Associate",
+  "NCA-GENM": "Associate",
+  "NCP-AAI": "Professional",
+  "NCP-AII": "Professional",
+  "NCP-AIN": "Professional",
+  "NCP-AIO": "Professional",
+  "NCP-ADS": "Professional",
+  "NCP-GENL": "Professional",
+  "NCP-OUSD": "Professional",
 };
 
 const levelOrder: Level[] = ["Foundational", "Fundamentals", "Associate", "Professional", "Expert", "Specialty"];
@@ -80,6 +101,8 @@ const providerTabs: { key: Provider; label: string }[] = [
   { key: "aws", label: "AWS" },
   { key: "azure", label: "Azure" },
   { key: "gcp", label: "GCP" },
+  { key: "comptia", label: "CompTIA" },
+  { key: "nvidia", label: "NVIDIA" },
 ];
 
 function getLevel(code: string | null): Level {

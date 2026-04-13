@@ -143,22 +143,30 @@ async def start_diagnostic(
     domains = exam.domains
 
     questions = []
+    used_ids: set[str] = set()
     for domain in domains:
         for difficulty in [1, 3, 5]:
-            result = await db.execute(
-                select(Question)
-                .where(
-                    and_(
-                        Question.exam_id == enrollment.exam_id,
-                        Question.domain_id == domain["id"],
-                        Question.difficulty == difficulty,
-                        Question.review_status == "approved",
+            # Try exact difficulty, then fall back to closest available
+            q = None
+            for d in [difficulty, 3, 2, 4, 1, 5]:
+                result = await db.execute(
+                    select(Question)
+                    .where(
+                        and_(
+                            Question.exam_id == enrollment.exam_id,
+                            Question.domain_id == domain["id"],
+                            Question.difficulty == d,
+                            Question.review_status == "approved",
+                            ~Question.id.in_(used_ids) if used_ids else True,
+                        )
                     )
+                    .limit(1)
                 )
-                .limit(1)
-            )
-            q = result.scalar_one_or_none()
+                q = result.scalar_one_or_none()
+                if q:
+                    break
             if q:
+                used_ids.add(q.id)
                 questions.append({
                     "id": q.id,
                     "stem": q.stem,
