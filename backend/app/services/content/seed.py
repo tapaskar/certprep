@@ -26,9 +26,16 @@ async def seed_exam(db: AsyncSession, data_dir: str) -> dict[str, int]:
         with open(exam_file) as f:
             exam_data = json.load(f)
 
+        exam_columns = {c.key for c in Exam.__table__.columns}
+        filtered_exam = {k: v for k, v in exam_data.items() if k in exam_columns}
         existing = await db.get(Exam, exam_data["id"])
-        if not existing:
-            exam = Exam(**exam_data)
+        if existing:
+            for key, value in filtered_exam.items():
+                if key != "id":
+                    setattr(existing, key, value)
+            counts["exams"] = 1
+        else:
+            exam = Exam(**filtered_exam)
             db.add(exam)
             counts["exams"] = 1
 
