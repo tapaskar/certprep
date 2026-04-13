@@ -1,6 +1,7 @@
 """Seed data loader — imports exam content from JSON fixtures."""
 
 import json
+import random
 from decimal import Decimal
 from pathlib import Path
 
@@ -86,6 +87,29 @@ async def seed_exam(db: AsyncSession, data_dir: str) -> dict[str, int]:
                 question = Question(**filtered)
                 db.add(question)
                 counts["questions"] += 1
+
+    # Auto-link questions with empty concept_ids to concepts in same domain
+    if concepts_file.exists() and questions_file.exists():
+        # Build domain → concept_ids map from seed data
+        domain_concepts: dict[str, list[str]] = {}
+        for cd in concepts_data:
+            did = cd.get("domain_id", "")
+            if did not in domain_concepts:
+                domain_concepts[did] = []
+            domain_concepts[did].append(cd["id"])
+
+        for qd in questions_data:
+            if not qd.get("concept_ids"):
+                domain_id = qd.get("domain_id", "")
+                candidates = domain_concepts.get(domain_id, [])
+                if candidates:
+                    # Assign 1-2 random concepts from the same domain
+                    linked = random.sample(candidates, min(2, len(candidates)))
+                    qd["concept_ids"] = linked
+                    # Update in DB too
+                    existing_q = await db.get(Question, qd["id"])
+                    if existing_q:
+                        existing_q.concept_ids = linked
 
     # Create dev user (for testing authenticated endpoints)
     result = await db.execute(select(User).where(User.clerk_id == "dev_user"))
