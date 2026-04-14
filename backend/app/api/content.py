@@ -1,4 +1,7 @@
-"""Content browsing endpoints — exams, concepts, decision trees, mind maps."""
+"""Content browsing endpoints — exams, concepts, decision trees, mind maps, roadmaps."""
+
+import json
+from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import and_, func, select
@@ -8,6 +11,8 @@ from app.models.exam import Concept, DecisionTree, Exam, MindMap, Question
 from app.models.progress import UserConceptMastery
 
 router = APIRouter(prefix="/content", tags=["content"])
+
+ROADMAPS_FILE = Path(__file__).parent.parent.parent / "data" / "roadmaps.json"
 
 
 @router.get("/exams")
@@ -28,6 +33,48 @@ async def list_exams(db: DB):
         }
         for e in exams
     ]
+
+
+@router.get("/{exam_id}/details")
+async def get_exam_details(exam_id: str, db: DB):
+    """Get full exam details including domains, tips, official resources."""
+    exam = await db.get(Exam, exam_id)
+    if not exam:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Exam not found")
+
+    # Count questions per domain
+    domain_question_counts = {}
+    result = await db.execute(
+        select(Question.domain_id, func.count())
+        .where(Question.exam_id == exam_id)
+        .group_by(Question.domain_id)
+    )
+    for domain_id, count in result.all():
+        domain_question_counts[domain_id] = count
+
+    total_questions_in_bank = sum(domain_question_counts.values())
+
+    return {
+        "id": exam.id,
+        "provider": exam.provider,
+        "name": exam.name,
+        "code": exam.code,
+        "description": exam.description,
+        "total_questions": exam.total_questions,
+        "time_limit_minutes": exam.time_limit_minutes,
+        "passing_score_pct": exam.passing_score_pct,
+        "domains": [
+            {
+                **d,
+                "question_count": domain_question_counts.get(d["id"], 0),
+            }
+            for d in exam.domains
+        ],
+        "exam_guide_url": exam.exam_guide_url,
+        "questions_in_bank": total_questions_in_bank,
+        "mock_exams_available": min(3, total_questions_in_bank // max(exam.total_questions, 1)),
+        "exam_info": exam.exam_info,
+    }
 
 
 @router.get("/{exam_id}/concepts")
@@ -147,3 +194,12 @@ async def get_decision_tree(exam_id: str, tree_id: str, db: DB):
         "trigger_pattern": dt.trigger_pattern,
         "tree_data": dt.tree_data,
     }
+
+
+@router.get("/roadmaps")
+async def get_roadmaps():
+    """Get certification career roadmaps."""
+    if ROADMAPS_FILE.exists():
+        with open(ROADMAPS_FILE) as f:
+            return json.load(f)
+    return []

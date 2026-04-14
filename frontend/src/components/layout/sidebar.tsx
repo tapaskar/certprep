@@ -9,6 +9,8 @@ import {
   Settings,
   GraduationCap,
   Layers,
+  Trophy,
+  Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProgressStore } from "@/stores/progress-store";
@@ -16,7 +18,9 @@ import { useProgressStore } from "@/stores/progress-store";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/study", label: "Study", icon: BookOpen },
+  { href: "/mock-exam", label: "Mock Exams", icon: Trophy },
   { href: "/flashcards", label: "Flashcards", icon: Layers },
+  { href: "/roadmaps", label: "Roadmaps", icon: Map },
   { href: "/progress", label: "Progress", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

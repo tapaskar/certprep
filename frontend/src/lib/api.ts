@@ -52,6 +52,51 @@ class ApiClient {
     return this.request(`/content/${examId}/concept/${conceptId}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getExamDetails(examId: string): Promise<any> {
+    return this.request(`/content/${examId}/details`);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getRoadmaps(): Promise<any[]> {
+    return this.request("/content/roadmaps");
+  }
+
+  // ── Mock Exam ──────────────────────────────────────────────────
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getMockExamStatus(examId: string): Promise<any> {
+    return this.request(`/mock-exam/available/${examId}`);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async startMockExam(examId: string, mockNumber: number): Promise<any> {
+    return this.request("/mock-exam/start", {
+      method: "POST",
+      body: JSON.stringify({ exam_id: examId, mock_number: mockNumber }),
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async submitMockAnswer(sessionId: string, questionId: string, selectedOption: string): Promise<any> {
+    return this.request(`/mock-exam/${sessionId}/answer`, {
+      method: "POST",
+      body: JSON.stringify({ question_id: questionId, selected_option: selectedOption }),
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async finishMockExam(sessionId: string): Promise<any> {
+    return this.request(`/mock-exam/${sessionId}/finish`, {
+      method: "POST",
+    });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getMockResults(sessionId: string): Promise<any> {
+    return this.request(`/mock-exam/${sessionId}/results`);
+  }
+
   // ── Study Session ──────────────────────────────────────────────
 
   async createSession(

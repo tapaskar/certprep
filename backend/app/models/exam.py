@@ -32,6 +32,7 @@ class Exam(Base, TimestampMixin):
 
     domains: Mapped[list] = mapped_column(JSONB, nullable=False)
     exam_guide_url: Mapped[str | None] = mapped_column(Text)
+    exam_info: Mapped[dict | None] = mapped_column(JSONB)
 
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     version: Mapped[int] = mapped_column(Integer, default=1)

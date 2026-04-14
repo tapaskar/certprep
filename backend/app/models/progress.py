@@ -219,3 +219,41 @@ class StudySession(Base):
         Index("idx_sessions_user", "user_id", "started_at"),
         Index("idx_sessions_exam", "exam_id"),
     )
+
+
+class MockExamSession(Base, UUIDPrimaryKey):
+    """Full-length timed mock exam with pass/fail scoring."""
+    __tablename__ = "mock_exam_sessions"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    exam_id: Mapped[str] = mapped_column(
+        String(50), ForeignKey("exams.id"), nullable=False
+    )
+    mock_number: Mapped[int] = mapped_column(Integer, nullable=False)  # 1, 2, or 3
+
+    started_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    ended_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    time_limit_minutes: Mapped[int] = mapped_column(Integer, nullable=False)
+
+    # Question plan — list of question IDs in order
+    question_ids: Mapped[list] = mapped_column(JSONB, nullable=False)
+    answers: Mapped[dict] = mapped_column(JSONB, default={})  # {question_id: selected_option}
+
+    total_questions: Mapped[int] = mapped_column(Integer, nullable=False)
+    questions_answered: Mapped[int] = mapped_column(Integer, default=0)
+    questions_correct: Mapped[int] = mapped_column(Integer, default=0)
+
+    score_pct: Mapped[Decimal | None] = mapped_column(Numeric(5, 2))
+    passed: Mapped[bool | None] = mapped_column(Boolean)
+    domain_scores: Mapped[dict | None] = mapped_column(JSONB)
+
+    completed: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    __table_args__ = (
+        Index("idx_mock_user", "user_id"),
+        Index("idx_mock_exam", "exam_id", "mock_number"),
+    )

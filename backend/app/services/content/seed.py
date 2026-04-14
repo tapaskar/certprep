@@ -40,6 +40,15 @@ async def seed_exam(db: AsyncSession, data_dir: str) -> dict[str, int]:
             db.add(exam)
             counts["exams"] = 1
 
+    # Load exam info
+    exam_info_file = data_path / "exam_info.json"
+    if exam_info_file.exists():
+        with open(exam_info_file) as f:
+            exam_info = json.load(f)
+        existing_exam = await db.get(Exam, exam_data["id"])
+        if existing_exam:
+            existing_exam.exam_info = exam_info
+
     # Load concepts
     concepts_file = data_path / "concepts.json"
     if concepts_file.exists():
