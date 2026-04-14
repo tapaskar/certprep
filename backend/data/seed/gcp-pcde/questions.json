@@ -7,20 +7,44 @@
     "difficulty": 4,
     "stem": "A global e-commerce platform processes 10,000 financial transactions per second across multiple continents. All transactions must be ACID compliant with global consistency. An account balance deducted in US must be immediately consistent when read in Asia. Which database meets these requirements?",
     "options": [
-      {"id": "A", "text": "Cloud SQL PostgreSQL with multi-region read replicas", "is_correct": false},
-      {"id": "B", "text": "Cloud Spanner in a multi-region configuration", "is_correct": true},
-      {"id": "C", "text": "Bigtable with multi-cluster replication", "is_correct": false},
-      {"id": "D", "text": "Firestore with strong consistency mode", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Cloud SQL PostgreSQL with multi-region read replicas",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Spanner in a multi-region configuration",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Bigtable with multi-cluster replication",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Firestore with strong consistency mode",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
-      "why_correct": "Cloud Spanner is the only database providing global ACID transactions with external consistency (stronger than serializable). Its multi-region configuration guarantees that a transaction committed in US is immediately consistent in Asia with 99.999% SLA — designed exactly for global financial applications.",
+      "why_correct": "Cloud Spanner is the only database providing global ACID transactions with external consistency (stronger than serializable). Its multi-region configuration guarantees that a transaction committed in US is immediately consistent in Asia with 99.999% SLA \u2014 designed exactly for global financial applications.",
       "why_not_A": "Cloud SQL multi-region read replicas use asynchronous replication; reads from Asia may see stale data after a US write. This violates the global consistency requirement.",
       "why_not_C": "Bigtable provides high throughput but no ACID guarantees across multiple rows or regions. It doesn't support financial transaction patterns.",
       "why_not_D": "Firestore provides strong consistency within a single region; it doesn't offer globally consistent multi-region ACID transactions at Spanner's scale."
     },
-    "concept_ids": ["pcde-spanner", "pcde-db-selection"],
-    "tags": ["cloud-spanner", "global-consistency", "acid-transactions", "financial"],
+    "concept_ids": [
+      "pcde-spanner",
+      "pcde-db-selection"
+    ],
+    "tags": [
+      "cloud-spanner",
+      "global-consistency",
+      "acid-transactions",
+      "financial"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -35,20 +59,43 @@
     "difficulty": 3,
     "stem": "A company needs to migrate their on-premises MySQL 8.0 database (1 TB) to Cloud SQL for MySQL with less than 5 minutes of downtime. The database must remain operational during migration. Which approach achieves this?",
     "options": [
-      {"id": "A", "text": "Export a MySQL dump file, upload to Cloud Storage, import to Cloud SQL — accept the downtime", "is_correct": false},
-      {"id": "B", "text": "Use Database Migration Service with continuous migration using binary log replication", "is_correct": true},
-      {"id": "C", "text": "Create a Cloud SQL instance, stop the source database, use mysqldump, and restore", "is_correct": false},
-      {"id": "D", "text": "Use Transfer Appliance to move the 1 TB MySQL data offline", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Export a MySQL dump file, upload to Cloud Storage, import to Cloud SQL \u2014 accept the downtime",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Database Migration Service with continuous migration using binary log replication",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a Cloud SQL instance, stop the source database, use mysqldump, and restore",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Transfer Appliance to move the 1 TB MySQL data offline",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
-      "why_correct": "DMS continuously replicates MySQL changes using binary log replication. The initial full dump is done while the source is running, then DMS replays binlog events to keep Cloud SQL in sync. The cutover window is seconds (stop writes, wait for replication to catch up, switch connection strings) — well within 5 minutes.",
-      "why_not_A": "A mysqldump + restore of 1 TB requires significant downtime during the dump, upload, and import phases — likely hours, not 5 minutes.",
+      "why_correct": "DMS continuously replicates MySQL changes using binary log replication. The initial full dump is done while the source is running, then DMS replays binlog events to keep Cloud SQL in sync. The cutover window is seconds (stop writes, wait for replication to catch up, switch connection strings) \u2014 well within 5 minutes.",
+      "why_not_A": "A mysqldump + restore of 1 TB requires significant downtime during the dump, upload, and import phases \u2014 likely hours, not 5 minutes.",
       "why_not_C": "Stopping the source database for any duration exceeds the 5-minute downtime requirement. This is a full maintenance window approach.",
-      "why_not_D": "Transfer Appliance is for offline petabyte-scale transfers; it takes days for shipping/processing — not suitable for minimal downtime migration."
+      "why_not_D": "Transfer Appliance is for offline petabyte-scale transfers; it takes days for shipping/processing \u2014 not suitable for minimal downtime migration."
     },
-    "concept_ids": ["pcde-database-migration"],
-    "tags": ["dms", "mysql", "cloud-sql", "minimal-downtime"],
+    "concept_ids": [
+      "pcde-database-migration"
+    ],
+    "tags": [
+      "dms",
+      "mysql",
+      "cloud-sql",
+      "minimal-downtime"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -63,23 +110,46 @@
     "difficulty": 4,
     "stem": "A Bigtable table stores user activity events with row key 'user_id#timestamp'. A Key Visualizer report shows a large hotspot concentrated on rows with timestamps in the last minute. What is the root cause and the fix?",
     "options": [
-      {"id": "A", "text": "Too many column families; reduce to one column family", "is_correct": false},
-      {"id": "B", "text": "Ascending timestamp suffix causes all recent writes to land on the same tablet; use reverse timestamp", "is_correct": true},
-      {"id": "C", "text": "The user_id prefix is too short; use a longer unique identifier", "is_correct": false},
-      {"id": "D", "text": "The Bigtable cluster has too few nodes; scale up to handle the hotspot", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Too many column families; reduce to one column family",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Ascending timestamp suffix causes all recent writes to land on the same tablet; use reverse timestamp",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The user_id prefix is too short; use a longer unique identifier",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The Bigtable cluster has too few nodes; scale up to handle the hotspot",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Bigtable stores rows in lexicographic order. Ascending timestamps (most recent = largest value) cause all current writes to concentrate on the last tablet (the one with the highest row keys), creating a write hotspot. Reverse timestamp (Long.MAX_VALUE - timestamp) makes recent rows sort to the BEGINNING, distributing writes.",
       "why_not_A": "Column families don't cause write hotspots. The hotspot is in row key space distribution, not schema structure.",
       "why_not_C": "Longer user_id doesn't fix the timestamp hotspot. The user_id prefix helps distribute users, but if timestamps are ascending, recent events for ALL users still land on the last tablet.",
-      "why_not_D": "Adding nodes increases overall throughput but doesn't fix key-level hotspots — one tablet still handles all recent writes regardless of cluster size."
+      "why_not_D": "Adding nodes increases overall throughput but doesn't fix key-level hotspots \u2014 one tablet still handles all recent writes regardless of cluster size."
     },
-    "concept_ids": ["pcde-bigtable-design"],
-    "tags": ["bigtable", "key-visualizer", "hotspot", "row-key-design"],
+    "concept_ids": [
+      "pcde-bigtable-design"
+    ],
+    "tags": [
+      "bigtable",
+      "key-visualizer",
+      "hotspot",
+      "row-key-design"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.08,
     "review_status": "approved"
   },
@@ -91,24 +161,48 @@
     "difficulty": 3,
     "stem": "A Cloud SQL PostgreSQL instance is in us-central1 (primary with HA standby). The company needs to ensure the database remains accessible if the entire us-central1 region fails, with RPO of 1 hour and RTO of 4 hours. What configuration achieves this?",
     "options": [
-      {"id": "A", "text": "The HA standby instance in a different zone provides regional failover automatically", "is_correct": false},
-      {"id": "B", "text": "Create a cross-region read replica in us-east1; promote it manually during a regional failure", "is_correct": true},
-      {"id": "C", "text": "Enable Cloud SQL automated backups and restore to a new instance in us-east1 during failure", "is_correct": false},
-      {"id": "D", "text": "Migrate to Cloud Spanner multi-region for automatic regional failover", "is_correct": false}
+      {
+        "id": "A",
+        "text": "The HA standby instance in a different zone provides regional failover automatically",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a cross-region read replica in us-east1; promote it manually during a regional failure",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Cloud SQL automated backups and restore to a new instance in us-east1 during failure",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Migrate to Cloud Spanner multi-region for automatic regional failover",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
-      "why_correct": "A cross-region read replica in us-east1 receives continuous asynchronous replication from the primary. During a regional failure, operators promote the replica to a standalone primary (within hours — meeting RTO of 4 hours). Asynchronous replication means RPO is minutes to hours, but 1 hour RPO is achievable with monitoring.",
-      "why_not_A": "Cloud SQL HA standby is within the same region (different zone). It provides zone-level redundancy but does NOT protect against full regional failures — both primary and standby are in us-central1.",
+      "why_correct": "A cross-region read replica in us-east1 receives continuous asynchronous replication from the primary. During a regional failure, operators promote the replica to a standalone primary (within hours \u2014 meeting RTO of 4 hours). Asynchronous replication means RPO is minutes to hours, but 1 hour RPO is achievable with monitoring.",
+      "why_not_A": "Cloud SQL HA standby is within the same region (different zone). It provides zone-level redundancy but does NOT protect against full regional failures \u2014 both primary and standby are in us-central1.",
       "why_not_C": "Restoring from backup (which runs once daily) could have RPO of up to 24 hours, exceeding the 1-hour RPO requirement. A read replica provides much lower RPO.",
       "why_not_D": "Migrating to Spanner is a large architectural change. The question asks for a DR configuration of the existing Cloud SQL setup."
     },
-    "concept_ids": ["pcde-disaster-recovery", "pcde-cloud-sql-ha"],
-    "tags": ["cloud-sql", "cross-region-replica", "disaster-recovery", "rpo-rto"],
+    "concept_ids": [
+      "pcde-disaster-recovery",
+      "pcde-cloud-sql-ha"
+    ],
+    "tags": [
+      "cloud-sql",
+      "cross-region-replica",
+      "disaster-recovery",
+      "rpo-rto"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -119,20 +213,44 @@
     "difficulty": 3,
     "stem": "A startup is building a mobile app where users can store personal notes. Notes are JSON documents with fields like title, content, tags, and created_at. The team expects 100K users with occasional writes and frequent reads. Which database is most appropriate for the lowest operational overhead?",
     "options": [
-      {"id": "A", "text": "Cloud SQL PostgreSQL with a JSONB column for note data", "is_correct": false},
-      {"id": "B", "text": "Bigtable with user_id as row key and note fields as column qualifiers", "is_correct": false},
-      {"id": "C", "text": "Firestore in Native mode — serverless document database with automatic scaling and offline sync", "is_correct": true},
-      {"id": "D", "text": "Cloud Spanner with a notes table and ARRAY type for tags", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Cloud SQL PostgreSQL with a JSONB column for note data",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Bigtable with user_id as row key and note fields as column qualifiers",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Firestore in Native mode \u2014 serverless document database with automatic scaling and offline sync",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Cloud Spanner with a notes table and ARRAY type for tags",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
       "why_correct": "Firestore is serverless (zero operational overhead), natively supports JSON document model, scales automatically from 0 to millions of users, offers offline sync for mobile apps, and has a Firebase SDK for easy iOS/Android integration. Perfect for a startup mobile app with 100K users.",
       "why_not_A": "Cloud SQL requires managing an instance (sizing, patching, HA configuration). For a startup, this operational overhead is unnecessary when Firestore provides the same functionality serverlessly.",
-      "why_not_B": "Bigtable is optimized for high-throughput analytics, not mobile document storage. It has no offline sync SDK and requires capacity planning — not appropriate for a startup at this scale.",
+      "why_not_B": "Bigtable is optimized for high-throughput analytics, not mobile document storage. It has no offline sync SDK and requires capacity planning \u2014 not appropriate for a startup at this scale.",
       "why_not_D": "Spanner is designed for high-scale globally consistent ACID workloads. It's expensive and complex for a 100K user startup storing personal notes."
     },
-    "concept_ids": ["pcde-firestore-design", "pcde-db-selection"],
-    "tags": ["firestore", "mobile-app", "serverless", "document-db"],
+    "concept_ids": [
+      "pcde-firestore-design",
+      "pcde-db-selection"
+    ],
+    "tags": [
+      "firestore",
+      "mobile-app",
+      "serverless",
+      "document-db"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -147,20 +265,43 @@
     "difficulty": 3,
     "stem": "A data engineering team wants to run SQL analytical queries joining Cloud SQL (operational transactions) with BigQuery (historical warehouse data). The Cloud SQL table has 100 million rows. Which BigQuery feature enables this without loading all Cloud SQL data into BigQuery?",
     "options": [
-      {"id": "A", "text": "BigQuery Data Transfer Service to schedule daily loads from Cloud SQL", "is_correct": false},
-      {"id": "B", "text": "BigQuery federated queries connecting to the Cloud SQL source directly", "is_correct": true},
-      {"id": "C", "text": "Dataflow pipeline to stream Cloud SQL changes to BigQuery continuously", "is_correct": false},
-      {"id": "D", "text": "BigQuery Storage API to read directly from Cloud SQL", "is_correct": false}
+      {
+        "id": "A",
+        "text": "BigQuery Data Transfer Service to schedule daily loads from Cloud SQL",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "BigQuery federated queries connecting to the Cloud SQL source directly",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Dataflow pipeline to stream Cloud SQL changes to BigQuery continuously",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "BigQuery Storage API to read directly from Cloud SQL",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "BigQuery federated queries can connect to Cloud SQL (MySQL, PostgreSQL) and run SQL joins between Cloud SQL tables and BigQuery native tables in a single query without pre-loading the data. This provides the most flexibility for ad-hoc analysis.",
       "why_not_A": "Daily data transfer loads a full or incremental copy of Cloud SQL data; it introduces up to 24-hour latency and requires maintaining the copy. Federated queries are more flexible for ad-hoc analysis.",
-      "why_not_C": "A Dataflow streaming pipeline is a valid approach for real-time sync but requires ongoing compute costs and engineering effort — more than needed for federated analytical queries.",
+      "why_not_C": "A Dataflow streaming pipeline is a valid approach for real-time sync but requires ongoing compute costs and engineering effort \u2014 more than needed for federated analytical queries.",
       "why_not_D": "BigQuery Storage API is for reading BigQuery data from external applications; it doesn't connect to Cloud SQL."
     },
-    "concept_ids": ["pcde-bigquery-analytics"],
-    "tags": ["bigquery", "federated-queries", "cloud-sql", "analytics"],
+    "concept_ids": [
+      "pcde-bigquery-analytics"
+    ],
+    "tags": [
+      "bigquery",
+      "federated-queries",
+      "cloud-sql",
+      "analytics"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -175,20 +316,42 @@
     "difficulty": 3,
     "stem": "A Cloud SQL PostgreSQL database serving a production web application is experiencing intermittent slow queries (> 2 seconds) that weren't present last month. What is the most efficient first step to diagnose the root cause?",
     "options": [
-      {"id": "A", "text": "Increase the Cloud SQL instance to a larger machine type", "is_correct": false},
-      {"id": "B", "text": "Use Cloud SQL Insights to analyze query performance, identify slow queries, and check wait events", "is_correct": true},
-      {"id": "C", "text": "Enable Point-in-Time Recovery to restore the database to last month's state", "is_correct": false},
-      {"id": "D", "text": "Failover to the HA standby instance to test if the primary has hardware issues", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Increase the Cloud SQL instance to a larger machine type",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud SQL Insights to analyze query performance, identify slow queries, and check wait events",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Point-in-Time Recovery to restore the database to last month's state",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Failover to the HA standby instance to test if the primary has hardware issues",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Cloud SQL Insights provides query performance analysis specific to each SQL statement including average latency, execution count, plan details, and wait events (Lock/IO/CPU). Since the issue started recently, looking at slow query patterns and wait events is the diagnostic first step.",
-      "why_not_A": "Increasing machine type without identifying the bottleneck may not fix the issue and increases cost. The bottleneck could be query design (missing index), locking, or a parameter change — not insufficient CPU.",
+      "why_not_A": "Increasing machine type without identifying the bottleneck may not fix the issue and increases cost. The bottleneck could be query design (missing index), locking, or a parameter change \u2014 not insufficient CPU.",
       "why_not_C": "PITR would restore data but not fix application performance issues. It's a DR tool, not a diagnostic tool.",
       "why_not_D": "Failing over to the standby tests hardware but would cause unnecessary downtime. If the issue is a SQL query problem, failover won't help."
     },
-    "concept_ids": ["pcde-performance-tuning"],
-    "tags": ["cloud-sql-insights", "performance-tuning", "slow-queries"],
+    "concept_ids": [
+      "pcde-performance-tuning"
+    ],
+    "tags": [
+      "cloud-sql-insights",
+      "performance-tuning",
+      "slow-queries"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -203,24 +366,47 @@
     "difficulty": 3,
     "stem": "A company is migrating from Oracle to AlloyDB for PostgreSQL. Their Oracle schema uses Oracle-specific syntax including CONNECT BY for hierarchical queries and TO_DATE functions. What is the most efficient tool for handling the SQL conversion?",
     "options": [
-      {"id": "A", "text": "Manually rewrite all Oracle SQL to PostgreSQL syntax", "is_correct": false},
-      {"id": "B", "text": "Use Database Migration Service's conversion workspace for Oracle-to-PostgreSQL SQL assessment and translation", "is_correct": true},
-      {"id": "C", "text": "Use Cloud Dataflow to transform Oracle data before loading into AlloyDB", "is_correct": false},
-      {"id": "D", "text": "Use ora2pg tool for schema extraction and then manually tune the output", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Manually rewrite all Oracle SQL to PostgreSQL syntax",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Database Migration Service's conversion workspace for Oracle-to-PostgreSQL SQL assessment and translation",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Cloud Dataflow to transform Oracle data before loading into AlloyDB",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use ora2pg tool for schema extraction and then manually tune the output",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
-      "why_correct": "DMS conversion workspace provides Oracle to PostgreSQL schema and SQL translation, including Oracle-specific syntax detection. It identifies incompatible SQL patterns and provides automated translation where possible, flagging complex elements (like CONNECT BY) for manual review — the most efficient starting point.",
+      "why_correct": "DMS conversion workspace provides Oracle to PostgreSQL schema and SQL translation, including Oracle-specific syntax detection. It identifies incompatible SQL patterns and provides automated translation where possible, flagging complex elements (like CONNECT BY) for manual review \u2014 the most efficient starting point.",
       "why_not_A": "Manual rewriting is time-consuming and error-prone. Automated tools should be used first to translate what they can, leaving only complex patterns for manual review.",
       "why_not_C": "Dataflow handles data transformation/movement, not SQL syntax conversion or schema migration.",
       "why_not_D": "ora2pg is a valid open-source alternative, but the question asks about GCP-native tools. DMS conversion workspace is the Google-native approach."
     },
-    "concept_ids": ["pcde-cloudsql-migration-tools"],
-    "tags": ["oracle-migration", "alloydb", "dms", "sql-conversion"],
+    "concept_ids": [
+      "pcde-cloudsql-migration-tools"
+    ],
+    "tags": [
+      "oracle-migration",
+      "alloydb",
+      "dms",
+      "sql-conversion"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -231,10 +417,26 @@
     "difficulty": 2,
     "stem": "A Cloud Spanner table stores order records. The primary key is ORDER_ID which is generated as a monotonically increasing integer (1, 2, 3...). What is the primary concern with this design?",
     "options": [
-      {"id": "A", "text": "Spanner doesn't support integer primary keys", "is_correct": false},
-      {"id": "B", "text": "Sequential integer keys create a write hotspot on the last split, limiting write throughput", "is_correct": true},
-      {"id": "C", "text": "Integer keys cannot be used in WHERE clauses for filtering", "is_correct": false},
-      {"id": "D", "text": "Monotonically increasing keys use more storage than UUID keys", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Spanner doesn't support integer primary keys",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Sequential integer keys create a write hotspot on the last split, limiting write throughput",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Integer keys cannot be used in WHERE clauses for filtering",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Monotonically increasing keys use more storage than UUID keys",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -243,8 +445,15 @@
       "why_not_C": "Integer keys work perfectly in WHERE clauses for filtering and range queries.",
       "why_not_D": "Storage differences between integer and UUID keys are negligible. The concern is performance (write distribution), not storage."
     },
-    "concept_ids": ["pcde-spanner"],
-    "tags": ["spanner", "hotspot", "primary-key", "sequential-keys"],
+    "concept_ids": [
+      "pcde-spanner"
+    ],
+    "tags": [
+      "spanner",
+      "hotspot",
+      "primary-key",
+      "sequential-keys"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -259,10 +468,26 @@
     "difficulty": 3,
     "stem": "A Cloud SQL instance is at 95% CPU during business hours due to read-heavy analytics queries. Write operations are minimal. What is the most cost-effective solution to reduce primary instance load?",
     "options": [
-      {"id": "A", "text": "Upgrade the primary instance to a higher machine type with more vCPUs", "is_correct": false},
-      {"id": "B", "text": "Create read replicas and direct analytics queries to the replicas", "is_correct": true},
-      {"id": "C", "text": "Migrate the analytics queries to BigQuery by loading a copy of the data daily", "is_correct": false},
-      {"id": "D", "text": "Enable Cloud SQL automatic storage increase to reduce I/O pressure", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Upgrade the primary instance to a higher machine type with more vCPUs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create read replicas and direct analytics queries to the replicas",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Migrate the analytics queries to BigQuery by loading a copy of the data daily",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable Cloud SQL automatic storage increase to reduce I/O pressure",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -271,8 +496,15 @@
       "why_not_C": "Loading data to BigQuery daily adds an hour of staleness to analytics. If analysts can tolerate this delay, it's valid, but it's more complex than adding a read replica.",
       "why_not_D": "Storage auto-increase adds disk space; it doesn't affect CPU. CPU is at 95%, not disk I/O."
     },
-    "concept_ids": ["pcde-cloud-sql-ha"],
-    "tags": ["cloud-sql", "read-replica", "read-scaling", "analytics"],
+    "concept_ids": [
+      "pcde-cloud-sql-ha"
+    ],
+    "tags": [
+      "cloud-sql",
+      "read-replica",
+      "read-scaling",
+      "analytics"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -287,20 +519,43 @@
     "difficulty": 2,
     "stem": "An application uses Memorystore for Redis for session caching. During a Redis failover (zone failure), sessions are lost and users are logged out. Which Redis configuration prevents this?",
     "options": [
-      {"id": "A", "text": "Enable persistence (RDB or AOF) on the Basic Tier Redis instance", "is_correct": false},
-      {"id": "B", "text": "Upgrade to Memorystore Standard Tier with high availability across two zones", "is_correct": true},
-      {"id": "C", "text": "Set Redis maxmemory-policy to allkeys-lru to preserve most-used sessions", "is_correct": false},
-      {"id": "D", "text": "Configure application-level session replication between two Redis instances", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable persistence (RDB or AOF) on the Basic Tier Redis instance",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Upgrade to Memorystore Standard Tier with high availability across two zones",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Set Redis maxmemory-policy to allkeys-lru to preserve most-used sessions",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure application-level session replication between two Redis instances",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Memorystore Standard Tier maintains a replica in a different zone with automatic failover. During a zone failure, Memorystore promotes the replica to primary, typically within 1-2 minutes, preserving session data. Basic Tier is single-node with no replication.",
-      "why_not_A": "Persistence (RDB/AOF) saves data to disk for recovery after a full restart but doesn't help during a live failover — there's still a period of unavailability. Also, Basic Tier supports limited persistence options.",
+      "why_not_A": "Persistence (RDB/AOF) saves data to disk for recovery after a full restart but doesn't help during a live failover \u2014 there's still a period of unavailability. Also, Basic Tier supports limited persistence options.",
       "why_not_C": "LRU eviction policy manages memory capacity; it doesn't provide HA or prevent data loss during a zone failure.",
       "why_not_D": "Application-level session replication adds complexity and requires maintaining two Redis instances manually. The Standard Tier handles this automatically."
     },
-    "concept_ids": ["pcde-memorystore"],
-    "tags": ["memorystore", "redis", "high-availability", "session-management"],
+    "concept_ids": [
+      "pcde-memorystore"
+    ],
+    "tags": [
+      "memorystore",
+      "redis",
+      "high-availability",
+      "session-management"
+    ],
     "estimated_time_seconds": 60,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -315,20 +570,42 @@
     "difficulty": 3,
     "stem": "A team wants to enable developers to connect to Cloud SQL from their laptops securely. The DBA does not want to manage IP allowlists or expose the database to the public internet. What is the recommended approach?",
     "options": [
-      {"id": "A", "text": "Add the Cloud SQL instance's public IP to a VPC subnet and use internal IPs", "is_correct": false},
-      {"id": "B", "text": "Use Cloud SQL Auth Proxy with IAM authentication on each developer's laptop", "is_correct": true},
-      {"id": "C", "text": "Create a Cloud Interconnect connection from each developer's home network", "is_correct": false},
-      {"id": "D", "text": "Enable SSL on Cloud SQL and distribute client certificates to developers", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Add the Cloud SQL instance's public IP to a VPC subnet and use internal IPs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud SQL Auth Proxy with IAM authentication on each developer's laptop",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a Cloud Interconnect connection from each developer's home network",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable SSL on Cloud SQL and distribute client certificates to developers",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Cloud SQL Auth Proxy authenticates using the developer's GCP IAM credentials (gcloud auth), establishes an encrypted tunnel to Cloud SQL, and exposes a local TCP port. No IP allowlists, no public IP management, and no certificate distribution required. Each developer's access is controlled via IAM roles.",
       "why_not_A": "Cloud SQL public IP remains on the internet; adding it to a subnet doesn't make it private. IP allowlists are still required for security.",
       "why_not_C": "Cloud Interconnect is for enterprise network-to-network connectivity; it's completely inappropriate for individual developer laptop access.",
-      "why_not_D": "SSL with client certificates requires distributing and managing certificates for each developer, rotating them regularly — the operational overhead the DBA wants to avoid."
+      "why_not_D": "SSL with client certificates requires distributing and managing certificates for each developer, rotating them regularly \u2014 the operational overhead the DBA wants to avoid."
     },
-    "concept_ids": ["pcde-db-security"],
-    "tags": ["cloud-sql-auth-proxy", "developer-access", "iam-authentication"],
+    "concept_ids": [
+      "pcde-db-security"
+    ],
+    "tags": [
+      "cloud-sql-auth-proxy",
+      "developer-access",
+      "iam-authentication"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -343,20 +620,44 @@
     "difficulty": 3,
     "stem": "A company needs to replicate changes from a production Cloud SQL PostgreSQL instance to BigQuery in near-real-time (within 5 minutes) for analytics. New rows are inserted frequently; some rows are updated. Which solution achieves this with minimal custom code?",
     "options": [
-      {"id": "A", "text": "Schedule a Cloud Composer DAG to run hourly and load new rows from Cloud SQL to BigQuery", "is_correct": false},
-      {"id": "B", "text": "Configure Datastream to replicate changes from Cloud SQL to BigQuery using CDC", "is_correct": true},
-      {"id": "C", "text": "Use a Cloud Function triggered by Cloud Scheduler every 5 minutes to sync rows", "is_correct": false},
-      {"id": "D", "text": "Enable BigQuery federated queries and connect directly to Cloud SQL", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Schedule a Cloud Composer DAG to run hourly and load new rows from Cloud SQL to BigQuery",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure Datastream to replicate changes from Cloud SQL to BigQuery using CDC",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Cloud Function triggered by Cloud Scheduler every 5 minutes to sync rows",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable BigQuery federated queries and connect directly to Cloud SQL",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
-      "why_correct": "Datastream is purpose-built for CDC (Change Data Capture) replication from Cloud SQL (MySQL, PostgreSQL) to BigQuery. It captures inserts, updates, and deletes continuously using WAL/binlog, with typical latency under 60 seconds — well within the 5-minute requirement. Minimal custom code needed.",
+      "why_correct": "Datastream is purpose-built for CDC (Change Data Capture) replication from Cloud SQL (MySQL, PostgreSQL) to BigQuery. It captures inserts, updates, and deletes continuously using WAL/binlog, with typical latency under 60 seconds \u2014 well within the 5-minute requirement. Minimal custom code needed.",
       "why_not_A": "Cloud Composer with hourly DAGs provides 1-hour latency at minimum, far exceeding the 5-minute requirement.",
       "why_not_C": "A Cloud Function checking every 5 minutes with SQL queries to detect changes requires change tracking logic (timestamps, CDC tables), is fragile, and misses delete operations.",
-      "why_not_D": "BigQuery federated queries read from Cloud SQL at query time — they provide current state, not historical changes, and have performance limitations for frequent analytical queries."
+      "why_not_D": "BigQuery federated queries read from Cloud SQL at query time \u2014 they provide current state, not historical changes, and have performance limitations for frequent analytical queries."
     },
-    "concept_ids": ["pcde-database-migration"],
-    "tags": ["datastream", "cdc", "cloud-sql", "bigquery", "real-time"],
+    "concept_ids": [
+      "pcde-database-migration"
+    ],
+    "tags": [
+      "datastream",
+      "cdc",
+      "cloud-sql",
+      "bigquery",
+      "real-time"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -371,10 +672,26 @@
     "difficulty": 2,
     "stem": "A company runs a PostgreSQL workload requiring 200K transactions per second with complex analytical queries mixed with OLTP. Standard Cloud SQL performance is insufficient. Which Google Cloud database handles both workloads on PostgreSQL?",
     "options": [
-      {"id": "A", "text": "Cloud SQL with the maximum 96 vCPU machine type", "is_correct": false},
-      {"id": "B", "text": "AlloyDB for PostgreSQL with the columnar engine enabled", "is_correct": true},
-      {"id": "C", "text": "Cloud Spanner with PostgreSQL dialect", "is_correct": false},
-      {"id": "D", "text": "Cloud SQL with read replicas for analytics", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Cloud SQL with the maximum 96 vCPU machine type",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AlloyDB for PostgreSQL with the columnar engine enabled",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Spanner with PostgreSQL dialect",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud SQL with read replicas for analytics",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -383,8 +700,15 @@
       "why_not_C": "Cloud Spanner PostgreSQL dialect doesn't provide native PostgreSQL compatibility for existing PostgreSQL applications. AlloyDB is fully PostgreSQL-compatible.",
       "why_not_D": "Read replicas offload read traffic but still have a single primary throughput bottleneck for writes. They also create staleness issues for mixed OLTP+analytics patterns."
     },
-    "concept_ids": ["pcde-alloydb"],
-    "tags": ["alloydb", "htap", "postgresql", "performance"],
+    "concept_ids": [
+      "pcde-alloydb"
+    ],
+    "tags": [
+      "alloydb",
+      "htap",
+      "postgresql",
+      "performance"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -399,24 +723,2076 @@
     "difficulty": 3,
     "stem": "A team deploys a new version of their application with a database schema change: adding a NOT NULL column 'status' to the Cloud SQL PostgreSQL 'orders' table. The application expects existing rows to have status = 'pending'. How should this be deployed with zero downtime?",
     "options": [
-      {"id": "A", "text": "Run ALTER TABLE orders ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pending' during a maintenance window", "is_correct": false},
-      {"id": "B", "text": "Use expand-contract: first ADD COLUMN status VARCHAR(20) DEFAULT 'pending', deploy new code, then add NOT NULL constraint once all rows have values", "is_correct": true},
-      {"id": "C", "text": "Stop the application, run the migration, restart the application", "is_correct": false},
-      {"id": "D", "text": "Create a new table with the column and switch application to use it", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Run ALTER TABLE orders ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'pending' during a maintenance window",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use expand-contract: first ADD COLUMN status VARCHAR(20) DEFAULT 'pending', deploy new code, then add NOT NULL constraint once all rows have values",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Stop the application, run the migration, restart the application",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a new table with the column and switch application to use it",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "The expand-contract pattern: (1) Add column with DEFAULT (existing rows get 'pending', new code works with the column), (2) deploy new application code that writes status, (3) once all rows have values, add NOT NULL constraint. This avoids locking tables for large migrations and maintains backward compatibility during rollout.",
       "why_not_A": "Adding NOT NULL without DEFAULT fails if existing rows would violate the constraint. With DEFAULT it works, but on large tables, this locks the table briefly in PostgreSQL. The expand-contract approach is safer for zero-downtime.",
-      "why_not_C": "Stopping the application for a schema change causes downtime — the requirement is zero downtime.",
-      "why_not_D": "Creating a new table requires migrating all data and switching queries — much more complex than the expand-contract migration."
+      "why_not_C": "Stopping the application for a schema change causes downtime \u2014 the requirement is zero downtime.",
+      "why_not_D": "Creating a new table requires migrating all data and switching queries \u2014 much more complex than the expand-contract migration."
     },
-    "concept_ids": ["pcde-schema-migration"],
-    "tags": ["schema-migration", "zero-downtime", "expand-contract", "postgresql"],
+    "concept_ids": [
+      "pcde-schema-migration"
+    ],
+    "tags": [
+      "schema-migration",
+      "zero-downtime",
+      "expand-contract",
+      "postgresql"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A retail company is migrating its on-premises MySQL database to Cloud SQL. They expect a steady growth in read traffic as their customer base expands globally. They want to ensure that read operations do not impact the performance of write operations. Which design pattern should they implement to achieve this scalability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the machine type of the primary instance to a higher vCPU and RAM configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure Cloud SQL read replicas and distribute read traffic across them using a load balancer or application-level routing.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        ":text": "Enable High Availability (HA) by configuring a standby instance in a different zone.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Migrate the database to Cloud Spanner to leverage its built-in horizontal scaling.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Read replicas allow the offloading of read-only queries from the primary instance, effectively scaling read capacity horizontally and preventing read operations from contending with write operations for resources.",
+      "why_not_A": "Vertical scaling (increasing machine size) helps but doesn't separate read/write traffic and eventually hits a hardware ceiling.",
+      "why_not_C": "HA standby instances are for failover and disaster recovery; they do not serve read traffic in Cloud SQL.",
+      "why_not_D": "While Spanner scales horizontally, the scenario asks for a design pattern for the current migration to Cloud SQL; migrating to Spanner is a complete architecture change and may be overkill for this specific requirement."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Read Replicas",
+      "Read Scalability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-016",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A fintech startup is designing a global payment system that requires strong consistency across multiple continents and must survive a regional outage without data loss. Which database solution provides the best balance of global scalability and high availability for this use case?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud SQL with cross-region read replicas.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Bigtable with multi-cluster routing enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Spanner with a multi-region configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Firestore in Datastore mode with a single-region setup.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Spanner is designed for global scale and provides synchronous replication across regions, ensuring strong consistency and high availability (up to 99.999% SLA) even during regional failures.",
+      "why_not_A": "Cloud SQL read replicas are asynchronous, meaning they provide eventual consistency, not strong consistency across regions.",
+      "why_not_B": "Bigtable is a NoSQL service that provides eventual consistency in multi-cluster setups and is not designed for the strong ACID consistency required by payment systems.",
+      "why_not_D": "A single-region setup cannot survive a regional outage and does not provide global distribution."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Global Consistency",
+      "Regional Availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-017",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An application uses Cloud Firestore to store user profiles. As the user base grows, the team notices a 'hotspotting' issue where a large number of writes to a small range of document IDs are causing latency spikes. How should they redesign their document ID strategy to resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of indexes on the collection to speed up lookups.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch from Firestore to Cloud Bigtable for all profile storage.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a sequential numbering system for document IDs to ensure order.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use randomly generated IDs or append a random suffix to IDs to distribute writes across the keyspace.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Firestore distributes data across tablets based on document IDs. Sequential IDs create 'hotspots' because writes hit the same tablet. Random IDs distribute writes across multiple tablets, increasing throughput.",
+      "why_not_A": "Indexes help with query performance but do not solve write hotspotting caused by the physical distribution of data.",
+      "why_not_B": "While Bigtable is powerful, changing the entire database engine is an extreme measure when the issue can be solved by changing the ID strategy in Firestore.",
+      "why_not_C": "Sequential numbering is exactly what causes hotspotting in distributed databases like Firestore and Spanner."
+    },
+    "tags": [
+      "Firestore",
+      "Hotspotting",
+      "Data Distribution"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-018",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is deploying a Cloud SQL for PostgreSQL instance. To ensure the database can recover from a zone failure with minimal downtime and no data loss, which configuration is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable automated backups and point-in-time recovery (PITR).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable High Availability (HA) with regional availability.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a cross-region read replica and promote it manually during failure.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a larger machine type to ensure the instance can handle the failover load.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud SQL HA uses a regional persistent disk that synchronously replicates data to a standby instance in a different zone, allowing for automatic failover with minimal downtime and zero data loss.",
+      "why_not_A": "Backups and PITR are for data recovery from corruption or accidental deletion, not for providing high availability or minimizing downtime during a zone failure.",
+      "why_not_C": "Cross-region replicas are asynchronous; promoting one manually leads to potential data loss (RPO > 0) and significant downtime (RTO).",
+      "why_not_D": "Machine size affects performance, not the availability or the mechanism of failover."
+    },
+    "tags": [
+      "Cloud SQL",
+      "High Availability",
+      "Disaster Recovery"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-019",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A media company stores a massive amount of time-series telemetry data from IoT devices. They need a solution that can handle millions of writes per second and provide low-latency reads for specific device IDs. Which database is the most scalable choice for this workload?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud SQL for MySQL with sharding implemented at the application level.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Spanner with a multi-region configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Bigtable.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Firestore in Native mode.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Bigtable is a sparsely populated, sorted map designed specifically for high-throughput time-series and analytical workloads, capable of scaling to millions of writes per second with sub-10ms latency.",
+      "why_not_A": "Application-level sharding in Cloud SQL is complex to manage, difficult to scale, and cannot match the native performance of Bigtable for this volume of data.",
+      "why_not_B": "While Spanner is scalable, it is optimized for relational consistency and transactions. For raw IoT telemetry throughput, Bigtable is more cost-effective and performant.",
+      "why_not_D": "Firestore is a document store; while scalable, it is not optimized for the extreme write throughput and sequential scan patterns typical of IoT time-series data."
+    },
+    "tags": [
+      "Cloud Bigtable",
+      "Time-Series",
+      "High Throughput"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-020",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A global retail company uses Cloud Spanner for its order management system. They are experiencing high latency for users in Asia, while the primary read-write operations are concentrated in North America. The company needs to minimize read latency for Asian users while maintaining strong consistency for critical order updates. Which configuration should the architect implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a regional instance in Asia and use an external load balancer to route traffic based on geography.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a multi-region instance configuration that includes Asia, and utilize stale reads with a maximum staleness bound for non-critical queries.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a read-only replica in Asia and use a manual failover mechanism to handle writes from that region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Migrate the data to a Cloud SQL instance with cross-region read replicas in Asia.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Multi-region configurations in Spanner provide global distribution. Using stale reads allows the system to serve data from the nearest replica without needing to coordinate with the leader region, significantly reducing latency while still providing a bounded consistency guarantee.",
+      "why_not_A": "Spanner instances are either regional or multi-regional; you cannot simply deploy a separate regional instance and expect seamless data synchronization without complex application-level logic.",
+      "why_not_C": "Spanner does not use 'read-only replicas' in the traditional sense of Cloud SQL; it uses a distributed architecture where replicas are managed by the configuration. Manual failover is not how Spanner handles read latency.",
+      "why_not_D": "Cloud SQL does not provide the same global scale or strong consistency across continents as Spanner, and migrating would introduce significant architectural overhead and lose the benefits of Spanner's horizontal scaling."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Multi-region",
+      "Read Latency",
+      "Consistency"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-021",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An application requires a NoSQL database to store user session data. The workload is characterized by extremely high write throughput and requires the ability to scale horizontally automatically to handle unpredictable spikes in traffic. The data is accessed primarily by session ID. Which solution meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a Cloud Bigtable instance with a single cluster and manually increase the number of nodes during peak hours.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud Firestore in Datastore mode with a composite index on the session ID.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Cloud Firestore in Native mode, leveraging its automatic scaling capabilities.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Memorystore for Redis cluster with a shards-based scaling approach.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Firestore Native mode is a serverless NoSQL database that scales automatically to handle high throughput and provides a simple API for session-style key-value access without the need to manage nodes or clusters.",
+      "why_not_A": "Bigtable requires manual node scaling (or using the Autoscaler, but it is not as 'instant' or 'serverless' as Firestore) and is generally overkill for simple session management unless the scale is in the petabytes.",
+      "why_not_B": "Datastore mode is efficient, but Native mode is generally preferred for real-time session data due to its better support for live synchronization and simpler scaling for this specific use case.",
+      "why_not_D": "While Redis is fast for sessions, Memorystore requires manual capacity planning and shard management, which increases operational overhead compared to the serverless nature of Firestore."
+    },
+    "tags": [
+      "Firestore",
+      "NoSQL",
+      "Scalability",
+      "Serverless"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcde-mock1-022",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is migrating a PostgreSQL database to Cloud SQL. The database must survive a zonal failure with a Recovery Time Objective (RTO) of less than 60 seconds and a Recovery Point Objective (RPO) of 0. Which configuration should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable High Availability (HA) with a regional standby and use synchronous replication.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Create a cross-region read replica and manually promote it during a failure.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use daily scheduled backups and point-in-time recovery (PITR) to restore the database in a different zone.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy multiple single-zone instances and use an application-level load balancer to distribute writes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Cloud SQL HA uses a regional persistent disk that synchronously replicates data between two zones. In the event of a zonal failure, the standby instance is promoted automatically, typically within seconds, ensuring RPO=0 and meeting the RTO requirement.",
+      "why_not_B": "Cross-region replicas use asynchronous replication, meaning RPO > 0 (data loss is possible). Manual promotion also exceeds the 60-second RTO.",
+      "why_not_C": "Restoring from backups or PITR takes significantly longer than 60 seconds, failing the RTO requirement.",
+      "why_not_D": "Cloud SQL does not support multi-master writes across separate instances in this manner; this would require a complete application rewrite and does not provide the native HA guarantees required."
+    },
+    "tags": [
+      "Cloud SQL",
+      "High Availability",
+      "RTO/RPO",
+      "PostgreSQL"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcde-mock1-023",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a system to store time-series telemetry data from 1 million IoT devices. The system must handle millions of writes per second and support analytical queries over large ranges of time. Which storage architecture is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud SQL for MySQL with partitioning by date on the primary key.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Spanner with a primary key consisting of a monotonically increasing timestamp.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Bigtable with a row key designed as a combination of device ID and timestamp.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Cloud Firestore in Native mode using a collection per device.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Bigtable is specifically designed for high-throughput time-series data. A row key combining device ID and timestamp prevents hotspots (by distributing writes across nodes) and allows for efficient range scans of telemetry for a specific device.",
+      "why_not_A": "Cloud SQL cannot scale to millions of writes per second; it is limited by the vertical scale of a single primary instance.",
+      "why_not_B": "Using a monotonically increasing timestamp as a primary key in Spanner creates a 'hotspot', where all writes hit a single split/node, destroying the performance of the database.",
+      "why_not_D": "Firestore's document-per-device approach would hit limits on the number of collections and would not be as efficient as Bigtable for massive-scale analytical range queries."
+    },
+    "tags": [
+      "Cloud Bigtable",
+      "Time-series",
+      "Hotspotting",
+      "IoT"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-gcp-pcde-mock1-024",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses a Cloud SQL instance that is frequently hitting CPU and memory limits during end-of-month reporting. The reporting queries are read-only and take several hours to complete, impacting the performance of the production transactional workload. What is the best way to scale the read capacity without affecting the primary instance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the machine type of the primary instance to a higher tier.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a read replica and point the reporting tool to the replica's IP address.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable automatic storage increase to provide more IOPS to the primary instance.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Convert the database to a multi-region Cloud Spanner instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Read replicas allow you to offload read-heavy workloads (like reporting) from the primary instance. This isolates the resource-intensive reporting queries from the transactional traffic, ensuring the primary instance remains responsive.",
+      "why_not_A": "Increasing the machine type (vertical scaling) helps, but the reporting queries will still compete for CPU/RAM with the production transactions on the same machine.",
+      "why_not_C": "Storage increase provides more disk space and potentially more throughput, but it does not solve CPU or Memory exhaustion caused by complex queries.",
+      "why_not_D": "Migrating to Spanner is a massive architectural change and is unnecessary for this problem; read replicas in Cloud SQL are the standard solution for this scenario."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Read Replicas",
+      "Vertical Scaling",
+      "Performance Tuning"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-gcp-pcde-mock1-025",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A global e-commerce platform uses Cloud Spanner for its order management system. They are experiencing high latency for read operations in the Asia-Pacific region, while the primary write operations occur in the US. The current configuration is a regional instance. The company needs to reduce read latency globally while maintaining strong consistency for critical order updates. Which architecture should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the regional instance to a multi-region configuration and use stale reads with a maximum staleness of 15 seconds for all read queries.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Convert the regional instance to a multi-region configuration and utilize directed reads to route read requests to the nearest replica.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement a Cloud Bigtable cluster in the Asia-Pacific region as a read-cache for the Spanner instance, using a Dataflow pipeline for synchronization.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy a separate Spanner instance in the Asia-Pacific region and implement application-level bidirectional replication.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Multi-region configurations in Spanner provide high availability and low-latency reads by placing replicas closer to users. Directed reads allow the application to specify which replica should handle the read request, significantly reducing latency for regional users while the multi-region setup maintains the required strong consistency for writes via the Paxos consensus algorithm.",
+      "why_not_A": "While multi-region is correct, stale reads sacrifice the requirement for strong consistency for critical updates, which the scenario explicitly requires.",
+      "why_not_C": "This introduces significant architectural complexity and eventual consistency issues, defeating the purpose of using Spanner's native global consistency and availability.",
+      "why_not_D": "Spanner does not support manual bidirectional replication between separate instances; this would lead to data drift and violates the design principle of using Spanner's built-in multi-region capabilities."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Multi-region",
+      "Read Latency"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcde-mock1-026",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company is migrating a legacy PostgreSQL database to Cloud SQL. The database handles a high volume of read-heavy reporting queries and a steady stream of write transactions. The current workload is causing CPU spikes on the primary instance, impacting write performance. You need to design a solution that scales read capacity without impacting the primary instance's write throughput and ensures the system can recover quickly from a primary instance failure.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the machine type of the primary instance and enable automatic storage increase.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create multiple read replicas and implement a load balancer to distribute read traffic, while keeping High Availability (HA) enabled for the primary.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Migrate the database to Cloud Spanner to leverage its native horizontal scaling for both reads and writes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a single read replica and use a database proxy to route all reporting queries to that replica.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Read replicas offload read-heavy reporting queries from the primary instance, preventing CPU spikes and preserving write throughput. Combining this with HA (regional availability) ensures that if the primary fails, a standby instance in a different zone is promoted, meeting the recovery requirement.",
+      "why_not_A": "Vertical scaling (increasing machine type) provides a temporary fix but does not solve the contention between read and write workloads and doesn't address the specific need to scale read capacity independently.",
+      "why_not_C": "While Spanner scales, migrating from PostgreSQL to Spanner requires a complete schema redesign and application rewrite, which is an over-engineered solution for a problem solvable within Cloud SQL.",
+      "why_not_D": "A single read replica creates a single point of failure for reporting and may not be sufficient to handle the high volume of queries, failing the 'scalable' requirement."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Read Replicas",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-027",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a real-time analytics dashboard for a fleet of 1 million IoT devices. Each device sends telemetry data every 10 seconds. The solution must support extremely high write throughput and provide low-latency lookups based on the device ID. The data is time-series in nature. Which database design is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud SQL for MySQL with a composite primary key of (device_id, timestamp) and sharding across multiple instances.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Spanner with a primary key based on a monotonically increasing timestamp to ensure sequential data storage.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Bigtable with a row key designed as '{device_id}#{timestamp}', utilizing a single-cluster instance with autoscaling enabled.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Firestore in Native mode, using a collection for devices and a sub-collection for telemetry data.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Bigtable is designed for high-throughput time-series data. A row key starting with device_id allows for efficient point lookups and range scans for a specific device's history. Using a single-cluster with autoscaling manages the high write volume efficiently.",
+      "why_not_A": "Cloud SQL cannot handle the write throughput of 100k writes/sec (1M devices / 10s) without extreme sharding complexity, making it unmanageable.",
+      "why_not_B": "Using a monotonically increasing timestamp as a primary key in Spanner creates 'hotspots,' where all writes hit a single node, severely limiting throughput and performance.",
+      "why_not_D": "Firestore is not optimized for the massive write throughput of high-frequency IoT telemetry and would be significantly more expensive and slower than Bigtable for this specific use case."
+    },
+    "tags": [
+      "Cloud Bigtable",
+      "IoT",
+      "Row Key Design"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-gcp-pcde-mock1-028",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company uses a multi-regional Cloud Spanner deployment for a global payment system. They notice that while write latency is acceptable, some read-only transactions are experiencing timeouts during peak hours. Upon investigation, they find that these transactions are attempting to read data from multiple regions. How should the schema and query pattern be optimized to improve performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change the deployment to a regional configuration to eliminate inter-region communication latency.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement interleaved tables to co-locate child data (e.g., Transactions) with parent data (e.g., Accounts) on the same splits.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the number of nodes in the Spanner instance to increase the total processing power.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a secondary index on all columns involved in the read-only transactions to avoid full table scans.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Interleaving allows Spanner to store related data (child rows) physically next to the parent row in the same split. This minimizes the need for the query to cross network boundaries between different nodes or regions, drastically reducing latency for joins and related data lookups.",
+      "why_not_A": "Moving to a regional configuration would solve the latency but would destroy the global availability and low-latency access for users in other regions, which is a core requirement of the payment system.",
+      "why_not_C": "Adding nodes increases throughput but does not solve the latency issue caused by data being physically distributed across different regions (cross-region network hops).",
+      "why_not_D": "While indexes help with search, they do not solve the physical data locality problem. In fact, updating indexes in a multi-region setup can increase write latency."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Interleaving",
+      "Data Locality"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcde-mock1-029",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a disaster recovery (DR) strategy for a mission-critical Cloud SQL for MySQL instance. The RPO (Recovery Point Objective) is 0, and the RTO (Recovery Time Objective) is less than 60 seconds. The application is deployed across two regions: us-central1 and us-east1. Which configuration meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable High Availability (HA) in us-central1 and schedule hourly automated backups with point-in-time recovery (PITR).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a cross-region read replica in us-east1 and manually promote it during a regional failure.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable HA in us-central1 and use a cross-region read replica in us-east1, combined with a custom failover script to promote the replica.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Spanner instead of Cloud SQL with a multi-region configuration.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "An RPO of 0 means zero data loss, which requires synchronous replication. Cloud SQL's cross-region replicas are asynchronous, meaning data loss is possible (RPO > 0). Only Cloud Spanner's multi-region configuration provides synchronous replication across regions, ensuring RPO=0 and near-instantaneous failover (RTO < 60s).",
+      "why_not_A": "HA in a single region protects against zonal failure, not regional failure. Backups/PITR have an RTO and RPO much higher than 60 seconds/0 seconds.",
+      "why_not_B": "Cross-region replicas in Cloud SQL use asynchronous replication, which means the RPO is greater than 0. Manual promotion also exceeds the 60-second RTO.",
+      "why_not_C": "Even with a failover script, the replication from us-central1 to us-east1 is asynchronous, failing the RPO=0 requirement."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Cloud Spanner",
+      "DR",
+      "RPO/RTO"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcde-mock1-030",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A global retail company is deploying a Cloud Spanner database to handle high-volume transaction data. They have a primary key consisting of a monotonically increasing timestamp combined with a store ID. After deployment, they observe that write latency is increasing and certain nodes are experiencing significantly higher CPU utilization than others, creating 'hotspots'. Which architectural change should the company implement to resolve this issue while maintaining scalability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of nodes in the Spanner instance to distribute the load across more compute resources.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a secondary index on the store ID to redirect read queries away from the primary key.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Change the primary key to use a UUID or a hashed value of the timestamp to ensure data is distributed across splits.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable the Spanner Commit Timestamp column to automatically handle the ordering of transactions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Spanner distributes data across splits based on key ranges. Monotonically increasing keys (like timestamps) cause all new writes to hit the same split (the end of the range), creating a hotspot. Using a UUID or hashing the key ensures that writes are distributed uniformly across all nodes and splits.",
+      "why_not_A": "Adding more nodes increases total throughput capacity, but if the workload is hitting a single split due to a sequential key, only one node will be stressed while others remain idle. This does not solve the hotspot problem.",
+      "why_not_C": "Secondary indexes help with read performance for non-primary key queries, but they do not solve write hotspots on the primary key; in fact, they can introduce additional write overhead.",
+      "why_not_D": "Commit timestamps are used for tracking when a row was modified and for consistency, but they do not change the physical distribution of the primary key and will not prevent hotspots caused by sequential primary keys."
+    },
+    "tags": [
+      "cloud-spanner",
+      "hotspots",
+      "sharding"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-031",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "design-scalable-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services firm requires a highly available PostgreSQL database on Google Cloud to support a critical application. The database must survive a zonal failure with a Recovery Time Objective (RTO) of under 60 seconds and a Recovery Point Objective (RPO) of 0. Which configuration meets these requirements most effectively?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a single Cloud SQL instance with automated backups enabled and point-in-time recovery (PITR).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy a Cloud SQL instance with High Availability (HA) enabled, utilizing a regional standby in a different zone.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Compute Engine instance running PostgreSQL with a manually configured asynchronous streaming replication to a second zone.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Cloud SQL instance with multiple read replicas across different regions to distribute the load.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud SQL HA uses a regional persistent disk that synchronously replicates data between the primary and standby zones. In the event of a zonal failure, the system automatically fails over to the standby instance, ensuring RPO=0 (no data loss) and an RTO typically under 60 seconds.",
+      "why_not_A": "A single instance without HA provides no automatic failover. Restoring from backups or PITR would take significantly longer than 60 seconds, violating the RTO.",
+      "why_not_C": "Asynchronous replication allows for data loss during a failover, meaning RPO > 0. Additionally, manual failover usually exceeds the 60-second RTO requirement.",
+      "why_not_D": "Read replicas are used for scaling read traffic, not for high availability of the write primary. They do not provide the automatic failover mechanism required to meet the strict RTO/RPO for a primary database."
+    },
+    "tags": [
+      "cloud-sql",
+      "high-availability",
+      "rto-rpo"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-032",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A retail company uses Cloud Spanner for its global order management system and Cloud Bigtable for its real-time clickstream analytics. They need to perform a weekly report that joins historical order data from Spanner with user behavior patterns from Bigtable. Which approach provides the most scalable and performant way to achieve this join without impacting the production performance of either database?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Write a custom application that iterates through Bigtable rows and performs individual lookups in Spanner for matching IDs.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use BigQuery Omni to run a federated query across both Spanner and Bigtable using external tables.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Export data from both Spanner and Bigtable to Avro files in Cloud Storage, then load them into BigQuery for analysis.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure a Dataflow pipeline to stream Bigtable data into Spanner in real-time to consolidate the datasets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Exporting to Cloud Storage and loading into BigQuery is the standard pattern for large-scale analytical joins across disparate database types. This offloads the compute from production databases to BigQuery's analytical engine, ensuring no performance degradation for end-users.",
+      "why_not_A": "This creates an 'N+1 query problem,' causing massive latency and potentially overloading the Spanner instance with millions of small requests.",
+      "why_not_B": "While BigQuery supports external queries for Spanner, Bigtable integration is not as seamless for complex joins, and federated queries can be slower and more resource-intensive on the source DB than a BigQuery native table.",
+      "why_not_D": "Streaming Bigtable data into Spanner is architecturally incorrect; Spanner is a relational database and Bigtable is a wide-column store. This would lead to massive storage costs and schema rigidity issues."
+    },
+    "tags": [
+      "BigQuery",
+      "Cloud Spanner",
+      "Cloud Bigtable",
+      "Data Integration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-033",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is migrating a legacy application that uses a combination of MySQL for transactional data and Redis for caching. They want to move to Google Cloud while minimizing operational overhead and maintaining the same architectural pattern. Which combination of services is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud SQL for MySQL and Memorystore for Redis.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Cloud Spanner and Memorystore for Redis.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud SQL for MySQL and Cloud Bigtable.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Compute Engine instances running MySQL and Redis in a managed instance group.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Cloud SQL for MySQL provides a fully managed relational database that is compatible with the legacy MySQL setup, and Memorystore for Redis provides a fully managed Redis service, minimizing operational overhead while preserving the existing architecture.",
+      "why_not_B": "Cloud Spanner is a globally distributed database with a different API and pricing model; switching from MySQL to Spanner would require significant application code changes, violating the goal of minimizing migration effort.",
+      "why_not_C": "Bigtable is a NoSQL wide-column store, not a caching layer. It lacks the sub-millisecond latency and data structures (like Pub/Sub or Sorted Sets) provided by Redis.",
+      "why_not_D": "Running databases on Compute Engine (IaaS) increases operational overhead for patching, backups, and scaling, which contradicts the goal of minimizing overhead."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Memorystore",
+      "Migration"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-gcp-pcde-mock1-034",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses Cloud Firestore in Datastore mode for user profiles and Cloud SQL for order history. They need to implement a feature where updating a user profile in Firestore triggers a synchronization update in Cloud SQL to keep a denormalized reporting table current. What is the most resilient way to implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a client-side application to write to both Firestore and Cloud SQL simultaneously in a single transaction.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set up a Cron job that polls Firestore for changes every 5 minutes and updates Cloud SQL.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Firestore Triggers (via Cloud Functions) to push updates to a Pub/Sub topic, which then triggers a second Cloud Function to update Cloud SQL.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Data Fusion to create a real-time replication pipeline between Firestore and Cloud SQL.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Event-driven architecture using Firestore triggers and Pub/Sub ensures decoupling and reliability. Pub/Sub provides a buffer (retry mechanism) so that if Cloud SQL is temporarily unavailable, the update is not lost.",
+      "why_not_A": "Distributed transactions across different database products (Firestore and Cloud SQL) are not natively supported and are prone to 'dual-write' failures where one succeeds and the other fails.",
+      "why_not_B": "Polling is inefficient, introduces latency, and can miss intermediate updates if the record changes multiple times between polls.",
+      "why_not_D": "Data Fusion is primarily an ETL tool for batch or complex pipeline processing; it is not designed for low-latency, event-driven synchronization between a NoSQL document store and a relational DB."
+    },
+    "tags": [
+      "Firestore",
+      "Cloud SQL",
+      "Event-Driven",
+      "Pub/Sub"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-035",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services firm requires a solution that combines a relational database for ACID-compliant transactions and a NoSQL database for storing unstructured audit logs. They need to ensure that the audit logs are archived to long-term storage every 30 days for compliance. Which architecture best meets these needs?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud SQL for PostgreSQL and Cloud Bigtable, with a Dataflow job exporting Bigtable data to Cloud Storage.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Cloud Spanner and Cloud Firestore, with a Cloud Function moving Firestore documents to Cloud Storage.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud SQL for PostgreSQL and Cloud SQL for PostgreSQL (using JSONB), with automated backups to Cloud Storage.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud Spanner and Cloud Bigtable, with Bigtable's native TTL (Time To Live) set to 30 days.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Cloud SQL provides the necessary ACID compliance for transactions. Bigtable is ideal for high-volume unstructured/semi-structured audit logs. A Dataflow job allows for the structured movement of data from Bigtable to cold storage (Cloud Storage) for compliance.",
+      "why_not_B": "While Spanner is ACID compliant, Firestore is generally more expensive and less performant than Bigtable for the massive volume of data typically associated with 'audit logs'.",
+      "why_not_C": "While PostgreSQL JSONB can handle unstructured data, using a relational DB for high-volume audit logs can lead to performance bottlenecks (vacuuming, index bloat) and is not as scalable as a dedicated NoSQL solution.",
+      "why_not_D": "TTL in Bigtable deletes the data automatically after the period expires. The requirement is to 'archive' the data for compliance, not to delete it."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Cloud Bigtable",
+      "Archiving",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-036",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A gaming company uses Cloud Spanner for player state and Cloud Memorystore for leaderboards. During a peak event, they notice that the application is experiencing timeouts when attempting to update both the player state and the leaderboard. The team wants to implement a pattern to ensure that the leaderboard eventually reflects the player state without blocking the primary transaction. Which pattern should they use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Two-Phase Commit (2PC) to ensure both Spanner and Memorystore are updated atomically.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Saga Pattern using an orchestrator to manage the sequence of updates and compensations.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Transactional Outbox pattern: write the leaderboard update to a Spanner table and use a separate process to update Memorystore.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Synchronous mirroring where Memorystore acts as a read-replica of the Spanner state table.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Transactional Outbox pattern ensures that the update to the primary database (Spanner) and the recording of the intent to update the secondary system (Memorystore) happen in one atomic transaction. A separate relay then pushes the update to Memorystore, ensuring eventual consistency without blocking the user's request.",
+      "why_not_A": "Two-Phase Commit is not supported across Spanner and Memorystore and would significantly increase latency and the risk of distributed deadlocks.",
+      "why_not_B": "While the Saga pattern is for distributed transactions, it is overly complex for a simple state-to-cache update and is typically used for long-running business processes involving multiple microservices.",
+      "why_not_D": "Memorystore (Redis) cannot act as a native read-replica of Cloud Spanner; they are fundamentally different database engines."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Memorystore",
+      "Eventual Consistency",
+      "Design Patterns"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcde-mock1-037",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A global retail company uses Cloud Spanner for its core transactional order system and BigQuery for real-time analytics. They need to synchronize data from Spanner to BigQuery with minimal latency to provide a real-time dashboard for executives. Which architecture should you recommend to ensure a scalable, decoupled integration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure a scheduled BigQuery load job that queries Spanner using an external table definition every 15 minutes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Spanner Change Streams to capture modifications and a Dataflow pipeline to stream those changes into BigQuery in real-time.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement a dual-write strategy in the application layer where every write to Spanner is simultaneously written to BigQuery via the BigQuery Storage Write API.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Export Spanner data to Avro files in Cloud Storage daily and use a BigQuery Transfer Service job to import the files.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Spanner Change Streams provide a native, scalable way to capture data changes (CDC). Using Dataflow to process these streams into BigQuery ensures low latency, high throughput, and a decoupled architecture that doesn't impact the primary transaction performance.",
+      "why_not_A": "External tables are read-only and querying Spanner directly from BigQuery frequently can cause performance degradation on the operational database and does not provide real-time synchronization.",
+      "why_not_C": "Dual-writes introduce strong coupling between the application and two different database systems, risking data inconsistency (distributed transaction problem) and increasing application latency.",
+      "why_not_D": "Daily exports are batch-oriented and do not meet the requirement for real-time analytics and minimal latency."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "BigQuery",
+      "CDC",
+      "Dataflow"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-038",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is migrating a legacy application that uses a combination of PostgreSQL for user profiles and MongoDB for product catalogs. They want to move to GCP while maintaining the same architectural split but reducing operational overhead. Which combination of managed services provides the most compatible and scalable replacement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud SQL for PostgreSQL and Cloud Bigtable",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud SQL for PostgreSQL and Firestore in Datastore mode",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "AlloyDB for PostgreSQL and Cloud Spanner",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud SQL for MySQL and Firestore in Native mode",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud SQL for PostgreSQL is a direct replacement for PostgreSQL. Firestore (especially in Datastore mode) provides the document-oriented, schema-less flexibility required to replace MongoDB while being a fully managed serverless offering.",
+      "why_not_A": "Cloud Bigtable is a wide-column store designed for massive analytical workloads and low-latency reads/writes, but it lacks the flexible indexing and document-querying capabilities typical of MongoDB.",
+      "why_not_C": "While AlloyDB is a great PostgreSQL upgrade, Cloud Spanner is a relational database with strong consistency and global scale, which is not the architectural equivalent of a document store like MongoDB.",
+      "why_not_D": "The requirement specifically mentioned PostgreSQL; switching to MySQL introduces unnecessary migration complexity and risk."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Firestore",
+      "Migration",
+      "Database Selection"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-039",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A fintech company uses a polyglot persistence strategy: Cloud Spanner for ledger transactions and Cloud Memorystore (Redis) for session caching. During a regional outage, they need to ensure that session data is not entirely lost and can be recovered quickly. How should they configure the multi-database solution for high availability of the cache layer?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable High Availability (HA) in Memorystore, which provides a standby replica in a different zone within the same region.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Configure Memorystore to automatically replicate data to a Cloud SQL instance every 60 seconds.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Cloud Spanner as a backup for Memorystore by writing session data to both databases simultaneously.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a manual snapshot of Memorystore and store it in a multi-regional Cloud Storage bucket.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Memorystore for Redis HA provides a primary instance and a replica in different zones. If the primary fails, the replica is promoted, ensuring minimal downtime and data loss within a region.",
+      "why_not_B": "Memorystore does not have a native automated replication feature to Cloud SQL; this would require a custom application-level implementation.",
+      "why_not_C": "Writing session data (high volume, transient) to Spanner (expensive, strong consistency) would create a massive performance bottleneck and increase costs significantly.",
+      "why_not_D": "Manual snapshots are not a high-availability strategy; they are a backup strategy and would result in significant data loss (RPO) and longer recovery time (RTO)."
+    },
+    "tags": [
+      "Memorystore",
+      "Cloud Spanner",
+      "High Availability",
+      "Disaster Recovery"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-040",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a system where a Cloud Function triggers based on an event in Pub/Sub. The function must update a record in Cloud SQL (PostgreSQL) and then update a corresponding document in Firestore. To ensure data consistency across these two different database solutions without using a distributed transaction coordinator, which pattern should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a Two-Phase Commit (2PC) protocol implemented within the Cloud Function code.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement the Outbox Pattern: write the update and a 'pending' event to a table in Cloud SQL, then use a separate process to propagate the change to Firestore.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Wrap both the Cloud SQL and Firestore calls in a single try-catch block and perform a manual rollback of the SQL transaction if the Firestore call fails.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the timeout of the Cloud Function to ensure both writes complete before the function terminates.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Outbox Pattern ensures atomicity. By writing the event to the same database as the business logic (Cloud SQL), you guarantee that the event is captured if the transaction succeeds. A separate relay then ensures 'at-least-once' delivery to Firestore, achieving eventual consistency.",
+      "why_not_A": "2PC is extremely difficult to implement across managed services that do not share a common transaction manager and typically leads to poor performance and availability.",
+      "why_not_C": "Manual rollbacks are unreliable in distributed systems. If the function crashes after the SQL commit but before the Firestore write, or if the network fails during the rollback, the system remains inconsistent.",
+      "why_not_D": "Increasing timeouts does not address the fundamental problem of atomicity across two separate database systems."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Firestore",
+      "Distributed Systems",
+      "Eventual Consistency"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcde-mock1-041",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company manages a multi-database environment consisting of AlloyDB for operational data and BigQuery for warehousing. They are experiencing 'stale data' issues in BigQuery. They want to implement a solution where BigQuery can query AlloyDB data directly without moving the data, to ensure the most current data is available for specific ad-hoc reports. What is the best approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set up a BigQuery Omni connection to the AlloyDB instance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use BigQuery Federated Queries via a Cloud SQL Auth Proxy.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure a BigQuery Cloud SQL external connection to the AlloyDB instance.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Implement a materialized view in BigQuery that refreshes every 60 seconds from AlloyDB.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "BigQuery supports federated queries for Cloud SQL and AlloyDB. By creating an external connection, BigQuery can query the database in real-time, eliminating the need for ETL and ensuring the reports see the most current data.",
+      "why_not_A": "BigQuery Omni is used for cross-cloud analytics (AWS/Azure), not for connecting to GCP's own managed databases like AlloyDB.",
+      "why_not_B": "The Cloud SQL Auth Proxy is a tool for connecting applications to databases; BigQuery's federated query mechanism uses a built-in connection object, not the proxy.",
+      "why_not_D": "Materialized views in BigQuery are based on BigQuery data. To refresh from AlloyDB, you would still need an underlying ETL process, which doesn't solve the 'stale data' problem as effectively as a direct federated query."
+    },
+    "tags": [
+      "AlloyDB",
+      "BigQuery",
+      "Federated Queries",
+      "Data Integration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-042",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A global retail organization uses a combination of Cloud Spanner for transactional order processing and Cloud Bigtable for real-time user behavioral tracking. To implement a personalized recommendation engine, they need to join real-time session data from Bigtable with historical purchase patterns from Spanner. The data volume is massive, and the join must happen with minimal latency for a batch-processing job that runs every hour. Which architecture is the most efficient for this multi-database integration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a custom Dataflow pipeline that reads from both Spanner and Bigtable using the Spanner and Bigtable IO connectors, performing a side-input join in memory.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Export Spanner data to Avro files in GCS and Bigtable data to SequenceFiles in GCS, then use a BigQuery external table to perform a federated join.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Dataflow pipeline to stream Bigtable updates into BigQuery via a Change Data Capture (CDC) pattern and periodically export Spanner snapshots to BigQuery, performing the join within BigQuery.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create a middleware application layer using App Engine that queries Spanner for purchase history and Bigtable for session data via API calls, joining the datasets in the application logic.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "For massive datasets spanning two different NoSQL/NewSQL paradigms, BigQuery is the optimal engine for large-scale joins. Using CDC for Bigtable and snapshots for Spanner ensures that BigQuery has the necessary data for the hourly batch job without overloading the operational databases with expensive analytical queries.",
+      "why_not_A": "Performing a join in-memory via side-inputs in Dataflow is only feasible if one of the datasets is small enough to fit in the worker's memory. With 'massive' data volumes, this would lead to OutOfMemory (OOM) errors.",
+      "why_not_B": "While federated queries exist, exporting to GCS and using external tables for a massive join every hour introduces significant latency and overhead compared to native BigQuery storage.",
+      "why_not_D": "Application-level joins (API-based) are highly inefficient for massive datasets and would cause severe performance degradation (N+1 query problem) and network bottlenecks."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Cloud Bigtable",
+      "BigQuery",
+      "Data Integration"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcde-mock1-043",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization is migrating from a monolithic on-premises Oracle database to a polyglot persistence architecture on GCP. You have decided to use Cloud SQL for PostgreSQL for relational metadata and Firestore in Datastore mode for high-scale document storage. You must ensure that a 'User Profile' update is atomic across both databases to prevent data inconsistency. Since GCP does not support cross-service distributed transactions (XA), which pattern should you implement to ensure eventual consistency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a two-phase commit (2PC) protocol implemented via a custom coordinator service running on GKE.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement the Saga pattern using a series of local transactions and compensating transactions coordinated by a Pub/Sub and Cloud Functions workflow.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Wrap both database calls in a single Cloud Function and set the retry policy to 'retry on failure' to ensure the second write eventually succeeds.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Utilize Cloud Spanner as a synchronization layer that writes to both Cloud SQL and Firestore using an external consistency mechanism.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Saga pattern is the industry standard for managing distributed transactions across heterogeneous databases (polyglot persistence). It breaks the transaction into a sequence of local transactions; if one fails, it executes compensating transactions to undo the previous steps, ensuring eventual consistency.",
+      "why_not_A": "Two-phase commit (2PC) is an anti-pattern in cloud-native distributed systems due to its synchronous nature, blocking resources, and high risk of failure in the event of network partitions (CAP theorem).",
+      "why_not_C": "Simple retries do not handle 'partial success' scenarios where the first write succeeds but the second fails permanently (e.g., schema violation), leading to permanent data divergence.",
+      "why_not_D": "Adding Spanner as a middleman adds unnecessary complexity and cost without solving the fundamental problem of atomic writes to two external, non-transactional-linked systems."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Firestore",
+      "Distributed Transactions",
+      "Saga Pattern"
+    ],
+    "estimated_time_seconds": 180,
+    "id": "q-gcp-pcde-mock1-044",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-multi-db",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company uses Cloud SQL for MySQL for its core ledger and Cloud Memorystore for Redis for a high-speed caching layer. During a peak traffic event, they observe that the cache is frequently stale because the cache invalidation logic (triggered by MySQL updates) is failing under load, leading to 'cache stampedes' and increased latency. You need to redesign the synchronization to be more resilient and scalable. Which approach is best?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the TTL (Time-to-Live) of the Redis keys to reduce the frequency of cache misses and decrease the load on MySQL.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a 'Write-Through' cache strategy where the application writes to Redis first and then synchronously writes to MySQL.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Change Data Capture (CDC) mechanism via Debezium and Kafka/Pub/Sub to asynchronously update Redis based on the MySQL binary logs.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure Cloud SQL Read Replicas to serve the read traffic, bypassing the Memorystore cache entirely during peak loads.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "CDC (Change Data Capture) decoupled from the application logic is the most resilient way to synchronize a database with a cache. By reading the MySQL binary logs, you ensure that every committed change is captured and propagated to Redis asynchronously, removing the invalidation burden from the application and preventing stale data.",
+      "why_not_A": "Increasing TTL increases the window of stale data, which is unacceptable for a financial ledger where accuracy is critical.",
+      "why_not_B": "Write-through caching can increase write latency and does not solve the problem of cache consistency if the synchronous write to the DB fails after the cache is updated.",
+      "why_not_D": "Read replicas solve for read scalability but do not replace the low-latency requirements of a cache, and they would still be subject to replication lag."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Memorystore",
+      "CDC",
+      "Cache Consistency"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-gcp-pcde-mock1-045",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is migrating a 10TB MySQL database from an on-premises data center to Cloud SQL for MySQL. The business requires near-zero downtime. The network bandwidth is limited, and the company wants to avoid the risk of a failed large-scale initial dump. Which migration strategy should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a full export to a CSV file, upload to Cloud Storage, and import into Cloud SQL using the import feature.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Database Migration Service (DMS) with a continuous replication setup using binary logs.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Set up a read replica of the on-premises database in Google Cloud and promote it to primary.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a third-party ETL tool to perform bulk batch loads every 4 hours until the cutover date.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Database Migration Service (DMS) provides a serverless way to migrate databases with minimal downtime by using continuous data replication (CDC) via binary logs, ensuring the target is synchronized with the source before cutover.",
+      "why_not_A": "A full export/import causes significant downtime proportional to the data size (10TB) and does not account for changes made during the transfer process.",
+      "why_not_C": "Cloud SQL does not support creating a read replica directly from an external on-premises MySQL instance; replication must be configured via the migration service or manual binary log setup.",
+      "why_not_D": "Batch loads create a 'gap' in data and do not provide the near-zero downtime required for financial services; it is not a true replication strategy."
+    },
+    "tags": [
+      "Cloud SQL",
+      "DMS",
+      "CDC"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-046",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are migrating a large-scale Spanner deployment from one region to another for disaster recovery purposes. You need to move several terabytes of data while keeping the application online. Which approach minimizes the impact on application performance and ensures data consistency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Export the Spanner data to Avro files in Cloud Storage and import them into the new region's instance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Dataflow pipeline to read from the source Spanner instance and write to the destination instance in real-time.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a snapshot of the source instance and restore it to the destination region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a multi-region configuration for the Spanner instance to automatically replicate data across regions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using Dataflow allows for a controlled, scalable stream of data from the source to the destination. Since Spanner does not have a built-in 'migration' tool for cross-region instance movement of existing data without reconfiguration, Dataflow is the standard pattern for high-volume data movement.",
+      "why_not_A": "Export/Import is an offline process. While it moves data, it does not keep the application 'online' with consistent data during the transition period.",
+      "why_not_C": "Spanner backups/restores are used for recovery, but restoring a backup to a new instance does not provide a mechanism for continuous synchronization during a migration.",
+      "why_not_D": "While multi-region configurations provide replication, changing a single-region instance to a multi-region instance is not a simple toggle and often requires a new instance and data migration."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Dataflow",
+      "Regional Migration"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcde-mock1-047",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a legacy Oracle database to Cloud SQL for PostgreSQL. The source database contains complex stored procedures and proprietary PL/SQL packages. Which tool should the engineer use to automate the schema conversion and identify incompatibilities?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud Data Fusion",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Database Migration Service (DMS) with integrated conversion workspace",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Dataflow with a custom Java template",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud Storage Transfer Service",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DMS now includes conversion workspace capabilities (powered by the SCT - Schema Conversion Tool logic) specifically designed to convert schemas from heterogeneous sources like Oracle to PostgreSQL, identifying what can be automated and what requires manual rewrite.",
+      "why_not_A": "Cloud Data Fusion is an ETL tool for data integration and transformation, not a schema conversion tool for database engines.",
+      "why_not_C": "Dataflow is used for moving data (rows), not for converting the structural definition (DDL) or logic (stored procedures) of a database.",
+      "why_not_D": "Transfer Service is used for moving files between buckets or from other clouds, not for database schema conversion."
+    },
+    "tags": [
+      "DMS",
+      "Heterogeneous Migration",
+      "Schema Conversion"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-048",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During a migration of a large MongoDB cluster to MongoDB Atlas on GCP, the engineer notices that the migration is lagging significantly. The source cluster is under heavy load, and the migration process is impacting production performance. What is the most effective way to reduce the impact on the source production environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the machine type of the destination MongoDB Atlas cluster.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Disable indexing on the destination cluster until the migration is complete.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Perform the migration from a secondary node in the source MongoDB replica set.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Switch from a live migration to a dump-and-restore method using mongodump.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In MongoDB, performing the migration/read operations from a secondary node offloads the read pressure from the primary node, ensuring that production write operations are not impacted by the migration process.",
+      "why_not_A": "Increasing the destination size improves write speed at the target, but it does not reduce the read load or resource contention on the source production server.",
+      "why_not_B": "While this may speed up the destination import, it does not address the performance degradation occurring at the source database.",
+      "why_not_D": "Dump-and-restore is an offline method that would increase downtime and doesn't necessarily solve the resource contention during the dump process."
+    },
+    "tags": [
+      "MongoDB Atlas",
+      "Performance Tuning",
+      "Replica Sets"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-049",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a 50TB dataset from an on-premises Hadoop cluster to BigQuery. The company has a 1Gbps connection, but the data must be migrated within a tight 2-week window. The data is stored in Parquet format. Which method provides the most reliable and fastest transfer?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use the BigQuery API to stream the data directly from the Hadoop cluster.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Transfer Appliance to physically move the data to Google Cloud.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use gsutil parallel composite uploads to move data to Cloud Storage, then load into BigQuery.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set up a dedicated Cloud Interconnect to increase bandwidth to 10Gbps and use gsutil.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "For 50TB of data over a 1Gbps link, the theoretical transfer time is high, and real-world throughput is often lower. Transfer Appliance is the recommended solution for multi-terabyte migrations where network bandwidth is a bottleneck and the timeline is strict.",
+      "why_not_A": "Streaming API is intended for real-time data ingestion, not for bulk migration of 50TB of historical data; it would be inefficient and costly.",
+      "why_not_C": "Even with parallel uploads, 50TB over a 1Gbps link (approx 125MB/s) would take roughly 5-6 days under perfect conditions, but network congestion and overhead make this risky for a tight 2-week window compared to a physical appliance.",
+      "why_not_D": "Provisioning a Cloud Interconnect typically takes several weeks to a few months, which exceeds the 2-week window provided in the scenario."
+    },
+    "tags": [
+      "BigQuery",
+      "Transfer Appliance",
+      "Data Ingestion"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-050",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "migrate-data",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is migrating a 10TB MySQL database from an on-premises data center to Cloud SQL for MySQL. To minimize downtime, the company decides to use a combination of an initial dump and continuous replication. During the migration, the database administrator notices that the replication lag is increasing significantly, and the source database is experiencing high CPU utilization due to the binary log reading process. Which strategy should the administrator implement to optimize the migration process and reduce the load on the source system?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch to using the Database Migration Service (DMS) with a continuous migration job and enable the 'Parallel Replication' feature in the destination Cloud SQL instance.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Perform a full export using mysqldump with the --single-transaction flag and import it directly into Cloud SQL via a Cloud Storage bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Increase the machine type of the source on-premises database to handle the increased CPU load during the binary log reading.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable binary logging on the source database temporarily to speed up the initial data transfer, then re-enable it for the delta sync.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Database Migration Service (DMS) automates the migration process and optimizes the data transfer. By enabling parallel replication on the destination Cloud SQL instance, the system can apply transactions in parallel rather than sequentially, which significantly reduces replication lag and optimizes the throughput of data being read from the source binary logs.",
+      "why_not_A": "N/A",
+      "why_not_B": "While mysqldump is a valid method for data movement, it does not address the replication lag or the continuous synchronization requirement, and it would result in significant downtime for a 10TB database.",
+      "why_not_C": "Increasing source hardware is a vertical scaling approach that treats the symptom rather than the cause. It does not address the inefficiency of the replication process or the lag occurring at the destination.",
+      "why_not_D": "Disabling binary logging on the source would make it impossible to perform a continuous/online migration, as the destination would have no way to track and apply changes that occurred during the initial dump.",
+      "why_not_E": "N/A"
+    },
+    "tags": [
+      "Cloud SQL",
+      "DMS",
+      "MySQL Migration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-051",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A retail company is deploying a Cloud SQL for PostgreSQL instance to support a high-traffic e-commerce site. To ensure the application remains available during a regional outage, the architect needs to implement a disaster recovery strategy with a low Recovery Time Objective (RTO). Which configuration should they choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable automated daily backups and store them in a Multi-Regional Cloud Storage bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a cross-region read replica and manually promote it to a standalone instance during a failure.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable High Availability (HA) configuration with regional persistence.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy a single instance in a single zone and use snapshots for recovery.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud SQL High Availability (HA) provides a regional deployment where data is synchronously replicated to a standby instance in a different zone within the same region, ensuring automatic failover and the lowest RTO.",
+      "why_not_A": "Backups provide data recovery (RPO) but not high availability; restoring a database from a backup takes significant time, resulting in a high RTO.",
+      "why_not_B": "While cross-region replicas help with regional disasters, manual promotion is slower and more complex than the automatic failover provided by HA configuration.",
+      "why_not_D": "A single-zone deployment is a single point of failure and does not provide the availability required for high-traffic sites."
+    },
+    "tags": [
+      "Cloud SQL",
+      "High Availability",
+      "RTO"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-052",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services firm is migrating a legacy MySQL database to Cloud Spanner to handle global transactions with strong consistency. They want to ensure that the database can scale horizontally to handle unpredictable spikes in write traffic across multiple continents. Which instance configuration is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A single-zone instance with increased node count.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "A multi-regional instance configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "A regional instance with read-only replicas in other regions.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A Cloud SQL MySQL instance with cross-region replicas.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Spanner multi-regional configurations provide synchronous replication across multiple regions, allowing for global strong consistency and the ability to scale reads and writes across continents.",
+      "why_not_A": "Single-zone instances provide no regional redundancy and cannot handle global traffic efficiently.",
+      "why_not_C": "Spanner does not use 'read-only replicas' in the traditional sense; it uses a multi-regional configuration to achieve global distribution and consistency.",
+      "why_not_D": "The scenario specifically asks for Cloud Spanner to achieve strong consistency and horizontal scaling, which Cloud SQL (MySQL) cannot provide at a global scale."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Multi-region",
+      "Scalability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-053",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An application team is using Firestore in Datastore mode. They are experiencing 'hotspotting' issues where certain tablets are overloaded because the application writes data using monotonically increasing IDs (timestamps). How should they redesign the primary key to improve scalability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of nodes in the underlying cluster.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a UUID or a hashed value as the prefix of the key.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch to Firestore in Native mode to avoid tablets.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a caching layer using Memorystore to buffer writes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In Firestore/Datastore, sequential keys create hotspots because data is stored in sorted order. Using UUIDs or hashes distributes writes across different tablets, enabling horizontal scaling.",
+      "why_not_A": "Firestore/Datastore is a fully managed serverless product; users cannot manually 'increase nodes' to solve a data modeling hotspot.",
+      "why_not_C": "Native mode also suffers from hotspotting if sequential keys are used, as it also relies on lexicographical sorting for indexing.",
+      "why_not_D": "Caching buffers the application but does not solve the underlying database write bottleneck caused by the key design."
+    },
+    "tags": [
+      "Firestore",
+      "Datastore",
+      "Hotspotting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-054",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is deploying a Cloud Memorystore for Redis cluster. They need to ensure that the cache remains available even if a single zone fails and that the application can handle a high volume of read requests without impacting the primary node. Which deployment option is correct?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a Basic Tier instance with a single node.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy a Standard Tier instance with replication enabled.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Basic Tier instance with a read replica in another region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a multi-regional Cloud SQL instance for caching.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Memorystore Standard Tier provides high availability by replicating data to another zone. It allows for failover and provides the infrastructure necessary to maintain availability during zonal outages.",
+      "why_not_A": "Basic Tier does not provide replication or high availability; a zonal failure would result in total downtime.",
+      "why_not_C": "Memorystore for Redis does not support cross-region read replicas in the Basic Tier; replication is a Standard Tier feature.",
+      "why_not_D": "Cloud SQL is a relational database and is not a suitable replacement for a low-latency in-memory cache like Redis."
+    },
+    "tags": [
+      "Memorystore",
+      "Redis",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-055",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-databases",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A media company is using AlloyDB for PostgreSQL. They expect a massive surge in read traffic during a specific event. They want to scale their read capacity without affecting the performance of the primary write instance. What is the recommended approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the CPU and RAM of the primary instance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create multiple AlloyDB read pool nodes.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable automated backups to offload read queries.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Migrate the database to a single-zone Cloud SQL instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AlloyDB uses read pools, which allow you to scale read capacity horizontally by adding more nodes to the pool. The load balancer automatically distributes read requests across these nodes.",
+      "why_not_A": "Scaling the primary instance (vertical scaling) helps, but it doesn't separate read/write traffic and is limited by the maximum machine size.",
+      "why_not_C": "Backups are for recovery, not for serving live read traffic.",
+      "why_not_D": "Cloud SQL is a different product and moving to a single-zone instance would decrease availability and not solve the specific read-scaling needs as efficiently as AlloyDB read pools."
+    },
+    "tags": [
+      "AlloyDB",
+      "Read Pools",
+      "Horizontal Scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcde-mock1-056",
+    "exam_id": "gcp-pcde",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   }
 ]

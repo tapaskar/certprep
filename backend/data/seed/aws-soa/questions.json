@@ -7,10 +7,26 @@
     "difficulty": 3,
     "stem": "A SysOps administrator notices that CloudWatch is not displaying memory utilization metrics for a fleet of EC2 instances running Amazon Linux 2. CPU utilization and network metrics appear normally. What is the MOST likely cause?",
     "options": [
-      {"id": "A", "text": "The instances are using the wrong instance type that does not support memory metrics", "is_correct": false},
-      {"id": "B", "text": "The CloudWatch agent is not installed or configured on the instances", "is_correct": true},
-      {"id": "C", "text": "Detailed monitoring has not been enabled for the instances", "is_correct": false},
-      {"id": "D", "text": "The IAM role attached to the instances does not have CloudWatch permissions", "is_correct": false}
+      {
+        "id": "A",
+        "text": "The instances are using the wrong instance type that does not support memory metrics",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The CloudWatch agent is not installed or configured on the instances",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Detailed monitoring has not been enabled for the instances",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The IAM role attached to the instances does not have CloudWatch permissions",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -19,11 +35,18 @@
       "why_not_C": "Detailed monitoring changes the metric reporting interval from 5 minutes to 1 minute. It does not add memory metrics.",
       "why_not_D": "If IAM permissions were missing, no custom metrics would be published, but the default hypervisor metrics (CPU, network) would still appear, which matches the scenario. However, the root cause is the agent not being installed at all."
     },
-    "concept_ids": ["aws-soa-cloudwatch-metrics"],
-    "tags": ["cloudwatch", "monitoring", "ec2", "troubleshooting"],
+    "concept_ids": [
+      "aws-soa-cloudwatch-metrics"
+    ],
+    "tags": [
+      "cloudwatch",
+      "monitoring",
+      "ec2",
+      "troubleshooting"
+    ],
     "estimated_time_seconds": 75,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -35,10 +58,26 @@
     "difficulty": 3,
     "stem": "A company needs to be alerted when BOTH CPU utilization exceeds 80% AND available memory drops below 500 MB on their production EC2 instances. How should the SysOps administrator configure this?",
     "options": [
-      {"id": "A", "text": "Create a single CloudWatch alarm using metric math to combine CPU and memory metrics", "is_correct": false},
-      {"id": "B", "text": "Create two separate alarms and use a composite alarm with an AND rule", "is_correct": true},
-      {"id": "C", "text": "Create an EventBridge rule that monitors both metrics simultaneously", "is_correct": false},
-      {"id": "D", "text": "Create a CloudWatch Logs Insights query that evaluates both conditions", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Create a single CloudWatch alarm using metric math to combine CPU and memory metrics",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create two separate alarms and use a composite alarm with an AND rule",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create an EventBridge rule that monitors both metrics simultaneously",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a CloudWatch Logs Insights query that evaluates both conditions",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -47,11 +86,18 @@
       "why_not_C": "EventBridge rules react to events, not continuous metric thresholds. It cannot monitor metric values and evaluate compound conditions.",
       "why_not_D": "CloudWatch Logs Insights queries log data, not real-time metrics. It is not designed for threshold-based alerting."
     },
-    "concept_ids": ["aws-soa-cloudwatch-metrics", "aws-soa-eventbridge"],
-    "tags": ["cloudwatch", "composite-alarm", "monitoring"],
+    "concept_ids": [
+      "aws-soa-cloudwatch-metrics",
+      "aws-soa-eventbridge"
+    ],
+    "tags": [
+      "cloudwatch",
+      "composite-alarm",
+      "monitoring"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -63,10 +109,26 @@
     "difficulty": 2,
     "stem": "A security team wants to track all API calls that modify security groups across all AWS accounts in their organization. The logs must be stored centrally in a dedicated security account's S3 bucket. Which approach should the SysOps administrator implement?",
     "options": [
-      {"id": "A", "text": "Enable VPC Flow Logs in each account and send them to the central S3 bucket", "is_correct": false},
-      {"id": "B", "text": "Create an organization trail in CloudTrail that delivers logs to the security account's S3 bucket", "is_correct": true},
-      {"id": "C", "text": "Configure CloudWatch Logs in each account with cross-account log sharing to the security account", "is_correct": false},
-      {"id": "D", "text": "Use AWS Config rules to monitor security group changes and aggregate findings centrally", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable VPC Flow Logs in each account and send them to the central S3 bucket",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an organization trail in CloudTrail that delivers logs to the security account's S3 bucket",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure CloudWatch Logs in each account with cross-account log sharing to the security account",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Config rules to monitor security group changes and aggregate findings centrally",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -75,11 +137,18 @@
       "why_not_C": "CloudWatch Logs cross-account sharing requires per-account setup and does not natively capture API calls. This approach has high operational overhead.",
       "why_not_D": "AWS Config can detect security group changes but is designed for compliance evaluation, not comprehensive API audit logging. It also requires per-account setup."
     },
-    "concept_ids": ["aws-soa-cloudtrail"],
-    "tags": ["cloudtrail", "security", "multi-account", "auditing"],
+    "concept_ids": [
+      "aws-soa-cloudtrail"
+    ],
+    "tags": [
+      "cloudtrail",
+      "security",
+      "multi-account",
+      "auditing"
+    ],
     "estimated_time_seconds": 75,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -91,10 +160,26 @@
     "difficulty": 3,
     "stem": "A company runs a critical application on an RDS MySQL Multi-AZ deployment. During a planned maintenance window, the primary database must be patched. What happens to the application during this process?",
     "options": [
-      {"id": "A", "text": "The application experiences downtime equal to the patching duration since the primary is unavailable", "is_correct": false},
-      {"id": "B", "text": "RDS applies the patch to the standby first, promotes it, then patches the old primary, resulting in a brief failover", "is_correct": true},
-      {"id": "C", "text": "RDS creates a new replica, patches it, and switches traffic using Route 53 DNS", "is_correct": false},
-      {"id": "D", "text": "The patch is applied in-place to both primary and standby simultaneously with zero downtime", "is_correct": false}
+      {
+        "id": "A",
+        "text": "The application experiences downtime equal to the patching duration since the primary is unavailable",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "RDS applies the patch to the standby first, promotes it, then patches the old primary, resulting in a brief failover",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "RDS creates a new replica, patches it, and switches traffic using Route 53 DNS",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The patch is applied in-place to both primary and standby simultaneously with zero downtime",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -103,11 +188,18 @@
       "why_not_C": "RDS Multi-AZ uses a synchronous standby, not a new replica. Route 53 is not involved in RDS failover; it uses an endpoint DNS name that is automatically updated.",
       "why_not_D": "Simultaneous patching would risk both instances being unavailable. The sequential approach with failover ensures at least one instance is always running."
     },
-    "concept_ids": ["aws-soa-rds-ha"],
-    "tags": ["rds", "multi-az", "maintenance", "failover"],
+    "concept_ids": [
+      "aws-soa-rds-ha"
+    ],
+    "tags": [
+      "rds",
+      "multi-az",
+      "maintenance",
+      "failover"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -119,10 +211,26 @@
     "difficulty": 3,
     "stem": "A Route 53 failover routing policy is configured with a primary record pointing to an ALB in us-east-1 and a secondary record pointing to an ALB in us-west-2. The primary ALB is healthy, but some users report being routed to the secondary. What is the MOST likely cause?",
     "options": [
-      {"id": "A", "text": "The Route 53 health check is using a fast interval that causes false positives", "is_correct": false},
-      {"id": "B", "text": "The DNS TTL has not expired in the users' local DNS resolvers from a previous failover event", "is_correct": true},
-      {"id": "C", "text": "Cross-region load balancing is interfering with the failover routing policy", "is_correct": false},
-      {"id": "D", "text": "The secondary record was configured as an alias record instead of a CNAME record", "is_correct": false}
+      {
+        "id": "A",
+        "text": "The Route 53 health check is using a fast interval that causes false positives",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The DNS TTL has not expired in the users' local DNS resolvers from a previous failover event",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cross-region load balancing is interfering with the failover routing policy",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The secondary record was configured as an alias record instead of a CNAME record",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -131,8 +239,16 @@
       "why_not_C": "Cross-region load balancing is not a Route 53 concept. Route 53 does not load balance across regions in failover mode; it routes all traffic to the primary when healthy.",
       "why_not_D": "Alias vs CNAME does not affect failover behavior. Both record types work correctly with failover routing policies."
     },
-    "concept_ids": ["aws-soa-route53-health", "aws-soa-route53-routing"],
-    "tags": ["route53", "failover", "dns", "troubleshooting"],
+    "concept_ids": [
+      "aws-soa-route53-health",
+      "aws-soa-route53-routing"
+    ],
+    "tags": [
+      "route53",
+      "failover",
+      "dns",
+      "troubleshooting"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
     "bkt_p_slip": 0.12,
@@ -147,10 +263,26 @@
     "difficulty": 3,
     "stem": "A SysOps administrator needs to update a CloudFormation stack that includes an RDS instance. The update will change the instance class from db.m5.large to db.m5.xlarge. Before applying, the administrator wants to verify exactly what changes will occur. What should they do?",
     "options": [
-      {"id": "A", "text": "Run drift detection on the stack to see the current state", "is_correct": false},
-      {"id": "B", "text": "Create a change set to preview the proposed modifications before execution", "is_correct": true},
-      {"id": "C", "text": "Use the stack policy to simulate the update without applying it", "is_correct": false},
-      {"id": "D", "text": "Deploy the update to a new stack and compare the resources manually", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Run drift detection on the stack to see the current state",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a change set to preview the proposed modifications before execution",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use the stack policy to simulate the update without applying it",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy the update to a new stack and compare the resources manually",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -159,11 +291,17 @@
       "why_not_C": "Stack policies protect resources from being updated or deleted, but they do not simulate updates. They are guardrails, not preview tools.",
       "why_not_D": "Creating a new stack duplicates infrastructure and costs. Change sets provide the same preview capability without provisioning anything."
     },
-    "concept_ids": ["aws-soa-cloudformation"],
-    "tags": ["cloudformation", "change-sets", "deployment"],
+    "concept_ids": [
+      "aws-soa-cloudformation"
+    ],
+    "tags": [
+      "cloudformation",
+      "change-sets",
+      "deployment"
+    ],
     "estimated_time_seconds": 75,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -175,10 +313,26 @@
     "difficulty": 2,
     "stem": "A company needs to execute a shell script on 500 EC2 instances to update a configuration file. The instances are spread across multiple VPCs and do not have SSH access enabled. All instances have the SSM Agent installed with proper IAM roles. What is the MOST efficient approach?",
     "options": [
-      {"id": "A", "text": "Use AWS Systems Manager Run Command to execute the script across all instances using resource groups", "is_correct": true},
-      {"id": "B", "text": "Create a custom AMI with the updated configuration and relaunch all 500 instances", "is_correct": false},
-      {"id": "C", "text": "Use AWS Systems Manager Session Manager to connect to each instance and run the script manually", "is_correct": false},
-      {"id": "D", "text": "Create a CloudFormation stack update to modify the instances' user data scripts", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Use AWS Systems Manager Run Command to execute the script across all instances using resource groups",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Create a custom AMI with the updated configuration and relaunch all 500 instances",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use AWS Systems Manager Session Manager to connect to each instance and run the script manually",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a CloudFormation stack update to modify the instances' user data scripts",
+        "is_correct": false
+      }
     ],
     "correct_answer": "A",
     "explanation": {
@@ -187,11 +341,17 @@
       "why_not_C": "Session Manager provides interactive shell access to individual instances. Connecting to 500 instances one by one is impractical and does not scale.",
       "why_not_D": "User data scripts only run at instance launch (unless explicitly configured otherwise). Changing user data does not re-execute the script on running instances."
     },
-    "concept_ids": ["aws-soa-systems-manager"],
-    "tags": ["systems-manager", "run-command", "automation"],
+    "concept_ids": [
+      "aws-soa-systems-manager"
+    ],
+    "tags": [
+      "systems-manager",
+      "run-command",
+      "automation"
+    ],
     "estimated_time_seconds": 75,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -203,10 +363,26 @@
     "difficulty": 2,
     "stem": "A development team wants to deploy an application update to Elastic Beanstalk with zero downtime and the ability to quickly roll back if issues are detected. Which deployment policy should they use?",
     "options": [
-      {"id": "A", "text": "All at once", "is_correct": false},
-      {"id": "B", "text": "Rolling", "is_correct": false},
-      {"id": "C", "text": "Immutable", "is_correct": true},
-      {"id": "D", "text": "Rolling with additional batch", "is_correct": false}
+      {
+        "id": "A",
+        "text": "All at once",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Rolling",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Immutable",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Rolling with additional batch",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -215,11 +391,17 @@
       "why_not_B": "Rolling deploys in batches to existing instances, reducing capacity during deployment. If a batch fails, some instances run the old version and some the new, requiring manual intervention.",
       "why_not_D": "Rolling with additional batch maintains full capacity by launching extra instances, but it still updates existing instances in batches. Rollback is slower than immutable because instances must be redeployed."
     },
-    "concept_ids": ["aws-soa-elastic-beanstalk"],
-    "tags": ["elastic-beanstalk", "deployment", "zero-downtime"],
+    "concept_ids": [
+      "aws-soa-elastic-beanstalk"
+    ],
+    "tags": [
+      "elastic-beanstalk",
+      "deployment",
+      "zero-downtime"
+    ],
     "estimated_time_seconds": 75,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -231,10 +413,26 @@
     "difficulty": 3,
     "stem": "A company must ensure that all EBS volumes are encrypted at rest across all AWS accounts in their organization. They want to detect non-compliant volumes and automatically encrypt them. Which combination of services achieves this?",
     "options": [
-      {"id": "A", "text": "AWS Config rule to detect unencrypted volumes with an SSM Automation remediation to create encrypted copies", "is_correct": true},
-      {"id": "B", "text": "CloudTrail with an EventBridge rule to intercept CreateVolume API calls and reject unencrypted volumes", "is_correct": false},
-      {"id": "C", "text": "IAM policy that denies ec2:CreateVolume without the Encrypted parameter", "is_correct": false},
-      {"id": "D", "text": "Amazon Inspector to scan for unencrypted volumes and send alerts via SNS", "is_correct": false}
+      {
+        "id": "A",
+        "text": "AWS Config rule to detect unencrypted volumes with an SSM Automation remediation to create encrypted copies",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "CloudTrail with an EventBridge rule to intercept CreateVolume API calls and reject unencrypted volumes",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "IAM policy that denies ec2:CreateVolume without the Encrypted parameter",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Amazon Inspector to scan for unencrypted volumes and send alerts via SNS",
+        "is_correct": false
+      }
     ],
     "correct_answer": "A",
     "explanation": {
@@ -243,11 +441,19 @@
       "why_not_C": "An IAM policy or SCP can prevent creation of unencrypted volumes going forward, but it does not detect or remediate existing unencrypted volumes.",
       "why_not_D": "Amazon Inspector scans for software vulnerabilities and network exposure, not EBS encryption status."
     },
-    "concept_ids": ["aws-soa-config-rules", "aws-soa-systems-manager"],
-    "tags": ["config", "encryption", "remediation", "compliance"],
+    "concept_ids": [
+      "aws-soa-config-rules",
+      "aws-soa-systems-manager"
+    ],
+    "tags": [
+      "config",
+      "encryption",
+      "remediation",
+      "compliance"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -259,10 +465,26 @@
     "difficulty": 4,
     "stem": "A SysOps administrator is troubleshooting why SSM Patch Manager is not patching a group of EC2 instances. The instances have the SSM Agent installed and can be seen in the Systems Manager console. The maintenance window is configured correctly and has run, but patch compliance shows no data. What should the administrator check FIRST?",
     "options": [
-      {"id": "A", "text": "Verify that the instances' security groups allow outbound HTTPS traffic to the SSM endpoints", "is_correct": false},
-      {"id": "B", "text": "Verify that the instances are registered as targets in the maintenance window and have the correct patch baseline assigned", "is_correct": true},
-      {"id": "C", "text": "Verify that the instances have the latest version of the SSM Agent installed", "is_correct": false},
-      {"id": "D", "text": "Verify that the maintenance window IAM service role has permission to patch EC2 instances", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Verify that the instances' security groups allow outbound HTTPS traffic to the SSM endpoints",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Verify that the instances are registered as targets in the maintenance window and have the correct patch baseline assigned",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Verify that the instances have the latest version of the SSM Agent installed",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Verify that the maintenance window IAM service role has permission to patch EC2 instances",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -271,8 +493,15 @@
       "why_not_C": "If instances appear in the console, the SSM Agent is functional. While older versions may have bugs, this is not the first thing to check.",
       "why_not_D": "IAM role issues would cause the maintenance window task itself to fail with an error, not silently produce no results."
     },
-    "concept_ids": ["aws-soa-patch-management", "aws-soa-systems-manager"],
-    "tags": ["patch-manager", "troubleshooting", "maintenance-window"],
+    "concept_ids": [
+      "aws-soa-patch-management",
+      "aws-soa-systems-manager"
+    ],
+    "tags": [
+      "patch-manager",
+      "troubleshooting",
+      "maintenance-window"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
     "bkt_p_slip": 0.12,
@@ -287,10 +516,26 @@
     "difficulty": 2,
     "stem": "A company needs a load balancer that provides static IP addresses per Availability Zone and handles millions of TCP requests per second with ultra-low latency. Which load balancer type should they choose?",
     "options": [
-      {"id": "A", "text": "Application Load Balancer (ALB)", "is_correct": false},
-      {"id": "B", "text": "Network Load Balancer (NLB)", "is_correct": true},
-      {"id": "C", "text": "Gateway Load Balancer (GWLB)", "is_correct": false},
-      {"id": "D", "text": "Classic Load Balancer (CLB)", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Application Load Balancer (ALB)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Network Load Balancer (NLB)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Gateway Load Balancer (GWLB)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Classic Load Balancer (CLB)",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -299,11 +544,18 @@
       "why_not_C": "GWLB operates at Layer 3 and is designed for deploying and managing third-party virtual appliances, not general application load balancing.",
       "why_not_D": "Classic Load Balancer is a legacy option that supports both Layer 4 and Layer 7 but lacks static IPs, has lower performance limits, and is not recommended for new deployments."
     },
-    "concept_ids": ["aws-soa-elb-types"],
-    "tags": ["elb", "nlb", "networking", "comparison"],
+    "concept_ids": [
+      "aws-soa-elb-types"
+    ],
+    "tags": [
+      "elb",
+      "nlb",
+      "networking",
+      "comparison"
+    ],
     "estimated_time_seconds": 60,
     "bkt_p_guess": 0.15,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -315,10 +567,26 @@
     "difficulty": 3,
     "stem": "A global application serves users from US, Europe, and Asia. The SysOps administrator wants to route users to the region that provides the best performance, while using a health check to fail over to another region if the primary becomes unavailable. Which Route 53 configuration should be used?",
     "options": [
-      {"id": "A", "text": "Weighted routing with equal weights across all regions", "is_correct": false},
-      {"id": "B", "text": "Geolocation routing with a default record as fallback", "is_correct": false},
-      {"id": "C", "text": "Latency-based routing with health checks enabled on all records", "is_correct": true},
-      {"id": "D", "text": "Multivalue answer routing with health checks on all records", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Weighted routing with equal weights across all regions",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Geolocation routing with a default record as fallback",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Latency-based routing with health checks enabled on all records",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Multivalue answer routing with health checks on all records",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -327,11 +595,19 @@
       "why_not_B": "Geolocation routing is based on the user's geographic location, not actual network latency. A user near a US-EU border might be routed to a geographically closer but higher-latency region.",
       "why_not_D": "Multivalue answer routing returns multiple IP addresses and lets the client choose. It does not optimize for latency and is primarily used for simple DNS-level distribution."
     },
-    "concept_ids": ["aws-soa-route53-routing", "aws-soa-route53-health"],
-    "tags": ["route53", "latency-routing", "global", "failover"],
+    "concept_ids": [
+      "aws-soa-route53-routing",
+      "aws-soa-route53-health"
+    ],
+    "tags": [
+      "route53",
+      "latency-routing",
+      "global",
+      "failover"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -343,10 +619,26 @@
     "difficulty": 4,
     "stem": "An Auto Scaling group is configured with a target tracking scaling policy to maintain average CPU utilization at 50%. The SysOps administrator notices that the group repeatedly scales out and scales in every few minutes, causing application instability. What is the MOST likely cause and solution?",
     "options": [
-      {"id": "A", "text": "The target value is too low; increase the target CPU utilization to 80%", "is_correct": false},
-      {"id": "B", "text": "The cooldown period is too short; increase the cooldown period to prevent rapid scaling oscillation", "is_correct": true},
-      {"id": "C", "text": "The minimum capacity is too low; increase the minimum number of instances in the group", "is_correct": false},
-      {"id": "D", "text": "The health check grace period is too long; reduce it so unhealthy instances are replaced faster", "is_correct": false}
+      {
+        "id": "A",
+        "text": "The target value is too low; increase the target CPU utilization to 80%",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The cooldown period is too short; increase the cooldown period to prevent rapid scaling oscillation",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The minimum capacity is too low; increase the minimum number of instances in the group",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The health check grace period is too long; reduce it so unhealthy instances are replaced faster",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -355,8 +647,16 @@
       "why_not_C": "Increasing minimum capacity adds a fixed cost and does not solve the oscillation problem. The group could still thrash above the minimum.",
       "why_not_D": "Health check grace period affects how long before health checks start on new instances. It is unrelated to scaling policy oscillation."
     },
-    "concept_ids": ["aws-soa-auto-scaling", "aws-soa-cloudwatch-metrics"],
-    "tags": ["auto-scaling", "troubleshooting", "scaling-policy", "cooldown"],
+    "concept_ids": [
+      "aws-soa-auto-scaling",
+      "aws-soa-cloudwatch-metrics"
+    ],
+    "tags": [
+      "auto-scaling",
+      "troubleshooting",
+      "scaling-policy",
+      "cooldown"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
     "bkt_p_slip": 0.12,
@@ -371,10 +671,26 @@
     "difficulty": 2,
     "stem": "A SysOps administrator wants to identify EC2 instances that are over-provisioned and could be downsized to reduce costs. The solution should provide specific right-sizing recommendations based on actual usage patterns. Which AWS service should they use?",
     "options": [
-      {"id": "A", "text": "AWS Trusted Advisor cost optimization checks", "is_correct": false},
-      {"id": "B", "text": "AWS Compute Optimizer", "is_correct": true},
-      {"id": "C", "text": "AWS Cost Explorer right-sizing recommendations", "is_correct": false},
-      {"id": "D", "text": "Amazon CloudWatch metrics with manual analysis", "is_correct": false}
+      {
+        "id": "A",
+        "text": "AWS Trusted Advisor cost optimization checks",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS Compute Optimizer",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "AWS Cost Explorer right-sizing recommendations",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Amazon CloudWatch metrics with manual analysis",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -383,11 +699,17 @@
       "why_not_C": "Cost Explorer offers basic right-sizing recommendations, but Compute Optimizer provides more detailed, ML-based analysis with projected performance impact.",
       "why_not_D": "CloudWatch provides raw metrics, but manual analysis at scale is time-consuming and error-prone. Compute Optimizer automates this analysis with ML."
     },
-    "concept_ids": ["aws-soa-trusted-advisor"],
-    "tags": ["cost-optimization", "right-sizing", "compute-optimizer"],
+    "concept_ids": [
+      "aws-soa-trusted-advisor"
+    ],
+    "tags": [
+      "cost-optimization",
+      "right-sizing",
+      "compute-optimizer"
+    ],
     "estimated_time_seconds": 60,
     "bkt_p_guess": 0.15,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -399,10 +721,26 @@
     "difficulty": 3,
     "stem": "A company has a Business support plan and wants to use AWS Trusted Advisor to monitor their infrastructure. Which categories of checks are available to them? (Select the description that is accurate.)",
     "options": [
-      {"id": "A", "text": "Only the 7 core security checks available to all support plans", "is_correct": false},
-      {"id": "B", "text": "The full set of checks across all five categories: cost optimization, performance, security, fault tolerance, and service limits", "is_correct": true},
-      {"id": "C", "text": "Security and service limit checks only; cost optimization requires Enterprise support", "is_correct": false},
-      {"id": "D", "text": "All checks except fault tolerance, which requires Enterprise support", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Only the 7 core security checks available to all support plans",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The full set of checks across all five categories: cost optimization, performance, security, fault tolerance, and service limits",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Security and service limit checks only; cost optimization requires Enterprise support",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "All checks except fault tolerance, which requires Enterprise support",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -411,12 +749,2926 @@
       "why_not_C": "Cost optimization checks are available with Business support, not limited to Enterprise. All five categories are fully available.",
       "why_not_D": "Fault tolerance checks are included with Business support. There is no category that requires Enterprise support exclusively."
     },
-    "concept_ids": ["aws-soa-trusted-advisor"],
-    "tags": ["trusted-advisor", "support-plans", "cost-optimization"],
+    "concept_ids": [
+      "aws-soa-trusted-advisor"
+    ],
+    "tags": [
+      "trusted-advisor",
+      "support-plans",
+      "cost-optimization"
+    ],
     "estimated_time_seconds": 60,
     "bkt_p_guess": 0.15,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses an Auto Scaling group of EC2 instances to host a web application. The company wants to be notified via email whenever the average CPU utilization across the fleet exceeds 80% for two consecutive 5-minute periods. Which combination of services should be used to implement this requirement with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a CloudWatch Alarm with a period of 5 minutes and a threshold of 80%, configured to trigger an SNS topic.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Install a third-party monitoring agent on each instance to send custom metrics to CloudWatch every 5 minutes.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use AWS Config to monitor the CPU utilization and trigger a Lambda function to send an email.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create an EventBridge rule that monitors EC2 State Change notifications and triggers an SNS topic.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "CloudWatch Alarms can be configured with a specific period (5 minutes) and a datapoint-to-alarm setting (2 out of 2) to ensure the condition is met for two consecutive periods before triggering an SNS notification.",
+      "why_not_A": "This is the correct answer.",
+      "why_not_B": "CPU utilization is a standard metric provided by EC2; installing a third-party agent adds unnecessary operational overhead.",
+      "why_not_C": "AWS Config is used for recording and evaluating the configuration of AWS resources, not for real-time performance metric monitoring.",
+      "why_not_D": "EventBridge state change notifications track whether an instance is running, stopped, or terminated, not performance metrics like CPU utilization."
+    },
+    "tags": [
+      "CloudWatch",
+      "SNS",
+      "Alarms"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-016",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A SysOps Administrator needs to analyze application logs stored in an S3 bucket to identify the root cause of intermittent 500 errors. The logs are voluminous, and the administrator needs to perform complex queries without moving the data to a database. Which service should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "AWS CloudTrail",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Amazon CloudWatch Logs Insights",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Amazon Athena",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Amazon OpenSearch Service",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon Athena is an interactive query service that makes it easy to analyze data directly in Amazon S3 using standard SQL, making it ideal for analyzing large log files without needing to load them into a database.",
+      "why_not_A": "CloudTrail records API calls made to the AWS account, not the internal application logs of the web server.",
+      "why_not_B": "CloudWatch Logs Insights is used for logs stored in CloudWatch Log Groups, not for logs stored as files in an S3 bucket.",
+      "why_not_C": "This is the correct answer.",
+      "why_not_D": "OpenSearch requires the data to be ingested/indexed into the cluster first, which increases operational overhead and cost compared to Athena's serverless approach."
+    },
+    "tags": [
+      "Athena",
+      "S3",
+      "Logging"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-017",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company has a critical application running on EC2 instances. They require a solution to automatically restart a specific service on the instance whenever the service crashes, without manually intervening or terminating the entire instance. What is the most efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure an EC2 Auto Scaling health check to replace the instance when the service fails.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use an AWS Systems Manager (SSM) State Manager association with a remediation script.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a CloudWatch Alarm that triggers an EC2 instance reboot via an SNS topic.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Lambda function to call the EC2 TerminateInstances API.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SSM State Manager can be used to define a specific state (e.g., the service must be running) and automatically apply a remediation script to bring the instance back to that state if it deviates.",
+      "why_not_A": "Auto Scaling health checks would replace the entire instance, which is more disruptive and slower than simply restarting a service.",
+      "why_not_B": "This is the correct answer.",
+      "why_not_C": "Rebooting the entire instance is a heavy-handed approach when only a single service needs to be restarted.",
+      "why_not_D": "Terminating the instance is the most disruptive option and does not specifically address the service restart requirement."
+    },
+    "tags": [
+      "Systems Manager",
+      "Remediation",
+      "State Manager"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-018",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization wants to ensure that all EC2 instances are compliant with a security policy that requires a specific monitoring agent to be installed. They need a way to identify which instances are missing the agent and automatically install it on those specific instances. Which AWS service combination is best?",
+    "options": [
+      {
+        "id": "A",
+        "text": "AWS Config and AWS Systems Manager (SSM) Run Command",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Amazon Inspector and AWS Lambda",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "AWS Trusted Advisor and EC2 User Data",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "CloudWatch Events and AWS CloudFormation",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "AWS Config can detect non-compliant resources based on a rule (e.g., agent missing). Once identified, SSM Run Command can be used to execute the installation script across the non-compliant instances.",
+      "why_not_A": "This is the correct answer.",
+      "why_not_B": "Amazon Inspector finds vulnerabilities and deviations from best practices, but it does not provide the direct mechanism to remediate/install software like SSM does.",
+      "why_not_C": "Trusted Advisor provides general recommendations; User Data only runs during the first boot of an instance, not for existing instances.",
+      "why_not_D": "CloudFormation is used for provisioning infrastructure, not for auditing current state and running ad-hoc commands on existing instances."
+    },
+    "tags": [
+      "AWS Config",
+      "SSM",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-019",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is experiencing a performance degradation in their application. They suspect that a high number of 4xx errors are being returned to users. They want to visualize the trend of these errors over the last 24 hours using a dashboard. Where should they look for this information if they are using an Application Load Balancer (ALB)?",
+    "options": [
+      {
+        "id": "A",
+        "text": "EC2 Instance Console Monitoring",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "CloudWatch Metrics for the ALB (HTTPCode_ELB_4XX_Count)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "VPC Flow Logs",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "AWS Config Resource History",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ALBs automatically send metrics to CloudWatch. The HTTPCode_ELB_4XX_Count metric specifically tracks the number of 4xx error responses sent by the load balancer, which can be easily plotted on a CloudWatch Dashboard.",
+      "why_not_A": "EC2 monitoring shows OS-level metrics (CPU, Disk, Network), not the HTTP response codes generated by the ALB.",
+      "why_not_B": "This is the correct answer.",
+      "why_not_C": "VPC Flow Logs capture IP traffic (source, destination, port) but do not capture the HTTP layer (L7) response codes.",
+      "why_not_D": "AWS Config tracks configuration changes to the load balancer (e.g., changing a listener), not the traffic patterns or error rates."
+    },
+    "tags": [
+      "ALB",
+      "CloudWatch Metrics",
+      "Dashboards"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-020",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A SysOps Administrator is tasked with monitoring a fleet of EC2 instances for a specific application error that appears in the application logs but does not trigger a system-level metric. The administrator needs to be notified via SNS as soon as this specific error string appears in the logs. Which solution provides the most efficient real-time notification with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Install the CloudWatch agent on all instances, configure it to push logs to CloudWatch Logs, and create a CloudWatch Logs Metric Filter with a corresponding CloudWatch Alarm.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Configure a cron job on each instance to grep the log files for the error string and trigger an AWS Lambda function via the AWS CLI to send an SNS notification.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Stream logs to an Amazon S3 bucket and use S3 Event Notifications to trigger a Lambda function that parses the log for the error string and sends an SNS notification.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Config to monitor the log file changes on the EC2 instances and trigger a remediation action via Systems Manager Automation to send an SNS notification.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The CloudWatch agent can stream application logs to CloudWatch Logs. Metric Filters allow you to search for specific patterns (like error strings) and turn them into numerical metrics, which can then trigger standard CloudWatch Alarms to send SNS notifications. This is the native, scalable AWS approach.",
+      "why_not_A": "N/A",
+      "why_not_B": "This requires managing custom scripts (cron jobs) on every instance, increasing operational overhead and creating a fragmented monitoring system.",
+      "why_not_C": "S3 Event Notifications trigger when a file is created/uploaded, but they do not inspect the content of the file. The Lambda would have to read the entire file every time, which is inefficient and slower than Metric Filters.",
+      "why_not_D": "AWS Config is used for resource configuration compliance, not for real-time application log monitoring or content analysis."
+    },
+    "tags": [
+      "CloudWatch Logs",
+      "Metric Filters",
+      "Monitoring"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-021",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is experiencing intermittent performance degradation on a set of EC2 instances. The standard CloudWatch metrics (CPUUtilization, DiskReadOps) show no anomalies. The administrator suspects a 'noisy neighbor' issue or CPU steal time is affecting performance. Which action should the administrator take to identify the root cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the granularity of standard CloudWatch metrics from 5 minutes to 1 minute.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Detailed Monitoring for the instances to capture the 'Steal' metric automatically in the CloudWatch console.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Install the CloudWatch agent and configure it to collect the 'cpu_steal' metric from the operating system.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Review the VPC Flow Logs to identify if there is an unusual amount of network traffic causing the degradation.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "CPU Steal time is an OS-level metric that indicates the hypervisor is taking CPU cycles away from the VM. This is not a standard CloudWatch metric and must be collected using the CloudWatch agent as a custom metric.",
+      "why_not_A": "Standard metrics do not include CPU Steal, regardless of the granularity (frequency) of the data points.",
+      "why_not_B": "Detailed Monitoring only increases the frequency of standard metrics (e.g., 1 minute instead of 5); it does not add new OS-level metrics like CPU Steal.",
+      "why_not_D": "VPC Flow Logs monitor network traffic (IPs and ports), which cannot identify CPU Steal or hypervisor-level performance issues."
+    },
+    "tags": [
+      "CloudWatch Agent",
+      "Custom Metrics",
+      "EC2 Performance"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-022",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses an Auto Scaling group (ASG) of EC2 instances. They have noticed that some instances are becoming unhealthy due to a memory leak, but the default EC2 health checks (which only check instance status) are not detecting this. The company wants to automatically replace these instances when memory usage exceeds 90%. What is the most effective way to implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a CloudWatch Alarm based on a custom memory metric and configure the alarm to trigger an EC2 instance terminate action.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a CloudWatch Alarm based on a custom memory metric and use the 'Terminate' action within the ASG's Health Check settings.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a CloudWatch Alarm based on a custom memory metric and configure the ASG to use this alarm as a custom health check.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use an AWS Lambda function triggered by a CloudWatch Alarm to call the 'TerminateInstance' API for the specific instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Auto Scaling groups support 'Custom Health Checks' using CloudWatch Alarms. By linking a memory-usage alarm to the ASG health check, the ASG will automatically mark the instance as unhealthy and replace it according to the ASG policy.",
+      "why_not_A": "Standard CloudWatch Alarms cannot directly 'terminate' an instance; they require an action (like SNS, Auto Scaling, or EC2 Action) to be defined. Even then, it wouldn't trigger the ASG to replace the instance unless the ASG knows it is unhealthy.",
+      "why_not_B": "The ASG Health Check settings are where you *enable* the custom alarm, not where you define the 'Terminate' action; the ASG's inherent behavior is to replace unhealthy instances.",
+      "why_not_D": "While this works, it is more complex (higher operational overhead) than using the native ASG custom health check feature and may lead to race conditions with the ASG's own scaling logic."
+    },
+    "tags": [
+      "Auto Scaling",
+      "Custom Health Checks",
+      "Remediation"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-aws-soa-mock1-023",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company requires a centralized logging solution for 50 different AWS accounts within an AWS Organization. The logs must be stored in a single S3 bucket in a dedicated 'Logging Account' and must be immutable for 7 years to meet regulatory requirements. Which architecture satisfies these requirements with the least effort?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure each account to push logs to its own S3 bucket and use S3 Cross-Region Replication to move logs to the Logging Account.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure CloudTrail organization trails to deliver logs to a centralized S3 bucket in the Logging Account and enable S3 Object Lock in compliance mode.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a Lambda function in each account that reads logs and writes them to the Logging Account's S3 bucket using a cross-account IAM role.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Config to aggregate logs from all accounts into the Logging Account and enable S3 Versioning on the destination bucket.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Organization trails allow a management account to create a trail that logs all accounts in the organization and delivers them to a single S3 bucket. S3 Object Lock in compliance mode prevents any user (including the root user) from deleting the objects for the specified retention period, ensuring immutability.",
+      "why_not_A": "This creates 50 buckets and 50 replication rules, which is high operational overhead and does not inherently provide immutability.",
+      "why_not_C": "This is a custom-built solution requiring 50 Lambda functions and complex IAM management, which is far more effort than using Organization trails.",
+      "why_not_D": "AWS Config is for configuration history and compliance, not for general log aggregation (like CloudTrail or application logs). S3 Versioning allows recovery but does not prevent deletion of object versions by a user with sufficient permissions."
+    },
+    "tags": [
+      "CloudTrail",
+      "S3 Object Lock",
+      "AWS Organizations"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-024",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-logging-remediation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A SysOps Administrator needs to implement a remediation strategy for EC2 instances that are found to have an outdated security patch. The requirement is that the patch must be applied automatically, and if the patch fails, the instance must be flagged for manual review. Which combination of AWS services should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "AWS Config Rule -> SNS -> Lambda -> EC2 Instance",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Amazon Inspector -> EventBridge -> Systems Manager Automation",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "CloudWatch Alarm -> EventBridge -> Systems Manager Run Command",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "AWS Config Rule -> Systems Manager Patch Manager (Direct Integration)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon Inspector is designed to scan for vulnerabilities and outdated patches. When a vulnerability is found, it can trigger an EventBridge event, which then kicks off a Systems Manager (SSM) Automation document to apply the patch. SSM Automation can handle the logic of flagging the instance if the patch fails.",
+      "why_not_A": "AWS Config can detect if a patch is missing (via a custom rule), but using Lambda to manually apply patches is reinventing the wheel when SSM exists.",
+      "why_not_C": "CloudWatch Alarms are for metrics, not for scanning software vulnerabilities or missing patches.",
+      "why_not_D": "While AWS Config can trigger remediation via SSM, it doesn't have a 'direct integration' that handles the vulnerability scanning and patching workflow as natively and comprehensively as the Inspector -> EventBridge -> SSM pipeline."
+    },
+    "tags": [
+      "Amazon Inspector",
+      "Systems Manager",
+      "Remediation"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-aws-soa-mock1-025",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company hosts a critical application using Amazon EC2 instances across multiple Availability Zones. The application stores session data in a local cache on each instance. During a sudden failure of one Availability Zone, users are redirected to instances in another zone but lose their current session data, causing them to be logged out. Which architectural change would provide the most reliable session persistence?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement an Auto Scaling group with a minimum size equal to the number of Availability Zones.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the Application Load Balancer to use sticky sessions (session affinity).",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Move session data from the local cache to an Amazon ElastiCache for Redis cluster.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable EC2 Auto Recovery to automatically restart failed instances in the same zone.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Using a distributed cache like ElastiCache for Redis allows session data to be stored externally to the EC2 instances. If an instance or an entire AZ fails, any other instance in any AZ can retrieve the session data, ensuring business continuity and a seamless user experience.",
+      "why_not_A": "Auto Scaling ensures availability of compute capacity but does not solve the problem of stateful data stored locally on the instances.",
+      "why_not_B": "Sticky sessions only ensure a user returns to the same instance. If that specific instance or AZ fails, the session data is still lost.",
+      "why_not_D": "Auto Recovery helps with single instance failures but does not protect against AZ-wide outages, nor does it solve the shared state problem."
+    },
+    "tags": [
+      "ElastiCache",
+      "State Management",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-026",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A SysOps Administrator needs to implement a backup strategy for a production Amazon RDS MySQL DB instance. The requirement is to ensure that the database can be restored to any point in time within the last 35 days with minimal data loss. Which configuration meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a manual snapshot of the database every 24 hours.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable automated backups and set the backup retention period to 35 days.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement a custom script using AWS Lambda to export data to Amazon S3 every hour.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Multi-AZ deployment for the RDS instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon RDS automated backups provide point-in-time recovery (PITR). By setting the retention period to 35 days (the maximum), the administrator can restore the database to any second within that window using the transaction logs and the latest snapshot.",
+      "why_not_A": "Manual snapshots do not provide point-in-time recovery between the snapshots; you could only restore to the exact time the snapshot was taken.",
+      "why_not_C": "Custom scripts to S3 are complex to manage and do not provide the native, granular point-in-time recovery capabilities of RDS automated backups.",
+      "why_not_D": "Multi-AZ is for high availability and failover, not for point-in-time recovery from accidental data deletion or corruption."
+    },
+    "tags": [
+      "RDS",
+      "Backup",
+      "Point-in-Time Recovery"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-aws-soa-mock1-027",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses an Amazon S3 bucket to store critical compliance documents. To prevent accidental deletion of these documents by an administrator with full access permissions, which feature should the SysOps Administrator implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable S3 Versioning and implement an MFA Delete policy.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Apply a restrictive Bucket Policy that denies the s3:DeleteObject action.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable S3 Replication to a second bucket in a different region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use S3 Object Lock in Governance mode.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "S3 Versioning keeps multiple versions of an object. MFA Delete requires a multi-factor authentication code to permanently delete a version or change the versioning state, providing a strong safeguard against accidental or malicious deletion by a privileged user.",
+      "why_not_B": "An administrator with full permissions (like an IAM Administrator) can simply modify or delete the bucket policy to regain delete access.",
+      "why_not_C": "Replication copies the data, but if a delete marker is created or a version is deleted in the source (depending on configuration), it doesn't prevent the initial deletion action.",
+      "why_not_D": "Governance mode allows users with special permissions to bypass or delete the lock. While useful, MFA Delete is the standard answer for preventing accidental deletion by high-privilege users."
+    },
+    "tags": [
+      "S3",
+      "Data Protection",
+      "MFA Delete"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-028",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An application is deployed across two AWS Regions for disaster recovery. The company requires a Recovery Time Objective (RTO) of 30 minutes and a Recovery Point Objective (RPO) of 15 minutes. Which disaster recovery strategy is most appropriate for these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Backup and Restore",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Pilot Light",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Warm Standby",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Multi-Site Active-Active",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pilot Light involves keeping a minimal version of the environment running (usually just the data/databases) in the DR region. It can be scaled up quickly to meet a 30-minute RTO, and continuous data replication meets the 15-minute RPO.",
+      "why_not_A": "Backup and Restore typically has an RTO of hours or days, which exceeds the 30-minute requirement.",
+      "why_not_C": "Warm Standby is faster than Pilot Light (RTO in minutes), but it is more expensive. While it would meet the requirements, Pilot Light is the 'most appropriate' (most cost-effective) that still meets the specific RTO/RPO thresholds given.",
+      "why_not_D": "Multi-Site Active-Active provides near-zero RTO/RPO but is significantly more expensive and complex than necessary for a 30-minute RTO."
+    },
+    "tags": [
+      "Disaster Recovery",
+      "RTO",
+      "RPO"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-029",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using an Amazon Route 53 Failover routing policy to switch traffic from a primary region to a secondary region. They have configured a health check for the primary endpoint. However, the failover is taking too long to trigger, causing intermittent 503 errors during the transition. What is the most effective way to reduce the time it takes for Route 53 to detect a failure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the TTL (Time to Live) of the DNS record.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Decrease the TTL of the DNS record and decrease the health check interval.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Change the routing policy from Failover to Weighted routing.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch the primary endpoint to a Network Load Balancer instead of an Application Load Balancer.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Reducing the health check interval makes Route 53 detect failures faster. Reducing the TTL ensures that DNS clients (browsers/OS) expire the old IP address quickly and request the new, healthy IP from Route 53.",
+      "why_not_A": "Increasing the TTL would make the failover take longer, as clients would cache the failing primary IP for a longer period.",
+      "why_not_C": "Weighted routing distributes traffic by percentage; it does not provide the automatic 'primary-to-secondary' failover logic required here.",
+      "why_not_D": "The type of load balancer does not affect how Route 53 performs health checks or how DNS records are cached by clients."
+    },
+    "tags": [
+      "Route 53",
+      "Health Checks",
+      "DNS"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-030",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses an Amazon RDS for MySQL Multi-AZ deployment for its production database. During a scheduled maintenance window, the database instance fails to recover within the expected timeframe, and the application experiences significant downtime. The SysOps Administrator needs to implement a strategy to minimize the Recovery Time Objective (RTO) for future unplanned outages while ensuring the application can read data even during a failover. Which solution should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the instance size of the primary database to handle more concurrent connections during recovery.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a Read Replica in a different region and configure the application to switch to the replica for read operations during a failover.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Amazon RDS Proxy to pool and reuse database connections, reducing the overhead of establishing new connections during a failover.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the Multi-AZ deployment to a Single-AZ deployment and implement a custom script to automate snapshots and restores.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon RDS Proxy reduces failover times for applications by automatically connecting to the new primary instance without requiring the application to handle DNS propagation delays or reconnect manually, significantly lowering RTO.",
+      "why_not_A": "Increasing instance size improves performance but does not reduce the time it takes for the DNS record to update or the database to recover during a failover event.",
+      "why_not_B": "Read Replicas are for scaling reads and disaster recovery across regions; however, they do not solve the primary connection instability and DNS lag associated with a Multi-AZ failover in the same region.",
+      "why_not_D": "Moving to Single-AZ increases the RTO significantly as it removes the automatic failover capability provided by Multi-AZ."
+    },
+    "tags": [
+      "RDS",
+      "High Availability",
+      "RDS Proxy"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-031",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company requires a backup strategy for their critical data stored in Amazon S3. The compliance policy mandates that backups must be immutable for 7 years and must be protected against accidental deletion or malicious modification by any user, including the root account. Which configuration meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable S3 Versioning and apply a bucket policy that denies the s3:DeleteObject permission to all IAM users.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable S3 Versioning and configure an S3 Object Lock in Compliance mode with a retention period of 7 years.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use S3 Replication to copy data to a second bucket in a different region and enable MFA Delete on both buckets.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a lifecycle policy to transition objects to S3 Glacier Deep Archive with a lock policy.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "S3 Object Lock in Compliance mode ensures that no one, including the root user, can delete or overwrite the objects until the retention period expires, meeting the immutability and compliance requirement.",
+      "why_not_A": "Bucket policies can be changed by the root account or users with sufficient permissions, meaning they do not provide true immutability against the root account.",
+      "why_not_C": "MFA Delete protects against accidental deletion but does not prevent an authorized user with MFA from deleting versions, nor does it enforce a 7-year immutable lock.",
+      "why_not_D": "Lifecycle policies manage the storage class of the data but do not provide the immutability (WORM) protection required by the compliance policy."
+    },
+    "tags": [
+      "S3",
+      "Object Lock",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-032",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An application runs on an Auto Scaling group of EC2 instances across three Availability Zones. The application is behind an Application Load Balancer (ALB). During a regional event, one Availability Zone (AZ) becomes unavailable. The ALB continues to route traffic to the remaining AZs, but the application experiences a performance degradation because the remaining instances are overloaded. The SysOps Administrator needs to ensure the application maintains its performance during such an event. Which action should be taken?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change the Auto Scaling group's health check type from EC2 to ELB.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the 'Desired Capacity' of the Auto Scaling group manually during the outage.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure the Auto Scaling group with a target tracking scaling policy based on average CPU utilization.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable Cross-Zone Load Balancing on the ALB to distribute traffic evenly across all instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A target tracking scaling policy will automatically increase the number of instances in the healthy AZs as the CPU utilization rises due to the shifted load from the failed AZ, restoring performance automatically.",
+      "why_not_A": "Changing the health check type helps identify unhealthy instances faster but does not solve the capacity issue caused by the loss of an entire AZ.",
+      "why_not_B": "Manual intervention increases RTO and is not a scalable or reliable architectural solution for maintaining performance during unexpected failures.",
+      "why_not_D": "Cross-Zone Load Balancing is enabled by default for ALBs and ensures traffic is distributed evenly across instances in all healthy AZs; however, it does not increase the actual capacity (number of instances) to handle the increased load."
+    },
+    "tags": [
+      "Auto Scaling",
+      "ALB",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-aws-soa-mock1-033",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company has a critical application deployed in a single AWS region. To meet a Disaster Recovery (DR) requirement of an RPO of 15 minutes and an RTO of 2 hours, the SysOps Administrator is evaluating DR strategies. The application uses a set of EC2 instances and an Amazon Aurora database. Which strategy provides the most cost-effective way to meet these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Multi-Site Active-Active: Deploy the full stack in two regions with synchronous data replication.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Warm Standby: Deploy a scaled-down version of the application in a second region and use Aurora Global Database.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Backup and Restore: Perform hourly snapshots of EBS volumes and Aurora, and store them in S3 in a second region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Pilot Light: Maintain only the Aurora database in a second region and use AMI backups for EC2 instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Warm Standby maintains a scaled-down version of the application and uses Aurora Global Database (which provides RPO of seconds and RTO of minutes), comfortably meeting the 15min RPO and 2hr RTO while being more cost-effective than Active-Active.",
+      "why_not_A": "Active-Active is the most expensive option and provides an RTO/RPO near zero, which exceeds the requirements and is not the most cost-effective.",
+      "why_not_C": "Backup and Restore typically has a much higher RTO because instances must be launched and data restored from snapshots, likely exceeding the 2-hour limit for a full recovery.",
+      "why_not_D": "While Pilot Light is cheaper, Aurora Global Database is the key for the RPO. However, 'Warm Standby' is more reliable for a 2-hour RTO as it ensures the application tier is already running and tested, whereas Pilot Light requires scaling up from zero."
+    },
+    "tags": [
+      "Disaster Recovery",
+      "Aurora Global Database",
+      "RPO/RTO"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-aws-soa-mock1-034",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "reliability-business-continuity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses AWS Backup to manage backups for multiple AWS services across several accounts. The SysOps Administrator needs to ensure that backups are not deleted even if a compromised administrative account attempts to delete them. The solution must be centrally managed and apply to all accounts in the AWS Organization. Which approach should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a backup vault in each account and enable the 'Delete' permission restriction in the vault lock policy.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS Backup Vault Lock in 'Compliance mode' and manage the backups via an AWS Organizations-integrated backup policy.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure a cross-account backup strategy where backups are copied to a separate security account with restricted access.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable S3 Versioning on the underlying buckets where AWS Backup stores the recovery points.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Backup Vault Lock in Compliance mode prevents anyone, including the root user and the AWS account owner, from deleting backups. Integrating this with AWS Organizations allows for centralized management and enforcement across the entire organization.",
+      "why_not_A": "Creating vaults in each account is not centrally managed and increases operational overhead; furthermore, without 'Compliance mode', the account owner could still modify the policy.",
+      "why_not_C": "Cross-account backup is a good security practice, but it does not inherently prevent the deletion of the backup if the destination account's administrator is compromised, unless Vault Lock is also used.",
+      "why_not_D": "AWS Backup manages its own storage; users do not have direct control over the underlying S3 buckets used by the AWS Backup service to enable versioning manually."
+    },
+    "tags": [
+      "AWS Backup",
+      "Vault Lock",
+      "AWS Organizations"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-035",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A SysOps Administrator needs to deploy a set of EC2 instances using an Auto Scaling group. The company requires that the instances are launched with a specific set of software configurations and a custom script that runs only once during the initial boot process. Which method is the most efficient way to achieve this while ensuring rapid scaling?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a custom Amazon Machine Image (AMI) with the software pre-installed and a User Data script for the one-time configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Use a standard Amazon Linux 2 AMI and execute a long shell script in User Data to install all software and configurations on every boot.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a Golden Image containing all software and the custom script, then trigger the script via a scheduled EventBridge rule.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS CloudFormation to launch instances and use the WaitCondition handle to install software sequentially.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Using a custom AMI (Golden Image) reduces boot time by pre-installing software, and User Data scripts are designed to run once during the first boot of an instance, making this the most efficient approach for rapid scaling.",
+      "why_not_A": "N/A",
+      "why_not_B": "Installing all software via User Data on every boot increases the startup time significantly, delaying the Auto Scaling group's ability to respond to traffic spikes.",
+      "why_not_C": "EventBridge rules are for scheduling events, not for managing the internal boot-time configuration of newly launched EC2 instances.",
+      "why_not_D": "WaitConditions are used to signal CloudFormation that a resource is ready; they do not replace the need for an AMI or User Data for software installation and would be overly complex for this requirement."
+    },
+    "tags": [
+      "EC2",
+      "Auto Scaling",
+      "AMI",
+      "User Data"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-036",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is using AWS CloudFormation to manage its infrastructure. They need to update a stack that contains an Amazon RDS instance. The administrator wants to change the DBInstanceClass, but they must ensure that the update does not result in the accidental deletion and recreation of the database instance.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the Stack update policy to 'Rollback on failure' and use a Change Set.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Termination Protection on the RDS instance via the AWS Console before updating the stack.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Apply a DeletionPolicy attribute of 'Retain' to the RDS resource in the CloudFormation template.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use the 'UpdateReplace' property in the template to force an in-place update.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The DeletionPolicy 'Retain' ensures that if a resource is replaced during a stack update or if the stack is deleted, the resource is preserved in the account rather than being deleted.",
+      "why_not_A": "Rollback on failure handles the state after a failed update, but it does not prevent the replacement of a resource if the property change triggers a replacement.",
+      "why_not_B": "Termination Protection is a feature of EC2; RDS has 'Deletion Protection', but applying it manually in the console doesn't prevent CloudFormation from attempting to replace the resource based on the template logic.",
+      "why_not_D": "UpdateReplace is not a valid CloudFormation property for controlling resource replacement behavior in this manner."
+    },
+    "tags": [
+      "CloudFormation",
+      "RDS",
+      "Infrastructure as Code"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-037",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses AWS Systems Manager (SSM) to manage a fleet of EC2 instances. They need to ensure that a specific security patch is installed across all instances tagged with 'Role: WebServer'. They want to automate this process and receive a report on which instances successfully applied the patch.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use an SSM Run Command to execute a shell script on all instances and manually check the logs of each instance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an SSM Patch Baseline and use an SSM Maintenance Window to apply the patches to the target group.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use an AWS Lambda function to SSH into each instance and run the update command.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use an EC2 Image Builder pipeline to create a new AMI and replace all existing instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SSM Patch Manager allows you to define Patch Baselines (what to patch) and use Maintenance Windows (when to patch), providing automated deployment and centralized reporting of compliance status.",
+      "why_not_A": "While Run Command works, manually checking logs for a large fleet is inefficient and does not provide a structured compliance report.",
+      "why_not_C": "SSH is not the recommended way to manage AWS fleets; SSM is agent-based and more secure, avoiding the need to manage SSH keys or open port 22.",
+      "why_not_D": "Creating a new AMI and replacing instances is a 'blue-green' deployment strategy, which is overkill for a simple security patch and causes unnecessary downtime/churn."
+    },
+    "tags": [
+      "Systems Manager",
+      "Patch Manager",
+      "Automation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-038",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A DevOps team is implementing a CI/CD pipeline using AWS CodeDeploy. They want to deploy a new version of their application to an Auto Scaling group of EC2 instances. The requirement is to shift traffic to the new version gradually, and if the error rate increases, the deployment should automatically roll back to the previous version.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a 'Half-at-a-Time' deployment configuration and manually monitor CloudWatch alarms to trigger a rollback.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a 'Canary' deployment strategy and configure CodeDeploy to trigger a rollback based on a CloudWatch alarm.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use an 'All-at-Once' deployment and implement a custom script to check for errors before completing the deployment.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Blue/Green deployment and use Route 53 weighted routing to shift traffic manually.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Canary deployments allow for a small percentage of traffic to be shifted first. CodeDeploy integrates with CloudWatch alarms to automatically roll back the deployment if specific metrics (like error rates) exceed a threshold.",
+      "why_not_A": "Half-at-a-time is a valid strategy, but the requirement specifies an automatic rollback, whereas this option suggests manual monitoring.",
+      "why_not_C": "All-at-once deployment causes downtime and does not allow for gradual traffic shifting or safe testing of the new version.",
+      "why_not_D": "While Blue/Green is a valid architecture, manual Route 53 shifting does not satisfy the requirement for automatic rollback based on error rates."
+    },
+    "tags": [
+      "CodeDeploy",
+      "CI/CD",
+      "Deployment Strategies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-039",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to provision multiple environments (Development, Testing, Production) using the same CloudFormation template. Each environment requires different values for the instance type and the number of instances in the Auto Scaling group. What is the best practice to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create three separate CloudFormation templates, one for each environment, and update them individually.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Hardcode the values in the template and use a script to find and replace strings before deployment.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use template parameters and provide different parameter files or values during stack creation for each environment.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use CloudFormation StackSets to deploy the same template to multiple regions with identical configurations.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Parameters allow a single template to be reused across different environments by passing different values (e.g., t3.micro for Dev and m5.large for Prod) at runtime.",
+      "why_not_A": "Maintaining three separate templates leads to configuration drift and significant administrative overhead.",
+      "why_not_B": "Manual string replacement is error-prone and bypasses the built-in capabilities of CloudFormation, making it difficult to track changes.",
+      "why_not_D": "StackSets are used for deploying stacks across multiple AWS accounts or regions, but the question is about environment-specific configuration differences, not regional distribution."
+    },
+    "tags": [
+      "CloudFormation",
+      "Parameters",
+      "Environment Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-040",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses AWS CloudFormation to manage its infrastructure. They need to update a stack that contains an AWS::AutoScaling::AutoScalingGroup. The update involves changing the Launch Configuration to a new version. The administrator notices that the update is taking a long time and the instances are not being replaced immediately. Which CloudFormation feature should be implemented to ensure a controlled, gradual rollout of the new instances without downtime?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use the CloudFormation Stack Update Policy with a RollingUpdate strategy.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the Auto Scaling group's UpdatePolicy with AutoScalingRollingUpdate and set MinInstancesScaleIn.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Stack Termination Protection and manually trigger an Instance Refresh.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a CloudFormation WaitCondition to pause the stack update until instances are healthy.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The AutoScalingRollingUpdate policy in CloudFormation allows the stack to update the Auto Scaling group by replacing instances in a rolling fashion, ensuring that a minimum number of instances remain available during the process.",
+      "why_not_A": "RollingUpdate is not a generic CloudFormation Stack Update Policy; it is specifically configured within the AutoScalingRollingUpdate property for ASGs.",
+      "why_not_C": "Termination Protection prevents the stack from being deleted; it does not manage the rollout strategy of instances within an ASG.",
+      "why_not_D": "WaitConditions are used to signal that a resource is ready for use, but they do not automate the rolling replacement of instances across an entire group."
+    },
+    "tags": [
+      "CloudFormation",
+      "AutoScaling",
+      "DeploymentStrategies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-041",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is deploying a multi-tier application using AWS Systems Manager (SSM). They need to ensure that a specific set of configuration scripts are executed on 500 EC2 instances in a specific order: first on the database tier, then on the application tier, and finally on the web tier. Which SSM feature is the most efficient way to achieve this orchestration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create an SSM Automation document with a series of AWS-RunShellScript steps.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use SSM State Manager to define a desired state for each tier independently.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create an SSM Automation document using the 'aws:executeAutomation' and 'aws:runCommand' actions with a defined sequence of targets.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use SSM Parameter Store to store the scripts and trigger them via a Lambda function.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "SSM Automation documents allow for the orchestration of complex workflows, including calling Run Command across different target groups in a specific sequential order.",
+      "why_not_A": "A simple Automation document with ShellScript steps usually targets a single instance or a generic group, but orchestrating tiered dependencies across hundreds of instances requires the structured targeting provided by 'aws:runCommand' within an automation workflow.",
+      "why_not_B": "State Manager ensures consistency over time (drift correction) but is not designed for the sequential, one-time orchestration of a deployment across tiers.",
+      "why_not_D": "While possible, this is a custom-built solution and not the 'most efficient' use of native SSM orchestration features."
+    },
+    "tags": [
+      "SystemsManager",
+      "Automation",
+      "Orchestration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-042",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A SysOps Administrator is tasked with automating the deployment of an application that requires a specific version of a third-party software package to be installed on all new EC2 instances. The administrator wants to avoid rebuilding the Amazon Machine Image (AMI) every time the software version changes. What is the best approach to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a CloudFormation UserData script to download and install the software at launch.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a custom AMI using EC2 Image Builder and update the Auto Scaling group launch template.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use AWS Systems Manager Distributor to package the software and deploy it via State Manager.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use AWS CodeDeploy to push the software package to the instances after they are launched.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "SSM Distributor is specifically designed to distribute software packages across EC2 instances. Combined with State Manager, it ensures that the specified version is installed on all instances without needing to bake a new AMI.",
+      "why_not_A": "UserData scripts increase boot time and can fail if the external download source is unavailable, leading to inconsistent deployment states.",
+      "why_not_B": "The requirement explicitly states the administrator wants to avoid rebuilding the AMI every time the version changes.",
+      "why_not_D": "CodeDeploy is intended for application code deployments, not for system-level software package distribution and lifecycle management."
+    },
+    "tags": [
+      "SystemsManager",
+      "Distributor",
+      "Provisioning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-043",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses AWS Elastic Beanstalk to manage their web application. They want to implement a deployment strategy where a small percentage of traffic is shifted to a new version of the application to test its stability before fully promoting it. Which deployment policy should they use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "All-at-once deployment",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Rolling deployment",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Immutable deployment",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Canary deployment using a separate environment and Route 53 weighted routing",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "While Elastic Beanstalk has built-in policies, a true 'Canary' deployment (shifting a small percentage of traffic) is achieved by creating a second environment for the new version and using Route 53 weighted routing to split traffic.",
+      "why_not_A": "All-at-once causes downtime and does not allow for gradual traffic shifting.",
+      "why_not_B": "Rolling deployment replaces instances in batches, but traffic is distributed across all healthy instances; it doesn't allow for a controlled 'small percentage' test of the new version specifically.",
+      "why_not_C": "Immutable deployment creates a new set of instances in a fresh group, but once the health check passes, the CNAME is swapped, resulting in a 100% shift rather than a gradual canary shift."
+    },
+    "tags": [
+      "ElasticBeanstalk",
+      "DeploymentStrategies",
+      "Route53"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-044",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An administrator is using AWS CloudFormation to deploy a complex infrastructure. They need to pass the output of one stack (a VPC ID) as an input parameter to another stack (an Application stack). Which method is the most scalable and maintainable way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Manually copy the VPC ID from the first stack's output and paste it into the second stack's parameters.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the Fn::ImportValue function in the second stack to reference the exported output of the first stack.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store the VPC ID in an SSM Parameter Store and use a dynamic reference in the second stack.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a nested stack where the VPC stack is a child of the Application stack.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Export/ImportValue mechanism is the native CloudFormation way to share information between independent stacks. It creates a dependency that prevents the exporting stack from being deleted if the value is still in use.",
+      "why_not_A": "Manual processes are not scalable and are prone to human error.",
+      "why_not_C": "While dynamic references to SSM are useful, Fn::ImportValue is the standard for cross-stack referencing within CloudFormation and provides built-in dependency protection (the stack cannot be deleted if the export is imported elsewhere).",
+      "why_not_D": "Nested stacks are used for modularity and reuse, but the Application stack usually depends on the VPC, not the other way around; the VPC should be the parent or a separate shared stack."
+    },
+    "tags": [
+      "CloudFormation",
+      "CrossStackReferences",
+      "Automation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-045",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-provisioning-automation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company uses AWS CloudFormation to manage a multi-tier application environment. They have implemented a strategy to update their production environment by deploying a new stack and shifting traffic using a Route 53 weighted routing policy. During a recent update, the CloudFormation stack update failed and entered the ROLLBACK_IN_PROGRESS state. The company needs to ensure that the failed stack is not deleted but remains in its current state for forensic analysis, while simultaneously ensuring that the production traffic remains pointed to the previous stable version of the application. Which combination of actions should the SysOps Administrator take to achieve this while adhering to the principle of least disruption?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Manually trigger a stack deletion for the failed stack and update the Route 53 record to remove the weight for the failed version.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the stack's 'OnFailure' property to ROLLBACK, then use the CloudFormation console to 'ContinueUpdateRollback' after manually fixing the underlying resource issue.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Set the stack's 'OnFailure' property to DELETE, then use Route 53 health checks to automatically divert traffic away from the failing resources.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Change the stack's 'OnFailure' property to DO_NOTHING, and ensure the Route 53 weighted record for the new stack is set to 0% or removed entirely.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Setting 'OnFailure' to DO_NOTHING prevents CloudFormation from automatically rolling back or deleting the stack when a failure occurs, preserving the resources in their failed state for forensic analysis. Since traffic is managed via Route 53 weighted routing, removing the weight for the new stack ensures that 100% of production traffic continues to hit the stable version without affecting the failed resources.",
+      "why_not_A": "Deleting the stack violates the requirement to keep the resources for forensic analysis.",
+      "why_not_B": "ROLLBACK would remove the failed state by reverting to the previous configuration, making forensic analysis of the failure impossible.",
+      "why_not_C": "Setting 'OnFailure' to DELETE would automatically remove the stack upon failure, which contradicts the requirement to preserve the environment for analysis."
+    },
+    "tags": [
+      "CloudFormation",
+      "Route53",
+      "DeploymentStrategies",
+      "InfrastructureAsCode"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-046",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to ensure that all Amazon S3 buckets in their AWS account are encrypted at rest using a customer-managed KMS key. A SysOps Administrator discovers that some legacy buckets are not encrypted. What is the most efficient way to identify these non-compliant buckets and ensure future buckets are encrypted by default?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Run a manual script using the AWS CLI to list all buckets and check the encryption status, then manually enable default encryption for each.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an AWS Config rule using the managed rule 's3-bucket-server-side-encryption-enabled' to identify non-compliant buckets and use an AWS Organizations Service Control Policy (SCP) to deny 's3:CreateBucket' if encryption is not specified.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable S3 Block Public Access at the account level and use Amazon Macie to discover unencrypted buckets.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure an Amazon Inspector scan to detect unencrypted S3 buckets and use a Lambda function to automatically delete non-compliant buckets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Config is the standard service for auditing resource configurations against a desired state. The managed rule specifically identifies unencrypted buckets. An SCP provides a preventative guardrail to ensure no new unencrypted buckets can be created.",
+      "why_not_A": "Manual scripts are not scalable, prone to error, and do not provide continuous monitoring or prevention for future buckets.",
+      "why_not_C": "S3 Block Public Access prevents public access but does not enforce encryption. Amazon Macie is for discovering sensitive data (PII), not for auditing resource configuration settings like encryption.",
+      "why_not_D": "Amazon Inspector is used for vulnerability scanning of EC2 instances and container images, not for auditing S3 bucket configurations. Deleting buckets automatically is an extreme action that could cause data loss."
+    },
+    "tags": [
+      "AWS Config",
+      "SCP",
+      "S3 Encryption"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-047",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is using AWS Secrets Manager to store database credentials. The security team requires that the secrets be rotated every 30 days. The application is running on EC2 instances. Which approach should the SysOps Administrator implement to ensure rotation without manual intervention or application downtime?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a scheduled EventBridge rule that triggers a Lambda function to manually update the password in the database and the secret in Secrets Manager.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable the built-in rotation feature in Secrets Manager and provide a Lambda function that handles the logic for updating the secret in the database.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store the credentials in AWS Systems Manager Parameter Store as 'SecureString' and use a cron job on the EC2 instances to rotate them.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use IAM roles to grant the EC2 instances permission to access the secret, and configure the application to restart every 30 days to fetch the new secret.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Secrets Manager has a native rotation feature that integrates with AWS Lambda to automatically change the secret value in both the target service (DB) and the manager, ensuring a seamless transition.",
+      "why_not_A": "While EventBridge can trigger Lambda, using the built-in rotation feature of Secrets Manager is the architectural best practice as it handles the rotation lifecycle (creating a pending secret, testing it, and promoting it).",
+      "why_not_C": "SSM Parameter Store does not have a native automated rotation mechanism like Secrets Manager does.",
+      "why_not_D": "IAM roles provide access, but they do not perform the rotation of the secret itself. Restarting the application is an inefficient way to handle credential updates."
+    },
+    "tags": [
+      "Secrets Manager",
+      "Lambda",
+      "Credential Rotation"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-048",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to implement a centralized logging solution for all API calls made across multiple AWS accounts in an organization. The logs must be stored in a dedicated security account and must be immutable to prevent tampering. Which combination of services should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable CloudTrail in each account and configure them to send logs to a shared S3 bucket in the security account with S3 Versioning enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an Organization-wide CloudTrail, configure it to deliver logs to an S3 bucket in the security account, and enable S3 Object Lock on that bucket.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use AWS Config to record API calls and stream the data to an Amazon Kinesis Data Firehose, which delivers the logs to an S3 bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure VPC Flow Logs for all accounts and aggregate them into a single S3 bucket using a cross-account IAM role.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An organization-wide CloudTrail simplifies management across multiple accounts. S3 Object Lock (Write Once Read Many - WORM) is the specific feature required to make logs immutable and prevent tampering.",
+      "why_not_A": "S3 Versioning allows you to recover previous versions, but it does not prevent a user with sufficient permissions from deleting the versions or the objects themselves.",
+      "why_not_C": "AWS Config tracks resource changes, not every API call (which is CloudTrail's purpose). Kinesis is for streaming, not specifically for immutability.",
+      "why_not_D": "VPC Flow Logs capture IP traffic (network layer), not API calls (management layer)."
+    },
+    "tags": [
+      "CloudTrail",
+      "S3 Object Lock",
+      "AWS Organizations"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-aws-soa-mock1-049",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A SysOps Administrator is tasked with restricting access to an internal application hosted on an EC2 instance. The application should only be accessible to users coming from a specific corporate IP range. The instance is currently in a public subnet with a public IP. What is the most secure way to implement this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure a Network ACL (NACL) for the subnet to allow traffic only from the corporate IP range and deny all other traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Modify the Security Group associated with the EC2 instance to allow inbound traffic on the application port only from the corporate IP range.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Install a software firewall on the EC2 instance and configure it to filter traffic based on the corporate IP range.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS WAF to filter traffic based on the corporate IP range and attach the WAF to the EC2 instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Security Groups act as a virtual firewall for the instance and are stateful. Restricting inbound traffic to a specific IP range in the Security Group is the standard and most efficient way to control access to an EC2 instance.",
+      "why_not_A": "NACLs are stateless and apply to the entire subnet. While they can block IPs, Security Groups are the primary and more granular tool for instance-level access control.",
+      "why_not_C": "Managing firewalls inside the OS increases administrative overhead and is less secure than using AWS's infrastructure-level security groups.",
+      "why_not_D": "AWS WAF cannot be attached directly to an EC2 instance; it must be attached to an Application Load Balancer, Amazon API Gateway, or AppSync."
+    },
+    "tags": [
+      "Security Groups",
+      "NACL",
+      "EC2 Security"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-aws-soa-mock1-050",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is undergoing a security audit and must prove that no IAM users have access keys older than 90 days. The SysOps Administrator needs to generate a report of all users and the age of their access keys. Which tool is best suited for this task?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use IAM Access Analyzer to identify users with unused permissions.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the IAM Credential Report to generate a CSV file containing the last rotation date of access keys for all users.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Query CloudTrail logs using Amazon Athena to find 'CreateAccessKey' events from the last 90 days.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Trusted Advisor to check for security gaps in IAM user permissions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The IAM Credential Report is a specifically designed feature that provides a comprehensive list of all users in an account and the status/age of their credentials (passwords and access keys).",
+      "why_not_A": "IAM Access Analyzer is used to analyze resource-based policies to identify public or cross-account access, not to track the age of credentials.",
+      "why_not_C": "Querying CloudTrail would only show when keys were created, not the current status of all keys, and would be significantly more complex to implement for a full report.",
+      "why_not_D": "Trusted Advisor provides general best practice recommendations (e.g., notifying you if MFA is not enabled), but it does not provide a detailed per-user credential age report."
+    },
+    "tags": [
+      "IAM",
+      "Credential Report",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-051",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company requires that all S3 buckets be encrypted using AWS KMS keys. A SysOps Administrator discovers that several buckets were created without encryption. The company needs to ensure that any future bucket created without encryption is automatically remediated and the offending user is notified. Which solution meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create an AWS Config rule using the 's3-bucket-server-side-encryption-enabled' managed rule and associate it with a remediation action using an AWS Systems Manager (SSM) Automation document.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Configure an S3 Bucket Policy that denies the 's3:PutObject' action if the 'x-amz-server-side-encryption' header is missing.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Write a custom Lambda function triggered by CloudTrail via EventBridge that checks for 'CreateBucket' events and applies encryption via the SDK.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable S3 Default Encryption at the account level using AWS Organizations SCPs to prevent the creation of unencrypted buckets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "AWS Config managed rules provide a built-in way to detect non-compliant resources, and the integration with SSM Automation allows for automatic remediation (applying encryption) and notification, providing the lowest operational overhead.",
+      "why_not_A": "N/A",
+      "why_not_B": "Bucket policies can prevent unencrypted uploads, but they do not remediate existing buckets or handle the 'CreateBucket' configuration itself automatically.",
+      "why_not_C": "While functional, this requires writing, maintaining, and managing custom code (Lambda), which represents higher operational overhead than a managed Config rule.",
+      "why_not_D": "SCPs are guardrails that can prevent actions, but they cannot 'automatically remediate' a resource that was created before the SCP was applied or automatically change a setting on a resource."
+    },
+    "tags": [
+      "AWS Config",
+      "S3",
+      "Remediation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-052",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is using AWS WAF to protect its public-facing application. They are experiencing a high volume of HTTP flood attacks from a specific set of IP addresses. The security team wants to implement a strategy that automatically blocks these IPs for 24 hours once they exceed a threshold of 1,000 requests per 5 minutes, but they want to avoid manually updating IP sets.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a WAF Rate-based rule with a threshold of 1,000 requests per 5 minutes.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Create a CloudWatch Alarm based on WAF logs that triggers a Lambda function to add IPs to a WAF IP Set.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a WAF rule using a regex pattern to identify the attacking IP addresses and block them.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Network ACL to block the IP addresses based on CloudWatch metrics.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "WAF rate-based rules are specifically designed for this scenario. They track the number of requests from each IP address and automatically block those that exceed the defined threshold within a sliding window, requiring zero manual intervention.",
+      "why_not_A": "N/A",
+      "why_not_B": "This approach involves significant operational overhead (Lambda, CloudWatch Alarms, Log analysis) and is less efficient than the native rate-based rule feature.",
+      "why_not_C": "Regex patterns are used for string matching in requests, not for tracking request volume per IP address.",
+      "why_not_D": "Network ACLs are stateless and do not have built-in rate-limiting capabilities; they would require an external automation script to update rules."
+    },
+    "tags": [
+      "AWS WAF",
+      "DDoS Protection",
+      "Rate Limiting"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-053",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization needs to implement a centralized logging strategy for all API calls across multiple AWS accounts in an Organization. The logs must be stored in a dedicated security account and must be immutable to prevent any user, including the root user of the member accounts, from deleting the logs.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable CloudTrail in each member account and configure the S3 bucket in the security account with a restrictive bucket policy.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an Organization-level CloudTrail and configure the S3 bucket in the security account with S3 Object Lock in compliance mode.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use AWS Config Aggregator to collect logs from all accounts and store them in a centralized S3 bucket with Versioning enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a cross-account IAM role that allows member accounts to push logs to an S3 bucket in the security account using S3 Glacier.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An Organization-level CloudTrail centralizes logging across all accounts. S3 Object Lock in 'Compliance mode' ensures that objects cannot be deleted or overwritten by any user, including the root user, for the specified retention period.",
+      "why_not_A": "A restrictive bucket policy can be modified by the bucket owner or bypassed by certain permissions; it does not provide the 'immutable' guarantee that Object Lock provides.",
+      "why_not_B": "N/A",
+      "why_not_C": "AWS Config tracks configuration changes, not every single API call (which is what CloudTrail does). Versioning allows recovery but does not prevent deletion of versions by a root user.",
+      "why_not_D": "Glacier is for archival and not for active log ingestion. IAM roles do not provide immutability."
+    },
+    "tags": [
+      "CloudTrail",
+      "S3 Object Lock",
+      "AWS Organizations"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-aws-soa-mock1-054",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a legacy application to EC2. The application requires a specific set of credentials to access a third-party API. The security team forbids the use of hardcoded credentials in the application code or stored in configuration files on the instance disk. How should the SysOps Administrator implement this securely?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Store the credentials in an environment variable on the EC2 instance and encrypt the variable using a KMS key.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Store the credentials in AWS Secrets Manager and grant the EC2 instance's IAM role permission to retrieve the secret.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store the credentials in the AWS Systems Manager Parameter Store as a 'String' type and use an IAM role for access.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a separate IAM user for the application and store the Access Key and Secret Key in an S3 bucket with restricted access.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Secrets Manager is designed for sensitive credentials. It allows for secure storage, retrieval via API using IAM roles, and supports automatic rotation of secrets, satisfying all security requirements.",
+      "why_not_A": "Environment variables are often visible in process lists and are not a secure way to store secrets, regardless of encryption at rest.",
+      "why_not_B": "N/A",
+      "why_not_C": "Parameter Store can store secrets, but it must be a 'SecureString' type, not a 'String' type, to be encrypted. Secrets Manager is generally preferred for third-party API keys due to rotation capabilities.",
+      "why_not_D": "Storing keys in S3 is a security anti-pattern; it introduces an unnecessary layer of risk and does not provide the management features of Secrets Manager."
+    },
+    "tags": [
+      "Secrets Manager",
+      "IAM",
+      "EC2"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-055",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "security-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company has a strict compliance requirement that all data at rest in their EBS volumes must be encrypted. They are using a mix of AWS managed keys and customer-managed keys (CMKs). They need to identify all unencrypted EBS volumes across 50 different AWS accounts and generate a report for the auditors.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Run a custom Python script using Boto3 that iterates through all regions and accounts to check the 'Encrypted' attribute of each volume.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS Trusted Advisor to identify unencrypted EBS volumes across the organization.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy an AWS Config rule 'ebs-encrypted' in all accounts and use an AWS Config Aggregator to view the compliance status centrally.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable EBS encryption by default in all accounts, which will automatically encrypt all existing unencrypted volumes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "AWS Config is the standard service for auditing resource configurations. The 'ebs-encrypted' rule identifies unencrypted volumes, and the Aggregator allows the SysOps Administrator to see the compliance status of all 50 accounts in one central dashboard.",
+      "why_not_A": "While possible, this is a high-operational-overhead approach requiring custom script maintenance and complex cross-account authentication.",
+      "why_not_B": "Trusted Advisor provides some security checks, but it is not designed for detailed, per-resource compliance reporting across a large organization like Config Aggregators are.",
+      "why_not_C": "N/A",
+      "why_not_D": "Enabling EBS encryption by default only affects NEW volumes created after the setting is enabled; it does not retroactively encrypt existing volumes."
+    },
+    "tags": [
+      "AWS Config",
+      "EBS",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-056",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A SysOps Administrator is troubleshooting a connectivity issue where an EC2 instance in a private subnet cannot download software updates from the public internet. The instance is associated with a NAT Gateway in a public subnet. Which of the following is the most likely cause of the failure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NAT Gateway is missing an Elastic IP address.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The private subnet's route table does not have a route pointing 0.0.0.0/0 to the NAT Gateway.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The public subnet's route table does not have a route to the internet gateway.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The EC2 instance does not have a public IP address assigned.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "For an instance in a private subnet to access the internet via a NAT Gateway, the subnet's route table must explicitly route all outbound traffic (0.0.0.0/0) to the NAT Gateway ID.",
+      "why_not_A": "A NAT Gateway cannot be created without an Elastic IP; the AWS console/API would prevent the creation of the resource if one wasn't provided.",
+      "why_not_C": "While the public subnet needs a route to the IGW for the NAT Gateway to function, the scenario focuses on the instance's inability to reach the gateway; route table configuration at the source subnet is the primary point of failure for 'cannot download' scenarios.",
+      "why_not_D": "Instances in private subnets should not have public IPs; the purpose of the NAT Gateway is to provide internet access without requiring a public IP on the instance."
+    },
+    "tags": [
+      "VPC",
+      "NAT Gateway",
+      "Route Tables"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-057",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses Amazon CloudFront to serve static content. Users are reporting that updates to the content on the S3 origin are not appearing immediately. The company wants to ensure that the most recent version of the content is served without waiting for the TTL to expire. What is the most efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the TTL values in the CloudFront cache behavior settings.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Disable caching entirely for the CloudFront distribution.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a CloudFront invalidation request for the affected files.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Change the S3 bucket permissions to allow public read access.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "An invalidation request tells CloudFront to remove the object from the edge caches, forcing the distribution to fetch the latest version from the origin upon the next request.",
+      "why_not_A": "Increasing the TTL would make the problem worse by keeping the stale content in the cache for a longer period.",
+      "why_not_B": "Disabling caching would eliminate the performance benefits of CloudFront and increase the load and cost associated with the S3 origin.",
+      "why_not_D": "S3 permissions affect access to the origin, not the caching behavior of the CloudFront edge locations."
+    },
+    "tags": [
+      "CloudFront",
+      "Caching",
+      "Invalidations"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-aws-soa-mock1-058",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An application running on EC2 instances in a VPC needs to communicate with a managed AWS service (like S3) without using a public IP address or a NAT Gateway. Which networking component should the administrator implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A Customer Gateway",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "A VPC Endpoint (Gateway Endpoint)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "A Transit Gateway",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A Peering Connection",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Gateway Endpoints allow private connectivity from your VPC to supported AWS services (S3 and DynamoDB) without requiring a NAT Gateway or public IP.",
+      "why_not_A": "A Customer Gateway is used for establishing VPN connections between an on-premises network and an AWS VPC.",
+      "why_not_C": "Transit Gateway is used to interconnect multiple VPCs and on-premises networks, not specifically for accessing AWS services privately.",
+      "why_not_D": "VPC Peering is used to connect two different VPCs to each other, not a VPC to an AWS service."
+    },
+    "tags": [
+      "VPC",
+      "VPC Endpoints",
+      "S3"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-soa-mock1-059",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is experiencing a high volume of HTTP requests to their web servers. They have deployed an Application Load Balancer (ALB). The administrator notices that some requests are failing with 503 Service Unavailable errors, while the CPU utilization on the backend EC2 instances remains low. What is the most likely cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The ALB is unable to reach the instances due to a Security Group misconfiguration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The Target Group health checks are failing, causing the ALB to mark instances as unhealthy.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The ALB is hitting its maximum concurrent connection limit.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The EC2 instances are running out of memory (RAM).",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A 503 error in the context of an ALB often occurs when there are no healthy instances in the target group. If health checks fail, the ALB stops routing traffic to those instances, leading to 503 errors even if the server hardware (CPU) is underutilized.",
+      "why_not_A": "Security group misconfigurations usually result in 504 Gateway Timeout or connection timeouts, rather than a 503 Service Unavailable.",
+      "why_not_C": "ALBs are managed services that scale automatically; it is highly unlikely for a standard workload to hit the ALB's internal connection limits before the backend fails.",
+      "why_not_D": "If instances were out of RAM, the application would likely crash or slow down, but the ALB would only return 503 if the health check specifically failed as a result."
+    },
+    "tags": [
+      "ELB",
+      "ALB",
+      "Health Checks"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-aws-soa-mock1-060",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to connect their on-premises data center to an AWS VPC. The connection must be private, provide consistent bandwidth, and avoid the public internet. Which solution is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "AWS Site-to-Site VPN",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS Direct Connect",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "AWS Transit Gateway with Public IP",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A Public Subnet with an Internet Gateway",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Direct Connect provides a dedicated physical network connection from an on-premises network to AWS, bypassing the internet and ensuring consistent network performance and bandwidth.",
+      "why_not_A": "Site-to-Site VPN uses the public internet to create an encrypted tunnel. While private in terms of data, it does not provide 'consistent' bandwidth because it is subject to internet congestion.",
+      "why_not_C": "Transit Gateway is a hub for connecting VPCs; while it can work with Direct Connect, the 'Public IP' mention makes it incorrect as the requirement is to avoid the public internet.",
+      "why_not_D": "An Internet Gateway is specifically designed to allow traffic to and from the public internet, which contradicts the requirement."
+    },
+    "tags": [
+      "Direct Connect",
+      "Hybrid Connectivity",
+      "VPN"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-aws-soa-mock1-061",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company has a multi-tier application deployed across two private subnets in a single Availability Zone. The application requires a NAT Gateway to allow instances to download software updates from the internet. After configuring the NAT Gateway in a public subnet and updating the route tables, the instances still cannot reach the internet. A network engineer discovers that the Security Group for the instances allows all outbound traffic, but the Network ACL for the private subnet is configured with a default 'Allow All' inbound rule and a specific outbound rule allowing traffic only to the NAT Gateway's internal IP address on port 80. What is the most likely cause of the connectivity issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NAT Gateway requires a public IP address to communicate with the private subnet.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The Network ACL is stateless and is missing an inbound rule to allow the return traffic from the NAT Gateway.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The Security Group must be updated to include an inbound rule allowing traffic from the NAT Gateway.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The route table for the public subnet is missing a route to the internet gateway.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Network ACLs are stateless. If you allow outbound traffic to a destination, you must explicitly allow the return (inbound) traffic on the ephemeral ports used by the client. Even though the outbound rule is set, the response from the NAT Gateway is being blocked by the ACL's inbound rules.",
+      "why_not_A": "The NAT Gateway already has an Elastic IP for internet communication; it does not need a public IP to talk to private instances within the VPC.",
+      "why_not_C": "Security Groups are stateful. If an outbound request is allowed, the return traffic is automatically allowed regardless of inbound rules.",
+      "why_not_D": "The scenario states the NAT Gateway is in a public subnet; if the public subnet route table were missing the IGW route, the NAT Gateway itself wouldn't work, but the specific failure described points to the ACL's stateless nature regarding the instance's return traffic."
+    },
+    "tags": [
+      "VPC",
+      "Network ACL",
+      "NAT Gateway"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-062",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization uses Amazon CloudFront to serve static content from an S3 bucket. To improve security, they want to ensure that users can only access the content via CloudFront and not directly via the S3 bucket URL. They have implemented Origin Access Control (OAC). However, users are reporting intermittent 403 Forbidden errors when attempting to access specific files. The S3 bucket is private, and the OAC policy is correctly applied. What is the most likely cause of these errors?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The S3 bucket has 'Block Public Access' enabled, which conflicts with OAC.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "CloudFront is attempting to cache files that are encrypted with KMS, but the CloudFront service principal lacks permissions to the KMS key.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The CloudFront distribution is not configured to forward the 'Host' header to the origin.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The S3 bucket policy is missing a statement allowing the 's3:ListBucket' permission for the CloudFront OAC.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "When using OAC with S3 buckets containing KMS-encrypted objects, CloudFront must have permission to use the KMS key to decrypt the objects before serving them. If the KMS key policy does not explicitly allow the CloudFront service principal, 403 errors occur for those specific encrypted files.",
+      "why_not_A": "OAC is designed specifically to work with private buckets where 'Block Public Access' is enabled; this is the recommended security posture.",
+      "why_not_C": "Forwarding the Host header is generally not required for S3 origins and would not cause intermittent 403s based on specific files.",
+      "why_not_D": "OAC requires 's3:GetObject' for serving files. 's3:ListBucket' is not required for CloudFront to serve a specific object via its key."
+    },
+    "tags": [
+      "CloudFront",
+      "S3",
+      "OAC",
+      "KMS"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-063",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a legacy application to AWS. The application requires a fixed IP address for a third-party API provider to whitelist. The application is hosted on an Auto Scaling group of EC2 instances across multiple Availability Zones. Which architecture provides the most scalable and highly available way to meet this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign an Elastic IP to each EC2 instance in the Auto Scaling group and provide the list to the provider.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Place the instances in a private subnet and use a NAT Gateway with an Elastic IP for all outbound traffic.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Network Load Balancer (NLB) with static IP addresses for the outbound traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a Transit Gateway to route traffic through a centralized egress VPC with a single EC2 proxy instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A NAT Gateway provides a single, static public IP (Elastic IP) for all instances in the private subnet. This allows the third-party provider to whitelist one IP regardless of how many instances are launched or terminated by the Auto Scaling group.",
+      "why_not_A": "This is not scalable. Auto Scaling changes the number of instances, meaning the whitelist would need constant updates, and there are limits on the number of Elastic IPs per account.",
+      "why_not_C": "NLBs provide static IPs for INBOUND traffic. They do not provide a static IP for OUTBOUND traffic initiated by the EC2 instances.",
+      "why_not_D": "Using a single EC2 proxy instance creates a single point of failure and is not highly available, violating the requirement."
+    },
+    "tags": [
+      "VPC",
+      "NAT Gateway",
+      "Auto Scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-064",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An administrator is troubleshooting a connectivity issue where an EC2 instance in VPC-A cannot communicate with an EC2 instance in VPC-B. Both VPCs are in the same region. A VPC Peering connection has been established and accepted. The route tables in both VPCs have been updated to route traffic to the peer VPC. The Security Groups for both instances allow traffic on the required ports. What is the most likely remaining cause of the failure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "VPC Peering does not support communication between instances in the same region.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The instances are using overlapping CIDR blocks.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The instances must be in the same Availability Zone to communicate via peering.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The Security Group rules must reference the Security Group ID of the peer VPC, which is not supported in peering.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Peering cannot be established or function if the two VPCs have overlapping CIDR blocks. If the CIDRs overlap, routing becomes ambiguous, and traffic will not reach the destination.",
+      "why_not_A": "VPC Peering explicitly supports both intra-region and inter-region connectivity.",
+      "why_not_C": "VPC Peering allows communication across different Availability Zones within the same region.",
+      "why_not_D": "While it is true that you cannot reference a Security Group ID from a peered VPC in some specific configurations (depending on the region/setup), the scenario states the Security Groups already allow the traffic (likely via CIDR ranges), and overlapping CIDRs are a more fundamental networking failure."
+    },
+    "tags": [
+      "VPC Peering",
+      "Networking"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-065",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is using Route 53 to manage the DNS for their application. They want to implement a disaster recovery strategy where traffic is normally routed to a primary region, but automatically fails over to a secondary region if the primary region becomes unavailable. They are using a health check to monitor the primary endpoint. Which routing policy should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Weighted Routing Policy",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Latency Routing Policy",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Failover Routing Policy",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Geolocation Routing Policy",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Failover routing is specifically designed for active-passive failover. It allows Route 53 to route traffic to a primary record and switch to a secondary record only when the health check for the primary record fails.",
+      "why_not_A": "Weighted routing is used for splitting traffic between multiple endpoints (e.g., A/B testing), not for automatic disaster recovery based on health.",
+      "why_not_B": "Latency routing directs users to the region that provides the lowest latency, which is an optimization for performance, not a failover mechanism.",
+      "why_not_D": "Geolocation routing routes traffic based on the geographic location of the user, regardless of the health of the endpoint."
+    },
+    "tags": [
+      "Route 53",
+      "DNS",
+      "Disaster Recovery"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-066",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-content-delivery",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A global e-commerce platform uses a multi-tier architecture across two AWS Regions. The application uses an Application Load Balancer (ALB) in each region to distribute traffic to EC2 instances in private subnets. To optimize performance, the company uses Amazon CloudFront. Recently, the operations team noticed that users in certain geographic areas are experiencing high latency and intermittent 504 Gateway Timeout errors. Investigation reveals that the ALB is occasionally dropping connections because the keep-alive timeout on the ALB is shorter than the CloudFront origin timeout. The team needs to ensure a seamless connection between CloudFront and the ALBs while maintaining the security posture of the private subnets. Which combination of actions should the SysOps Administrator take?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the ALB keep-alive timeout to exceed the CloudFront origin timeout and configure CloudFront to use the ALB's public DNS name as the origin.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the ALB keep-alive timeout to exceed the CloudFront origin timeout and implement CloudFront Origin Request policies to manage header forwarding.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Increase the ALB keep-alive timeout to exceed the CloudFront origin timeout and configure CloudFront to use a Global Accelerator DNS name as the origin.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the ALB keep-alive timeout to exceed the CloudFront origin timeout and ensure the ALB is configured with a target group that includes the EC2 instances with a matching keep-alive setting.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "To prevent 504 Gateway Timeout errors caused by connection closures, the keep-alive timeout of the backend (ALB and the EC2 instances) must be greater than or equal to the CloudFront origin timeout (which is 60 seconds by default). If the ALB closes the connection before CloudFront does, CloudFront may attempt to reuse a closed connection, resulting in a 504. The full chain (CloudFront -> ALB -> EC2) must have aligned keep-alive settings to ensure stability.",
+      "why_not_A": "While increasing the timeout is correct, using the public DNS name is the standard configuration and does not address the underlying timeout mismatch between the ALB and the backend EC2 instances.",
+      "why_not_B": "Origin Request policies control which headers, cookies, and query strings are forwarded to the origin; they have no impact on the TCP keep-alive timeout or the 504 errors described.",
+      "why_not_C": "AWS Global Accelerator is typically used as a replacement for or in front of an ALB for non-HTTP traffic or specific routing needs, but placing it between CloudFront and an ALB adds unnecessary complexity and does not solve the keep-alive timeout mismatch between the ALB and the EC2 instances."
+    },
+    "tags": [
+      "CloudFront",
+      "ALB",
+      "TCP-Keep-Alive",
+      "504-Gateway-Timeout"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-soa-mock1-067",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cost-performance-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is running a fleet of Amazon EC2 instances for a batch processing workload that is fault-tolerant and can be interrupted. The current setup uses On-Demand instances, resulting in high monthly costs. The company wants to minimize costs while ensuring the workload eventually completes. Which strategy should the SysOps Administrator recommend?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Migrate the workload to Reserved Instances with a 1-year term.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Spot Instances and implement a mechanism to handle interruptions using Spot Fleet.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch to Dedicated Hosts to avoid noisy neighbor performance issues.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement an Auto Scaling group with a minimum capacity of 1 and a maximum of 10 On-Demand instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Spot Instances offer the lowest cost for workloads that are fault-tolerant and can be interrupted, making them ideal for batch processing.",
+      "why_not_A": "Reserved Instances provide a discount but require a commitment and are more expensive than Spot Instances for fault-tolerant workloads.",
+      "why_not_C": "Dedicated Hosts are used for specific licensing or compliance needs and are generally more expensive than shared tenancy.",
+      "why_not_D": "Using On-Demand instances in an Auto Scaling group does not address the goal of minimizing costs as effectively as Spot Instances."
+    },
+    "tags": [
+      "EC2",
+      "Cost Optimization",
+      "Spot Instances"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-068",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cost-performance-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A SysOps Administrator notices that an Amazon EBS volume attached to an EC2 instance is consistently experiencing high latency and I/O wait times, affecting application performance. The volume is currently a General Purpose SSD (gp2). Which action will provide the most immediate performance improvement for bursty I/O workloads?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change the volume type to Provisioned IOPS SSD (io2).",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Increase the volume size while keeping it as gp2.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Convert the volume to Throughput Optimized HDD (st1).",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable EBS snapshots every hour to optimize disk performance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Provisioned IOPS SSD (io2) provides consistent, high-performance I/O and is specifically designed for I/O intensive applications that require low latency.",
+      "why_not_B": "While increasing gp2 size increases baseline IOPS, it may not be sufficient for highly intensive or unpredictable bursty workloads compared to io2.",
+      "why_not_C": "st1 is a HDD-based volume designed for large, sequential workloads (like Big Data) and has much higher latency than SSDs.",
+      "why_not_D": "Snapshots are for backup and recovery; they do not improve the active I/O performance of a volume."
+    },
+    "tags": [
+      "EBS",
+      "Performance Optimization",
+      "Storage"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-069",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cost-performance-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company has several S3 buckets containing logs that are accessed frequently for the first 30 days, rarely accessed for the next 60 days, and then must be kept for 7 years for compliance but are almost never accessed. The company wants to automate the transition of these objects to the most cost-effective storage class. What is the best approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Manually move objects to S3 Glacier Deep Archive after 90 days.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an S3 Lifecycle policy to transition objects to S3 Standard-IA after 30 days and to S3 Glacier Deep Archive after 90 days.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use S3 Intelligent-Tiering and set the archive access tier to 30 days.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Move all objects immediately to S3 One Zone-IA to reduce storage costs.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "S3 Lifecycle policies automate the transition between storage classes based on the age of the object, perfectly matching the 30-day and 90-day requirements.",
+      "why_not_A": "Manual movement is not scalable and does not meet the requirement for automation.",
+      "why_not_C": "S3 Intelligent-Tiering is for unknown access patterns; here, the patterns are known and predictable, making a Lifecycle policy more cost-effective.",
+      "why_not_D": "One Zone-IA provides lower durability (single AZ) and does not address the long-term compliance storage requirement."
+    },
+    "tags": [
+      "S3",
+      "Cost Optimization",
+      "Lifecycle Policies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-070",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cost-performance-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company's application is hosted on an Auto Scaling group of EC2 instances. During peak hours, CPU utilization reaches 90%, causing application slowdowns. The company wants to ensure performance remains stable while minimizing the cost of over-provisioning. Which scaling policy is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Scheduled Scaling based on known peak hours.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Simple Scaling based on a single CPU utilization threshold.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Target Tracking Scaling policy with a CPU utilization target of 70%.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Step Scaling based on a critical alarm of 95% CPU utilization.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Target Tracking Scaling acts like a thermostat, automatically adding or removing capacity to maintain a specific metric, providing a balance between performance and cost.",
+      "why_not_A": "Scheduled scaling only works if peak hours are perfectly predictable and does not react to unexpected traffic spikes.",
+      "why_not_B": "Simple scaling is less efficient and more prone to 'flapping' (rapid scaling up and down) than target tracking.",
+      "why_not_D": "Waiting until 95% CPU utilization is too late; the application will already be experiencing significant performance degradation."
+    },
+    "tags": [
+      "Auto Scaling",
+      "Performance Optimization",
+      "Scaling Policies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-071",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cost-performance-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using Amazon CloudWatch to monitor its infrastructure. They have noticed that the cost of CloudWatch metrics is increasing due to the high number of custom metrics being sent from hundreds of EC2 instances. Which strategy would most effectively reduce these costs without losing critical visibility?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Decrease the resolution of the metrics from 1-minute to 5-minute intervals.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch from custom metrics to standard AWS metrics only.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use CloudWatch Embedded Metric Format (EMF) to send metrics as logs to CloudWatch Logs.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disable CloudWatch alarms for non-production environments.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "EMF allows you to send metrics as JSON logs. CloudWatch then extracts these metrics, which is often more cost-effective and performant than making individual PutMetricData API calls for every single instance.",
+      "why_not_A": "Changing the resolution does not reduce the number of unique metric streams being billed; it only changes the granularity of the data.",
+      "why_not_B": "Standard metrics do not provide the application-level visibility that custom metrics offer, which would result in losing critical visibility.",
+      "why_not_D": "Disabling alarms reduces alarm costs but does not reduce the cost of the underlying metrics being ingested."
+    },
+    "tags": [
+      "CloudWatch",
+      "Cost Optimization",
+      "Monitoring"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-072",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cost-performance-optimization",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is running a fleet of Amazon EC2 instances in a production environment. The workload is predictable and requires a baseline of 10 instances running 24/7, with periodic spikes up to 30 instances during business hours. The company wants to minimize costs while ensuring high availability. Which strategy provides the most cost-effective approach for this specific workload pattern?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Purchase 30 Standard Reserved Instances for a one-year term with no upfront payment.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Purchase 10 Savings Plans for a one-year term and use an Auto Scaling group with Spot Instances for the additional 20 instances.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Purchase 10 Savings Plans for a one-year term and configure an Auto Scaling group to launch On-Demand instances for the additional 20 instances based on CPU utilization.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use an Auto Scaling group with a minimum capacity of 10 and maximum of 30, using only On-Demand instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Savings Plans provide a significant discount over On-Demand pricing for the consistent baseline (10 instances). Since this is a production environment and high availability is required, using On-Demand instances for the spikes ensures that capacity is guaranteed and not interrupted, which is the safest approach for production scaling.",
+      "why_not_A": "Purchasing 30 Reserved Instances would result in wasted spend (underutilization) during non-business hours when only 10 instances are needed.",
+      "why_not_B": "Spot Instances can be reclaimed by AWS with a two-minute warning. For a production environment requiring high availability, relying solely on Spot Instances for the scaling component introduces unacceptable risk of downtime.",
+      "why_not_D": "This is the most expensive option as it pays the full On-Demand rate for the 10 baseline instances that are running 24/7, ignoring the cost-saving benefits of Savings Plans or RIs."
+    },
+    "tags": [
+      "EC2",
+      "Savings Plans",
+      "Auto Scaling",
+      "Cost Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-073",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cost-performance-optimization",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An application uses an Amazon EBS General Purpose SSD (gp3) volume. Monitoring via CloudWatch shows that the application is experiencing high latency during peak hours. The administrator observes that the volume is consistently hitting the provisioned IOPS limit, but the throughput limit is not being reached. The volume is 500 GB. Which action will optimize performance with the least amount of wasted spend?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the volume size to 1 TiB to leverage the increased baseline performance of gp3 volumes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Migrate the volume to Provisioned IOPS SSD (io2) to ensure consistent low-latency performance.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Increase the provisioned IOPS for the existing gp3 volume to meet the peak demand.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the volume to gp2 to take advantage of the burst balance mechanism.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "gp3 volumes allow you to provision IOPS and throughput independently of volume size. Since the bottleneck is specifically the IOPS limit and not the throughput or capacity, increasing the provisioned IOPS on the gp3 volume is the most surgical and cost-effective fix.",
+      "why_not_A": "Unlike gp2, gp3 performance (IOPS and throughput) does not scale with the size of the volume. Increasing the size to 1 TiB would increase storage costs without increasing the IOPS limit.",
+      "why_not_B": "io2 is significantly more expensive than gp3. While it provides high performance, it is an over-provisioning of cost if the requirement can be met by simply increasing IOPS on a gp3 volume.",
+      "why_not_D": "gp2 ties IOPS to volume size (3 IOPS per GiB). To get a significant IOPS increase on gp2, you would have to increase the volume size, and gp2 lacks the independent performance tuning that gp3 provides. Moving back to gp2 is generally a regression in cost-optimization."
+    },
+    "tags": [
+      "EBS",
+      "gp3",
+      "IOPS",
+      "Performance Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-soa-mock1-074",
+    "exam_id": "aws-soa-c02",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   }
 ]

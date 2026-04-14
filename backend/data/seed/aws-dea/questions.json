@@ -7,10 +7,26 @@
     "difficulty": 3,
     "stem": "A company ingests clickstream data at 50,000 events per second. Each event is 1 KB. The data must be stored in S3 in Parquet format for downstream analytics with Athena. The solution should minimize operational overhead and cost. Which architecture should the data engineer use?",
     "options": [
-      {"id": "A", "text": "Kinesis Data Streams with a KCL consumer application that converts records to Parquet and writes to S3", "is_correct": false},
-      {"id": "B", "text": "Kinesis Data Firehose with record format conversion enabled to output Parquet directly to S3", "is_correct": true},
-      {"id": "C", "text": "Amazon MSK with a Kafka Connect S3 sink connector writing JSON, followed by a Glue ETL job to convert to Parquet", "is_correct": false},
-      {"id": "D", "text": "Kinesis Data Streams feeding a Lambda function that batches records and writes Parquet files to S3", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Kinesis Data Streams with a KCL consumer application that converts records to Parquet and writes to S3",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Kinesis Data Firehose with record format conversion enabled to output Parquet directly to S3",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Amazon MSK with a Kafka Connect S3 sink connector writing JSON, followed by a Glue ETL job to convert to Parquet",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Kinesis Data Streams feeding a Lambda function that batches records and writes Parquet files to S3",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -19,11 +35,19 @@
       "why_not_C": "Using MSK with a two-step pipeline (JSON to S3 then Glue ETL to Parquet) adds latency and complexity. Firehose handles the conversion inline during delivery.",
       "why_not_D": "Lambda has a 15-minute timeout and 6 MB payload limit per invocation. At 50,000 events/second, managing batching and Parquet file generation in Lambda is fragile and difficult to scale."
     },
-    "concept_ids": ["aws-dea-kinesis-firehose", "aws-dea-kinesis-streams"],
-    "tags": ["streaming", "parquet", "format-conversion", "firehose"],
+    "concept_ids": [
+      "aws-dea-kinesis-firehose",
+      "aws-dea-kinesis-streams"
+    ],
+    "tags": [
+      "streaming",
+      "parquet",
+      "format-conversion",
+      "firehose"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -35,10 +59,26 @@
     "difficulty": 3,
     "stem": "A data team must choose between Kinesis Data Streams and Amazon MSK for a new streaming pipeline. The existing application code uses Apache Kafka consumer APIs, and the team wants to minimize code changes during migration. Which factor MOST strongly favors choosing Amazon MSK?",
     "options": [
-      {"id": "A", "text": "MSK supports higher throughput per shard than Kinesis Data Streams", "is_correct": false},
-      {"id": "B", "text": "MSK is fully serverless and requires no capacity planning", "is_correct": false},
-      {"id": "C", "text": "MSK supports native Kafka APIs, allowing the existing consumer code to work without modification", "is_correct": true},
-      {"id": "D", "text": "MSK provides built-in record format conversion to Parquet and ORC", "is_correct": false}
+      {
+        "id": "A",
+        "text": "MSK supports higher throughput per shard than Kinesis Data Streams",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "MSK is fully serverless and requires no capacity planning",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "MSK supports native Kafka APIs, allowing the existing consumer code to work without modification",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "MSK provides built-in record format conversion to Parquet and ORC",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -47,11 +87,19 @@
       "why_not_B": "MSK Serverless exists but standard MSK requires choosing broker instance types and storage. This statement is an oversimplification and not the primary migration factor.",
       "why_not_D": "MSK does not provide built-in format conversion. That capability belongs to Kinesis Data Firehose. MSK delivers raw records as produced."
     },
-    "concept_ids": ["aws-dea-msk", "aws-dea-kinesis-streams"],
-    "tags": ["streaming", "kafka", "migration", "api-compatibility"],
+    "concept_ids": [
+      "aws-dea-msk",
+      "aws-dea-kinesis-streams"
+    ],
+    "tags": [
+      "streaming",
+      "kafka",
+      "migration",
+      "api-compatibility"
+    ],
     "estimated_time_seconds": 75,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -63,10 +111,26 @@
     "difficulty": 4,
     "stem": "A company needs to migrate a 5 TB Oracle database to Amazon Aurora PostgreSQL with minimal downtime. The source database uses Oracle-specific stored procedures and data types. Which combination of AWS services should the data engineer use?",
     "options": [
-      {"id": "A", "text": "AWS DMS for full load migration only, then manually rewrite and deploy stored procedures on Aurora", "is_correct": false},
-      {"id": "B", "text": "AWS SCT to convert the schema and stored procedures, then AWS DMS with full load plus CDC for data migration with minimal downtime", "is_correct": true},
-      {"id": "C", "text": "AWS DMS with CDC only, relying on DMS to automatically convert Oracle data types and procedures", "is_correct": false},
-      {"id": "D", "text": "Export the Oracle database using pg_dump and import into Aurora PostgreSQL using pg_restore", "is_correct": false}
+      {
+        "id": "A",
+        "text": "AWS DMS for full load migration only, then manually rewrite and deploy stored procedures on Aurora",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS SCT to convert the schema and stored procedures, then AWS DMS with full load plus CDC for data migration with minimal downtime",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "AWS DMS with CDC only, relying on DMS to automatically convert Oracle data types and procedures",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Export the Oracle database using pg_dump and import into Aurora PostgreSQL using pg_restore",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -75,8 +139,16 @@
       "why_not_C": "DMS does not automatically convert stored procedures or complex Oracle-specific data types. SCT is required for schema conversion in heterogeneous migrations. CDC only mode does not migrate existing data.",
       "why_not_D": "pg_dump and pg_restore are PostgreSQL-native tools and cannot read an Oracle database. This approach is invalid for heterogeneous migrations."
     },
-    "concept_ids": ["aws-dea-dms"],
-    "tags": ["database-migration", "heterogeneous", "oracle", "aurora", "cdc"],
+    "concept_ids": [
+      "aws-dea-dms"
+    ],
+    "tags": [
+      "database-migration",
+      "heterogeneous",
+      "oracle",
+      "aurora",
+      "cdc"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
@@ -91,10 +163,26 @@
     "difficulty": 2,
     "stem": "Which feature of AWS Glue ETL prevents reprocessing of data that has already been handled in previous job runs?",
     "options": [
-      {"id": "A", "text": "Glue Crawlers", "is_correct": false},
-      {"id": "B", "text": "DynamicFrames", "is_correct": false},
-      {"id": "C", "text": "Job bookmarks", "is_correct": true},
-      {"id": "D", "text": "Glue Data Catalog", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Glue Crawlers",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "DynamicFrames",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Job bookmarks",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Glue Data Catalog",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -103,12 +191,18 @@
       "why_not_B": "DynamicFrames are Glue's data abstraction that extends Spark DataFrames with schema flexibility. They handle data transformation, not deduplication of processing.",
       "why_not_D": "The Glue Data Catalog is a centralized metastore for table definitions and schemas. It does not track ETL job processing state."
     },
-    "concept_ids": ["aws-dea-glue-etl"],
-    "tags": ["glue", "job-bookmarks", "incremental-processing"],
+    "concept_ids": [
+      "aws-dea-glue-etl"
+    ],
+    "tags": [
+      "glue",
+      "job-bookmarks",
+      "incremental-processing"
+    ],
     "estimated_time_seconds": 60,
-    "bkt_p_guess": 0.20,
+    "bkt_p_guess": 0.2,
     "bkt_p_slip": 0.12,
-    "bkt_p_transit": 0.10,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -119,10 +213,26 @@
     "difficulty": 3,
     "stem": "A data engineer needs to process streaming records from Kinesis Data Streams. Each record must be enriched by looking up a reference table in DynamoDB before being written to S3. The pipeline must guarantee that each record is processed exactly once. Which consumer approach is MOST appropriate?",
     "options": [
-      {"id": "A", "text": "Kinesis Data Firehose with a Lambda transformation function that queries DynamoDB", "is_correct": false},
-      {"id": "B", "text": "Lambda function triggered by Kinesis Data Streams with a DynamoDB lookup and idempotent writes to S3", "is_correct": true},
-      {"id": "C", "text": "Kinesis Data Analytics SQL application that joins the stream with the DynamoDB table", "is_correct": false},
-      {"id": "D", "text": "Enhanced fan-out consumer writing directly to S3 with a separate Glue job for enrichment", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Kinesis Data Firehose with a Lambda transformation function that queries DynamoDB",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Lambda function triggered by Kinesis Data Streams with a DynamoDB lookup and idempotent writes to S3",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Kinesis Data Analytics SQL application that joins the stream with the DynamoDB table",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enhanced fan-out consumer writing directly to S3 with a separate Glue job for enrichment",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -131,11 +241,20 @@
       "why_not_C": "Kinesis Data Analytics SQL cannot directly join a stream with a DynamoDB table. It supports reference data from S3, not DynamoDB.",
       "why_not_D": "Separating enrichment into a downstream Glue job adds latency and complexity. The enrichment would not happen in real time, and coordinating between the consumer and the batch job is operationally heavy."
     },
-    "concept_ids": ["aws-dea-kinesis-streams", "aws-dea-dynamodb-analytics"],
-    "tags": ["streaming", "enrichment", "lambda", "dynamodb", "exactly-once"],
+    "concept_ids": [
+      "aws-dea-kinesis-streams",
+      "aws-dea-dynamodb-analytics"
+    ],
+    "tags": [
+      "streaming",
+      "enrichment",
+      "lambda",
+      "dynamodb",
+      "exactly-once"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -147,10 +266,26 @@
     "difficulty": 3,
     "stem": "A data lake on S3 contains 10 TB of log data stored as uncompressed CSV files. Athena queries scanning this data are slow and expensive. The data engineer wants to reduce both query cost and execution time without changing the schema. Which two actions will provide the MOST improvement?",
     "options": [
-      {"id": "A", "text": "Convert the data to Parquet format and partition by date using Hive-style partitioning", "is_correct": true},
-      {"id": "B", "text": "Enable S3 Transfer Acceleration and increase the Athena query concurrency limit", "is_correct": false},
-      {"id": "C", "text": "Move the data to S3 Glacier and use Glacier Select for queries", "is_correct": false},
-      {"id": "D", "text": "Create an S3 Inventory report and use it to optimize bucket structure", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Convert the data to Parquet format and partition by date using Hive-style partitioning",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Enable S3 Transfer Acceleration and increase the Athena query concurrency limit",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Move the data to S3 Glacier and use Glacier Select for queries",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create an S3 Inventory report and use it to optimize bucket structure",
+        "is_correct": false
+      }
     ],
     "correct_answer": "A",
     "explanation": {
@@ -159,11 +294,19 @@
       "why_not_C": "Glacier is for archival storage with retrieval latency of minutes to hours. Glacier Select supports limited query operations but is not designed for interactive analytics.",
       "why_not_D": "S3 Inventory lists objects in a bucket for auditing purposes. It does not optimize query performance or reduce data scan costs."
     },
-    "concept_ids": ["aws-dea-s3-data-lake", "aws-dea-athena"],
-    "tags": ["data-lake", "parquet", "partitioning", "query-optimization"],
+    "concept_ids": [
+      "aws-dea-s3-data-lake",
+      "aws-dea-athena"
+    ],
+    "tags": [
+      "data-lake",
+      "parquet",
+      "partitioning",
+      "query-optimization"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -175,10 +318,26 @@
     "difficulty": 3,
     "stem": "A company runs complex analytical queries that join large fact tables with dimension tables and require sub-second response times for dashboards. The queries run repeatedly throughout the day. Which service is MOST appropriate?",
     "options": [
-      {"id": "A", "text": "Amazon Athena with query results caching", "is_correct": false},
-      {"id": "B", "text": "Amazon Redshift with materialized views and distribution key optimization", "is_correct": true},
-      {"id": "C", "text": "Amazon DynamoDB with global secondary indexes", "is_correct": false},
-      {"id": "D", "text": "Amazon RDS PostgreSQL with read replicas", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Amazon Athena with query results caching",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Amazon Redshift with materialized views and distribution key optimization",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Amazon DynamoDB with global secondary indexes",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Amazon RDS PostgreSQL with read replicas",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -187,11 +346,19 @@
       "why_not_C": "DynamoDB is a NoSQL key-value store optimized for single-digit millisecond lookups by key. It does not support complex SQL joins across tables.",
       "why_not_D": "RDS PostgreSQL is a row-based OLTP database. It is not optimized for analytical workloads with large table scans and complex aggregations at the scale described."
     },
-    "concept_ids": ["aws-dea-redshift", "aws-dea-athena"],
-    "tags": ["data-warehouse", "materialized-views", "analytical-queries", "performance"],
+    "concept_ids": [
+      "aws-dea-redshift",
+      "aws-dea-athena"
+    ],
+    "tags": [
+      "data-warehouse",
+      "materialized-views",
+      "analytical-queries",
+      "performance"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -203,10 +370,26 @@
     "difficulty": 4,
     "stem": "A company stores transactional data in DynamoDB. The analytics team needs to run daily aggregate queries on this data without impacting the production table's read capacity. The solution should also retain historical data for trend analysis over 12 months. Which approach is MOST cost-effective?",
     "options": [
-      {"id": "A", "text": "Enable DynamoDB Streams and use a Lambda function to write each change to a Redshift cluster for analytics", "is_correct": false},
-      {"id": "B", "text": "Perform a DynamoDB table scan each night using a Glue ETL job to copy data into S3 for Athena queries", "is_correct": false},
-      {"id": "C", "text": "Use DynamoDB export to S3 on a daily schedule, then query the exported data with Athena", "is_correct": true},
-      {"id": "D", "text": "Create a DynamoDB global secondary index optimized for the analytical query patterns", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable DynamoDB Streams and use a Lambda function to write each change to a Redshift cluster for analytics",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Perform a DynamoDB table scan each night using a Glue ETL job to copy data into S3 for Athena queries",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use DynamoDB export to S3 on a daily schedule, then query the exported data with Athena",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create a DynamoDB global secondary index optimized for the analytical query patterns",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -215,8 +398,16 @@
       "why_not_B": "A DynamoDB table scan consumes significant read capacity from the production table, which the requirement explicitly prohibits. This would also increase costs during scan operations.",
       "why_not_D": "GSIs consume additional write and read capacity on the production table. They are designed for alternative access patterns, not for complex aggregate analytical queries."
     },
-    "concept_ids": ["aws-dea-dynamodb-analytics", "aws-dea-athena"],
-    "tags": ["dynamodb", "export", "analytics", "cost-optimization"],
+    "concept_ids": [
+      "aws-dea-dynamodb-analytics",
+      "aws-dea-athena"
+    ],
+    "tags": [
+      "dynamodb",
+      "export",
+      "analytics",
+      "cost-optimization"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
@@ -231,10 +422,26 @@
     "difficulty": 2,
     "stem": "Which Amazon Athena feature allows querying data stored in external relational databases like RDS and on-premises PostgreSQL without moving the data into S3?",
     "options": [
-      {"id": "A", "text": "CTAS (Create Table As Select)", "is_correct": false},
-      {"id": "B", "text": "Athena federated queries using Lambda connectors", "is_correct": true},
-      {"id": "C", "text": "Athena workgroups with cross-account access", "is_correct": false},
-      {"id": "D", "text": "Glue Data Catalog with JDBC crawlers", "is_correct": false}
+      {
+        "id": "A",
+        "text": "CTAS (Create Table As Select)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Athena federated queries using Lambda connectors",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Athena workgroups with cross-account access",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Glue Data Catalog with JDBC crawlers",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -243,12 +450,18 @@
       "why_not_C": "Workgroups control query access, cost allocation, and settings within Athena. They do not provide connectivity to external relational databases.",
       "why_not_D": "Glue JDBC crawlers catalog schema metadata from JDBC sources into the Data Catalog, but they do not enable Athena to query those sources directly. The data would still need to be loaded."
     },
-    "concept_ids": ["aws-dea-athena"],
-    "tags": ["athena", "federated-queries", "lambda-connectors"],
+    "concept_ids": [
+      "aws-dea-athena"
+    ],
+    "tags": [
+      "athena",
+      "federated-queries",
+      "lambda-connectors"
+    ],
     "estimated_time_seconds": 60,
     "bkt_p_guess": 0.15,
     "bkt_p_slip": 0.12,
-    "bkt_p_transit": 0.10,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -259,10 +472,26 @@
     "difficulty": 3,
     "stem": "A data engineer must implement fine-grained access control so that the marketing team can only see the customer_name and purchase_amount columns, while the finance team can see all columns including credit_card_number. Both teams query the same data lake table using Athena. Which service provides this capability with the LEAST operational overhead?",
     "options": [
-      {"id": "A", "text": "Create separate S3 buckets for each team with different subsets of columns", "is_correct": false},
-      {"id": "B", "text": "Use IAM policies with S3 object-level permissions to restrict column access", "is_correct": false},
-      {"id": "C", "text": "AWS Lake Formation with column-level security and LF-Tags for permission management", "is_correct": true},
-      {"id": "D", "text": "Create separate Glue Data Catalog tables with different column definitions for each team", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Create separate S3 buckets for each team with different subsets of columns",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use IAM policies with S3 object-level permissions to restrict column access",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "AWS Lake Formation with column-level security and LF-Tags for permission management",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create separate Glue Data Catalog tables with different column definitions for each team",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -271,11 +500,19 @@
       "why_not_B": "IAM policies operate at the S3 object level (files), not at the column level within those files. You cannot restrict access to specific columns within a Parquet file using IAM alone.",
       "why_not_D": "Maintaining separate catalog tables requires managing multiple ETL jobs and ensuring schema consistency. This adds operational overhead and does not scale as the number of teams grows."
     },
-    "concept_ids": ["aws-dea-lake-formation", "aws-dea-athena"],
-    "tags": ["lake-formation", "column-security", "lf-tags", "access-control"],
+    "concept_ids": [
+      "aws-dea-lake-formation",
+      "aws-dea-athena"
+    ],
+    "tags": [
+      "lake-formation",
+      "column-security",
+      "lf-tags",
+      "access-control"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -287,10 +524,26 @@
     "difficulty": 3,
     "stem": "A data engineering team needs to orchestrate a multi-step data pipeline that includes a Glue ETL job, an Athena CTAS query, and an SNS notification upon completion. The team has no existing Apache Airflow expertise. Which orchestration service should they choose?",
     "options": [
-      {"id": "A", "text": "Amazon MWAA with a DAG that defines the three steps", "is_correct": false},
-      {"id": "B", "text": "AWS Step Functions with direct SDK integrations for Glue, Athena, and SNS", "is_correct": true},
-      {"id": "C", "text": "EventBridge Scheduler triggering each service independently on a time-based schedule", "is_correct": false},
-      {"id": "D", "text": "A Lambda function that calls each service sequentially with error handling", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Amazon MWAA with a DAG that defines the three steps",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS Step Functions with direct SDK integrations for Glue, Athena, and SNS",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "EventBridge Scheduler triggering each service independently on a time-based schedule",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A Lambda function that calls each service sequentially with error handling",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -299,11 +552,19 @@
       "why_not_C": "EventBridge Scheduler triggers services on time-based schedules but does not coordinate dependencies between steps. If the Glue job finishes early or late, the Athena query would not be synchronized.",
       "why_not_D": "A single Lambda function orchestrating multiple long-running services risks hitting the 15-minute timeout. Managing retries, error handling, and state within Lambda code is more complex than Step Functions."
     },
-    "concept_ids": ["aws-dea-step-functions", "aws-dea-mwaa"],
-    "tags": ["orchestration", "step-functions", "serverless", "pipeline"],
+    "concept_ids": [
+      "aws-dea-step-functions",
+      "aws-dea-mwaa"
+    ],
+    "tags": [
+      "orchestration",
+      "step-functions",
+      "serverless",
+      "pipeline"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -315,10 +576,26 @@
     "difficulty": 2,
     "stem": "Which AWS service provides a visual, no-code interface for cleaning and normalizing data with built-in data profiling capabilities?",
     "options": [
-      {"id": "A", "text": "AWS Glue ETL", "is_correct": false},
-      {"id": "B", "text": "AWS Glue DataBrew", "is_correct": true},
-      {"id": "C", "text": "Amazon Athena", "is_correct": false},
-      {"id": "D", "text": "AWS Step Functions", "is_correct": false}
+      {
+        "id": "A",
+        "text": "AWS Glue ETL",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS Glue DataBrew",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Amazon Athena",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "AWS Step Functions",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -327,12 +604,19 @@
       "why_not_C": "Athena is a SQL query engine for analyzing data in S3. It does not provide visual data cleaning or profiling capabilities.",
       "why_not_D": "Step Functions is a workflow orchestration service. It coordinates multi-step processes but does not perform data cleaning or profiling."
     },
-    "concept_ids": ["aws-dea-glue-databrew"],
-    "tags": ["databrew", "data-preparation", "no-code", "profiling"],
+    "concept_ids": [
+      "aws-dea-glue-databrew"
+    ],
+    "tags": [
+      "databrew",
+      "data-preparation",
+      "no-code",
+      "profiling"
+    ],
     "estimated_time_seconds": 45,
-    "bkt_p_guess": 0.20,
+    "bkt_p_guess": 0.2,
     "bkt_p_slip": 0.12,
-    "bkt_p_transit": 0.10,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -343,10 +627,26 @@
     "difficulty": 3,
     "stem": "A data engineer needs to schedule a Glue ETL job to run every day at 6 AM UTC. If the job fails, it should be retried up to 3 times before sending a failure notification to an SNS topic. Which service provides the scheduling and retry behavior with the LEAST custom code?",
     "options": [
-      {"id": "A", "text": "Amazon EventBridge Scheduler with a cron expression, retry policy, and dead-letter queue connected to SNS", "is_correct": true},
-      {"id": "B", "text": "CloudWatch Events rule on a cron schedule with a Lambda function that manages retries", "is_correct": false},
-      {"id": "C", "text": "Glue Workflows with a time-based trigger and manual retry logic in the ETL script", "is_correct": false},
-      {"id": "D", "text": "A Step Functions state machine with a Wait state and retry in the Glue step, triggered by cron", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Amazon EventBridge Scheduler with a cron expression, retry policy, and dead-letter queue connected to SNS",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "CloudWatch Events rule on a cron schedule with a Lambda function that manages retries",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Glue Workflows with a time-based trigger and manual retry logic in the ETL script",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A Step Functions state machine with a Wait state and retry in the Glue step, triggered by cron",
+        "is_correct": false
+      }
     ],
     "correct_answer": "A",
     "explanation": {
@@ -355,11 +655,19 @@
       "why_not_C": "Glue Workflows support triggers and job orchestration but retry logic within the ETL script itself is not a clean separation of concerns. Workflow-level retries are limited compared to EventBridge Scheduler.",
       "why_not_D": "Step Functions with retry is a valid approach but adds more infrastructure (the state machine definition) compared to EventBridge Scheduler's built-in retry policy for a single job invocation."
     },
-    "concept_ids": ["aws-dea-eventbridge-scheduling", "aws-dea-glue-etl"],
-    "tags": ["scheduling", "eventbridge", "retry", "automation"],
+    "concept_ids": [
+      "aws-dea-eventbridge-scheduling",
+      "aws-dea-glue-etl"
+    ],
+    "tags": [
+      "scheduling",
+      "eventbridge",
+      "retry",
+      "automation"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -371,10 +679,26 @@
     "difficulty": 3,
     "stem": "A healthcare company stores patient data in S3 and queries it with Athena. Regulatory requirements mandate that encryption keys must be customer-managed, key usage must be auditable, and keys must be rotated annually. Which encryption approach meets ALL of these requirements?",
     "options": [
-      {"id": "A", "text": "SSE-S3 with Amazon-managed keys", "is_correct": false},
-      {"id": "B", "text": "SSE-KMS with a customer-managed KMS key and automatic annual key rotation enabled", "is_correct": true},
-      {"id": "C", "text": "SSE-C with customer-provided encryption keys stored in Secrets Manager", "is_correct": false},
-      {"id": "D", "text": "Client-side encryption using the AWS Encryption SDK before uploading to S3", "is_correct": false}
+      {
+        "id": "A",
+        "text": "SSE-S3 with Amazon-managed keys",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "SSE-KMS with a customer-managed KMS key and automatic annual key rotation enabled",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "SSE-C with customer-provided encryption keys stored in Secrets Manager",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Client-side encryption using the AWS Encryption SDK before uploading to S3",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -383,11 +707,19 @@
       "why_not_C": "SSE-C requires the customer to provide the encryption key with every request. AWS does not store the key, so audit logging of key usage is the customer's responsibility. Managing key rotation and distribution is operationally complex.",
       "why_not_D": "Client-side encryption meets the encryption requirements but adds complexity to the application. Athena cannot directly query client-side encrypted data without the application first decrypting it."
     },
-    "concept_ids": ["aws-dea-s3-encryption"],
-    "tags": ["encryption", "kms", "compliance", "audit", "key-rotation"],
+    "concept_ids": [
+      "aws-dea-s3-encryption"
+    ],
+    "tags": [
+      "encryption",
+      "kms",
+      "compliance",
+      "audit",
+      "key-rotation"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -399,10 +731,26 @@
     "difficulty": 4,
     "stem": "A data engineer is configuring an Amazon Redshift cluster that processes sensitive financial data. The security team requires that all COPY and UNLOAD operations between Redshift and S3 travel through the VPC and not over the public internet. Which Redshift feature must be enabled?",
     "options": [
-      {"id": "A", "text": "Redshift Spectrum with a VPC endpoint for S3", "is_correct": false},
-      {"id": "B", "text": "Enhanced VPC routing on the Redshift cluster", "is_correct": true},
-      {"id": "C", "text": "SSL enforcement on the Redshift cluster parameter group", "is_correct": false},
-      {"id": "D", "text": "Column-level access control with GRANT statements on sensitive columns", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Redshift Spectrum with a VPC endpoint for S3",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enhanced VPC routing on the Redshift cluster",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "SSL enforcement on the Redshift cluster parameter group",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Column-level access control with GRANT statements on sensitive columns",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -411,12 +759,3010 @@
       "why_not_C": "SSL enforcement encrypts data in transit but does not control the network path. Traffic could still traverse the public internet even with SSL enabled.",
       "why_not_D": "Column-level access control restricts which users can query specific columns. It is an authorization control, not a network routing feature."
     },
-    "concept_ids": ["aws-dea-redshift-security", "aws-dea-redshift"],
-    "tags": ["redshift", "enhanced-vpc-routing", "network-security", "compliance"],
+    "concept_ids": [
+      "aws-dea-redshift-security",
+      "aws-dea-redshift"
+    ],
+    "tags": [
+      "redshift",
+      "enhanced-vpc-routing",
+      "network-security",
+      "compliance"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data engineer needs to ingest real-time streaming telemetry data from thousands of IoT devices into an Amazon S3 data lake. The data must be partitioned by date and hour to optimize query performance in Amazon Athena. Which solution provides the most efficient way to achieve this with minimal operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Amazon Kinesis Data Streams and a custom AWS Lambda function to write data directly to S3.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Amazon Kinesis Data Firehose with the 'Dynamic Partitioning' feature enabled.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Amazon MSK (Managed Streaming for Apache Kafka) and a Kafka Connect S3 sink connector.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Glue Streaming ETL to process the data and write it to S3 in Parquet format.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Kinesis Data Firehose is a fully managed service that can automatically deliver streaming data to S3. The Dynamic Partitioning feature allows Firehose to create S3 prefixes based on the data content (e.g., date/hour), meeting the requirement with minimal operational overhead.",
+      "why_not_A": "While Lambda can write to S3, managing the buffering, batching, and partitioning logic manually increases operational overhead and complexity compared to Firehose.",
+      "why_not_C": "Amazon MSK is more complex to set up and manage than Firehose and is generally overkill for simple ingestion to S3 without complex stream processing requirements.",
+      "why_not_D": "AWS Glue Streaming ETL is powerful but introduces higher latency and cost compared to Firehose for simple ingestion and partitioning tasks."
+    },
+    "tags": [
+      "Kinesis Data Firehose",
+      "S3 Partitioning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-016",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is migrating a legacy on-premises database to AWS. The data engineer needs to perform an initial bulk load of several terabytes of data, followed by continuous capture of changes (CDC) to keep the target Amazon RDS instance synchronized. Which combination of services is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "AWS DataSync for the initial load and AWS Glue for the CDC process.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS Snowball Edge for the initial load and Amazon Kinesis Data Streams for CDC.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "AWS Database Migration Service (DMS) with Full Load and CDC enabled.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Amazon S3 for the initial load and AWS Step Functions to trigger Glue jobs for CDC.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "AWS DMS is specifically designed for this use case. It can perform a 'Full Load' to migrate the existing data and then transition to 'CDC' mode to replicate ongoing changes from the source database to the target.",
+      "why_not_A": "DataSync is for file-level migration, not database-level migration, and Glue is not a native CDC tool for database replication.",
+      "why_not_B": "Snowball is for offline bulk transfer, but Kinesis is not a native database CDC tool and would require complex custom application logic to read database logs.",
+      "why_not_D": "S3 and Step Functions do not provide the native log-based replication capabilities required for efficient database CDC."
+    },
+    "tags": [
+      "AWS DMS",
+      "CDC"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-017",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data engineer is using AWS Glue to transform a large dataset in S3. The Glue job is failing due to 'Out of Memory' (OOM) errors because the dataset contains a few extremely large partitions that exceed the memory of the worker nodes. Which strategy should be used to resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of Worker nodes in the Glue job configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable 'Job Bookmarks' to track processed data.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Switch to a larger Worker Type (e.g., from G.1X to G.2X).",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use the 'repartition()' or 'coalesce()' method to redistribute the data across workers.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "OOM errors caused by large partitions (data skew) cannot be solved by adding more nodes if a single partition still exceeds a single node's memory. Repartitioning redistributes the data more evenly across all available executors, breaking up the oversized partitions.",
+      "why_not_A": "Increasing the number of workers only helps if the total volume of data is too high, but it does not solve the problem of a single skewed partition being too large for one worker.",
+      "why_not_B": "Job Bookmarks prevent reprocessing of old data but do not address memory issues during the processing of the current batch.",
+      "why_not_C": "While G.2X provides more memory, if the data skew is severe enough, even a larger worker may fail. Repartitioning is the architectural best practice for handling data skew."
+    },
+    "tags": [
+      "AWS Glue",
+      "Data Skew",
+      "Spark Optimization"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-dea-mock1-018",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to ingest semi-structured JSON logs from multiple web servers into an Amazon S3 bucket. The logs must be converted to Apache Parquet format and the schema must be automatically updated in the Glue Data Catalog whenever new fields are added to the JSON logs. Which approach is most efficient?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Amazon Kinesis Data Firehose with an AWS Glue transformation Lambda and Glue Crawler.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Use an AWS Glue ETL job running every hour to convert JSON to Parquet.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Amazon AppFlow to move logs from the web servers to S3.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Amazon Kinesis Data Streams and a custom EC2 consumer to write Parquet files.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Kinesis Data Firehose can natively convert JSON to Parquet (using the Glue schema). When combined with a Glue Crawler, the Data Catalog can be updated to reflect new fields discovered in the S3 data.",
+      "why_not_B": "Running a Glue ETL job hourly is a batch process, not real-time ingestion, and introduces more latency and management overhead.",
+      "why_not_C": "AppFlow is designed for SaaS application integration (e.g., Salesforce to S3), not for ingesting web server logs.",
+      "why_not_D": "Using EC2 requires managing the server, the Parquet conversion logic, and the S3 upload process manually, which is not 'most efficient' in terms of overhead."
+    },
+    "tags": [
+      "Kinesis Data Firehose",
+      "AWS Glue Crawler",
+      "Parquet"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-019",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data engineer is designing a pipeline to process sensitive PII (Personally Identifiable Information) data. The data is ingested into S3 and must be transformed to mask the PII before being loaded into a data warehouse. The transformation must be scalable and support a variety of complex business rules. Which tool is best suited for this transformation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Amazon S3 Select",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS Glue DataBrew",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "AWS Glue ETL (PySpark)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Amazon Athena",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "AWS Glue ETL (PySpark) provides a fully managed, scalable environment capable of handling complex business logic and transformations (like masking PII using custom Python/Spark libraries) on large datasets.",
+      "why_not_A": "S3 Select is used to filter data within an S3 object using SQL; it is not a transformation tool for masking PII across large datasets.",
+      "why_not_B": "DataBrew is a visual data preparation tool. While it can mask data, it is less flexible than PySpark for implementing highly complex, custom business rules at scale.",
+      "why_not_D": "Athena is a query service. While it can use views to mask data, it does not physically transform and move the data into a warehouse format as part of an ingestion pipeline."
+    },
+    "tags": [
+      "AWS Glue",
+      "PII Masking",
+      "ETL"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-020",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company needs to ingest real-time transaction data from an on-premises Apache Kafka cluster into an Amazon S3 data lake. The data must be delivered in near real-time, and the company wants to minimize the operational overhead of managing the ingestion pipeline while ensuring that the data is partitioned by date and hour in S3. Which solution should the data engineer implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a fleet of Amazon EC2 instances running Kafka Connect with the S3 Sink Connector.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Amazon Kinesis Data Firehose with a direct integration to the on-premises Kafka cluster via a VPC peering connection.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Amazon MSK Connect to deploy a Kafka Connect worker that streams data from the on-premises cluster to Amazon S3.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create an AWS Lambda function that polls the Kafka cluster every minute and writes the batches to Amazon S3.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon MSK Connect is a fully managed service that simplifies the deployment and scaling of Kafka Connect workers. It can connect to both MSK and self-managed Kafka clusters, providing a scalable and low-overhead way to stream data to S3 with built-in partitioning support.",
+      "why_not_A": "Deploying EC2 instances increases operational overhead for patching, scaling, and management, which contradicts the requirement to minimize overhead.",
+      "why_not_B": "Kinesis Data Firehose does not have a native 'direct integration' to pull from an external Kafka cluster; it is a destination for data pushed into Kinesis streams or via API.",
+      "why_not_D": "Polling via Lambda is not a real-time streaming pattern and would lead to significant scaling issues and potential data loss or duplication compared to the Kafka Connect offset management."
+    },
+    "tags": [
+      "MSK Connect",
+      "Kafka",
+      "S3"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-021",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer is designing a pipeline to process high-velocity streaming telemetry data using Amazon Kinesis Data Analytics (KDA) for Apache Flink. The data contains late-arriving events due to network latency. The engineer needs to ensure that these late events are correctly aggregated into the appropriate time windows without causing the application to wait indefinitely for data. Which approach should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use processing-time windows instead of event-time windows to ignore the delay.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Watermarks to define how long the application should wait for late-arriving data before closing a window.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the Kinesis Data Stream shard count to reduce the ingestion lag.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a global window with a custom trigger that fires every 5 seconds regardless of the timestamp.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In Apache Flink (KDA), Watermarks are the standard mechanism to handle event-time skew and late-arriving data. They tell the system when it can assume all data for a specific window has arrived, allowing the window to close and trigger the computation.",
+      "why_not_A": "Processing-time windows use the time the event reaches the operator, which ignores the actual event time and would lead to incorrect business logic for telemetry data.",
+      "why_not_C": "Increasing shards improves throughput but does not solve the logical problem of late-arriving data within a time window.",
+      "why_not_D": "Global windows without a specific watermark strategy do not solve the problem of associating late events with their original time-based window."
+    },
+    "tags": [
+      "Kinesis Data Analytics",
+      "Apache Flink",
+      "Watermarks"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-022",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is using AWS Glue to transform a large dataset stored in S3. The Glue job is failing with an 'OutOfMemoryError' (OOM) during the shuffle phase, even after increasing the worker type to G.1X. The data contains a few keys with a disproportionately high number of records (data skew). What is the most effective way to resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of Glue workers to G.2X to provide more memory per executor.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable 'Automatic Scaling' in the Glue job configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement salting by adding a random prefix to the skewed keys before the join/aggregation operation.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the S3 data from CSV to JSON to reduce the memory footprint during parsing.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Data skew causes a single executor to process a disproportionate amount of data, leading to OOM regardless of the total cluster size. Salting redistributes the skewed keys across multiple partitions, balancing the load across executors.",
+      "why_not_A": "While G.2X provides more memory, if the skew is severe enough, a single partition will still exceed the memory limit of a single worker.",
+      "why_not_B": "Auto-scaling adds more workers, but it doesn't fix the distribution of data; the skewed key will still be handled by one worker.",
+      "why_not_D": "Changing the file format does not address the logical distribution of data during the shuffle/join phase."
+    },
+    "tags": [
+      "AWS Glue",
+      "Data Skew",
+      "Spark Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-023",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is migrating a legacy ETL process to AWS. They need to perform complex transformations on data arriving in S3. The transformation requires joining the incoming data with a large static reference table (10GB) and then writing the results back to S3. The transformation must be performed every hour. Which AWS Glue approach is most efficient for the join operation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a standard Spark join, allowing Glue to handle the shuffle of both datasets.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Broadcast Join by wrapping the reference table in a broadcast() function.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store the reference table in DynamoDB and perform a lookup for every row in the streaming data.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Glue DataBrew to create a recipe that joins the two S3 datasets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A Broadcast Join sends the smaller table (10GB is small enough for many Spark executors' memory) to every worker node. This eliminates the expensive shuffle phase for the large incoming dataset, significantly improving performance.",
+      "why_not_A": "A standard shuffle join is expensive and slower because it moves both datasets across the network to group keys together.",
+      "why_not_C": "Performing a DynamoDB lookup for every row in a large dataset would result in massive latency and high API costs (Read Capacity Units).",
+      "why_not_D": "DataBrew is a visual tool for data preparation and is not designed for high-performance, scheduled ETL joins of large-scale datasets compared to Glue Spark jobs."
+    },
+    "tags": [
+      "AWS Glue",
+      "Spark Join",
+      "Performance Tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-024",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to ingest data from an RDS PostgreSQL database into an S3-based data lake. The requirement is to capture only the changes (inserts, updates, and deletes) from the database in near real-time to keep the data lake synchronized. Which architecture should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Schedule an AWS Glue job to run every 15 minutes and perform a full table export to S3.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS DMS (Database Migration Service) with Change Data Capture (CDC) enabled, targeting Amazon S3.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a PostgreSQL trigger that calls an AWS Lambda function to write each change to S3.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Amazon AppFlow to sync the RDS PostgreSQL table to S3 on a schedule.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS DMS with CDC is specifically designed for this use case. It reads the database transaction logs (WAL in Postgres) and streams the changes to the target (S3) without putting significant load on the source database.",
+      "why_not_A": "Full table exports are inefficient, slow, and do not provide near real-time synchronization as the dataset grows.",
+      "why_not_C": "Using triggers to call Lambda for every row change can severely degrade database performance and is difficult to manage at scale.",
+      "why_not_D": "AppFlow is primarily for SaaS applications (like Salesforce, Zendesk) and is not the standard tool for RDS database CDC."
+    },
+    "tags": [
+      "AWS DMS",
+      "CDC",
+      "RDS"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-025",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company needs to ingest high-velocity streaming data from multiple on-premises sources into an Amazon S3 data lake. The data arrives in varying formats (JSON and CSV) and must be transformed into Apache Parquet for optimized querying. The solution must ensure exactly-once processing and support a 15-minute window for late-arriving data. Which architecture meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Amazon Kinesis Data Streams to collect data, then use a fleet of EC2 instances running a custom Spark application to transform and write data to S3.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Amazon Kinesis Data Firehose with a Lambda transformation function to convert data to Parquet and deliver it to S3.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Amazon Kinesis Data Streams and Amazon Managed Service for Apache Flink to perform windowed transformations and write the output to S3 using the File Sink.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Glue Streaming ETL to ingest data from Kinesis Data Streams and write it directly to S3 in Parquet format.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon Managed Service for Apache Flink is specifically designed for complex windowing (handling late-arriving data via watermarks) and provides exactly-once processing guarantees. The File Sink allows efficient writing to S3 in Parquet format.",
+      "why_not_A": "Managing a fleet of EC2 instances increases operational overhead significantly compared to managed services.",
+      "why_not_B": "Kinesis Data Firehose does not natively support complex windowing or the handling of late-arriving data over a 15-minute window; it is a delivery stream, not a stateful processing engine.",
+      "why_not_D": "While Glue Streaming ETL can handle the transformation, it typically has higher latency and is less optimized for strict exactly-once stateful windowing compared to Flink for high-velocity streams."
+    },
+    "tags": [
+      "Kinesis",
+      "Apache Flink",
+      "Windowing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-026",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data engineer is designing a pipeline to migrate 50 TB of historical data from an on-premises Oracle database to Amazon S3. The network bandwidth is limited, and the data must be partitioned by 'Year' and 'Month' during ingestion to optimize downstream Athena queries. Which approach is most efficient?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use AWS DataSync to move the data to S3, then run an AWS Glue ETL job to re-partition the data into Year/Month folders.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy an AWS Snowball Edge device, load the data locally, and use an AWS Glue job to partition the data after it is uploaded to S3.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use AWS DMS with an S3 target, configuring the 'Extra Connection Attributes' to enable Parquet format and automatic partitioning.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Export the Oracle data to CSV files on-premises, partition them into folders, and upload them using the AWS CLI with the --recursive flag.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "With 50 TB and limited bandwidth, AWS Snowball is the most efficient way to move the bulk data. Since S3 is an object store, partitioning is logically achieved by folder structure, which is best handled by a Glue job post-upload to ensure consistent Parquet formatting and partitioning.",
+      "why_not_A": "DataSync relies on the network bandwidth, which is stated to be limited, making it slower than Snowball for 50 TB.",
+      "why_not_C": "AWS DMS is primarily for continuous replication (CDC) or smaller migrations; it does not provide the robust partitioning and transformation capabilities required for 50 TB of historical data as efficiently as a dedicated ETL job.",
+      "why_not_D": "This requires significant manual effort on-premises and still relies on the limited network bandwidth for the upload."
+    },
+    "tags": [
+      "Snowball",
+      "AWS Glue",
+      "Data Migration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-027",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company uses AWS Glue to transform large datasets. They are experiencing 'Out of Memory' (OOM) errors during the execution of a Glue job that joins a very large table with a small lookup table. The job is running on G.1X workers. How should the engineer optimize this job?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of workers from G.1X to G.2X to provide more memory per executor.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Convert the join operation to a Broadcast Join by wrapping the small table in a broadcast() function.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable 'Dynamic Frames' instead of using Spark DataFrames to handle the join.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the Glue worker timeout setting to allow the job more time to process the join.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "OOM errors during joins often occur due to 'shuffling' large amounts of data across the network. A Broadcast Join sends the small lookup table to every worker, eliminating the need to shuffle the large table, which drastically reduces memory pressure and network I/O.",
+      "why_not_A": "While G.2X provides more memory, it doesn't solve the underlying inefficiency of a shuffle join. The job may still fail or remain inefficient as the dataset grows.",
+      "why_not_C": "Dynamic Frames are useful for schema flexibility, but the underlying join mechanism in Spark still requires memory management; it doesn't inherently solve the shuffle OOM problem.",
+      "why_not_D": "Increasing the timeout does not solve a memory exhaustion (OOM) error; the job will still crash once memory is depleted."
+    },
+    "tags": [
+      "AWS Glue",
+      "Spark Optimization",
+      "Performance Tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-028",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An organization is ingesting logs from thousands of IoT devices via Amazon Kinesis Data Streams. The data contains duplicate records due to device retries. The data engineer needs to implement a deduplication logic based on a unique 'deviceId' and 'timestamp' before storing the data in Amazon Redshift. Which is the most scalable approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Kinesis Data Firehose to deliver data to S3, then use a Redshift COPY command to load data into a staging table and run a DELETE query to remove duplicates.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Amazon Managed Service for Apache Flink with a Keyed State to track seen IDs within a sliding window and filter duplicates in real-time.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure Kinesis Data Streams with a custom partition key based on deviceId and use a Lambda function to check for duplicates in a DynamoDB table.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Glue Streaming ETL and implement a groupByKey operation on deviceId and timestamp to select the first record.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Apache Flink's keyed state allows for highly scalable, stateful deduplication in real-time. By keying the stream by deviceId and timestamp, Flink can efficiently maintain a state of processed records and drop duplicates before they ever hit the storage layer.",
+      "why_not_A": "This is a batch-based approach. While it works, it introduces significant latency and puts a high load on the Redshift cluster for frequent deduplication queries.",
+      "why_not_C": "Using DynamoDB as a lookup for every single record in a high-velocity stream would create a massive bottleneck and lead to extremely high DynamoDB costs and potential throttling.",
+      "why_not_D": "A groupByKey operation in Spark Streaming can lead to massive data skews and memory issues if one device produces significantly more logs than others, making it less scalable than Flink's state management."
+    },
+    "tags": [
+      "Kinesis",
+      "Apache Flink",
+      "Deduplication"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-029",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is implementing a Lake House architecture using AWS Lake Formation. They need to ingest sensitive PII data into S3. The requirement is that data must be encrypted at rest, and specific columns (e.g., Social Security Number) must be masked for analysts while remaining visible to HR administrators. Which combination of features should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use S3 Managed Keys (SSE-S3) for encryption and use S3 Access Grants to restrict folder access.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS KMS for encryption and implement Lake Formation cell-level security to define column-based access policies.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use SSE-KMS for encryption and use IAM policies to restrict access to the S3 prefixes containing PII.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Glue DataBrew to mask the columns during ingestion and store the masked data in a separate S3 bucket.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Lake Formation provides cell-level security, which allows for fine-grained access control down to the column and row level. This enables the masking of specific columns for certain roles (Analysts) while allowing others (HR) full access, all while KMS ensures encryption at rest.",
+      "why_not_A": "S3 Access Grants and SSE-S3 do not provide the column-level granularity required to mask specific fields within a file.",
+      "why_not_C": "IAM policies are applied at the bucket or prefix level. They cannot mask individual columns within a Parquet or CSV file.",
+      "why_not_D": "Creating separate buckets for masked and unmasked data leads to data duplication and significant management overhead (data silos), which contradicts the Lake House architectural goal."
+    },
+    "tags": [
+      "Lake Formation",
+      "Security",
+      "PII"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-030",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A retail company needs to ingest real-time clickstream data from a website into an Amazon S3 data lake. The data arrives in small, frequent bursts and must be partitioned by date and hour. The company wants to minimize the number of small files created in S3 to optimize downstream query performance in Amazon Athena. Which architectural approach should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Send data directly from the website to S3 using the AWS SDK with a custom partitioning logic in the application code.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Route the data through Amazon Kinesis Data Streams and use an AWS Lambda function to write the data to S3 in small batches.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Route the data through Amazon Kinesis Data Firehose and configure a buffer size of 128 MB or a buffer interval of 900 seconds.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Amazon MSK (Managed Streaming for Apache Kafka) and configure the S3 Sink Connector with a high flush interval.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon Kinesis Data Firehose is specifically designed for loading streaming data into S3. Its buffering capabilities (size and time) allow it to aggregate small records into larger files, directly addressing the 'small file problem' and improving Athena performance.",
+      "why_not_A": "Directly writing from the application to S3 often leads to an excessive number of small files, which degrades Athena performance and increases S3 request costs.",
+      "why_not_B": "While Lambda can write to S3, managing the buffering and aggregation logic manually is complex and inefficient compared to the native capabilities of Firehose.",
+      "why_not_D": "While MSK can work, it introduces significant operational overhead and cost compared to the serverless, managed nature of Kinesis Data Firehose for this specific use case."
+    },
+    "tags": [
+      "Kinesis",
+      "S3",
+      "Data Ingestion"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-031",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is migrating a legacy on-premises ETL process to AWS. The process involves extracting data from an on-premises SQL Server, performing complex joins and aggregations, and loading the result into Amazon Redshift. The data volume is 5 TB per day, and the transformation requires high memory for large-scale joins. Which AWS Glue configuration is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a Glue Python Shell job to execute the SQL transformations using Pandas.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Glue Spark job with G.1X worker type and enable Auto Scaling.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Glue Spark job with G.2X worker type to provide more memory and disk space per worker.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Step Functions to trigger multiple small Lambda functions to process the data in chunks.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "G.2X workers provide double the memory and disk space of G.1X workers. For complex joins and aggregations on large datasets (5 TB), higher memory per worker is critical to prevent 'Out of Memory' (OOM) errors and reduce disk spilling.",
+      "why_not_A": "Python Shell jobs are designed for small-scale tasks and do not support distributed processing, making them unsuitable for 5 TB of data.",
+      "why_not_B": "G.1X workers may not provide sufficient memory for the complex joins required, leading to job failures or extreme slowness due to disk swapping.",
+      "why_not_D": "Lambda has strict memory (10GB) and timeout (15 min) limits, making it inappropriate for large-scale ETL involving 5 TB of data and complex joins."
+    },
+    "tags": [
+      "AWS Glue",
+      "Spark",
+      "ETL"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-032",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A healthcare provider needs to ingest sensitive patient data from an on-premises database into an Amazon S3 bucket. The data must be encrypted at rest, and the ingestion process must ensure that no plaintext data ever touches the S3 bucket. The company requires the ability to rotate encryption keys every 90 days. Which solution meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use AWS DataSync to move the data and enable S3 Managed Keys (SSE-S3).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS Glue with a connection to the on-premises DB and configure the S3 sink to use SSE-KMS with a customer-managed key.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use AWS Transfer Family to upload files to S3 and enable S3 Default Encryption.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use an AWS Snowcone device to transport the data and encrypt it using a password provided by the user.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Glue can connect to on-premises databases via a VPC. By using SSE-KMS with a customer-managed key (CMK), the company can fulfill the requirement of rotating keys every 90 days (via KMS key rotation policies) and ensure data is encrypted before it is persisted in S3.",
+      "why_not_A": "SSE-S3 uses keys managed by AWS, and the user cannot control the rotation schedule to be exactly every 90 days as required.",
+      "why_not_C": "S3 Default Encryption (SSE-S3) does not allow the granular control over key rotation required by the healthcare provider's policy.",
+      "why_not_D": "Snowcone is for offline data transfer and does not provide a mechanism for the mandated 90-day key rotation of the destination S3 bucket."
+    },
+    "tags": [
+      "Security",
+      "KMS",
+      "S3"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-033",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer is designing a pipeline to transform raw JSON logs in S3 into Parquet format for a data warehouse. The transformation logic involves filtering out invalid records and flattening nested arrays. The pipeline must be cost-effective and only trigger when new data arrives. Which is the most efficient approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Run a Glue Crawler every hour to identify new files and trigger a Glue ETL job.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set up an S3 Event Notification to trigger an AWS Lambda function, which then starts a Glue ETL job.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a scheduled EventBridge rule to trigger a Glue ETL job every 15 minutes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Amazon EMR with a continuous Spark Streaming job that monitors the S3 bucket for new files.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using S3 Event Notifications to trigger Lambda, which in turn starts a Glue job, ensures that the pipeline is event-driven. This is the most cost-effective method because resources are only used when data is actually present.",
+      "why_not_A": "Crawlers are used to discover schema and populate the Data Catalog; using them as a trigger for ETL is inefficient and introduces unnecessary latency and cost.",
+      "why_not_C": "Scheduled triggers lead to 'empty runs' where the job starts but finds no new data, resulting in wasted compute costs.",
+      "why_not_D": "A continuous EMR cluster is significantly more expensive than a serverless Glue job for a task that is not truly real-time and can be handled in batches."
+    },
+    "tags": [
+      "S3",
+      "AWS Glue",
+      "Event-Driven"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-034",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is using AWS Glue to transform data. They are experiencing 'Skewed Data' issues where a few Spark executors are doing the majority of the work, leading to long job execution times and occasional failures. The data is being joined on a 'customer_id' column where a small number of customers have millions of transactions. How should the data engineer resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of Glue workers to distribute the load across more executors.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Convert the dataset to CSV format before performing the join to reduce memory overhead.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement 'salting' by adding a random suffix to the join key for the skewed values.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Change the Glue worker type from G.1X to G.2X.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Salting is a standard Spark technique to handle data skew. By adding a random value to the join key of the skewed records, the data is distributed more evenly across partitions, preventing a single executor from becoming a bottleneck.",
+      "why_not_A": "Increasing the number of workers does not solve skew. The skewed partition will still be processed by a single worker, and the other workers will remain idle.",
+      "why_not_B": "CSV is a row-based format and is less efficient than Parquet for large-scale joins; it does not address the logical distribution of data across executors.",
+      "why_not_D": "While G.2X provides more memory, it only delays the failure. If the skew is severe enough, even a G.2X worker will run out of memory because it is still processing the entire skewed partition alone."
+    },
+    "tags": [
+      "AWS Glue",
+      "Spark",
+      "Performance Tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-035",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-ingestion-transformation",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A global financial services firm is implementing a real-time fraud detection pipeline. They are ingesting high-velocity transaction streams via Amazon Kinesis Data Streams (KDS). The data must be transformed to normalize currency and filter out invalid transactions before being loaded into Amazon S3 in Parquet format for downstream analytics. The transformation logic requires joining the incoming stream with a slowly changing dimension (SCD) table containing exchange rates stored in Amazon DynamoDB. The solution must ensure exactly-once processing semantics and minimize the latency between ingestion and storage. Which architecture meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Kinesis Data Firehose with a Lambda transformation function that queries DynamoDB for exchange rates and writes the output to S3.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Amazon Managed Service for Apache Flink (MSF) to consume the KDS stream, perform a lookup against DynamoDB using an async I/O operator, and use the S3 File Sink with checkpointing enabled.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy a fleet of EC2 instances running a custom Java application using the Kinesis Client Library (KCL) to process records, performing synchronous DynamoDB lookups and writing to S3 via the AWS SDK.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Kinesis Data Firehose to deliver raw data to S3, then trigger an AWS Glue ETL job every 5 minutes to perform the join with DynamoDB and overwrite the files in Parquet format.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon Managed Service for Apache Flink (MSF) is designed for low-latency, stateful stream processing. By using the S3 File Sink with checkpointing, it ensures exactly-once semantics. Using async I/O for DynamoDB lookups prevents the pipeline from stalling on network I/O, maintaining high throughput and low latency, which is critical for fraud detection.",
+      "why_not_A": "Kinesis Data Firehose provides 'at-least-once' delivery, not exactly-once. Additionally, Lambda transformations in Firehose can introduce significant latency and potential timeouts when performing external API calls (DynamoDB) at high velocity.",
+      "why_not_C": "While KCL can achieve the goal, it introduces massive operational overhead regarding instance management, scaling, and manually implementing the exactly-once logic (checkpointing/idempotency), violating the 'least operational overhead' requirement.",
+      "why_not_D": "This is a batch-processing approach. Triggering Glue jobs every 5 minutes introduces a minimum 5-minute latency, which is unacceptable for a 'real-time' fraud detection scenario."
+    },
+    "tags": [
+      "Kinesis",
+      "Apache Flink",
+      "DynamoDB",
+      "Exactly-Once Processing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-036",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data engineer is designing a solution to store semi-structured log data that is accessed frequently for the first 30 days and rarely thereafter. The solution must be cost-effective and ensure that data is automatically moved to a cheaper storage tier after the initial period. Which AWS storage strategy should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Store the logs in Amazon S3 Standard and manually move them to S3 Glacier Flexible Retrieval using a Lambda function every 30 days.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Store the logs in Amazon S3 and configure an S3 Lifecycle policy to transition objects to S3 Standard-IA after 30 days.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store the logs in Amazon DynamoDB and use Time to Live (TTL) to delete the data after 30 days.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Store the logs in Amazon EBS volumes and use snapshots to move data to S3 after 30 days.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "S3 Lifecycle policies provide an automated, cost-effective way to transition data between storage classes (e.g., Standard to Standard-IA) based on the age of the object without manual intervention.",
+      "why_not_A": "Manual movement via Lambda is operationally complex and prone to error compared to the native S3 Lifecycle feature.",
+      "why_not_C": "TTL in DynamoDB deletes the data entirely; the requirement is to move it to a cheaper tier for rare access, not to delete it.",
+      "why_not_D": "EBS is block storage for EC2 and is not suitable for long-term, cost-effective semi-structured log storage compared to S3."
+    },
+    "tags": [
+      "S3",
+      "Lifecycle Policies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-037",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses an Amazon DynamoDB table to store session data. They notice that a small number of partition keys are receiving significantly more traffic than others, leading to 'ProvisionedThroughputExceededException' errors despite the overall table throughput being sufficient. Which feature should the data engineer implement to resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable DynamoDB Point-in-Time Recovery (PITR).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch the table to On-Demand capacity mode.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a write sharding strategy by adding a random suffix to the partition keys.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the Read Capacity Units (RCU) for the entire table.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "This is a 'hot partition' problem. Adding a random suffix (sharding) distributes the writes across multiple partitions, preventing a single partition from hitting its throughput limit.",
+      "why_not_A": "PITR is for backup and recovery, not for performance or throughput issues.",
+      "why_not_B": "While On-Demand handles spikes, a single partition still has a hard limit of 3,000 RCUs or 1,000 WCUs. If the hot key exceeds this, On-Demand will not solve the partition-level bottleneck.",
+      "why_not_D": "Increasing global RCU does not solve the problem if the traffic is concentrated on one specific partition; that partition will still be throttled."
+    },
+    "tags": [
+      "DynamoDB",
+      "Partitioning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-038",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data engineer is optimizing an Amazon Redshift cluster. They observe that certain large tables are frequently joined with smaller dimension tables, causing significant data movement across the network. Which distribution style should be applied to the smaller dimension tables to improve query performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "DISTSTYLE EVEN",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "DISTSTYLE KEY",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "DISTSTYLE ALL",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "DISTSTYLE AUTO",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "DISTSTYLE ALL replicates the entire table on every compute node. For small dimension tables, this eliminates the need to move data across the network during joins with larger tables, significantly increasing performance.",
+      "why_not_A": "EVEN distributes data in a round-robin fashion, which often requires data shuffling during joins.",
+      "why_not_B": "KEY distribution is best for large tables that are joined on the same key, but for small tables, ALL is more efficient to avoid any network movement.",
+      "why_not_D": "AUTO is the default and lets Redshift decide, but for a known small dimension table, explicitly choosing ALL is the optimization best practice."
+    },
+    "tags": [
+      "Redshift",
+      "Distribution Styles"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-039",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization requires a database that can scale horizontally to handle millions of requests per second with single-digit millisecond latency for a global user base. The data schema is flexible and evolves over time. Which AWS service is the most appropriate choice?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Amazon Aurora PostgreSQL",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Amazon DynamoDB",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Amazon RDS for MySQL",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Amazon Redshift",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DynamoDB is a NoSQL database designed for massive scale, flexible schemas, and consistent single-digit millisecond latency, making it ideal for global, high-request applications.",
+      "why_not_A": "Aurora is a relational database. While highly scalable, it cannot match the horizontal scale and latency profile of DynamoDB for millions of requests per second with a flexible schema.",
+      "why_not_C": "RDS MySQL is a traditional relational database and would struggle with the required scale and schema flexibility.",
+      "why_not_D": "Redshift is an OLAP data warehouse designed for complex analytical queries, not for high-frequency, low-latency transactional requests."
+    },
+    "tags": [
+      "DynamoDB",
+      "NoSQL"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-040",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using Amazon S3 to store a massive dataset of Parquet files. They want to improve the performance of Amazon Athena queries and reduce the cost by minimizing the amount of data scanned. Which technique should the data engineer implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the Parquet files to CSV format.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the number of S3 buckets to distribute the data.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Hive-style partitioning (e.g., s3://bucket/year=2023/month=10/).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable S3 Versioning on the bucket.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Hive-style partitioning allows Athena to 'prune' partitions, meaning it only scans the folders/files that match the filter criteria in the WHERE clause, drastically reducing data scanned and cost.",
+      "why_not_A": "CSV is a row-based format and is less efficient than the columnar Parquet format for Athena queries.",
+      "why_not_B": "Adding more buckets does not help Athena prune data within a query; it only helps with S3 request rate limits.",
+      "why_not_D": "Versioning keeps old copies of files, which would actually increase the amount of data stored and would not improve query performance."
+    },
+    "tags": [
+      "Athena",
+      "S3 Partitioning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-041",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company stores historical transaction data in an Amazon S3 data lake. The data is partitioned by year, month, and day. Data engineers have noticed that as the dataset grows, queries using Amazon Athena are becoming slower and more expensive due to the large number of small files in the S3 buckets. Which strategy should the data engineer implement to optimize query performance and reduce costs?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of partitions by adding hour and minute levels to the S3 folder structure.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a compaction process to merge small files into larger files (approx. 128MB to 512MB) and convert the data to Apache Parquet format.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Move the data from S3 to an Amazon EBS volume attached to an EC2 instance running a Hive metastore.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable S3 Transfer Acceleration to speed up the retrieval of small files during Athena scans.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Athena performance is heavily impacted by the 'small file problem.' Merging small files into larger chunks reduces the number of S3 GET requests and metadata overhead. Converting to Parquet (columnar format) allows Athena to read only the required columns, further reducing data scanned and cost.",
+      "why_not_A": "Adding more granular partitions (hour/minute) would actually increase the number of small files and the number of S3 API calls required to list partitions, worsening the performance issue.",
+      "why_not_C": "Moving data to EBS removes the scalability and serverless benefits of S3 and Athena, and EBS is not a suitable replacement for a data lake storage layer.",
+      "why_not_D": "S3 Transfer Acceleration is designed for speeding up uploads/downloads over long distances using CloudFront edge locations; it does not optimize how Athena scans data within a bucket."
+    },
+    "tags": [
+      "S3",
+      "Athena",
+      "FileOptimization",
+      "Parquet"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-042",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A retail company uses Amazon DynamoDB to store user session data. The application experiences a massive spike in traffic every Friday evening, leading to 'ProvisionedThroughputExceededException' errors despite having auto-scaling enabled. The data engineers identify that a few specific 'hot' product IDs are being accessed significantly more than others. What is the most effective way to resolve this throughput issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch the table to On-Demand capacity mode to eliminate the need for provisioned throughput.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the Read Capacity Units (RCUs) and Write Capacity Units (WCUs) manually before every Friday peak.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a write-sharding strategy by appending a random suffix to the partition key for the hot items.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable DynamoDB Accelerator (DAX) and change the partition key to a UUID.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The scenario describes a 'hot partition' problem where a single partition key exceeds the throughput limit of a single partition (3000 RCU / 1000 WCU). Adding a random suffix (sharding) distributes the load across multiple partitions, allowing the system to utilize the aggregate throughput of the table.",
+      "why_not_A": "On-Demand mode handles spikes, but it cannot overcome the physical limit of a single partition's throughput. If the heat is on one key, On-Demand will still throttle.",
+      "why_not_B": "Increasing overall capacity doesn't help if the bottleneck is a single partition. The throughput is distributed; if one partition is hot, it will throttle even if the total table capacity is high.",
+      "why_not_D": "While DAX helps with read-heavy hot keys, the question implies a general throughput issue (which could include writes). Changing the partition key to a UUID is a design change that might break existing application queries and doesn't solve the logic of how the 'hot' products are accessed."
+    },
+    "tags": [
+      "DynamoDB",
+      "Partitioning",
+      "HotKey",
+      "Throughput"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-dea-mock1-043",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer is designing a solution to store time-series telemetry data from 10,000 IoT devices. The data must be queried for real-time dashboards and long-term trend analysis. The data arrives at a rate of 1GB per minute. Which storage architecture provides the best balance of real-time ingestion and cost-effective long-term storage?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Ingest data into Amazon Timestream for real-time analysis and configure a multi-tier storage policy to migrate aged data to S3.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Stream data directly into Amazon Redshift using Kinesis Data Firehose for both real-time and long-term storage.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Store all data in Amazon DynamoDB with a TTL (Time to Live) enabled to delete data after 30 days.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Amazon S3 as the primary store and use Athena for all real-time dashboard queries.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Amazon Timestream is purpose-built for IoT time-series data. It features a memory store for high-throughput ingestion and real-time queries, and a magnetic store for cost-effective long-term storage, automatically managing the data lifecycle between the two.",
+      "why_not_B": "Redshift is an OLAP warehouse. While powerful, using it for raw 1GB/min telemetry ingestion can be expensive and less efficient than a dedicated time-series database for the real-time component.",
+      "why_not_C": "DynamoDB is expensive for massive volumes of time-series data and lacks built-in time-series functions (like interpolation or smoothing). Deleting data after 30 days fails the requirement for long-term trend analysis.",
+      "why_not_D": "Athena is not suitable for 'real-time' dashboards due to query latency (typically seconds). It is a query-on-demand service, not a low-latency serving layer."
+    },
+    "tags": [
+      "Timestream",
+      "IoT",
+      "TimeSeries",
+      "StorageTiering"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-044",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses Amazon Redshift to manage its corporate data warehouse. They have a large fact table that is joined frequently with a small dimension table (e.g., 'Store_Locations'). The queries are currently performing poorly. Which distribution style should be applied to the dimension table to optimize performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "DISTSTYLE KEY based on the Store_ID column.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "DISTSTYLE EVEN to ensure data is spread equally across all slices.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "DISTSTYLE ALL to replicate the table on every compute node.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "DISTSTYLE AUTO to let Redshift manage the distribution based on query patterns.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "For small dimension tables, DISTSTYLE ALL is the best choice. It replicates the entire table on every compute node, eliminating the need to move data across the network (data shuffling) during joins with a large fact table, significantly improving performance.",
+      "why_not_A": "KEY distribution is best when joining two large tables on the same key. For a small dimension table, the overhead of potential data movement for other queries is higher than the cost of replicating the small table.",
+      "why_not_B": "EVEN distribution is used when no join key is obvious or for tables that are not joined. It would result in significant data shuffling during joins with the fact table.",
+      "why_not_D": "While AUTO is a valid setting, the question asks for the *best* optimization for a known 'small dimension table' scenario. ALL is the specific architectural recommendation for this use case."
+    },
+    "tags": [
+      "Redshift",
+      "DistributionStyle",
+      "PerformanceTuning",
+      "OLAP"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-045",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer needs to implement a data retention policy for a set of S3 buckets containing logs. The requirements are: 1) Move objects to S3 Glacier Flexible Retrieval after 90 days. 2) Permanently delete objects after 7 years. 3) Ensure that objects cannot be deleted or overwritten by any user, including the root user, for the first 3 years to meet regulatory compliance. Which combination of features should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "S3 Lifecycle Policies for transitions/expiration and S3 Versioning with MFA Delete.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "S3 Lifecycle Policies for transitions/expiration and S3 Object Lock in Compliance mode.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "S3 Replication to a second region and S3 Lifecycle Policies for expiration.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "S3 Intelligent-Tiering for cost optimization and S3 Bucket Policies to deny DeleteObject permissions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "S3 Lifecycle Policies handle the transition to Glacier (90 days) and the final expiration (7 years). S3 Object Lock in 'Compliance mode' ensures that no one (including the root account) can delete or modify the object until the retention period (3 years) expires.",
+      "why_not_A": "MFA Delete requires a token for deletions but does not programmatically prevent deletion for a fixed period of time across all users regardless of their permissions.",
+      "why_not_C": "Replication provides availability and disaster recovery, but it does not prevent deletion (unless combined with Object Lock) and doesn't handle the 7-year expiration logic.",
+      "why_not_D": "Bucket Policies can deny DeleteObject, but they can be changed by an administrator. They do not provide the 'WORM' (Write Once Read Many) guarantee required by strict regulatory compliance that Object Lock Compliance mode provides."
+    },
+    "tags": [
+      "S3",
+      "LifecyclePolicy",
+      "ObjectLock",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-dea-mock1-046",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company is migrating a high-throughput transactional database to Amazon DynamoDB. The workload exhibits a highly skewed access pattern where a small percentage of items (hot keys) receive the vast majority of read requests. The company is experiencing ProvisionedThroughputExceededException despite having high provisioned capacity. Which architectural change will most effectively resolve this issue while minimizing latency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable DynamoDB Auto Scaling to automatically increase the read capacity units (RCUs) based on the observed load.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement DynamoDB Accelerator (DAX) to cache the frequently accessed items.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the partition key's cardinality by adding a random suffix to the key of the hot items.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch the table to On-Demand capacity mode to eliminate the need for provisioned throughput.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DAX is a fully managed in-memory cache that specifically addresses the 'hot key' problem by offloading read requests from the DynamoDB table, reducing latency to microseconds and preventing throughput exceptions caused by partition-level limits.",
+      "why_not_A": "Auto Scaling increases overall table capacity, but it cannot solve the problem of a single partition being overwhelmed (hot partition), as throughput is limited per partition.",
+      "why_not_C": "Adding a random suffix (sharding) is a valid write-heavy strategy, but for read-heavy hot keys, it complicates the application logic and doesn't address the inherent need to fetch the specific record efficiently.",
+      "why_not_D": "On-Demand mode still adheres to partition-level throughput limits. If a single partition is hit too hard, it will still throttle regardless of the billing mode."
+    },
+    "tags": [
+      "DynamoDB",
+      "DAX",
+      "Performance Tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-047",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A healthcare provider stores large volumes of patient telemetry data in an Amazon S3 data lake. The data is partitioned by year, month, and day. Data engineers have noticed that queries filtering by 'PatientID' and 'DeviceType' are performing poorly and scanning massive amounts of data, leading to high Athena costs. The data is updated once daily in bulk. Which strategy provides the best performance improvement for these specific queries?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the data from CSV format to JSON to improve the parsing speed of Athena.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the number of S3 partitions by adding PatientID to the folder hierarchy.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Convert the data to Apache Parquet format and implement bucketed columns on PatientID.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable S3 Intelligent-Tiering to ensure the most accessed data is in the Frequent Access tier.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Parquet is a columnar format that allows Athena to read only the required columns. Bucketing on PatientID ensures that data for a specific patient is grouped into a limited number of files, significantly reducing the amount of data scanned during filtered queries.",
+      "why_not_A": "JSON is a row-based format and is generally less efficient for large-scale analytical queries than columnar formats like Parquet.",
+      "why_not_B": "Adding PatientID to the partition hierarchy would create millions of small files (one per patient per day), leading to the 'too many small files' problem, which degrades S3 and Athena performance.",
+      "why_not_D": "Intelligent-Tiering manages storage costs based on access patterns; it does not reduce the amount of data scanned by a query engine."
+    },
+    "tags": [
+      "S3",
+      "Athena",
+      "Parquet",
+      "Bucketing"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-dea-mock1-048",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company uses Amazon Redshift for its data warehouse. They have a large fact table (10 TB) and several smaller dimension tables. Queries joining the fact table with the dimension tables are experiencing high network traffic and slow performance due to data redistribution across the cluster nodes. Which distribution style should be applied to the dimension tables to optimize performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the distribution style to AUTO to let Redshift decide based on table size.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set the distribution style to KEY, using the join column as the distribution key.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Set the distribution style to ALL for the dimension tables.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Set the distribution style to EVEN to spread the data uniformly across nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "DISTSTYLE ALL copies the entire dimension table to every compute node. This eliminates the need to redistribute data across the network during joins with the large fact table, which is the most efficient approach for small to medium-sized dimension tables.",
+      "why_not_A": "While AUTO is convenient, for known dimension tables, explicitly setting ALL is the gold standard for performance to avoid any redistribution overhead.",
+      "why_not_B": "KEY distribution is useful for joining two very large tables. For small dimension tables, it still requires some network movement compared to the local access provided by ALL.",
+      "why_not_D": "EVEN distribution is a round-robin approach. It is used when there is no clear join key or the data is skewed, but it forces data redistribution during almost every join, causing the exact problem described in the scenario."
+    },
+    "tags": [
+      "Redshift",
+      "Distribution Styles",
+      "Query Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-049",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An organization is implementing a data lake on Amazon S3 and requires a mechanism to ensure that only authorized users can access specific subsets of data (columns and rows) within the same S3 bucket. The organization wants to avoid creating multiple physical copies of the data for different user groups. Which solution meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use S3 Bucket Policies to restrict access to specific prefixes within the bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement AWS Lake Formation with fine-grained access control (FGAC).",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use S3 Access Points to create separate entry points for different user groups.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Apply S3 Object Tags and use IAM policies to filter access based on those tags.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Lake Formation provides fine-grained access control, allowing administrators to define permissions at the column, row, and cell levels. This allows different users to see different subsets of the same data without duplicating the physical files.",
+      "why_not_A": "Bucket policies provide access at the object or prefix level. They cannot filter individual columns or rows within a file (e.g., a Parquet or CSV file).",
+      "why_not_C": "Access Points simplify managing access for large numbers of applications, but they still operate at the bucket/prefix level, not the row/column level.",
+      "why_not_D": "Object tags can control access to the entire file, but they cannot selectively hide columns or rows within that file."
+    },
+    "tags": [
+      "Lake Formation",
+      "S3",
+      "Security",
+      "Governance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-050",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-store-management",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data engineer is designing a storage solution for a real-time analytics dashboard. The requirement is to store time-series data that is ingested at a rate of 50,000 events per second. The dashboard requires low-latency queries for the last 24 hours of data, while data older than 24 hours should be stored cost-effectively for long-term historical analysis. Which architecture is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Ingest data into Amazon S3 and use Amazon Athena for both real-time and historical queries.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Ingest data into Amazon Timestream for real-time queries and use a scheduled Lambda to move old data to Amazon S3.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Ingest data into Amazon DynamoDB with a TTL (Time to Live) of 24 hours, and use DynamoDB Streams to archive data to S3.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Ingest data into Amazon OpenSearch and use the Index State Management (ISM) to delete data after 24 hours.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon Timestream is purpose-built for time-series data. It features a multi-tiered storage architecture (memory store for recent data and magnetic store for historical data) that automatically handles the transition and provides low-latency queries for recent data while maintaining cost-efficiency for long-term storage.",
+      "why_not_A": "Athena is an interactive query service and is not designed for sub-second low-latency dashboard refreshes at a rate of 50k events/sec ingestion.",
+      "why_not_C": "While DynamoDB can handle the ingestion, it is not optimized for the complex time-series aggregations typically required by analytics dashboards, and managing the archive via Streams adds unnecessary complexity compared to Timestream's native tiers.",
+      "why_not_D": "OpenSearch is great for search and some analytics, but deleting data after 24 hours fails the requirement to store data for long-term historical analysis."
+    },
+    "tags": [
+      "Timestream",
+      "S3",
+      "Time-Series",
+      "Storage Tiering"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-dea-mock1-051",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data engineer is managing an AWS Glue ETL job that consistently fails due to an 'Out of Memory' (OOM) error when processing a large dataset with high skewness. The job is currently using Standard worker nodes. Which action should the data engineer take to resolve this issue with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of worker nodes in the Glue job configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch the worker type from Standard to G.1X or G.2X.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Job Bookmarks to process data in smaller increments.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the timeout setting of the Glue job.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "G.1X and G.2X worker types provide more memory and disk space per worker compared to Standard workers, which is the primary solution for OOM errors caused by data skew or large partitions.",
+      "why_not_A": "Increasing the number of workers helps with overall throughput but does not solve OOM errors if a single partition is too large for a single worker's memory.",
+      "why_not_C": "Job Bookmarks prevent reprocessing of old data but do not change the memory available to process the current batch of skewed data.",
+      "why_not_D": "Increasing the timeout prevents the job from being killed by the system, but it does not resolve the underlying memory exhaustion causing the crash."
+    },
+    "tags": [
+      "AWS Glue",
+      "Resource Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-052",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses an Amazon Redshift cluster for daily reporting. The administrator notices that several complex queries are experiencing significant performance degradation. Upon reviewing the system tables, they find that the query execution plan shows frequent 'broadcast' operations for large tables. Which optimization technique should be implemented to reduce network traffic and improve performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change the distribution style of the large tables to ALL.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the number of nodes in the Redshift cluster.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Change the distribution style of the large tables to KEY distribution based on a common join column.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the tables to use SORT KEYS instead of DISTRIBUTION keys.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "KEY distribution ensures that rows with the same join key are stored on the same slice, eliminating the need to broadcast large tables across the network during joins.",
+      "why_not_A": "DISTSTYLE ALL copies the entire table to every node; while it eliminates broadcasting, it is inefficient and consumes excessive storage for large tables.",
+      "why_not_B": "Adding nodes increases total capacity but does not address the inefficient data movement pattern caused by incorrect distribution styles.",
+      "why_not_D": "Sort keys improve range scan performance and filtering but do not resolve the network overhead associated with broadcasting tables during joins."
+    },
+    "tags": [
+      "Amazon Redshift",
+      "Performance Tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-053",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data pipeline uses Amazon Kinesis Data Streams to ingest real-time logs. The application is throwing 'ProvisionedThroughputExceededException' errors during peak hours. The data engineer needs to resolve this while ensuring the consumer application can still process records in the order they were received. What is the most effective solution?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of shards in the Kinesis Data Stream.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Implement an exponential backoff strategy in the consumer application.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Change the shard mapping to use a random partition key.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch from Kinesis Data Streams to Kinesis Data Firehose.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Increasing the number of shards increases the total write throughput capacity of the stream, directly resolving the ProvisionedThroughputExceededException.",
+      "why_not_B": "Backoff strategies handle the error but do not solve the capacity bottleneck, leading to increased latency and potential data loss if the buffer fills.",
+      "why_not_C": "Random partition keys distribute load evenly but break the requirement to process records in the order they were received (which requires the same partition key).",
+      "why_not_D": "Kinesis Data Firehose is a delivery stream and does not provide the same real-time, ordered processing capabilities as Kinesis Data Streams."
+    },
+    "tags": [
+      "Amazon Kinesis",
+      "Scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-054",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization has a critical data pipeline that loads data from S3 into Amazon Redshift using the COPY command. The pipeline has started failing with errors indicating that the source files contain unexpected characters that do not match the target table's schema. The engineer needs to identify the specific rows causing the failure without stopping the entire load process. Which Redshift system table should be queried?",
+    "options": [
+      {
+        "id": "A",
+        "text": "STL_QUERY",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "STL_LOAD_ERRORS",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "SVV_TABLE_INFO",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "STL_CONNECTION",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "STL_LOAD_ERRORS contains detailed information about errors encountered during the COPY command, including the filename, line number, and the specific column/value that caused the failure.",
+      "why_not_A": "STL_QUERY tracks the execution of SQL queries but does not provide the granular row-level error details for data loads.",
+      "why_not_C": "SVV_TABLE_INFO provides metadata about table size and distribution but not operational error logs for data ingestion.",
+      "why_not_D": "STL_CONNECTION tracks session and connection information, which is irrelevant to data parsing errors in a COPY command."
+    },
+    "tags": [
+      "Amazon Redshift",
+      "Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-055",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data engineer is implementing a monitoring solution for an AWS Glue workflow. They need to be notified immediately whenever a specific Glue job fails, and they want the notification to include the job name and the error message. Which combination of services provides the most efficient implementation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "CloudWatch Logs with a custom Lambda function triggered by a schedule.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "EventBridge rule filtered for Glue Job State Change events, targeting an SNS topic.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "CloudWatch Alarm based on the 'Glue Job Run' metric, targeting an SNS topic.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "AWS Glue Observability metrics sent to a Third-party dashboard.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "EventBridge can natively detect 'Glue Job State Change' events (e.g., FAILED). The event payload contains the job name and status, which can be sent directly to SNS for immediate notification.",
+      "why_not_A": "A scheduled Lambda function is not real-time and introduces unnecessary latency and complexity compared to an event-driven architecture.",
+      "why_not_C": "CloudWatch Alarms are based on numeric metrics (thresholds); they cannot easily pass the specific job name or the detailed error message in the notification payload.",
+      "why_not_D": "External dashboards provide visibility but do not provide the automated, immediate notification mechanism required for operational support."
+    },
+    "tags": [
+      "AWS Glue",
+      "Monitoring"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-056",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer is managing a critical Glue ETL job that processes hourly batches. Recently, the job has been failing intermittently with 'OutOfMemoryError' during the shuffle phase. The engineer needs to resolve this while minimizing costs and ensuring the job completes within its hourly window. Which is the most effective strategy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of Worker nodes in the Glue job configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Glue Auto Scaling and switch to G.1X worker types.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Switch to G.2X worker types to increase the memory available per executor.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the timeout setting of the Glue job to allow more time for garbage collection.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "OutOfMemoryErrors during shuffle usually indicate that the data partitions are too large for the allocated memory of the executor. G.2X workers provide double the memory and disk space of G.1X workers, which directly addresses the memory pressure during shuffle operations.",
+      "why_not_A": "Increasing the number of workers (horizontal scaling) increases overall parallelism but does not increase the memory available to a single executor handling a specific large partition, which is the cause of OOM errors.",
+      "why_not_B": "Auto Scaling manages the number of workers based on demand but does not change the memory capacity of the individual worker type. G.1X has less memory than G.2X.",
+      "why_not_D": "Increasing the timeout does not solve a memory exhaustion issue; the job will still fail once the JVM runs out of heap space regardless of the time limit."
+    },
+    "tags": [
+      "AWS Glue",
+      "Performance Tuning",
+      "Resource Allocation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-057",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses an Amazon Redshift serverless workgroup for reporting. Users report that certain complex queries are failing due to 'out of memory' errors, while other queries run fine. The data engineer needs to ensure these complex queries can execute without manually scaling the workgroup every time. What is the recommended approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the base RPU (Redshift Processing Units) for the workgroup.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Query Monitoring Rules (QMR) to abort queries that exceed memory limits.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable Automatic Scaling for the serverless workgroup.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the serverless workgroup to a provisioned cluster with RA3 nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon Redshift Serverless Automatic Scaling allows the workgroup to automatically scale the RPU capacity up or down based on the workload demand, allowing complex, memory-intensive queries to complete by temporarily increasing resources.",
+      "why_not_A": "Increasing the base RPU provides a higher minimum capacity, but it increases costs for all queries and may still not be enough for the most extreme spikes.",
+      "why_not_B": "QMR would stop the queries from crashing the system, but it doesn't solve the problem of the queries failing; it simply automates the failure.",
+      "why_not_D": "While provisioned clusters offer more control, the requirement is to handle these queries without manual scaling and while maintaining the serverless model's benefits."
+    },
+    "tags": [
+      "Amazon Redshift",
+      "Serverless",
+      "Scaling"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-dea-mock1-058",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data pipeline uses Amazon Kinesis Data Firehose to deliver data to an S3 bucket. The data engineer notices that the files in S3 are too small and too numerous, leading to performance degradation in Athena queries. The engineer wants to optimize the file sizes without introducing significant latency. Which configuration change is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Decrease the Buffer interval and increase the Buffer size.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the Buffer interval and increase the Buffer size.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Dynamic Partitioning and decrease the Buffer interval.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Change the delivery stream to Kinesis Data Streams for better control.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Firehose buffers data based on either size or time (whichever comes first). Increasing both the Buffer interval (time) and Buffer size (MB) ensures that more data is accumulated before a file is written to S3, resulting in fewer, larger files which are more efficient for Athena to scan.",
+      "why_not_A": "Decreasing the buffer interval would cause files to be written more frequently, creating even more small files.",
+      "why_not_C": "Dynamic partitioning helps organize data into folders but does not inherently solve the 'small file problem' unless combined with larger buffers.",
+      "why_not_D": "Kinesis Data Streams is a real-time streaming service, not a delivery service. Switching would require adding a consumer (like Lambda or Glue) to handle the S3 writes, adding unnecessary complexity."
+    },
+    "tags": [
+      "Kinesis Data Firehose",
+      "S3 Optimization",
+      "Athena"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-aws-dea-mock1-059",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is implementing a data lake on S3 and needs to ensure that data is not accidentally deleted or overwritten by automated cleanup scripts. They require a mechanism that allows recovery of objects even if a delete marker was applied. Which combination of S3 features should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "S3 Versioning and S3 Replication.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "S3 Object Lock in Compliance mode and S3 Versioning.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "S3 Versioning and S3 Object Lock in Governance mode.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "S3 Cross-Region Replication and S3 Lifecycle Policies.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "S3 Versioning allows the recovery of objects after a delete marker is applied. Governance mode of Object Lock prevents users (or scripts) from overwriting or deleting an object version unless they have special permissions, providing a layer of protection against accidental deletion while still allowing authorized administrators to manage the data.",
+      "why_not_A": "Replication copies data to another region but doesn't prevent the original from being deleted or provide the specific 'lock' mechanism against authorized scripts.",
+      "why_not_B": "Compliance mode is too restrictive; it prevents even the root user from deleting the object version until the retention period expires, which is usually too extreme for internal data lake management.",
+      "why_not_D": "Lifecycle policies are used to delete or transition data, which is the opposite of the requirement to prevent accidental deletion."
+    },
+    "tags": [
+      "Amazon S3",
+      "Data Protection",
+      "Object Lock"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-060",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is experiencing a 'hot partition' problem in their DynamoDB table, where a single partition is receiving the majority of the read/write throughput, causing throttling. The partition key is 'CustomerID'. How should the data engineer resolve this to maintain operational stability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the Provisioned Throughput (RCU/WCU) for the entire table.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable DynamoDB Auto Scaling for the table.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a 'write sharding' strategy by appending a random suffix to the CustomerID.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create a Global Secondary Index (GSI) with the same partition key.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Write sharding involves adding a random number (suffix) to the partition key (e.g., CustomerID_1, CustomerID_2). This distributes the writes across multiple partitions, effectively eliminating the hot partition bottleneck.",
+      "why_not_A": "Increasing total throughput does not help if the bottleneck is a single partition. DynamoDB has a hard limit on throughput per partition (3000 RCU / 1000 WCU); if one partition is hot, increasing the overall table limit won't stop that specific partition from throttling.",
+      "why_not_B": "Auto Scaling increases the total capacity of the table, but like Option A, it cannot overcome the per-partition throughput limit.",
+      "why_not_D": "A GSI with the same partition key will simply replicate the hot partition problem to the index, as the same data will be grouped together in the index as well."
+    },
+    "tags": [
+      "DynamoDB",
+      "Performance Tuning",
+      "Partitioning"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-aws-dea-mock1-061",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data engineer is managing a critical Glue ETL job that processes multi-terabyte datasets. The job has recently started failing with 'java.lang.OutOfMemoryError: Java heap space' during the join operation of two large datasets. The data engineer has already increased the worker type to G.2X, but the error persists. Which strategy should be implemented to resolve this issue while maintaining optimal performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of worker nodes in the Glue job to distribute the memory load across more instances.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a broadcast join by wrapping the smaller dataset in a broadcast() function to avoid shuffling.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable the 'Glue Dynamic Frame' join and increase the number of partitions using the repartition() method on the larger dataset.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Analyze the data distribution for skew and implement salting on the join keys to redistribute the data more evenly across executors.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Heap space errors during joins in Spark/Glue are frequently caused by data skew, where one partition becomes too large for a single executor's memory. Salting adds a random prefix to the join keys, breaking up large chunks of data and distributing them across multiple executors, effectively solving the OOM error when vertical scaling (G.2X) fails.",
+      "why_not_A": "Increasing the number of workers adds more total capacity, but if the data is skewed, one worker will still receive the oversized partition and crash regardless of how many other idle workers exist.",
+      "why_not_B": "Broadcast joins are only effective if one dataset is small enough to fit entirely in the memory of every executor. Since the scenario mentions 'two large datasets', broadcasting would likely cause an OOM error on the driver or all executors.",
+      "why_not_C": "Repartitioning without addressing the key skew does not solve the problem; the shuffle phase will still group the same skewed keys onto the same executor, leading to the same memory failure."
+    },
+    "tags": [
+      "AWS Glue",
+      "Spark Performance",
+      "Data Skew"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-dea-mock1-062",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company uses an Amazon Redshift cluster to store sensitive transaction data. To comply with security audits, the company must ensure that only authorized users can see specific columns in a table, and that any changes to the data are traceable. The company wants to implement a solution that minimizes administrative overhead for managing individual user permissions.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create separate views for different user roles and grant permissions to those views while restricting access to the base tables.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Column-Level Security (CLS) and Row-Level Security (RLS) using Redshift's native security features and enable Redshift Audit Logging.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Export the data to S3 and use AWS Lake Formation to manage fine-grained access control via the Redshift Spectrum external schema.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Redshift stored procedures to filter columns based on the current user's identity and return the result set.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon Redshift provides native Column-Level Security (CLS) and Row-Level Security (RLS), which allow administrators to define access policies based on roles or users directly on the table. Combining this with Audit Logging satisfies both the column-level restriction and the traceability requirement with the lowest overhead.",
+      "why_not_A": "Creating views for every role leads to 'view sprawl,' significantly increasing administrative overhead as the number of roles and tables grows.",
+      "why_not_C": "While Lake Formation provides fine-grained control, this requires moving the data to S3 and accessing it via Spectrum, which changes the architecture from a native Redshift warehouse to a Lakehouse pattern, introducing unnecessary complexity for a requirement that Redshift can handle natively.",
+      "why_not_D": "Stored procedures are not a security mechanism for column-level access; they can be bypassed and are difficult to maintain for basic access control."
+    },
+    "tags": [
+      "Amazon Redshift",
+      "Security",
+      "Governance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-063",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-operations-support",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An organization has a complex data pipeline where an Amazon Kinesis Data Stream feeds an AWS Lambda function, which then writes data to an Amazon DynamoDB table. Recently, the pipeline has experienced 'ProvisionedThroughputExceededException' errors in DynamoDB, causing Lambda to retry and eventually fail, leading to data loss in the stream due to the iterator age increasing. What is the most resilient architecture to solve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the Read/Write capacity units (RCU/WCU) of the DynamoDB table and implement a Dead Letter Queue (DLQ) for the Lambda function.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the Kinesis stream with an On-Demand capacity mode and enable DynamoDB Auto Scaling.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a Kinesis Data Firehose transformation that buffers data and writes to S3, then use a scheduled Glue job to load data into DynamoDB.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a 'Bisect on Function Error' retry policy for the Lambda event source mapping and introduce an Amazon SQS queue between Lambda and DynamoDB.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Integrating SQS as a buffer between Lambda and DynamoDB decouples the ingestion rate from the database write rate, preventing throughput exceptions from crashing the pipeline. 'Bisect on Function Error' allows Lambda to split a failed batch into smaller parts to isolate the problematic record, preventing the entire shard from being blocked and reducing iterator age.",
+      "why_not_A": "Increasing capacity is a temporary fix; spikes in data volume will still cause exceptions. A Lambda DLQ only captures the failed event but does not prevent the iterator age from increasing or the stream from blocking.",
+      "why_not_B": "On-demand and Auto Scaling handle gradual growth but cannot react instantly to the micro-spikes that typically cause ProvisionedThroughputExceededException in high-velocity streams.",
+      "why_not_C": "This changes the architecture from real-time to batch processing, which may not meet the business requirement for low-latency data availability."
+    },
+    "tags": [
+      "Kinesis",
+      "DynamoDB",
+      "Error Handling"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-aws-dea-mock1-064",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services company stores sensitive customer PII in an Amazon S3 bucket. The company needs to ensure that data is encrypted at rest using a key that they can rotate on a schedule and manage independently of AWS. Which encryption method should the data engineer implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Server-Side Encryption with Amazon S3 Managed Keys (SSE-S3)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Server-Side Encryption with AWS KMS keys (SSE-KMS) using a Customer Managed Key (CMK)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Server-Side Encryption with Customer-Provided Keys (SSE-C)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Client-Side Encryption using the S3 Encryption Client",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SSE-KMS with a Customer Managed Key (CMK) allows the user to control the key policy, manage the rotation schedule (manually or automatically), and maintain an audit trail via CloudTrail.",
+      "why_not_A": "SSE-S3 uses keys managed entirely by AWS; the customer cannot control the rotation schedule or manage the key independently.",
+      "why_not_C": "SSE-C requires the customer to manage the keys themselves and provide the key with every single read/write request, which is operationally complex and doesn't leverage AWS's rotation management.",
+      "why_not_D": "While client-side encryption provides high security, the requirement asks for a method to encrypt at rest within S3; SSE-KMS is the standard AWS-native way to achieve manageable rotation and governance."
+    },
+    "tags": [
+      "S3",
+      "KMS",
+      "Encryption"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-aws-dea-mock1-065",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A healthcare provider is using AWS Lake Formation to manage a data lake on Amazon S3. They need to grant a group of analysts access to a 'Patients' table, but the analysts must not be able to see the 'Social Security Number' column. What is the most efficient way to implement this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a separate S3 bucket for the analysts and copy the data without the SSN column.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use S3 Bucket Policies to deny access to the specific files containing the SSN column.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Define column-level permissions in AWS Lake Formation for the analyst group.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create a database view in Amazon Athena that excludes the SSN column and grant access to the view.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "AWS Lake Formation provides granular access control, including column-level security, allowing administrators to define exactly which columns a principal can access without duplicating data.",
+      "why_not_A": "Copying data to separate buckets creates data redundancy and increases management overhead (Data Silos).",
+      "why_not_B": "S3 Bucket Policies operate at the object level, not the column level. You cannot hide a specific column within a Parquet or CSV file using an S3 policy.",
+      "why_not_D": "While views can restrict columns, Lake Formation is the centralized governance tool designed specifically for this purpose across the data lake, providing a more scalable and manageable security model."
+    },
+    "tags": [
+      "Lake Formation",
+      "Governance",
+      "Column-level security"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-dea-mock1-066",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is auditing its data pipeline. They need to ensure that all API calls made by an AWS Glue ETL job to access a DynamoDB table are logged for compliance purposes. Which service should be used to track these API calls?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Amazon CloudWatch Logs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS CloudTrail",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "AWS Config",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "VPC Flow Logs",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS CloudTrail records API calls made by AWS accounts, users, and AWS services, providing a complete history of actions taken within the account.",
+      "why_not_A": "CloudWatch Logs collects logs from applications and services (like Glue job output), but it does not natively record the AWS API call history for governance auditing.",
+      "why_not_C": "AWS Config tracks the configuration history of resources (e.g., whether a bucket is public), but it doesn't log the individual API calls made to access data.",
+      "why_not_D": "VPC Flow Logs track IP traffic going to and from network interfaces; they do not provide the high-level API call details needed for a compliance audit."
+    },
+    "tags": [
+      "CloudTrail",
+      "Audit",
+      "Governance"
+    ],
+    "estimated_time_seconds": 80,
+    "id": "q-aws-dea-mock1-067",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data engineer is designing a pipeline where an AWS Lambda function needs to write data to an Amazon Redshift cluster. To follow the principle of least privilege, how should the Lambda function be granted access?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign an IAM User with a permanent Access Key and Secret Key to the Lambda environment variables.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Assign an IAM Role to the Lambda function with a policy granting only 'redshift:PutClusterParameterGroup' permissions.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Assign an IAM Role to the Lambda function with a policy granting the minimum necessary permissions to write to Redshift.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Grant the Lambda function administrative access to the Redshift cluster to ensure no permission errors occur.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Using an IAM Role for the Lambda function is the AWS best practice. The role should contain a policy that grants only the specific actions required (e.g., redshift-data:ExecuteStatement) to adhere to the principle of least privilege.",
+      "why_not_A": "Hardcoding credentials in environment variables is a major security risk and violates AWS best practices.",
+      "why_not_B": "The 'PutClusterParameterGroup' permission is for managing cluster settings, not for writing data to the database.",
+      "why_not_D": "Granting administrative access violates the principle of least privilege and increases the blast radius in case of a security breach."
+    },
+    "tags": [
+      "IAM",
+      "Least Privilege",
+      "Lambda"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-aws-dea-mock1-068",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses Amazon Macie to discover sensitive data in their S3 buckets. After Macie identifies several files containing unmasked credit card numbers, the company wants to automate the remediation process. What is the recommended architecture to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure Macie to automatically delete any file it identifies as containing sensitive data.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use an EventBridge rule to trigger an AWS Lambda function when Macie generates a 'Finding' event.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Schedule a daily Glue job to scan S3 for credit card patterns and move them to a secure bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable S3 Versioning to ensure that if Macie deletes a file, it can be recovered.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon Macie sends findings to EventBridge. An EventBridge rule can trigger a Lambda function to perform remediation (e.g., moving the file, notifying an admin, or updating S3 permissions) in real-time.",
+      "why_not_A": "Macie is a discovery and classification service; it does not have a built-in feature to delete or modify the data it finds.",
+      "why_not_C": "Using Glue to recreate the logic already provided by Macie is inefficient and redundant. Macie is the purpose-built service for this discovery.",
+      "why_not_D": "S3 Versioning is a data protection feature, not a remediation or automation mechanism for sensitive data discovery."
+    },
+    "tags": [
+      "Macie",
+      "EventBridge",
+      "Automation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-069",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A healthcare organization stores patient records in an S3 bucket. They require a solution where data is encrypted at rest using a key that is automatically rotated every year. The organization must maintain the ability to audit exactly which IAM users accessed the decryption key for specific datasets. Which encryption strategy meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use S3 Managed Keys (SSE-S3) to ensure automatic rotation and seamless integration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS KMS with a Customer Managed Key (CMK) and enable automatic key rotation.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use SSE-KMS with an AWS Managed Key (aws/s3) to leverage built-in rotation.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use client-side encryption with a key stored in AWS Secrets Manager.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Customer Managed Keys (CMKs) in AWS KMS support automatic rotation and provide detailed audit logs via AWS CloudTrail, allowing the organization to track exactly which IAM principal requested a decrypt operation.",
+      "why_not_A": "SSE-S3 uses keys managed by S3; while it rotates keys, it does not provide the granular audit trail of which IAM user accessed the key, as the key is not a distinct KMS resource.",
+      "why_not_C": "AWS Managed Keys are rotated every 3 years (not 1), and the organization has less control over the key policy compared to Customer Managed Keys.",
+      "why_not_D": "Client-side encryption increases operational complexity and does not natively provide the integrated rotation and auditing features of KMS for S3 objects."
+    },
+    "tags": [
+      "KMS",
+      "S3",
+      "Encryption"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-070",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company uses AWS Lake Formation to manage a data lake on S3. They need to provide a data analyst with access to a 'Transactions' table, but the analyst must not see the 'CreditCardNumber' column and should only see rows where the 'Region' is 'NorthAmerica'. Which Lake Formation feature should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create an S3 Bucket Policy that restricts access to specific prefixes using condition keys.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use IAM Policy variables to filter the data returned by the S3 API.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Fine-Grained Access Control (FGAC) using column-level and row-level filters in Lake Formation.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create a separate S3 bucket for NorthAmerica and use a View in Athena to hide the column.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "AWS Lake Formation provides Fine-Grained Access Control (FGAC), allowing administrators to define column-level filters (to hide the credit card number) and row-level filters (to restrict data to NorthAmerica) directly in the data catalog.",
+      "why_not_A": "S3 Bucket Policies operate at the object/prefix level and cannot filter individual columns or rows within a file (e.g., Parquet or CSV).",
+      "why_not_B": "IAM policies provide coarse-grained access to resources; they cannot inspect the content of the data to filter rows or columns.",
+      "why_not_D": "While views in Athena can hide columns, they do not provide a centralized governance mechanism for row-level security across the entire data lake as efficiently as Lake Formation."
+    },
+    "tags": [
+      "Lake Formation",
+      "Governance",
+      "FGAC"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-071",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a legacy database to Amazon Redshift. The source data contains Personally Identifiable Information (PII). The security team requires that PII be masked for all users except for a small group of 'HR_Admins'. Which Redshift feature should be implemented to achieve this with minimal operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create multiple copies of the table with different masking levels and route users to different tables.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Redshift Dynamic Data Masking (DDM) to define masking expressions based on user roles.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement application-level masking by modifying the SQL queries in the BI tool.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use S3 Select to filter out PII before loading data into Redshift.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Redshift Dynamic Data Masking (DDM) allows administrators to mask sensitive data in non-privileged sessions without changing the actual data on disk, ensuring only authorized roles (HR_Admins) see the plain text.",
+      "why_not_A": "Creating multiple copies of tables leads to data redundancy, increased storage costs, and a synchronization nightmare (high operational overhead).",
+      "why_not_C": "Application-level masking is not a database security control; users with direct access to Redshift would still see the PII.",
+      "why_not_D": "S3 Select filters data during the read process from S3, but once the data is loaded into Redshift, it is no longer masked unless DDM or views are used."
+    },
+    "tags": [
+      "Redshift",
+      "Data Masking",
+      "PII"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-072",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization needs to ensure that all data uploaded to a specific S3 bucket is encrypted. If a user attempts to upload an object without the 'x-amz-server-side-encryption' header, the upload must be rejected. Which configuration is required?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Default Encryption on the S3 bucket settings.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Apply an S3 Bucket Policy with a 'Deny' effect for 's3:PutObject' if the 's3:x-amz-server-side-encryption' condition is false.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use an AWS Lambda trigger to delete any object that is uploaded without encryption.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable S3 Block Public Access to force encryption.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A bucket policy with a Deny statement and a condition check on the encryption header is the only way to actively reject (fail) an upload request that does not specify encryption.",
+      "why_not_A": "Default Encryption ensures that objects are encrypted if no header is provided, but it does not 'reject' the upload; it simply applies the default encryption.",
+      "why_not_C": "A Lambda trigger is reactive (post-upload). The object would briefly exist unencrypted before being deleted, violating the requirement to reject the upload.",
+      "why_not_D": "Block Public Access prevents public visibility but has no relationship with enforcing server-side encryption headers."
+    },
+    "tags": [
+      "S3",
+      "Bucket Policy",
+      "Encryption"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-073",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data engineer is designing a pipeline that moves data from an on-premises database to Amazon S3 via AWS Glue. The security team mandates that the data must be encrypted during transit and that the Glue job must not have permanent access to the S3 bucket. Which combination of tools provides the most secure implementation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a VPC Endpoint for S3 and provide the Glue job with a static IAM Role with S3FullAccess.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use TLS for transit and assign a temporary IAM role to the Glue job using an IAM Role with a session policy.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a public S3 endpoint and encrypt the data using a password-protected ZIP file before upload.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Direct Connect and give the Glue job root account credentials for the duration of the job.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TLS ensures encryption in transit. Using temporary credentials (via IAM roles and session policies) follows the principle of least privilege and ensures access is not permanent.",
+      "why_not_A": "S3FullAccess is a violation of the principle of least privilege and is a permanent permission, not a temporary one.",
+      "why_not_C": "Public endpoints are less secure than VPC endpoints, and manual ZIP encryption is an operational burden that doesn't integrate with AWS's native security model.",
+      "why_not_D": "Direct Connect provides a private path but not necessarily encryption (unless combined with VPN/TLS). Using root account credentials is a critical security violation."
+    },
+    "tags": [
+      "AWS Glue",
+      "IAM",
+      "Transit Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dea-mock1-074",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A healthcare provider stores sensitive patient records in an Amazon S3 bucket. To comply with strict regulatory requirements, the company must ensure that data is encrypted at rest using a key that is rotated every 90 days. Additionally, the company requires a mechanism to prove to auditors that no one, including the AWS account root user, can delete the encryption keys or the data for a period of 7 years. Which combination of services and configurations meets these requirements with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use S3 Managed Keys (SSE-S3) for encryption and enable S3 Object Lock in compliance mode for the 7-year retention period.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS KMS with Customer Managed Keys (CMK) and enable automatic key rotation. Apply an S3 Object Lock in compliance mode and use a KMS Key Policy that denies 'kms:ScheduleKeyDeletion' to all principals.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use AWS KMS with AWS Managed Keys. Enable S3 Versioning and use a Bucket Policy to deny the 's3:DeleteObject' permission for all users.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use an AWS CloudHSM cluster to manage encryption keys and implement a custom Lambda-based rotation logic every 90 days. Use S3 Object Lock in governance mode.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Customer Managed Keys (CMKs) allow for automatic rotation (every year by default, but manageable) and specific key policies. S3 Object Lock in 'compliance mode' ensures that no one, including the root user, can delete the objects until the retention period expires. Denying 'kms:ScheduleKeyDeletion' prevents the key from being deleted, ensuring data remains accessible and encrypted.",
+      "why_not_A": "SSE-S3 uses keys managed by AWS that are not customer-rotatable on a specific 90-day schedule and do not provide the same level of granular audit/control as CMKs.",
+      "why_not_C": "AWS Managed Keys cannot be deleted by the user, but they do not support the specific rotation control required. S3 Versioning and Bucket Policies can be overridden by the root user or someone with sufficient permissions, failing the 'no one including root' requirement.",
+      "why_not_D": "CloudHSM provides high control but significantly higher operational overhead than KMS. Governance mode in S3 Object Lock allows users with special permissions to bypass the lock, which violates the requirement.",
+      "tags": [
+        "S3",
+        "KMS",
+        "DataGovernance"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-aws-dea-mock1-075",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
+  },
+  {
+    "domain_id": "data-security-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services firm is implementing a data lake on Amazon S3. They use AWS Lake Formation to manage access control. The firm has a requirement where Analysts should be able to see the 'Transaction_Amount' and 'Transaction_Date' columns of a table, but the 'Customer_Name' and 'SSN' columns must be masked. However, the 'SSN' column should be completely hidden from Analysts, while 'Customer_Name' should be visible but redacted (e.g., showing only the first letter). How should the data engineer implement this using Lake Formation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create an IAM policy with Condition keys to restrict access to specific columns and use S3 Select to filter the data.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Define a Lake Formation Column-level permission for the Analysts group, granting access only to 'Transaction_Amount' and 'Transaction_Date', and use a Glue ETL job to create a masked view of the table.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Lake Formation Data Filters to grant access to the 'Transaction_Amount' and 'Transaction_Date' columns, and apply a cell-level filter to exclude 'SSN' and a masking expression for 'Customer_Name'.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Lake Formation to grant full table access and implement a DynamoDB-based lookup table to mask the sensitive attributes at the application layer.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "AWS Lake Formation Data Filters allow for both column-level filtering (completely hiding columns like SSN) and cell-level filtering/masking (redacting parts of the data like Customer_Name). This is the native, most efficient way to implement fine-grained access control without duplicating data.",
+      "why_not_A": "IAM policies cannot provide column-level security for S3 data; they operate at the object or prefix level. S3 Select is a retrieval mechanism, not a governance/security layer.",
+      "why_not_B": "While column-level permissions can hide 'SSN', creating separate masked views via Glue ETL leads to data duplication and higher operational overhead for synchronization.",
+      "why_not_D": "Granting full table access violates the principle of least privilege and pushes the security logic to the application layer, which is not a governance-level solution.",
+      "tags": [
+        "LakeFormation",
+        "DataMasking",
+        "FineGrainedAccess"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-aws-dea-mock1-076",
+    "exam_id": "aws-dea-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
   }
 ]

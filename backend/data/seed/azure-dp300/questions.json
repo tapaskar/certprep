@@ -7,10 +7,26 @@
     "difficulty": 3,
     "stem": "A company needs to migrate a large on-premises SQL Server 2016 database (2TB) to Azure. The migration must complete with less than 30 minutes of downtime, and the database uses CLR assemblies and cross-database queries. Which Azure SQL target and migration approach is most appropriate?",
     "options": [
-      {"id": "A", "text": "Azure SQL Database (single database) using backup/restore", "is_correct": false},
-      {"id": "B", "text": "Azure SQL Managed Instance using Azure Database Migration Service (online mode)", "is_correct": true},
-      {"id": "C", "text": "Azure SQL Database with Azure Data Factory data movement pipeline", "is_correct": false},
-      {"id": "D", "text": "Azure SQL Database Hyperscale using SSMA", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Azure SQL Database (single database) using backup/restore",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Managed Instance using Azure Database Migration Service (online mode)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure SQL Database with Azure Data Factory data movement pipeline",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure SQL Database Hyperscale using SSMA",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -19,12 +35,19 @@
       "why_not_C": "Azure Data Factory is an ETL tool, not a database migration service. It moves data in bulk but cannot efficiently replicate ongoing transaction log changes to minimize downtime.",
       "why_not_D": "Azure SQL Database Hyperscale does not support CLR assemblies or cross-database queries. SSMA (SQL Server Migration Assistant) is for migrating non-SQL databases to Azure SQL, not for SQL Server to Azure SQL migrations."
     },
-    "concept_ids": ["dp300-azure-sql-deployment", "dp300-database-migration"],
-    "tags": ["sql-managed-instance", "dms", "online-migration"],
+    "concept_ids": [
+      "dp300-azure-sql-deployment",
+      "dp300-database-migration"
+    ],
+    "tags": [
+      "sql-managed-instance",
+      "dms",
+      "online-migration"
+    ],
     "estimated_time_seconds": 95,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -35,10 +58,26 @@
     "difficulty": 3,
     "stem": "A DBA needs to configure Azure SQL Database so that a specific application can connect using its Entra ID managed identity. After enabling Entra-only authentication on the SQL server, what must be created in the database for the managed identity?",
     "options": [
-      {"id": "A", "text": "A SQL login in the master database and a database user mapped to it", "is_correct": false},
-      {"id": "B", "text": "A contained database user created from external provider in the application database", "is_correct": true},
-      {"id": "C", "text": "A server-level firewall rule with the managed identity's IP address", "is_correct": false},
-      {"id": "D", "text": "An application registration in Entra ID with database permissions", "is_correct": false}
+      {
+        "id": "A",
+        "text": "A SQL login in the master database and a database user mapped to it",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "A contained database user created from external provider in the application database",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "A server-level firewall rule with the managed identity's IP address",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "An application registration in Entra ID with database permissions",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -47,11 +86,17 @@
       "why_not_C": "Firewall rules control network access (which IP addresses can reach the SQL server). They do not create database users or grant permissions for managed identities to authenticate.",
       "why_not_D": "App registrations are for service principals authenticating via OAuth. Managed identities already have an Entra ID identity; no additional app registration is needed, but a database user must still be created."
     },
-    "concept_ids": ["dp300-database-authentication"],
-    "tags": ["entra-id-auth", "managed-identity", "contained-user"],
+    "concept_ids": [
+      "dp300-database-authentication"
+    ],
+    "tags": [
+      "entra-id-auth",
+      "managed-identity",
+      "contained-user"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -63,24 +108,46 @@
     "difficulty": 4,
     "stem": "A DBA notices that a specific query that previously ran in 2 seconds now takes 45 seconds. The query has not changed. Query Store data shows that a different execution plan was chosen recently. What is the most likely cause and solution?",
     "options": [
-      {"id": "A", "text": "Hardware failure; scale up to a higher vCore tier", "is_correct": false},
-      {"id": "B", "text": "Plan regression; force the known-good plan in Query Store", "is_correct": true},
-      {"id": "C", "text": "Missing index; create an index using the missing index DMV recommendations", "is_correct": false},
-      {"id": "D", "text": "Table fragmentation; rebuild all indexes and update statistics", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Hardware failure; scale up to a higher vCore tier",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Plan regression; force the known-good plan in Query Store",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Missing index; create an index using the missing index DMV recommendations",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Table fragmentation; rebuild all indexes and update statistics",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
-      "why_correct": "Query Store captures both the old (good) and new (bad) execution plans with their performance metrics. Plan regression—where statistics updates or schema changes cause the optimizer to choose a worse plan—is the most likely cause. Query Store allows you to force the known-good plan, immediately restoring performance without code changes.",
+      "why_correct": "Query Store captures both the old (good) and new (bad) execution plans with their performance metrics. Plan regression\u2014where statistics updates or schema changes cause the optimizer to choose a worse plan\u2014is the most likely cause. Query Store allows you to force the known-good plan, immediately restoring performance without code changes.",
       "why_not_A": "Hardware failure would affect all queries broadly, not cause a single query's plan to change. The Query Store data showing a plan change is the specific diagnostic clue.",
       "why_not_C": "A missing index would have caused the slow performance from the beginning, not a sudden regression. Plan regression occurs when an existing plan is replaced by a worse alternative.",
       "why_not_D": "Fragmentation causes gradual degradation of read performance but does not explain a sudden plan regression shown in Query Store. This would be addressed after the immediate plan regression is resolved."
     },
-    "concept_ids": ["dp300-query-performance"],
-    "tags": ["query-store", "plan-regression", "performance-tuning"],
+    "concept_ids": [
+      "dp300-query-performance"
+    ],
+    "tags": [
+      "query-store",
+      "plan-regression",
+      "performance-tuning"
+    ],
     "estimated_time_seconds": 95,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -91,10 +158,26 @@
     "difficulty": 3,
     "stem": "A DBA needs to identify all queries currently blocked in an Azure SQL Database and which query is holding the blocking lock. Which Dynamic Management View (DMV) combination provides this information?",
     "options": [
-      {"id": "A", "text": "sys.dm_exec_query_stats and sys.dm_exec_sql_text", "is_correct": false},
-      {"id": "B", "text": "sys.dm_exec_requests joined with sys.dm_exec_sql_text using blocking_session_id", "is_correct": true},
-      {"id": "C", "text": "sys.dm_os_wait_stats and sys.dm_os_schedulers", "is_correct": false},
-      {"id": "D", "text": "sys.dm_db_index_usage_stats and sys.indexes", "is_correct": false}
+      {
+        "id": "A",
+        "text": "sys.dm_exec_query_stats and sys.dm_exec_sql_text",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "sys.dm_exec_requests joined with sys.dm_exec_sql_text using blocking_session_id",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "sys.dm_os_wait_stats and sys.dm_os_schedulers",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "sys.dm_db_index_usage_stats and sys.indexes",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -103,8 +186,14 @@
       "why_not_C": "sys.dm_os_wait_stats provides cumulative server-level wait statistics since the last restart. sys.dm_os_schedulers shows CPU scheduler state. Neither provides per-session blocking information.",
       "why_not_D": "sys.dm_db_index_usage_stats and sys.indexes show index usage patterns. They are used for index tuning analysis, not for diagnosing blocking chains."
     },
-    "concept_ids": ["dp300-tsql-administration"],
-    "tags": ["blocking", "dmv", "troubleshooting"],
+    "concept_ids": [
+      "dp300-tsql-administration"
+    ],
+    "tags": [
+      "blocking",
+      "dmv",
+      "troubleshooting"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -119,10 +208,26 @@
     "difficulty": 3,
     "stem": "A DBA needs to schedule a weekly index maintenance job that runs DBCC CHECKDB and rebuilds fragmented indexes across all user databases in Azure SQL Database. SQL Server Agent is not available. Which service should be used?",
     "options": [
-      {"id": "A", "text": "Azure SQL Database built-in maintenance tasks", "is_correct": false},
-      {"id": "B", "text": "Azure Elastic Jobs", "is_correct": true},
-      {"id": "C", "text": "Azure Automation with PowerShell Runbook", "is_correct": false},
-      {"id": "D", "text": "SQL Server Agent on a separate Azure VM connected to SQL Database", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Azure SQL Database built-in maintenance tasks",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Elastic Jobs",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure Automation with PowerShell Runbook",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "SQL Server Agent on a separate Azure VM connected to SQL Database",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -131,8 +236,14 @@
       "why_not_C": "Azure Automation PowerShell Runbooks can connect to SQL Database and run T-SQL, but they require PowerShell scripting for database operations. Elastic Jobs provide native T-SQL execution without requiring PowerShell wrappers.",
       "why_not_D": "SQL Server Agent on an Azure VM requires a separate VM and connection to each Azure SQL Database. This adds significant infrastructure cost and complexity compared to the purpose-built Elastic Jobs service."
     },
-    "concept_ids": ["dp300-sql-agent-automation"],
-    "tags": ["elastic-jobs", "maintenance", "automation"],
+    "concept_ids": [
+      "dp300-sql-agent-automation"
+    ],
+    "tags": [
+      "elastic-jobs",
+      "maintenance",
+      "automation"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -147,10 +258,26 @@
     "difficulty": 3,
     "stem": "An Azure SQL Database has an index with 75% average fragmentation. Which maintenance operation should be performed to restore index structure while MINIMIZING impact on concurrent DML operations (INSERT, UPDATE, DELETE)?",
     "options": [
-      {"id": "A", "text": "ALTER INDEX ALL ON table REBUILD", "is_correct": false},
-      {"id": "B", "text": "ALTER INDEX ALL ON table REBUILD WITH (ONLINE = ON)", "is_correct": true},
-      {"id": "C", "text": "ALTER INDEX ALL ON table REORGANIZE", "is_correct": false},
-      {"id": "D", "text": "UPDATE STATISTICS table WITH FULLSCAN", "is_correct": false}
+      {
+        "id": "A",
+        "text": "ALTER INDEX ALL ON table REBUILD",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "ALTER INDEX ALL ON table REBUILD WITH (ONLINE = ON)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "ALTER INDEX ALL ON table REORGANIZE",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "UPDATE STATISTICS table WITH FULLSCAN",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -159,11 +286,17 @@
       "why_not_C": "REORGANIZE defragments the existing B-tree leaf pages in place using minimal locking but is typically appropriate for fragmentation between 10-30%. At 75% fragmentation, a full REBUILD is more efficient and effective.",
       "why_not_D": "UPDATE STATISTICS updates query optimizer statistics but does not address physical index fragmentation. Statistics and fragmentation are separate concerns."
     },
-    "concept_ids": ["dp300-index-management"],
-    "tags": ["index-rebuild", "online-rebuild", "fragmentation"],
+    "concept_ids": [
+      "dp300-index-management"
+    ],
+    "tags": [
+      "index-rebuild",
+      "online-rebuild",
+      "fragmentation"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -175,23 +308,45 @@
     "difficulty": 4,
     "stem": "A company has an Azure SQL Database with an Active Geo-Replication secondary in another region. The primary region experiences an outage. An administrator needs to fail over to the secondary region. After the failover, what endpoint should the application use to connect?",
     "options": [
-      {"id": "A", "text": "The original primary server's fully qualified domain name (FQDN)", "is_correct": false},
-      {"id": "B", "text": "The secondary server's FQDN (changed manually in the connection string)", "is_correct": false},
-      {"id": "C", "text": "The Failover Group listener endpoint (unchanged, automatically redirected)", "is_correct": true},
-      {"id": "D", "text": "The Azure Traffic Manager endpoint for the database", "is_correct": false}
+      {
+        "id": "A",
+        "text": "The original primary server's fully qualified domain name (FQDN)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The secondary server's FQDN (changed manually in the connection string)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The Failover Group listener endpoint (unchanged, automatically redirected)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The Azure Traffic Manager endpoint for the database",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
-      "why_correct": "Auto-Failover Groups provide a read-write listener endpoint that always resolves to the current primary. After failover, the listener's DNS automatically updates to point to the new primary (formerly the secondary). Applications using the listener endpoint require no connection string changes—the failover is transparent.",
-      "why_not_A": "The original primary server's FQDN resolves to the failed region's server. After failover, the primary role has shifted to the secondary server—connecting to the old primary's FQDN would fail or connect to a demoted replica.",
+      "why_correct": "Auto-Failover Groups provide a read-write listener endpoint that always resolves to the current primary. After failover, the listener's DNS automatically updates to point to the new primary (formerly the secondary). Applications using the listener endpoint require no connection string changes\u2014the failover is transparent.",
+      "why_not_A": "The original primary server's FQDN resolves to the failed region's server. After failover, the primary role has shifted to the secondary server\u2014connecting to the old primary's FQDN would fail or connect to a demoted replica.",
       "why_not_B": "Manually updating connection strings creates application downtime during the update process. The benefit of Failover Groups is the automatic DNS-based redirection without application changes.",
       "why_not_D": "Azure Traffic Manager provides DNS-based global routing for web applications. It is not used for Azure SQL Database failover. Auto-Failover Groups provide the equivalent DNS listener functionality natively."
     },
-    "concept_ids": ["dp300-ha-dr-strategy"],
-    "tags": ["failover-groups", "geo-replication", "disaster-recovery"],
+    "concept_ids": [
+      "dp300-ha-dr-strategy"
+    ],
+    "tags": [
+      "failover-groups",
+      "geo-replication",
+      "disaster-recovery"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -203,20 +358,42 @@
     "difficulty": 3,
     "stem": "A compliance requirement mandates that an Azure SQL Database must be restorable to any point in time within the past 30 days. What configuration is needed in Azure SQL Database?",
     "options": [
-      {"id": "A", "text": "Configure Azure Backup policy with 30-day retention for the database", "is_correct": false},
-      {"id": "B", "text": "Set the automated backup retention period to 30 days in the database settings", "is_correct": true},
-      {"id": "C", "text": "Enable Long-Term Retention (LTR) policy with a 30-day weekly retention", "is_correct": false},
-      {"id": "D", "text": "Set up Active Geo-Replication with a 30-day readable secondary", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Configure Azure Backup policy with 30-day retention for the database",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set the automated backup retention period to 30 days in the database settings",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Long-Term Retention (LTR) policy with a 30-day weekly retention",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set up Active Geo-Replication with a 30-day readable secondary",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Azure SQL Database automated backup retention is configurable from 1 to 35 days directly in the database settings. Setting it to 30 days ensures Point-in-Time Restore (PITR) is available for any point within the last 30 days using the automated backup chain (full + differential + log backups).",
       "why_not_A": "Azure Backup is a separate service from Azure SQL automated backups. While it can be used for SQL Server on VMs, Azure SQL Database has its own built-in backup system that handles PITR natively without needing Azure Backup.",
-      "why_not_C": "Long-Term Retention stores weekly, monthly, or yearly backup snapshots for compliance retention beyond 35 days (up to 10 years). It is not designed for PITR within 30 days—that is the purpose of the automated backup retention setting.",
+      "why_not_C": "Long-Term Retention stores weekly, monthly, or yearly backup snapshots for compliance retention beyond 35 days (up to 10 years). It is not designed for PITR within 30 days\u2014that is the purpose of the automated backup retention setting.",
       "why_not_D": "Active Geo-Replication creates a continuously synchronized readable secondary for DR failover. It does not provide point-in-time recovery to arbitrary moments in the past."
     },
-    "concept_ids": ["dp300-backup-restore"],
-    "tags": ["pitr", "backup-retention", "automated-backups"],
+    "concept_ids": [
+      "dp300-backup-restore"
+    ],
+    "tags": [
+      "pitr",
+      "backup-retention",
+      "automated-backups"
+    ],
     "estimated_time_seconds": 80,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -231,20 +408,42 @@
     "difficulty": 3,
     "stem": "An Azure SQL Database administrator needs to review all data access events including SELECT statements for audit purposes. Which Microsoft Defender for SQL feature automatically generates findings about potentially harmful SQL patterns?",
     "options": [
-      {"id": "A", "text": "SQL Auditing with Storage Account destination", "is_correct": false},
-      {"id": "B", "text": "Advanced Threat Protection (ATP) - SQL injection detection", "is_correct": false},
-      {"id": "C", "text": "Vulnerability Assessment scan", "is_correct": false},
-      {"id": "D", "text": "Vulnerability Assessment scans identify misconfigurations; Advanced Threat Protection detects SQL injection and anomalous access at runtime", "is_correct": true}
+      {
+        "id": "A",
+        "text": "SQL Auditing with Storage Account destination",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Advanced Threat Protection (ATP) - SQL injection detection",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Vulnerability Assessment scan",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Vulnerability Assessment scans identify misconfigurations; Advanced Threat Protection detects SQL injection and anomalous access at runtime",
+        "is_correct": true
+      }
     ],
     "correct_answer": "D",
     "explanation": {
       "why_correct": "Microsoft Defender for SQL includes two complementary capabilities: Vulnerability Assessment performs periodic scans to find security misconfigurations (weak passwords, excessive permissions, missing encryption). Advanced Threat Protection monitors runtime activity to detect SQL injection attempts, anomalous access patterns, and brute force attacks. Together they provide comprehensive database security.",
       "why_not_A": "SQL Auditing records database activity events to storage for audit trail purposes. It captures what happened but does not proactively detect threats or generate security findings about attack patterns.",
-      "why_not_B": "ATP detects SQL injection at runtime, which is correct—but this answer is incomplete as it does not describe the full Defender for SQL capability including Vulnerability Assessment.",
-      "why_not_C": "Vulnerability Assessment identifies misconfigurations, which is correct—but this answer is also incomplete as it omits the runtime threat detection component of Defender for SQL."
+      "why_not_B": "ATP detects SQL injection at runtime, which is correct\u2014but this answer is incomplete as it does not describe the full Defender for SQL capability including Vulnerability Assessment.",
+      "why_not_C": "Vulnerability Assessment identifies misconfigurations, which is correct\u2014but this answer is also incomplete as it omits the runtime threat detection component of Defender for SQL."
     },
-    "concept_ids": ["dp300-auditing-compliance"],
-    "tags": ["defender-sql", "vulnerability-assessment", "threat-protection"],
+    "concept_ids": [
+      "dp300-auditing-compliance"
+    ],
+    "tags": [
+      "defender-sql",
+      "vulnerability-assessment",
+      "threat-protection"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -259,23 +458,46 @@
     "difficulty": 3,
     "stem": "An Azure SQL Database running in the General Purpose tier consistently shows CPU utilization above 95% during business hours. The workload is a mix of OLTP transactions and reporting queries. Which approach BEST addresses the performance bottleneck while minimizing cost?",
     "options": [
-      {"id": "A", "text": "Scale up to Business Critical tier to get a readable secondary for reporting", "is_correct": false},
-      {"id": "B", "text": "Scale up to more vCores in General Purpose tier AND use Active Geo-Replication to offload reporting queries to the readable secondary", "is_correct": false},
-      {"id": "C", "text": "Enable query store, identify the top CPU-consuming queries, and optimize them with indexes or rewrites before scaling", "is_correct": true},
-      {"id": "D", "text": "Scale down to Serverless compute to reduce cost by auto-pausing during low utilization", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Scale up to Business Critical tier to get a readable secondary for reporting",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Scale up to more vCores in General Purpose tier AND use Active Geo-Replication to offload reporting queries to the readable secondary",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable query store, identify the top CPU-consuming queries, and optimize them with indexes or rewrites before scaling",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Scale down to Serverless compute to reduce cost by auto-pausing during low utilization",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
-      "why_correct": "Before scaling (which increases cost), the best practice is to identify and optimize the root cause. Query Store identifies the top CPU-consuming queries. Optimizing these queries with better indexes, rewrites, or query hints can often resolve 80%+ of CPU issues at no additional cost—scaling should be the last resort after optimization.",
+      "why_correct": "Before scaling (which increases cost), the best practice is to identify and optimize the root cause. Query Store identifies the top CPU-consuming queries. Optimizing these queries with better indexes, rewrites, or query hints can often resolve 80%+ of CPU issues at no additional cost\u2014scaling should be the last resort after optimization.",
       "why_not_A": "Scaling to Business Critical tier provides a readable secondary but at significantly higher cost. This should only be considered after query optimization efforts are exhausted.",
       "why_not_B": "Adding vCores and geo-replication both increase cost substantially. This may be necessary eventually but should follow query optimization attempts.",
-      "why_not_D": "Serverless would not help—the database is already CPU-bound at 95% during business hours. Serverless auto-pausing helps with idle databases, not with consistently high-utilization workloads."
+      "why_not_D": "Serverless would not help\u2014the database is already CPU-bound at 95% during business hours. Serverless auto-pausing helps with idle databases, not with consistently high-utilization workloads."
     },
-    "concept_ids": ["dp300-query-performance", "dp300-resource-monitoring"],
-    "tags": ["cpu-optimization", "query-tuning", "performance"],
+    "concept_ids": [
+      "dp300-query-performance",
+      "dp300-resource-monitoring"
+    ],
+    "tags": [
+      "cpu-optimization",
+      "query-tuning",
+      "performance"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -285,22 +507,44 @@
     "domain_id": "plan-implement-data-platform",
     "type": "scenario",
     "difficulty": 3,
-    "stem": "A company runs 50 Azure SQL databases for different customers. Each database has highly variable usage—some are busy during the day, others at night, and usage patterns change week to week. The company wants to reduce costs. Which Azure SQL feature is designed for this scenario?",
+    "stem": "A company runs 50 Azure SQL databases for different customers. Each database has highly variable usage\u2014some are busy during the day, others at night, and usage patterns change week to week. The company wants to reduce costs. Which Azure SQL feature is designed for this scenario?",
     "options": [
-      {"id": "A", "text": "Azure SQL Database Serverless compute tier", "is_correct": false},
-      {"id": "B", "text": "Azure SQL Database Elastic Pool", "is_correct": true},
-      {"id": "C", "text": "Azure SQL Managed Instance with multiple databases", "is_correct": false},
-      {"id": "D", "text": "Azure SQL Database with Azure Reservations (3-year commitment)", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Azure SQL Database Serverless compute tier",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Database Elastic Pool",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure SQL Managed Instance with multiple databases",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure SQL Database with Azure Reservations (3-year commitment)",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Elastic Pools are designed exactly for this scenario: multiple databases with variable, unpredictable usage that do not all peak at the same time. Instead of paying for maximum capacity for each database individually, all databases share a pool of resources (eDTUs or vCores), reducing total cost significantly.",
       "why_not_A": "Serverless tier auto-scales a single database and auto-pauses it during inactivity. For 50 databases with variable usage, managing 50 separate Serverless databases would be more expensive than a single Elastic Pool covering all of them.",
-      "why_not_C": "SQL Managed Instance does not support Elastic Pools. It hosts multiple databases within a single managed instance with a fixed vCore allocation—not optimized for variable multi-tenant workloads across 50 databases.",
+      "why_not_C": "SQL Managed Instance does not support Elastic Pools. It hosts multiple databases within a single managed instance with a fixed vCore allocation\u2014not optimized for variable multi-tenant workloads across 50 databases.",
       "why_not_D": "Azure Reservations reduce the hourly rate for committed vCore usage but require predicting capacity needs. For variable workloads across 50 databases, the correct sizing is difficult and Elastic Pools provide better flexibility."
     },
-    "concept_ids": ["dp300-elastic-pools"],
-    "tags": ["elastic-pools", "multi-tenant", "cost-optimization"],
+    "concept_ids": [
+      "dp300-elastic-pools"
+    ],
+    "tags": [
+      "elastic-pools",
+      "multi-tenant",
+      "cost-optimization"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -315,10 +559,26 @@
     "difficulty": 2,
     "stem": "A security audit finding requires that all Azure SQL Database connection attempts (both successful and failed) be logged for 90 days. Where should the audit logs be sent to ensure 90-day retention is economically feasible?",
     "options": [
-      {"id": "A", "text": "Enable auditing to a Log Analytics workspace with default 30-day retention", "is_correct": false},
-      {"id": "B", "text": "Enable auditing to an Azure Blob Storage account with 90-day retention policy", "is_correct": true},
-      {"id": "C", "text": "Enable auditing to Azure Event Hubs with 90-day retention", "is_correct": false},
-      {"id": "D", "text": "Use SQL Server error logs stored on the Azure SQL logical server", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable auditing to a Log Analytics workspace with default 30-day retention",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable auditing to an Azure Blob Storage account with 90-day retention policy",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable auditing to Azure Event Hubs with 90-day retention",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use SQL Server error logs stored on the Azure SQL logical server",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -327,8 +587,14 @@
       "why_not_C": "Azure Event Hubs is designed for real-time streaming to consumers. Its retention (maximum 90 days with premium tier) is intended for streaming consumers, not archival. It is significantly more expensive than Blob Storage for archive purposes.",
       "why_not_D": "SQL Server error logs are operational logs for database engine errors, not audit logs of connection attempts. Azure SQL Database does not provide direct access to error log files stored on the server."
     },
-    "concept_ids": ["dp300-auditing-compliance"],
-    "tags": ["sql-auditing", "log-retention", "storage"],
+    "concept_ids": [
+      "dp300-auditing-compliance"
+    ],
+    "tags": [
+      "sql-auditing",
+      "log-retention",
+      "storage"
+    ],
     "estimated_time_seconds": 80,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -343,10 +609,26 @@
     "difficulty": 3,
     "stem": "A DBA needs to identify the top 5 queries by total CPU time consumed over the past week using Query Store data. Which T-SQL query approach retrieves this information?",
     "options": [
-      {"id": "A", "text": "Query sys.dm_exec_query_stats ordered by total_worker_time DESC", "is_correct": false},
-      {"id": "B", "text": "Query sys.query_store_runtime_stats joined with sys.query_store_query_text ordered by total_cpu_time DESC", "is_correct": true},
-      {"id": "C", "text": "Run DBCC SHOWSTATISTICS on each table", "is_correct": false},
-      {"id": "D", "text": "Query sys.dm_os_wait_stats ordered by wait_time_ms DESC", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Query sys.dm_exec_query_stats ordered by total_worker_time DESC",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Query sys.query_store_runtime_stats joined with sys.query_store_query_text ordered by total_cpu_time DESC",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Run DBCC SHOWSTATISTICS on each table",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Query sys.dm_os_wait_stats ordered by wait_time_ms DESC",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -355,11 +637,18 @@
       "why_not_C": "DBCC SHOWSTATISTICS displays statistics histogram and density information for a specific index or column. It does not provide query performance metrics.",
       "why_not_D": "sys.dm_os_wait_stats shows cumulative wait type statistics for the server. It provides aggregate wait information but does not show which specific queries are consuming CPU."
     },
-    "concept_ids": ["dp300-tsql-administration", "dp300-query-performance"],
-    "tags": ["query-store", "cpu-analysis", "performance-dmv"],
+    "concept_ids": [
+      "dp300-tsql-administration",
+      "dp300-query-performance"
+    ],
+    "tags": [
+      "query-store",
+      "cpu-analysis",
+      "performance-dmv"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -371,20 +660,43 @@
     "difficulty": 3,
     "stem": "An Azure SQL Database in the Business Critical tier provides which built-in high availability feature that enables read-only reporting queries to be offloaded without additional cost?",
     "options": [
-      {"id": "A", "text": "Automatic failover to Geo-Replication secondary", "is_correct": false},
-      {"id": "B", "text": "An included readable secondary replica accessible via ApplicationIntent=ReadOnly in the connection string", "is_correct": true},
-      {"id": "C", "text": "Hyperscale read-only replicas automatically provisioned by Azure", "is_correct": false},
-      {"id": "D", "text": "In-memory OLTP tables replicated to a separate read replica", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Automatic failover to Geo-Replication secondary",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "An included readable secondary replica accessible via ApplicationIntent=ReadOnly in the connection string",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Hyperscale read-only replicas automatically provisioned by Azure",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "In-memory OLTP tables replicated to a separate read replica",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Business Critical tier uses an Always On availability group with 4 replicas (3 synchronous + 1 configuration). One of the secondary replicas is readable at no additional charge. Applications connect to it by adding 'ApplicationIntent=ReadOnly' to the connection string, offloading reporting queries from the primary.",
       "why_not_A": "Geo-Replication creates a secondary in another region and requires additional configuration and cost beyond the Business Critical tier price. It is not an automatic built-in feature of the tier.",
       "why_not_C": "Hyperscale is a separate service tier with its own read-scale-out architecture. Business Critical tier uses Always On, not Hyperscale architecture.",
-      "why_not_D": "In-memory OLTP tables in Business Critical tier replicate to secondary replicas for HA, but the readable secondary is not specific to in-memory tables—all tables are accessible via the read-only connection."
+      "why_not_D": "In-memory OLTP tables in Business Critical tier replicate to secondary replicas for HA, but the readable secondary is not specific to in-memory tables\u2014all tables are accessible via the read-only connection."
     },
-    "concept_ids": ["dp300-ha-dr-strategy", "dp300-performance-scaling"],
-    "tags": ["business-critical", "readable-secondary", "read-scale"],
+    "concept_ids": [
+      "dp300-ha-dr-strategy",
+      "dp300-performance-scaling"
+    ],
+    "tags": [
+      "business-critical",
+      "readable-secondary",
+      "read-scale"
+    ],
     "estimated_time_seconds": 80,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -399,24 +711,2789 @@
     "difficulty": 3,
     "stem": "An Azure SQL Database stores customer PII data including names and email addresses. A developer query returns these values in plaintext. The security team requires that application developers cannot read PII column values while still being able to work with the other non-PII columns. Which feature achieves this with the least application code change?",
     "options": [
-      {"id": "A", "text": "Row-Level Security with a security predicate filtering PII rows", "is_correct": false},
-      {"id": "B", "text": "Always Encrypted with randomized encryption on PII columns", "is_correct": false},
-      {"id": "C", "text": "Dynamic Data Masking on the PII columns with developers excluded from unmasking permissions", "is_correct": true},
-      {"id": "D", "text": "Revoke SELECT permission on PII columns for developer database users", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Row-Level Security with a security predicate filtering PII rows",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Always Encrypted with randomized encryption on PII columns",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Dynamic Data Masking on the PII columns with developers excluded from unmasking permissions",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Revoke SELECT permission on PII columns for developer database users",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
       "why_correct": "Dynamic Data Masking (DDM) is the easiest solution for the requirement: it requires no application code changes (masking is applied by the SQL engine at query time), developers see masked values (e.g., 'XXXX@XXXX.com'), while privileged users can see real data. This balances accessibility with PII protection.",
       "why_not_A": "Row-Level Security restricts access to entire rows, not specific column values. Developers could see PII columns in rows they have access to.",
-      "why_not_B": "Always Encrypted requires application-level changes (client driver configuration, certificate distribution). The question specifies 'least application code change'—DDM requires zero code changes.",
+      "why_not_B": "Always Encrypted requires application-level changes (client driver configuration, certificate distribution). The question specifies 'least application code change'\u2014DDM requires zero code changes.",
       "why_not_D": "Revoking SELECT on PII columns prevents developers from including those columns in any query. This breaks applications that may need to query rows even if they don't need to display PII values (e.g., using PII columns in WHERE clauses for lookups)."
     },
-    "concept_ids": ["dp300-data-protection"],
-    "tags": ["dynamic-data-masking", "pii", "data-protection"],
+    "concept_ids": [
+      "dp300-data-protection"
+    ],
+    "tags": [
+      "dynamic-data-masking",
+      "pii",
+      "data-protection"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-implement-data-platform",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company is migrating an on-premises SQL Server database to Azure SQL Database. The database is 2 TB in size and requires high availability across two different Azure regions to survive a regional outage. You must ensure that the failover process is automatic and that the secondary region is readable for reporting purposes. Which deployment configuration should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure SQL Database Single Database with Geo-Replication.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Database Failover Groups.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure SQL Managed Instance with Link feature.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure SQL Database with Active Geo-Replication only.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Failover Groups provide a mechanism for managing failover of a group of databases to a secondary region. It provides a read-write listener endpoint that remains constant regardless of which region is primary, and it supports automatic failover policies.",
+      "why_not_A": "Single Database Geo-Replication provides a readable secondary, but failover is manual and requires updating connection strings in the application.",
+      "why_not_C": "SQL Managed Instance Link is primarily used for hybrid connectivity or migration from on-premises, not specifically for regional high-availability failover groups in the context of SQL Database.",
+      "why_not_D": "Active Geo-Replication is the underlying technology, but without the Failover Group wrapper, it does not provide the automatic failover listener required for seamless application transition."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "High Availability",
+      "Failover Groups"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-016",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-implement-data-platform",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing an Azure SQL Database deployment for a global application. The workload is highly unpredictable, with spikes in demand occurring randomly. You need to minimize costs during idle periods but ensure the database can scale instantly to handle peak loads without manual intervention. Which service tier and configuration should you choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "General Purpose tier with Manual Scaling.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Business Critical tier with Hyperscale.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Serverless compute tier in the General Purpose service tier.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Premium tier with elastic pools.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Serverless compute tier automatically scales compute based on workload demand and bills based on the amount of compute used per second. It also allows the database to automatically pause during inactive periods, minimizing costs.",
+      "why_not_A": "Manual scaling requires administrative action and does not respond instantly to unpredictable spikes.",
+      "why_not_B": "Hyperscale is for very large datasets and high performance, but it does not offer the 'auto-pause' and per-second billing efficiency of the Serverless tier for unpredictable, low-to-medium workloads.",
+      "why_not_D": "Elastic pools are great for managing multiple databases with varying demands, but they do not automatically pause a single database to zero cost during idle periods."
+    },
+    "tags": [
+      "Compute Tiers",
+      "Serverless",
+      "Cost Optimization"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-azure-dp300-mock1-017",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-implement-data-platform",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is deploying an Azure SQL Managed Instance (MI). The security policy requires that the database be isolated from the public internet and accessible only from a specific on-premises network via a private connection. Which networking configuration is the most secure and appropriate for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Public Endpoint and use a Firewall rule to restrict IP addresses.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy the Managed Instance in a Virtual Network (VNet) and use a VPN Gateway or ExpressRoute.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Private Endpoint for the Managed Instance while keeping the public endpoint enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Azure SQL Database with Private Link instead of Managed Instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure SQL Managed Instance is deployed directly into a VNet. To connect from on-premises without using the public internet, a Site-to-Site VPN or Azure ExpressRoute is the standard and most secure architecture.",
+      "why_not_A": "Public endpoints, even with firewall rules, still expose the service to the public internet, which violates the 'isolated from public internet' requirement.",
+      "why_not_C": "While Private Endpoints are useful, the primary deployment model for MI is VNet injection. Enabling the public endpoint contradicts the security requirement.",
+      "why_not_D": "The requirement specifically asks for the configuration of the Managed Instance; switching to a different service (Azure SQL Database) does not answer the implementation question for MI."
+    },
+    "tags": [
+      "Managed Instance",
+      "Networking",
+      "VNet"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-azure-dp300-mock1-018",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-implement-data-platform",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are implementing a data platform that requires a SQL-based engine to handle massive amounts of data (hundreds of terabytes) and needs to support rapid scaling of storage independently of compute. Which Azure SQL offering should you choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure SQL Database Business Critical tier.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Managed Instance General Purpose.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure SQL Database Hyperscale.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure SQL Database Standard tier.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Hyperscale uses a tiered storage architecture that separates the compute layer from the storage layer, allowing storage to grow automatically up to 100 TB per database and providing rapid scaling.",
+      "why_not_A": "Business Critical is optimized for low latency and high IOPS, but it has more restrictive storage limits compared to Hyperscale.",
+      "why_not_B": "Managed Instance General Purpose relies on remote Azure Premium Storage, which does not scale storage independently and rapidly to the same extent as the Hyperscale architecture.",
+      "why_not_D": "The Standard tier has significant limitations on maximum database size and performance that would not support hundreds of terabytes."
+    },
+    "tags": [
+      "Hyperscale",
+      "Storage Scaling",
+      "Resource Planning"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-azure-dp300-mock1-019",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-implement-data-platform",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is setting up a new Azure SQL Database. To comply with regulatory requirements, you must ensure that all data is encrypted at rest using a key that the organization manages and controls, rather than the default Microsoft-managed key. Which feature should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Transparent Data Encryption (TDE) with Service-Managed Keys.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Always Encrypted with secure enclaves.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Transparent Data Encryption (TDE) with Customer-Managed Keys (CMK) stored in Azure Key Vault.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Disk Encryption on the underlying VM.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "TDE with Customer-Managed Keys (Bring Your Own Key - BYOK) allows the organization to control the key lifecycle and rotation using Azure Key Vault, satisfying the requirement for organizational control over encryption at rest.",
+      "why_not_A": "Service-managed keys are the default; the organization does not control the key, which fails the regulatory requirement.",
+      "why_not_B": "Always Encrypted encrypts data at the column level (in-transit and at-rest) within the client application, but it is not the primary mechanism for 'encryption at rest' for the entire database file/disk.",
+      "why_not_D": "Azure Disk Encryption is for Virtual Machines. Azure SQL Database is a PaaS service where you do not have access to the underlying VM disks."
+    },
+    "tags": [
+      "Security",
+      "TDE",
+      "Key Vault"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-azure-dp300-mock1-020",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-implement-data-platform",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your company is migrating a mission-critical on-premises SQL Server workload to Azure SQL Database. The application requires a maximum of 10ms latency for read operations and must handle unpredictable spikes in workload. You need to implement a deployment model that minimizes costs during idle periods while ensuring that performance does not degrade during peak bursts without manual intervention. Which configuration should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure SQL Database Hyperscale tier with Auto-pause enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Database Serverless compute tier with a defined min/max vCore range.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure SQL Managed Instance with the General Purpose service tier.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure SQL Database Business Critical tier with Read-Scale Out enabled.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Serverless compute tier is specifically designed for unpredictable workloads. It automatically scales compute based on demand and bills for the amount of vCores used per second. The auto-pause feature further reduces costs during idle periods by pausing the database entirely, meeting the requirement for cost minimization and automatic scaling.",
+      "why_not_A": "The Hyperscale tier provides high scalability for large datasets, but it does not support the 'Serverless' auto-pause/auto-scale mechanism in the same way the General Purpose serverless tier does for cost-optimization during idle periods.",
+      "why_not_C": "Azure SQL Managed Instance (General Purpose) does not support automatic pausing or the same granular serverless scaling as Azure SQL Database, making it more expensive during idle periods.",
+      "why_not_D": "The Business Critical tier is designed for high performance and low latency, but it is the most expensive tier and does not scale down to zero or auto-pause, failing the cost-minimization requirement for idle periods."
+    },
+    "tags": [
+      "compute-tiers",
+      "serverless",
+      "cost-optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-021",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-implement-data-platform",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a disaster recovery strategy for an Azure SQL Managed Instance (MI) deployment across two Azure regions. The business requirement specifies a Recovery Time Objective (RTO) of less than 60 minutes and a Recovery Point Objective (RPO) of less than 5 seconds. You must ensure that the failover process is as automated as possible and minimizes data loss. Which feature should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Geo-replication with a manual failover trigger.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Automatic backups with cross-region restore.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Failover Groups for Azure SQL Managed Instance.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Site Recovery (ASR) for the Managed Instance underlying VM.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Failover Groups provide a mechanism to manage a group of databases/instances and allow for a seamless failover to a secondary region. It uses asynchronous replication which typically meets an RPO of seconds and an RTO of minutes, and it provides a listener endpoint that remains constant regardless of which region is primary, automating the connection transition.",
+      "why_not_A": "While geo-replication provides the underlying data movement, a manual failover trigger may not meet the stringent RTO requirements if the process is not streamlined via a Failover Group, and it doesn't provide the DNS listener benefit.",
+      "why_not_B": "Restoring from backups (even cross-region) is a slow process that would significantly exceed the 60-minute RTO and would result in an RPO equal to the last backup interval (typically hours), not 5 seconds.",
+      "why_not_D": "Azure SQL Managed Instance is a PaaS offering; users do not have access to the underlying VM. Azure Site Recovery is used for IaaS VMs, not for Managed Instance internals."
+    },
+    "tags": [
+      "disaster-recovery",
+      "managed-instance",
+      "failover-groups"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-022",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your company has an Azure SQL Database that contains sensitive customer data. To comply with regulatory requirements, you must ensure that the data is encrypted at rest, but you need to manage the encryption keys in your own Azure Key Vault rather than using the service-managed keys. Which feature should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Always Encrypted",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Transparent Data Encryption (TDE) with Customer-Managed Keys (CMK)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Dynamic Data Masking",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure SQL Database Ledger",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TDE with Customer-Managed Keys (CMK) allows the administrator to store the TDE protector in an Azure Key Vault, providing full control over the key rotation and management while ensuring data is encrypted at rest.",
+      "why_not_A": "Always Encrypted encrypts data in transit and at rest within the client application, but it is not the primary mechanism for overall 'at rest' storage encryption managed by the database engine via Key Vault.",
+      "why_not_C": "Dynamic Data Masking is used to hide sensitive data from non-privileged users at query time; it does not encrypt the data on disk.",
+      "why_not_D": "Ledger is used for providing an immutable record of data changes to ensure data integrity, not for encryption at rest."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "TDE",
+      "Key Vault"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-023",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are configuring network security for an Azure SQL Managed Instance. You want to ensure that the database is not accessible from the public internet, but is accessible from a specific on-premises application server via a secure, private connection. Which configuration is the most secure and appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable the public endpoint and configure a SQL Firewall rule for the on-premises IP address.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Private Endpoint and disable the public endpoint.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Shared Key for authentication between the server and the instance.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a Virtual Network Gateway with a Basic SKU only.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Private Endpoints provide a private IP address from your VNet, ensuring traffic does not traverse the public internet. Disabling the public endpoint eliminates the attack surface from the web.",
+      "why_not_A": "Even with firewall rules, the public endpoint remains active, which increases the attack surface and does not meet the requirement of 'not accessible from the public internet'.",
+      "why_not_C": "Shared keys are not a network security configuration and do not prevent public internet exposure.",
+      "why_not_D": "A VNet Gateway is used for connectivity, but it doesn't inherently disable the public endpoint of the SQL Managed Instance."
+    },
+    "tags": [
+      "SQL Managed Instance",
+      "Private Link",
+      "Networking"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-024",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A security audit reveals that several developers have 'sysadmin' privileges on a production Azure SQL Managed Instance. You need to implement a solution that allows developers to perform specific administrative tasks without granting them full system-level permissions. What is the best approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a custom database role and assign specific granular permissions to the developers.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Change all developer accounts to 'Guest' users.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable Row-Level Security (RLS) for the developers.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a single shared account for all administrative tasks.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Following the principle of least privilege, creating custom roles with specific permissions (e.g., GRANT SELECT, ALTER) allows users to perform their jobs without having the dangerous permissions associated with the sysadmin role.",
+      "why_not_B": "Guest users have minimal permissions and would likely be unable to perform the necessary administrative tasks required by the developers.",
+      "why_not_C": "RLS is used to restrict which rows of data a user can see based on a predicate; it is not used to manage administrative system permissions.",
+      "why_not_D": "Using a shared account violates auditing and accountability standards, as individual actions cannot be traced to a specific person."
+    },
+    "tags": [
+      "RBAC",
+      "Least Privilege",
+      "Permissions"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-025",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You need to implement a security measure for an Azure SQL Database that prevents unauthorized users from seeing the actual credit card numbers in a table, while still allowing the application to function. The data should remain encrypted on disk, but the output should be partially obscured (e.g., XXXX-XXXX-1234) for non-privileged users. Which feature is specifically designed for this output requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Transparent Data Encryption",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Always Encrypted",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Dynamic Data Masking",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Active Directory (Azure AD) Authentication",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Dynamic Data Masking (DDM) is specifically designed to obscure sensitive data in the result set of a query for non-privileged users without changing the actual data in the database.",
+      "why_not_A": "TDE encrypts the database at rest (physical files) and does not mask data presented in query results.",
+      "why_not_B": "Always Encrypted encrypts the data such that the database engine cannot see the plaintext; it doesn't provide a 'masked' format like XXXX-1234 for unauthorized users.",
+      "why_not_D": "Azure AD authentication manages who can log in, but it does not control how data is formatted or masked in the results."
+    },
+    "tags": [
+      "Dynamic Data Masking",
+      "Data Privacy"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-026",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your organization is migrating to Azure SQL Database. You want to eliminate the use of SQL Server authentication passwords to reduce the risk of credential leakage and simplify user management. Which authentication method should you implement to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "SQL Server Authentication with strong password policies.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Microsoft Entra ID (formerly Azure Active Directory) authentication",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Windows Authentication via a local domain controller.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Certificate-based authentication via self-signed certificates.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Microsoft Entra ID authentication allows users to authenticate using their corporate identity, supporting Multi-Factor Authentication (MFA) and eliminating the need for database-specific passwords.",
+      "why_not_A": "This still relies on SQL passwords, which is exactly what the organization wants to eliminate.",
+      "why_not_C": "Standard local Windows Authentication is not natively supported for Azure SQL Database (a PaaS service) without complex hybrid setups, and Entra ID is the cloud-native equivalent.",
+      "why_not_D": "Azure SQL Database does not use self-signed certificates as a primary replacement for user authentication passwords in the way Entra ID does."
+    },
+    "tags": [
+      "Authentication",
+      "Microsoft Entra ID",
+      "Identity Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-027",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is deploying an Azure SQL Database that contains highly sensitive PII. To comply with regulatory requirements, you must ensure that data is encrypted at rest and that the encryption keys are managed by the organization rather than by Microsoft. Which configuration should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Transparent Data Encryption (TDE) with Service-Managed Keys.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Transparent Data Encryption (TDE) with a Customer-Managed Key (CMK) stored in Azure Key Vault.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        ":text": "Implement Always Encrypted with a Column Master Key stored in the application local store.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure Azure Disk Encryption on the underlying virtual machine hosting the database.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TDE with Customer-Managed Keys (BYOK) allows the organization to maintain full control over the key lifecycle in Azure Key Vault while ensuring data at rest is encrypted.",
+      "why_not_A": "Service-managed keys are managed by Microsoft, which violates the requirement for the organization to manage the keys.",
+      "why_not_C": "Always Encrypted protects data in transit and at rest by encrypting it at the client side, but TDE is the standard requirement for 'encryption at rest' for the entire database file.",
+      "why_not_D": "Azure SQL Database is a PaaS service; the administrator does not have access to the underlying VM to configure Disk Encryption."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "TDE",
+      "Key Vault"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-028",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are tasked with restricting network access to an Azure SQL Managed Instance. The requirement is that the database must only be accessible from a specific on-premises network via a private connection, and all public internet access must be completely blocked. Which approach is the most secure and appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure the Azure SQL Firewall rules to allow only the on-premises public IP address.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a Private Endpoint for the Managed Instance and disable the public endpoint.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy the Managed Instance within a dedicated Virtual Network (VNet) and use a VPN Gateway or ExpressRoute.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable 'Allow Azure services and resources to access this server' in the firewall settings.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure SQL Managed Instance is deployed directly into a VNet. To restrict access to on-premises networks and block public access, the VNet must be connected via VPN or ExpressRoute.",
+      "why_not_A": "Firewall rules still allow traffic over the public internet, which violates the requirement to block public internet access.",
+      "why_not_B": "Private Endpoints are used for Azure SQL Database (Single Database/Elastic Pool), but Managed Instance uses VNet integration by design.",
+      "why_not_D": "This setting allows any service within the Azure cloud to attempt a connection, which significantly increases the attack surface and does not restrict access to on-premises."
+    },
+    "tags": [
+      "Managed Instance",
+      "VNet",
+      "Network Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-029",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial application requires that certain columns in an Azure SQL Database (such as CreditCardNumber) remain encrypted even from database administrators (DBAs) who have sysadmin privileges. Which feature should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Dynamic Data Masking (DDM)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Transparent Data Encryption (TDE)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Always Encrypted",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Row-Level Security (RLS)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Always Encrypted ensures that sensitive data is encrypted within the client application and never decrypted within the database engine, meaning DBAs cannot see the plaintext data.",
+      "why_not_A": "DDM is a masking technique that obscures data in result sets, but the data is still plaintext in the database and can be bypassed by users with UNMASK permissions.",
+      "why_not_B": "TDE encrypts the database files on disk (at rest), but once the data is loaded into memory for a query, it is decrypted and visible to the DBA.",
+      "why_not_D": "RLS restricts which rows a user can see based on a predicate, but it does not encrypt the data itself."
+    },
+    "tags": [
+      "Always Encrypted",
+      "Data Protection",
+      "Privileged Access"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-030",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are configuring an Azure SQL Database to use Microsoft Entra ID (formerly Azure AD) authentication. You want to ensure that the principle of least privilege is followed for the application identity connecting to the database. Which sequence of actions is correct?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the application identity as the Server Admin, then create a custom role for the app.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Entra ID authentication, create a contained database user from the Entra ID identity, and assign it a specific database role (e.g., db_datareader).",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a SQL Login with a strong password and map it to the Entra ID identity.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Add the application identity to the 'db_owner' role to ensure it has all necessary permissions to run.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Creating a contained database user mapped to an Entra ID identity and assigning a specific role (like db_datareader) follows the principle of least privilege by avoiding server-wide permissions.",
+      "why_not_A": "Setting the identity as Server Admin gives it full control over all databases on the server, which is the opposite of least privilege.",
+      "why_not_C": "SQL Logins are separate from Entra ID identities; you cannot map a SQL Login to an Entra ID identity.",
+      "why_not_D": "The 'db_owner' role provides excessive permissions (dropping tables, changing schema) which are typically not required for application runtime."
+    },
+    "tags": [
+      "Microsoft Entra ID",
+      "Least Privilege",
+      "Authentication"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-031",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You want to implement a security mechanism that detects and blocks potential SQL injection attacks and unusual database access patterns in real-time for your Azure SQL Database. Which tool should you configure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "SQL Server Audit",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Database Ledger",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Microsoft Defender for SQL",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Policy",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Microsoft Defender for SQL provides advanced threat protection, including the ability to detect anomalies (like unusual login locations) and specific threats like SQL injection.",
+      "why_not_A": "SQL Server Audit records what happened (forensics) but does not block attacks in real-time.",
+      "why_not_B": "Ledger provides a tamper-proof record of data changes for auditing and verification, not real-time threat detection.",
+      "why_not_D": "Azure Policy ensures resource compliance (e.g., ensuring TDE is enabled) but does not monitor active database traffic for attacks."
+    },
+    "tags": [
+      "Microsoft Defender",
+      "Threat Detection",
+      "SQL Injection"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-032",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization is deploying an Azure SQL Database that contains highly sensitive PII. The security policy requires that data be encrypted at rest, and the encryption keys must be managed and rotated by the organization's security team rather than by Microsoft. Additionally, the database must be accessible only from a specific set of on-premises application servers via a private IP address, ensuring no public internet exposure. Which combination of features should you implement to meet these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Transparent Data Encryption (TDE) with service-managed keys and configure a SQL Server firewall rule for the on-premises IP range.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Transparent Data Encryption (TDE) with a Customer-Managed Key (CMK) stored in Azure Key Vault and implement a Private Endpoint.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement Always Encrypted with secure enclaves and configure a Virtual Network (VNet) Service Endpoint.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable TDE with Customer-Managed Keys (CMK) and configure the Azure SQL Database to allow 'Azure services and resources to access this server'.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TDE with Customer-Managed Keys (CMK) allows the organization to control the key lifecycle (rotation and management) via Azure Key Vault, satisfying the encryption requirement. A Private Endpoint assigns a private IP address from the VNet to the database, ensuring traffic remains on the private network and is not exposed to the public internet.",
+      "why_not_A": "Service-managed keys are handled by Microsoft, which violates the requirement that the organization's security team must manage and rotate the keys. Firewall rules still expose the database to a public endpoint, even if restricted to specific IPs.",
+      "why_not_C": "Always Encrypted protects data in use, but the requirement specifically asks for encryption at rest (TDE). Furthermore, Service Endpoints still use a public IP address for the database, whereas the requirement specifies a private IP address.",
+      "why_not_D": "While CMK is correct, allowing 'Azure services and resources' to access the server is a firewall setting that does not provide a private IP address and does not prevent public endpoint exposure."
+    },
+    "tags": [
+      "TDE",
+      "Azure Key Vault",
+      "Private Link",
+      "Network Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-033",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-secure-environment",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company uses an Azure SQL Database. To comply with strict regulatory standards, they must implement a solution that prevents database administrators (DBAs) from viewing sensitive credit card numbers in the tables, even though the DBAs require full permissions to perform performance tuning and index maintenance. The solution must not require changes to the application code that queries the data.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement Row-Level Security (RLS) to filter out rows containing credit card numbers for the DBA role.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Always Encrypted with randomized encryption to encrypt the credit card column.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Dynamic Data Masking (DDM) on the credit card column and ensure DBAs do not have the UNMASK permission.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create a separate schema for sensitive data and revoke SELECT permissions for the DBA role on that schema.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Dynamic Data Masking (DDM) obscures the sensitive data in the result set of a query. Since the DBAs need to maintain the database (performance tuning, indexing) but should not see the actual data, DDM allows them to perform their duties while the data remains masked. By withholding the UNMASK permission, the DBA sees the masked value. This requires no application code changes.",
+      "why_not_A": "Row-Level Security (RLS) restricts which rows a user can see. If RLS were used, the DBAs would not see the rows at all, which would interfere with their ability to perform comprehensive performance tuning and data distribution analysis.",
+      "why_not_B": "Always Encrypted provides the strongest security, but it requires the application to use a specific driver and manage encryption keys, which violates the requirement that no changes be made to the application code.",
+      "why_not_D": "Revoking SELECT permissions would prevent the DBAs from performing tasks like verifying data distribution for index tuning or troubleshooting query plans that involve those tables, and it does not provide a 'masked' view, only a total lack of access."
+    },
+    "tags": [
+      "Dynamic Data Masking",
+      "Access Control",
+      "Data Privacy"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-034",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An Azure SQL Database is experiencing intermittent performance degradation. You notice that the 'log_rate_governance' wait type is frequently appearing in the top wait statistics. Which action should you take to resolve this issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the maximum size of the database.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a read-scale out replica to offload read queries.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Upgrade the database to a higher service tier or vCore limit.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the database to a serverless compute tier.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The 'log_rate_governance' wait type indicates that the database is hitting the transaction log rate limit imposed by the specific service tier. Increasing the service tier or vCore limit increases the allowed log throughput.",
+      "why_not_A": "Increasing the database size affects storage capacity, not the throughput rate of the transaction log.",
+      "why_not_B": "Read-scale out helps with read-heavy workloads, but log rate governance is typically tied to write operations and transaction log throughput.",
+      "why_not_D": "Serverless compute adjusts based on demand but does not inherently remove the log rate limits associated with the underlying hardware/tier constraints."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "Performance Tuning",
+      "Log Rate Governance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-035",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are managing an Azure SQL Managed Instance. You observe that the CPU utilization is consistently above 90%, causing application timeouts. You want to implement a solution that automatically scales the compute resources based on demand without manual intervention. Which feature should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Automatic Tuning with Force Plan.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Database Serverless compute tier.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure an Azure Monitor Autoscale setting for the instance.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "There is no native 'auto-scale' for Managed Instance vCores; you must manually scale or use a script via Azure Automation.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Unlike Azure SQL Database Serverless, Azure SQL Managed Instance does not currently offer a native 'auto-scaling' feature for vCores that adjusts dynamically based on CPU load. Scaling requires a manual change or an external automation script.",
+      "why_not_A": "Automatic Tuning focuses on query plan optimization, not the physical scaling of compute resources.",
+      "why_not_B": "Serverless is a feature of Azure SQL Database (Single Database), not Azure SQL Managed Instance.",
+      "why_not_C": "Azure Monitor can alert you, but it cannot directly trigger a vCore scale-up of a Managed Instance without a custom logic app or script."
+    },
+    "tags": [
+      "SQL Managed Instance",
+      "Scaling",
+      "Compute Resources"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-036",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer reports that a critical report query is running slowly. You use Query Store and identify that the query plan has changed, leading to a performance regression. You want to ensure the query uses the previous, more efficient plan. What is the most appropriate action?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Delete the query from the Query Store and restart the database.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the 'Force Plan' feature in Query Store to lock the known good plan.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a new index based on the current execution plan.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Update the statistics for all tables involved in the query.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'Force Plan' feature in Query Store allows an administrator to specify a previous execution plan that was performing well, preventing the optimizer from using a regressed plan.",
+      "why_not_A": "Deleting the query removes the history and does not solve the plan regression; restarting the database does not guarantee a better plan.",
+      "why_not_C": "While a new index might help, the scenario explicitly states there was a previous 'good' plan, making forcing that plan the fastest and most direct fix.",
+      "why_not_D": "Updating statistics may help the optimizer find a better plan, but it does not guarantee the return of the specific efficient plan identified in Query Store."
+    },
+    "tags": [
+      "Query Store",
+      "Plan Regression",
+      "Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-037",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are monitoring an Azure SQL Database and notice a high number of 'PAGEIOLATCH_EX' waits. Which of the following is the most likely cause of this behavior?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The database is experiencing high CPU contention.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "There is a bottleneck in the storage subsystem or insufficient memory causing frequent disk reads.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "There is an issue with the transaction log growth limits.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The database is experiencing network latency between the app and the server.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PAGEIOLATCH_EX occurs when a task is waiting for a data page to be read from disk into the buffer pool. This usually indicates slow I/O or that the working set of data exceeds the available memory.",
+      "why_not_A": "CPU contention typically manifests as SOS_SCHEDULER_YIELD waits.",
+      "why_not_C": "Transaction log issues typically manifest as WRITELOG or LOGBUFFER waits.",
+      "why_not_D": "Network latency is usually observed as ASYNC_NETWORK_IO."
+    },
+    "tags": [
+      "Wait Statistics",
+      "I/O Performance",
+      "Monitoring"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-038",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You want to identify the most resource-intensive queries in your Azure SQL Database over the last 24 hours to prioritize optimization efforts. Which tool provides the most comprehensive historical view of query execution statistics?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Dynamic Management Views (DMVs) such as sys.dm_exec_requests.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Database Advisor.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Query Store.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Monitor Metrics.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Query Store captures a history of queries, execution plans, and runtime statistics, allowing you to analyze performance over a specific time window (e.g., the last 24 hours).",
+      "why_not_A": "DMVs like sys.dm_exec_requests show real-time activity, not historical trends.",
+      "why_not_B": "Advisor provides recommendations based on data, but Query Store is the primary tool for analyzing the actual resource consumption of queries.",
+      "why_not_D": "Azure Monitor Metrics provide high-level resource usage (CPU, DTU) but cannot drill down into specific SQL queries."
+    },
+    "tags": [
+      "Query Store",
+      "Monitoring",
+      "Resource Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-039",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company uses Azure SQL Database and is experiencing intermittent performance degradation during peak hours. You observe high 'SOS_SCHEDULER_YIELD' wait types and high CPU utilization. You need to identify the specific queries causing this pressure without enabling permanent server-wide tracing. Which tool should you use to capture the most accurate real-time performance data with minimal overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "SQL Server Profiler",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Extended Events (XEvents) with a ring buffer target",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Database Mail alerts configured for CPU thresholds",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The sys.dm_exec_requests DMV polled every 10 seconds",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Extended Events is the lightweight replacement for Profiler in Azure SQL. Using a ring buffer allows for the capture of specific events (like long-running queries) with minimal impact on system performance, making it ideal for transient CPU spikes.",
+      "why_not_A": "SQL Server Profiler is deprecated and not supported directly on Azure SQL Database; it also incurs significant performance overhead.",
+      "why_not_C": "Alerts notify you that a problem exists, but they do not capture the specific query execution data needed to diagnose the root cause.",
+      "why_not_D": "Polling DMVs can miss transient spikes between intervals and does not provide a historical trace of the specific statements that caused the scheduler yield."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "Monitoring",
+      "Extended Events"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-040",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are managing an Azure SQL Managed Instance. You notice that the log rate is hitting the maximum throughput limit, causing 'WRITELOG' waits and slowing down bulk insert operations. You cannot increase the instance size at this time. Which configuration change should you implement to optimize the log throughput?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change the database recovery model to SIMPLE",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch the instance to a Business Critical service tier",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the Max Degree of Parallelism (MAXDOP)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable Accelerated Database Recovery (ADR)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In Azure SQL Managed Instance, the General Purpose tier uses remote storage (Azure Premium Storage), whereas the Business Critical tier uses local SSDs, providing significantly higher log throughput and lower latency for WRITELOG waits.",
+      "why_not_A": "Azure SQL Managed Instance does not support switching between FULL and SIMPLE recovery models; it is always in FULL recovery to support high availability.",
+      "why_not_C": "MAXDOP affects CPU parallelism for query execution but does not increase the physical I/O throughput limit of the transaction log.",
+      "why_not_D": "ADR speeds up the recovery process after a crash or during a rollback, but it does not increase the steady-state log write throughput."
+    },
+    "tags": [
+      "SQL Managed Instance",
+      "Performance Tuning",
+      "Log Throughput"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-041",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A critical report in an Azure SQL Database is performing poorly. You check Query Store and find that the query has multiple execution plans. One plan is significantly faster than the others, but the engine occasionally switches to a slower plan due to parameter sniffing. You want to ensure the fast plan is used consistently. What is the best action?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use the 'Force Plan' feature in Query Store",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Run DBCC FREEPROCCACHE to clear the plan cache",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable Automatic Tuning: Force Plan",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Add a RECOMPILE hint to the query",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Manually forcing a known good plan in Query Store ensures that the optimizer uses that specific execution plan regardless of the parameters provided, effectively solving parameter sniffing for that specific query.",
+      "why_not_B": "Clearing the cache is a temporary fix; the optimizer will eventually regenerate a plan, and there is no guarantee it will choose the fast one.",
+      "why_not_C": "Automatic Tuning: Force Plan is a system-wide setting that allows Azure to automatically force plans it deems better, but for a critical report, a manual force of a verified plan is the precise administrative action required.",
+      "why_not_D": "RECOMPILE forces the plan to be generated every time, which increases CPU overhead and does not guarantee the fastest plan will be chosen."
+    },
+    "tags": [
+      "Query Store",
+      "Plan Forcing",
+      "Performance Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-042",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are monitoring an Azure SQL Database using the 'Query Performance Insight' tool. You observe a high percentage of 'Memory' waits. You determine that the workload is exceeding the available memory for the current DTU/vCore limit. You want to implement a scaling solution that handles these spikes automatically without manual intervention. Which feature should you configure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure SQL Database Serverless compute tier",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Read-Scale Out",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Hyperscale Named Replicas",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Automatic Indexing",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The Serverless compute tier automatically scales compute (CPU and Memory) based on workload demand and pauses the database during periods of inactivity, making it the ideal solution for unpredictable spikes in resource demand.",
+      "why_not_B": "Read-Scale Out allows you to offload read-only workloads to a secondary replica, but it doesn't automatically scale the primary's memory resources based on load.",
+      "why_not_C": "Named Replicas provide additional read-only capacity but are a configuration of the Hyperscale tier and do not provide the 'auto-scaling' of a single instance's resources.",
+      "why_not_D": "Automatic Indexing optimizes query performance by adding/dropping indexes, which might reduce memory pressure, but it does not scale the actual memory resources of the database."
+    },
+    "tags": [
+      "Compute Tiers",
+      "Serverless",
+      "Resource Scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-043",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You have a large Azure SQL Database where several tables have high fragmentation. You want to implement a maintenance strategy that minimizes the impact on the transaction log and avoids locking tables for extended periods. Which approach is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Run ALTER INDEX REBUILD with ONLINE = ON",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Run ALTER INDEX REORGANIZE",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Perform a full database backup and restore",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use DBCC SHRINKDATABASE to reclaim space",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "ONLINE index rebuilds allow concurrent user access to the underlying table during the process and are the standard way to remove fragmentation in high-availability environments while maintaining uptime.",
+      "why_not_B": "While REORGANIZE is online and uses fewer resources, it is often significantly slower and less effective than a REBUILD for high levels of fragmentation.",
+      "why_not_C": "Backing up and restoring does not resolve index fragmentation within the data pages.",
+      "why_not_D": "SHRINKDATABASE actually increases index fragmentation and should be avoided as a performance optimization technique."
+    },
+    "tags": [
+      "Index Maintenance",
+      "Availability",
+      "Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-044",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your company manages an Azure SQL Database using the vCore-based model. You observe a consistent pattern where CPU utilization spikes to 95% during a specific 4-hour window every day, causing application timeouts. The database is currently configured with a fixed compute tier. You need to implement a solution that minimizes costs while ensuring performance stability during peak loads without manual intervention. Which approach should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch to the Serverless compute tier and configure the Auto-pause delay to 1 hour.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch to the Serverless compute tier and configure the Min and Max vCore limits to encompass the peak demand.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement an Azure Automation runbook to scale the vCore limit up before the peak window and down after.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Migrate the database to a Hyperscale tier to leverage the rapid scaling capabilities of the storage layer.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Serverless compute tier automatically scales compute resources based on workload demand. By setting a Max vCore limit that accommodates the 95% spike, the system will automatically scale up during the 4-hour window and scale down during idle periods, optimizing cost and performance without manual intervention.",
+      "why_not_A": "Auto-pause is used to stop billing for compute when the database is completely inactive. It does not solve the problem of CPU spikes during an active 4-hour window; in fact, it would cause a 'cold start' delay for the first user.",
+      "why_not_C": "While an Automation runbook works, it requires manual configuration of schedules and is less responsive to actual demand than the native Serverless auto-scaling mechanism, increasing operational overhead.",
+      "why_not_D": "Hyperscale is designed for very large databases (up to 100TB) and high storage throughput. While it scales well, it does not provide the automatic, granular compute scaling (per-second billing) that Serverless offers for fluctuating CPU demands."
+    },
+    "tags": [
+      "Compute Tiers",
+      "Serverless",
+      "Resource Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-045",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are troubleshooting a performance degradation issue in an Azure SQL Database. You run a query against sys.dm_db_resource_consumption_numeric_snapshots and identify that the 'avg_cpu_percent' is low, but 'avg_log_rate_percent' is consistently hitting 100%. You determine that the application is performing massive batch deletes. Which action will most effectively resolve this specific bottleneck while minimizing the impact on other database operations?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the Max vCore limit of the database to provide more compute power.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Change the database configuration to use a Premium tier with higher IOPS.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Modify the application to perform deletes in smaller, throttled batches using a loop.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable Accelerated Database Recovery (ADR) to reduce the log write overhead.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The 'avg_log_rate_percent' hitting 100% indicates a Transaction Log Rate limit bottleneck. Massive batch deletes generate a huge volume of log records. Breaking these into smaller batches allows the log write rate to catch up and prevents the database from throttling all other transactions.",
+      "why_not_A": "CPU utilization is low; increasing vCores provides more CPU and memory but does not necessarily solve a log rate limit if the workload is purely log-bound and the tier's log throughput is already capped.",
+      "why_not_B": "While Premium tiers offer higher throughput, the most efficient and immediate architectural fix for log saturation caused by batching is to optimize the batch size, rather than paying for a higher tier that may still be saturated by the same inefficient process.",
+      "why_not_D": "ADR improves recovery time (RTO) by using a persisted version store to avoid long undo phases during rollback. It does not reduce the amount of log generated during a DELETE operation."
+    },
+    "tags": [
+      "Performance Monitoring",
+      "Log Rate Governance",
+      "DMVs"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-azure-dp300-mock1-046",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-optimize-resources",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A critical reporting query in your Azure SQL Database has seen a significant increase in execution time. You use Query Store to identify a plan regression. You notice that the query is performing an Index Scan instead of an Index Seek, despite a supporting non-clustered index existing on the filter columns. You suspect the statistics are outdated, but you cannot afford to run a full database statistics update during business hours. What is the most precise way to resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Execute 'UPDATE STATISTICS' on the specific table involved in the query.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Use Query Store to 'Force Plan' the previous known-good execution plan.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Run 'DBCC FREEPROCCACHE' to clear the plan cache and force a recompile.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the database's Max Degree of Parallelism (MAXDOP) to speed up the Scan.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Updating statistics for a specific table is a targeted operation that provides the Optimizer with current data distribution, which is the most likely cause for switching from a Seek to a Scan. It is significantly less resource-intensive than a full database update and addresses the root cause.",
+      "why_not_B": "Forcing a plan is a workaround, not a fix. If the underlying data distribution has changed significantly, the old plan might be suboptimal or even cause errors. Updating statistics allows the optimizer to find the actual best plan.",
+      "why_not_C": "DBCC FREEPROCCACHE is a 'nuclear' option that clears all plans for all users, causing a massive CPU spike as every single query in the system must be recompiled simultaneously.",
+      "why_not_D": "Increasing MAXDOP might make the Scan run slightly faster by using more cores, but it does not fix the inefficiency of scanning millions of rows when a seek is possible; it merely masks the symptom."
+    },
+    "tags": [
+      "Query Store",
+      "Index Optimization",
+      "Statistics"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-047",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your company uses Azure SQL Database and requires a mechanism to automatically perform a weekly cleanup of historical audit logs. You need to ensure the process runs on a schedule without maintaining a dedicated virtual machine or a permanent application server. Which solution should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "An Azure SQL Elastic Job",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "A SQL Server Agent job on a Managed Instance",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "A stored procedure executed via a manual trigger",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Data Factory with a self-hosted integration runtime",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Azure SQL Elastic Jobs allow you to run T-SQL scripts across one or many Azure SQL Databases on a schedule, providing a serverless automation mechanism that doesn't require a VM.",
+      "why_not_A": "N/A",
+      "why_not_B": "The scenario specifies Azure SQL Database, not Managed Instance; while Managed Instance has SQL Agent, Elastic Jobs are the native automation tool for single databases.",
+      "why_not_C": "Manual triggers do not meet the requirement for automatic weekly cleanup.",
+      "why_not_D": "A self-hosted integration runtime requires a dedicated VM or server, which contradicts the requirement to avoid maintaining a dedicated machine."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "Elastic Jobs"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-048",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are configuring an Azure Automation account to run a PowerShell script that modifies database firewall rules in Azure SQL Database. The script requires permissions to read and write to the resource group containing the database. What is the most secure and recommended method to provide these credentials to the automation runbook?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Hardcode the Service Principal credentials within the script",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a User-Assigned Managed Identity",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store the credentials in a plain text variable in the Automation account",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a shared account password passed as a parameter at runtime",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Managed Identities eliminate the need for developers to manage credentials. A User-Assigned Managed Identity can be granted specific RBAC roles to the resource group, ensuring secure, passwordless authentication.",
+      "why_not_A": "Hardcoding credentials is a critical security risk and violates best practices.",
+      "why_not_B": "N/A",
+      "why_not_C": "Plain text variables are insecure and easily compromised.",
+      "why_not_D": "Passing passwords as parameters is insecure and creates an administrative burden for credential rotation."
+    },
+    "tags": [
+      "Azure Automation",
+      "Managed Identity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-049",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You have implemented an Azure Logic App to automate the scaling of an Azure SQL Database based on a specific trigger. You need to ensure that if the Logic App fails to execute the scaling operation, you are notified immediately via email. Which component should you add to the Logic App workflow?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A 'Until' loop around the scaling action",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "A 'Scope' action with a 'Configure Run After' setting",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "A recurring trigger set to 5-minute intervals",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "An Azure Monitor Alert based on the database CPU metric",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'Configure Run After' feature in Logic Apps allows you to define a path that only executes if the previous action failed, timed out, or was skipped, making it the correct way to handle errors and send notifications.",
+      "why_not_A": "An 'Until' loop would repeatedly attempt the action but doesn't inherently provide a notification mechanism for a final failure.",
+      "why_not_B": "N/A",
+      "why_not_C": "A recurring trigger controls when the workflow starts, not how it handles errors during execution.",
+      "why_not_D": "While Azure Monitor Alerts are useful, the question asks for a component within the Logic App workflow to handle the failure of the scaling action specifically."
+    },
+    "tags": [
+      "Logic Apps",
+      "Error Handling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-050",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are managing an Azure SQL Managed Instance. You need to automate a database backup process that occurs every 4 hours. You want to use a tool that allows you to write T-SQL and manage the schedule directly within the SQL environment. Which tool is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure SQL Elastic Jobs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "SQL Server Agent",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure Functions with a Timer Trigger",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Logic Apps",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure SQL Managed Instance includes a fully functional SQL Server Agent, which allows administrators to schedule T-SQL jobs directly within the instance, mimicking the on-premises SQL Server experience.",
+      "why_not_A": "Elastic Jobs are primarily for Azure SQL Database (Single/Elastic Pool), not the primary tool for Managed Instance internal scheduling.",
+      "why_not_B": "N/A",
+      "why_not_C": "Azure Functions would require external coding (C#/Python/JS) and external connectivity, whereas SQL Agent is native to the instance.",
+      "why_not_D": "Logic Apps provide high-level orchestration but are not 'within the SQL environment' and are less efficient for simple T-SQL job scheduling compared to SQL Agent."
+    },
+    "tags": [
+      "SQL Managed Instance",
+      "SQL Server Agent"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-051",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You want to automate the deployment of a standardized set of Azure SQL Databases across multiple environments (Dev, Test, Prod) using a template-based approach to ensure consistency and repeatability. Which Azure service should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure SQL Database Copy",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Resource Manager (ARM) Templates",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "SQL Server Management Studio (SSMS) Registered Servers",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Backup center",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ARM Templates (or Bicep) provide an Infrastructure-as-Code (IaC) approach, allowing you to define the desired state of your Azure SQL resources and deploy them consistently across different environments.",
+      "why_not_A": "Database Copy creates a duplicate of an existing database but does not automate the infrastructure deployment or standardization across environments.",
+      "why_not_B": "N/A",
+      "why_not_C": "Registered Servers in SSMS helps in managing multiple connections but does not provide template-based deployment or automation of resource creation.",
+      "why_not_D": "Azure Backup center is used for data protection and recovery, not for the deployment of database infrastructure."
+    },
+    "tags": [
+      "Infrastructure as Code",
+      "ARM Templates"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-052",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company uses Azure SQL Database and requires a mechanism to automatically scale the compute tier (Service Objective) of a production database based on CPU utilization trends. You need to implement a solution that minimizes manual intervention and ensures the database scales back down during low-traffic periods. Which approach should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure an Azure SQL Database Auto-pause setting.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an Azure Automation runbook that uses Azure Monitor alerts to trigger a PowerShell script to update the database service objective.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement a SQL Server Agent job using a linked server to the Azure SQL Database.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure the database to use the Serverless compute tier with auto-scaling enabled.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Automation runbooks triggered by Azure Monitor alerts provide a robust way to programmatically change the service objective (e.g., from GP_Gen5_2 to GP_Gen5_4) based on specific performance metrics and can be scripted to scale down based on similar logic.",
+      "why_not_A": "Auto-pause is only available for Serverless tiers and stops the database entirely; it does not scale the compute tier up and down based on CPU load while remaining online.",
+      "why_not_C": "SQL Server Agent is not natively available within Azure SQL Database (single database); it is a feature of Managed Instance or SQL Server on VM.",
+      "why_not_D": "While Serverless scales compute automatically, the question asks for a mechanism to manage the 'compute tier' (Service Objective), and Serverless handles memory/CPU within a range, but does not allow for the precise, custom logic of tier-shifting often required for specific production SLAs across different tiers (e.g., moving from General Purpose to Business Critical)."
+    },
+    "tags": [
+      "Azure Automation",
+      "Scaling",
+      "Azure Monitor"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-053",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are tasked with automating the backup of a set of critical tables in an Azure SQL Database to a separate archive storage account every Sunday at 2:00 AM. The solution must be managed centrally for multiple databases across different servers. Which tool is the most appropriate for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Logic Apps using the SQL Server connector and a recurrence trigger.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Azure SQL Database built-in automated backups.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "A T-SQL stored procedure scheduled via the database's internal scheduler.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Data Factory using a Copy activity triggered by a schedule.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Azure Logic Apps provide a low-code way to orchestrate tasks across multiple databases and integrate with external storage accounts using a recurrence trigger, making it ideal for central management of specific table exports.",
+      "why_not_B": "Built-in automated backups are database-level (full backup) and managed by Azure; they do not allow for table-level granularity or custom destination storage accounts.",
+      "why_not_C": "Azure SQL Database does not have a built-in T-SQL scheduler (like SQL Agent) to run stored procedures on a timer.",
+      "why_not_D": "While ADF can move data, Logic Apps are generally more efficient for simple 'trigger-and-action' administrative tasks across multiple environments without the overhead of pipeline orchestration. However, Logic Apps specifically excel at the 'automation of tasks' context for admin workflows."
+    },
+    "tags": [
+      "Logic Apps",
+      "Backup Automation",
+      "Task Scheduling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-054",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization uses Azure SQL Managed Instance. You need to automate the process of updating statistics for all user tables across all databases on the instance every night. You want to ensure that the process does not impact production performance during peak hours. Which solution should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a SQL Server Agent job that executes a cursor-based T-SQL script across all databases.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Use an Azure Function with a Timer Trigger to call the sp_updatestats procedure.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable the Auto Update Statistics database-level setting.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure an Azure Automation hybrid worker to run a local SQL script.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Azure SQL Managed Instance supports SQL Server Agent, which is the native and most efficient way to schedule maintenance tasks like updating statistics across multiple databases within the same instance.",
+      "why_not_B": "Azure Functions are external to the instance and would require complex authentication and connection management to iterate through all databases, making it less efficient than the internal Agent.",
+      "why_not_C": "Auto Update Statistics happens on-demand when the query optimizer detects stale statistics; it is not a scheduled 'nightly' process and cannot be controlled to run specifically during off-peak hours.",
+      "why_not_D": "Hybrid workers are used for on-premises or VM-based automation; since Managed Instance has a built-in Agent, an external worker is unnecessary and adds complexity."
+    },
+    "tags": [
+      "SQL Agent",
+      "Managed Instance",
+      "Maintenance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-055",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You need to implement a system that automatically detects when a database's data file is approaching its maximum allocated size and sends an email notification to the DBA team. The solution must work for an Azure SQL Database (singleton). Which combination of tools should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "SQL Server Agent Alert and Database Mail.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Monitor Metric Alert and Azure Action Group.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "A T-SQL job that queries sys.database_files and uses sp_send_dbmail.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Advisor with a custom alert rule.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Monitor tracks the 'Data space used' metric for Azure SQL Databases. You can set a metric alert that triggers an Action Group to send an email when the percentage of space used exceeds a specific threshold.",
+      "why_not_A": "SQL Server Agent and Database Mail are not available in Azure SQL Database (singleton).",
+      "why_not_C": "sp_send_dbmail is not supported in Azure SQL Database; it is only available in SQL Server and Managed Instance.",
+      "why_not_D": "Azure Advisor provides recommendations based on best practices (like cost or security), but it is not a real-time monitoring and alerting tool for specific storage thresholds."
+    },
+    "tags": [
+      "Azure Monitor",
+      "Alerting",
+      "Storage Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-056",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are automating the deployment of Azure SQL Databases using ARM templates. You need to ensure that after the database is created, a set of default users and permissions are applied without manually running scripts after every deployment. What is the best way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Include the user creation scripts within the ARM template's 'resources' section.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a deployment script resource in the ARM template to execute a PowerShell script that runs the T-SQL commands.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Post-Deployment script in the SQL Server Management Studio (SSMS) project.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Logic App to trigger upon the creation of a new Azure resource.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'deploymentScripts' resource in ARM templates allows you to run Azure PowerShell or CLI scripts during the deployment process, which can connect to the newly created database and execute the necessary T-SQL for users and permissions.",
+      "why_not_A": "ARM templates define the infrastructure (the database resource), but they cannot execute T-SQL commands inside the database engine as part of the resource definition.",
+      "why_not_C": "SSMS post-deployment scripts are part of a local project deployment workflow, not part of the automated Azure Resource Manager deployment pipeline.",
+      "why_not_D": "While a Logic App could work, it is an asynchronous external process. A deployment script is part of the atomic deployment operation, ensuring the database is fully configured before the deployment is marked as 'Succeeded'."
+    },
+    "tags": [
+      "ARM Templates",
+      "Deployment Scripts",
+      "Automation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-057",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization manages several Azure SQL Managed Instances (MI) across different regions. You need to implement a solution to automate the process of capturing a database-level backup and moving it to a long-term archival storage account every quarter. The solution must trigger based on a specific calendar date, handle potential failures with a retry mechanism, and provide a centralized logging system for audit compliance. Which approach provides the most scalable and maintainable architecture for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a SQL Agent Job within each Managed Instance using T-SQL and schedule it using the built-in scheduler.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy an Azure Logic App with a Recurrence trigger, using the Azure SQL connector to execute the backup and the Azure Blob Storage connector for archival.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure an Azure Automation account with a Python runbook that uses the Azure SDK to trigger the backup and move the files.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a Windows Task Scheduler on a dedicated Azure VM that runs a PowerShell script via the sqlps module.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Logic Apps provide a low-code, serverless orchestration engine with built-in recurrence triggers and native connectors for Azure SQL and Blob Storage. It natively supports 'Configure Run After' settings for sophisticated retry/error handling and integrates directly with Azure Monitor and Log Analytics for centralized auditing.",
+      "why_not_A": "SQL Agent Jobs are localized to each instance. Managing them across multiple regions creates a decentralized management overhead and lacks a centralized audit trail for the archival process across the entire estate.",
+      "why_not_C": "While Azure Automation is capable, a Python runbook requires more maintenance (dependency management) and lacks the visual orchestration and native 'retry' logic flow that Logic Apps provide for simple API-driven movements.",
+      "why_not_D": "This introduces an unnecessary infrastructure dependency (the VM), creating a single point of failure and increasing operational costs compared to serverless options.",
+      "tags": [
+        "Azure Logic Apps",
+        "Automation",
+        "Azure SQL MI"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-azure-dp300-mock1-058",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
+  },
+  {
+    "domain_id": "configure-manage-automation",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are tasked with automating the index maintenance for a high-traffic Azure SQL Database. You want to implement a solution that intelligently decides whether to reorganize or rebuild an index based on the fragmentation percentage. The solution must run weekly, avoid impacting performance during peak hours, and must be managed centrally for 50 different databases. Which implementation strategy is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a stored procedure using the sys.dm_db_index_physical_stats DMV and schedule it via an Azure Automation Hybrid Runbook Worker.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use an Azure Automation account with a PowerShell runbook that calls a stored procedure in each database via a managed identity.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure an Elastic Job agent to execute a T-SQL script that checks fragmentation and performs the necessary action.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy an Azure Function with a Timer Trigger that iterates through the databases and executes the maintenance scripts.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Automation with PowerShell runbooks allows for centralized management across multiple databases. By using a Managed Identity, you ensure secure access without storing credentials. The runbook can iterate through a list of databases and call a localized stored procedure that contains the fragmentation logic, providing a balance of centralized control and database-level execution.",
+      "why_not_A": "Hybrid Runbook Workers are used for on-premises or VM-based targets; they are unnecessary for Azure SQL Database, which is a cloud-native service.",
+      "why_not_C": "While Elastic Jobs are designed for multi-database tasks, they are primarily for executing the same T-SQL across many DBs. Implementing complex conditional logic (rebuild vs reorganize) is more maintainable in a runbook that can handle the orchestration and logging more flexibly.",
+      "why_not_D": "Azure Functions have a timeout limit (default 5-10 mins). Index maintenance on large databases can exceed this limit, potentially leading to partial executions or timeouts.",
+      "tags": [
+        "Azure Automation",
+        "Index Maintenance",
+        "Azure SQL Database"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-azure-dp300-mock1-059",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is deploying an Azure SQL Database using the Premium tier. They require a disaster recovery strategy that ensures a Recovery Point Objective (RPO) of 5 seconds and a Recovery Time Objective (RTO) of 30 seconds. Which high availability feature should they configure to meet these specific requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Geo-redundant backup",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Active Geo-Replication",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Local-redundant storage (LRS)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Point-in-time restore (PITR)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Active Geo-Replication allows for the creation of readable secondaries in different regions. Because it uses asynchronous replication, it can achieve an RPO of 5 seconds and a very low RTO (around 30 seconds) by manually or programmatically failing over to the secondary.",
+      "why_not_A": "Geo-redundant backups are used for disaster recovery but have a much higher RPO (up to 1 hour) and RTO because the database must be restored from a backup.",
+      "why_not_C": "LRS provides high availability within a single data center but does not protect against regional outages, failing to meet disaster recovery requirements.",
+      "why_not_D": "PITR is used to recover data from a specific point in time due to accidental deletion or corruption, not for rapid regional failover."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "Active Geo-Replication"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-060",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are configuring an Auto-failover group for two Azure SQL Databases across two different Azure regions. You need to ensure that the application connection strings do not need to be changed during a failover event. Which component provides this functionality?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The primary server's DNS name",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The secondary server's DNS name",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The read-write listener endpoint",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The Azure Traffic Manager profile",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Auto-failover groups provide a read-write listener endpoint that remains constant regardless of which server is currently the primary. This allows applications to maintain a single connection string.",
+      "why_not_A": "If the primary server fails, the DNS name of that specific server will no longer point to the active primary database.",
+      "why_not_B": "The secondary server's DNS name only points to the secondary; after failover, the application would need to be manually updated to point here.",
+      "why_not_D": "While Traffic Manager handles global routing, Azure SQL Auto-failover groups have built-in listener endpoints specifically designed for this purpose without needing external DNS management."
+    },
+    "tags": [
+      "Auto-failover groups",
+      "Connectivity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-061",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is running a mission-critical workload on an Azure SQL Managed Instance. They require the highest possible availability, including protection against the failure of an entire Azure region. Which deployment option should they choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Business Critical service tier with local redundancy",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "General Purpose service tier with geo-replication",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Business Critical service tier with Failover Groups",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "General Purpose service tier with local redundancy",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Business Critical tier provides the highest local availability (using always-on availability groups). When combined with Failover Groups, it extends this protection across regions, ensuring the highest overall availability.",
+      "why_not_A": "Local redundancy only protects against hardware failure within a single region, not a total regional outage.",
+      "why_not_B": "The General Purpose tier has slower failover times and lower performance compared to Business Critical, making it unsuitable for 'mission-critical' requirements.",
+      "why_not_D": "General Purpose with local redundancy provides the lowest level of availability among the listed options."
+    },
+    "tags": [
+      "Managed Instance",
+      "Business Critical"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-062",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are designing a disaster recovery plan for an Azure SQL Database. You want to ensure that if a regional failure occurs, the database fails over automatically to a secondary region without manual intervention, but only if the failure is determined to be a regional outage. Which feature should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Active Geo-Replication",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Auto-failover groups",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Zone-redundant configuration",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Read-scale out",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Auto-failover groups automate the failover process to a secondary region based on a defined policy, removing the need for manual intervention during a regional disaster.",
+      "why_not_A": "Active Geo-Replication allows for multiple secondaries, but the failover process is manual; the administrator must trigger the failover.",
+      "why_not_C": "Zone-redundancy protects against the failure of a single availability zone within a region, but it does not provide automatic failover to a different region.",
+      "why_not_D": "Read-scale out is used to offload read-only workloads to a secondary replica within the same region; it is not a disaster recovery mechanism for regional failure."
+    },
+    "tags": [
+      "Auto-failover groups",
+      "Automation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-063",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using Azure SQL Database and wants to implement a strategy to protect against data corruption caused by a human error (e.g., an accidental DELETE statement). Which feature is specifically designed to address this scenario while minimizing data loss?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Geo-Replication",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Auto-failover groups",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Point-in-time restore (PITR)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "High Availability (HA) replicas",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Point-in-time restore (PITR) allows you to restore a database to any single point in time within the retention period, which is the primary defense against logical data corruption like accidental deletes.",
+      "why_not_A": "Geo-Replication replicates data asynchronously. If a DELETE statement is executed on the primary, it is replicated to the secondary almost immediately, meaning the data is lost on both sides.",
+      "why_not_B": "Auto-failover groups manage the movement of the primary role between regions; they do not protect against the content of the transactions being replicated.",
+      "why_not_D": "HA replicas provide availability during hardware failure but replicate all transactions immediately, including the erroneous DELETE statement."
+    },
+    "tags": [
+      "Backup and Restore",
+      "PITR"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-064",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company uses Azure SQL Database and requires a recovery point objective (RPO) of 5 seconds and a recovery time objective (RTO) of 30 seconds for a critical application. The company needs to protect against a regional outage. Which high availability feature should you implement to meet these specific requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Geo-redundant backup (Geo-backup)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Active Geo-Replication",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Auto-failover groups",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Local redundancy (LRS)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Auto-failover groups provide a managed failover process with a read-write listener endpoint that doesn't require connection string changes. It is the only option that guarantees the strict RTO of 30 seconds through automated failover orchestration.",
+      "why_not_A": "Geo-redundant backups have an RPO of 1 hour and an RTO of several hours, which fails both requirements.",
+      "why_not_B": "Active Geo-Replication provides the RPO, but failover is manual. The time to manually update connection strings and trigger failover would exceed the 30-second RTO.",
+      "why_not_D": "Local redundancy only protects against hardware failure within a single data center, not a regional outage."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "Auto-failover groups",
+      "RTO/RPO"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-065",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a disaster recovery strategy for an Azure SQL Managed Instance. The business requires that the secondary instance be available for read-only workloads to offload reporting traffic while ensuring the data is synchronized from the primary instance. Which configuration should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Failover Group with Read-Scale Out enabled",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Failover Group with the read-only routing URL",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Backup and Restore to a secondary region",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Zone-redundant configuration only",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Failover groups for Managed Instance provide a read-only routing endpoint that allows reporting traffic to be directed to the secondary instance without affecting the primary.",
+      "why_not_A": "Read-Scale Out is a feature of the Premium/Business Critical tiers for single databases to provide a local read-only replica, not for cross-region disaster recovery reporting.",
+      "why_not_C": "Backup and Restore is a manual process and does not provide a live, synchronized read-only instance for reporting.",
+      "why_not_D": "Zone-redundancy protects against zone failure within a region but does not provide a secondary instance in a different region for reporting offload."
+    },
+    "tags": [
+      "SQL Managed Instance",
+      "Failover Groups",
+      "Read-only workloads"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-066",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a SQL Server Always On Availability Group to Azure Virtual Machines. They want to minimize the impact of a single data center failure and ensure that the quorum is maintained even if one Azure Availability Zone goes offline. Which quorum model should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Node Majority",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Node Weighting",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Witness",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disk Witness",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A Cloud Witness uses Azure Blob Storage to act as a tie-breaker. Because it is independent of the VMs' Availability Zones, it ensures the cluster maintains quorum even if an entire zone fails.",
+      "why_not_A": "Node Majority requires more than half of the nodes to be online. In a 2-node setup, if one zone fails, the cluster loses quorum.",
+      "why_not_B": "Node Weighting is a configuration of the quorum, not a quorum model itself, and does not solve the zone failure problem.",
+      "why_not_D": "Disk Witness (File Share Witness) requires a shared disk or file share. If that share is located within one of the failing zones, quorum is lost."
+    },
+    "tags": [
+      "SQL Server on Azure VM",
+      "Always On",
+      "Quorum"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-067",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are configuring a Geo-Replication setup for an Azure SQL Database. You notice that the secondary database is lagging behind the primary. You need to determine if the replication is asynchronous or synchronous to optimize the performance. Which statement is true regarding Azure SQL Database Geo-Replication?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Geo-Replication can be toggled between synchronous and asynchronous modes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Geo-Replication is always asynchronous.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Geo-Replication is synchronous by default but can be changed to asynchronous.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Geo-Replication uses synchronous commit to ensure zero data loss.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure SQL Database Geo-Replication is always asynchronous. This prevents the primary database's performance from being degraded by network latency between regions.",
+      "why_not_A": "There is no toggle for synchronicity in Geo-Replication; it is architecturally asynchronous.",
+      "why_not_C": "It is never synchronous by default.",
+      "why_not_D": "Synchronous commit is used in local high availability (within a region), but not for Geo-Replication across regions."
+    },
+    "tags": [
+      "Azure SQL Database",
+      "Geo-Replication",
+      "Asynchronous"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-068",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization requires a disaster recovery plan for a SQL Server on Azure VM deployment that supports a multi-subnet Availability Group. You need to ensure that the application can connect to the primary replica regardless of which subnet it is currently residing in. What is the most efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a single IP address for the listener across all subnets.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Distributed Availability Group.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Assign a unique IP address for each subnet to the Availability Group Listener.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Azure Load Balancer in Basic SKU to route traffic to the listener.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In a multi-subnet Availability Group, the listener must have one IP address for every subnet in which the replicas reside. The client connects via the DNS name, and the listener provides the list of IP addresses to the client.",
+      "why_not_A": "A single IP cannot span multiple subnets in a standard Azure VNet configuration for a SQL listener.",
+      "why_not_B": "Distributed AGs are used to connect two separate AGs, not to manage listener connectivity within a single multi-subnet AG.",
+      "why_not_D": "Basic SKU Load Balancers do not support the necessary features for SQL AGs; Standard SKU is required, and the listener still needs subnet-specific IPs."
+    },
+    "tags": [
+      "SQL Server on Azure VM",
+      "Multi-subnet AG",
+      "Listener"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-069",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company uses an Azure SQL Database managed instance with a Business Critical service tier. The company requires a disaster recovery strategy that ensures a Recovery Point Objective (RPO) of less than 5 seconds and a Recovery Time Objective (RTO) of less than 30 seconds in the event of a regional outage. The company wants to minimize the manual effort required to perform a failover during a regional disaster. Which configuration should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure Geo-replication with a secondary instance in a paired region and use a manual failover process.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure an Auto-failover group with a read-write listener and a secondary instance in a paired region.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement a backup-and-restore strategy using Long-term Retention (LTR) backups stored in a Geo-redundant storage (GRS) account.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Failover Group with a manual failover policy and use a custom DNS alias to redirect traffic.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Auto-failover groups provide a read-write listener endpoint that remains constant regardless of which instance is primary, minimizing manual reconfiguration. They support automatic failover based on a grace period, meeting the strict RTO requirements and providing the lowest possible RPO for regional disasters.",
+      "why_not_A": "Geo-replication requires the application to change the connection string to point to the secondary instance during a failover, which increases RTO and requires manual intervention.",
+      "why_not_C": "Backup-and-restore from GRS is a recovery method, not a high-availability solution. The RTO would be hours (depending on DB size) and RPO would be based on the last backup, failing both requirements.",
+      "why_not_D": "A manual failover policy contradicts the requirement to minimize manual effort and would significantly increase the RTO beyond the 30-second threshold."
+    },
+    "tags": [
+      "Azure SQL Managed Instance",
+      "Auto-failover Groups",
+      "RPO/RTO"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-070",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "plan-hadr-environment",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a high availability solution for a mission-critical SQL Server 2022 deployment on Azure Virtual Machines. The workload requires synchronous replication to ensure zero data loss and must support a multi-subnet cluster across two Availability Zones in a single region. You must ensure that the solution can survive the failure of a single zone without manual intervention. Which configuration is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a single-node instance with Azure Premium SSDs and enable Zone-redundant storage (ZRS).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure an Always On Availability Group with asynchronous commit mode and a cluster quorum based on a cloud witness.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure an Always On Availability Group with synchronous commit mode and a cluster quorum based on a cloud witness.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy a SQL Server Failover Cluster Instance (FCI) using a shared disk via Azure Shared Disks in a single Availability Zone.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Synchronous commit mode ensures zero data loss (RPO 0). By deploying across Availability Zones and using a Cloud Witness for quorum, the cluster can maintain availability and perform automatic failover if one zone fails.",
+      "why_not_A": "ZRS protects the data at the storage layer, but it does not provide high availability for the SQL Server instance itself; a VM failure would still result in downtime.",
+      "why_not_B": "Asynchronous commit mode allows for potential data loss during failover, which violates the 'zero data loss' requirement.",
+      "why_not_D": "Deploying an FCI in a single Availability Zone creates a single point of failure for that zone; if the zone fails, the entire database service becomes unavailable."
+    },
+    "tags": [
+      "SQL Server on VM",
+      "Always On Availability Groups",
+      "Availability Zones"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-dp300-mock1-071",
+    "exam_id": "azure-dp300",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   }
 ]

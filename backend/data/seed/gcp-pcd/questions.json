@@ -7,20 +7,44 @@
     "difficulty": 3,
     "stem": "You are building a cloud-native e-commerce application. The shopping cart service needs to store session state so users don't lose their cart during service restarts. Which approach aligns with 12-factor app principles?",
     "options": [
-      {"id": "A", "text": "Store cart state in an in-memory object within the Cloud Run container", "is_correct": false},
-      {"id": "B", "text": "Store cart state in Memorystore for Redis, accessed by the stateless Cloud Run service", "is_correct": true},
-      {"id": "C", "text": "Write cart state to the container's local filesystem in /tmp", "is_correct": false},
-      {"id": "D", "text": "Store cart state in a class-level static variable shared across requests", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Store cart state in an in-memory object within the Cloud Run container",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Store cart state in Memorystore for Redis, accessed by the stateless Cloud Run service",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Write cart state to the container's local filesystem in /tmp",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Store cart state in a class-level static variable shared across requests",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "12-factor apps are stateless; state is stored in external backing services. Memorystore for Redis is an external, persistent, high-performance state store. Cloud Run can scale to multiple instances, all sharing the same Redis state, enabling horizontal scaling without session affinity.",
-      "why_not_A": "In-memory state in a container is lost when the container restarts or scales down — violating the 12-factor principle of stateless processes.",
+      "why_not_A": "In-memory state in a container is lost when the container restarts or scales down \u2014 violating the 12-factor principle of stateless processes.",
       "why_not_C": "Cloud Run containers have ephemeral local filesystems that are reset on container restarts. The /tmp directory is not persistent and can't be shared across multiple container instances.",
       "why_not_D": "Static variables are in-process memory; they are not shared across Cloud Run instances and are lost on container restart."
     },
-    "concept_ids": ["pcd-cloud-native-design", "pcd-memorystore"],
-    "tags": ["12-factor", "stateless", "memorystore", "cloud-run"],
+    "concept_ids": [
+      "pcd-cloud-native-design",
+      "pcd-memorystore"
+    ],
+    "tags": [
+      "12-factor",
+      "stateless",
+      "memorystore",
+      "cloud-run"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -35,10 +59,26 @@
     "difficulty": 3,
     "stem": "Your Cloud Run service needs to access a Cloud SQL database using private IP. The Cloud Run service and Cloud SQL are in the same VPC. What configuration is required to allow Cloud Run to access the private Cloud SQL IP?",
     "options": [
-      {"id": "A", "text": "Add a Cloud Run VPC connector (Serverless VPC Access) and configure Cloud Run to use it", "is_correct": true},
-      {"id": "B", "text": "Enable Cloud Run with Direct VPC egress only — no connector needed", "is_correct": false},
-      {"id": "C", "text": "Enable public IP on Cloud SQL and whitelist the Cloud Run service IP range", "is_correct": false},
-      {"id": "D", "text": "Cloud Run can automatically access VPC resources — no additional configuration needed", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Add a Cloud Run VPC connector (Serverless VPC Access) and configure Cloud Run to use it",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Enable Cloud Run with Direct VPC egress only \u2014 no connector needed",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable public IP on Cloud SQL and whitelist the Cloud Run service IP range",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud Run can automatically access VPC resources \u2014 no additional configuration needed",
+        "is_correct": false
+      }
     ],
     "correct_answer": "A",
     "explanation": {
@@ -47,11 +87,19 @@
       "why_not_C": "Enabling public IP to avoid VPC configuration is an anti-pattern that exposes the database endpoint to the internet.",
       "why_not_D": "Cloud Run does NOT automatically access VPC resources; it runs outside the VPC by default and requires explicit VPC access configuration."
     },
-    "concept_ids": ["pcd-cloud-run-deploy", "pcd-spanner-cloudsql"],
-    "tags": ["cloud-run", "cloud-sql", "vpc-connector", "private-ip"],
+    "concept_ids": [
+      "pcd-cloud-run-deploy",
+      "pcd-spanner-cloudsql"
+    ],
+    "tags": [
+      "cloud-run",
+      "cloud-sql",
+      "vpc-connector",
+      "private-ip"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -63,10 +111,26 @@
     "difficulty": 3,
     "stem": "A Cloud Build pipeline runs tests and builds a Docker image. You want to ensure the image is automatically deployed to Cloud Run in the dev environment but requires manual approval for production deployment. Which approach implements this?",
     "options": [
-      {"id": "A", "text": "Add two gcloud run deploy steps in cloudbuild.yaml with a manual approval step between them", "is_correct": false},
-      {"id": "B", "text": "Use Cloud Deploy with a delivery pipeline: dev target (auto-promote) -> prod target (requires approval)", "is_correct": true},
-      {"id": "C", "text": "Create two separate Cloud Build triggers: one for dev and one for prod with different branch filters", "is_correct": false},
-      {"id": "D", "text": "Use Cloud Scheduler to trigger prod deployment after 24 hours if dev deployment succeeds", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Add two gcloud run deploy steps in cloudbuild.yaml with a manual approval step between them",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud Deploy with a delivery pipeline: dev target (auto-promote) -> prod target (requires approval)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create two separate Cloud Build triggers: one for dev and one for prod with different branch filters",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Scheduler to trigger prod deployment after 24 hours if dev deployment succeeds",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -75,12 +139,19 @@
       "why_not_C": "Separate triggers create two independent pipelines without a promotion relationship. They don't ensure the same artifact that passed dev tests is promoted to prod.",
       "why_not_D": "Time-based promotion doesn't guarantee the dev deployment was successful before promoting. It also introduces unnecessary delays."
     },
-    "concept_ids": ["pcd-cicd-cloud-build"],
-    "tags": ["cloud-deploy", "cloud-build", "approval-gate", "progressive-delivery"],
+    "concept_ids": [
+      "pcd-cicd-cloud-build"
+    ],
+    "tags": [
+      "cloud-deploy",
+      "cloud-build",
+      "approval-gate",
+      "progressive-delivery"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -91,24 +162,47 @@
     "difficulty": 3,
     "stem": "A Pub/Sub subscriber receives the same message multiple times despite acknowledging it. The subscriber processes each message by inserting a record in Firestore. Duplicate insertions are causing data quality issues. What is the best fix?",
     "options": [
-      {"id": "A", "text": "Enable exactly-once delivery on the Pub/Sub subscription", "is_correct": false},
-      {"id": "B", "text": "Make the Firestore insertion idempotent using the message ID as the Firestore document ID", "is_correct": true},
-      {"id": "C", "text": "Switch from Pub/Sub to Cloud Tasks which guarantees exactly-once delivery", "is_correct": false},
-      {"id": "D", "text": "Increase the acknowledgment deadline so messages are less likely to be redelivered", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable exactly-once delivery on the Pub/Sub subscription",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Make the Firestore insertion idempotent using the message ID as the Firestore document ID",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from Pub/Sub to Cloud Tasks which guarantees exactly-once delivery",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the acknowledgment deadline so messages are less likely to be redelivered",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
-      "why_correct": "Using the Pub/Sub message ID as the Firestore document ID makes insertion idempotent — Firestore's document set operation overwrites existing documents with the same ID, so duplicate messages result in the same document being written rather than creating duplicate records.",
+      "why_correct": "Using the Pub/Sub message ID as the Firestore document ID makes insertion idempotent \u2014 Firestore's document set operation overwrites existing documents with the same ID, so duplicate messages result in the same document being written rather than creating duplicate records.",
       "why_not_A": "While Pub/Sub does support exactly-once delivery with a specific subscription type, the robust solution is always to make consumers idempotent. Exactly-once delivery adds latency and is not always available in all configurations.",
       "why_not_C": "Cloud Tasks provides at-least-once delivery, not exactly-once. The fundamental distributed systems guarantee is at-least-once; idempotent consumers are always the correct solution.",
       "why_not_D": "A longer acknowledgment deadline reduces the frequency of redelivery but doesn't eliminate it. Redelivery is inherent to Pub/Sub's at-least-once guarantee."
     },
-    "concept_ids": ["pcd-pubsub-integration"],
-    "tags": ["pub-sub", "idempotency", "firestore", "at-least-once"],
+    "concept_ids": [
+      "pcd-pubsub-integration"
+    ],
+    "tags": [
+      "pub-sub",
+      "idempotency",
+      "firestore",
+      "at-least-once"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -119,10 +213,26 @@
     "difficulty": 2,
     "stem": "A developer wants to run integration tests for a Cloud Functions function that uses Pub/Sub locally without incurring costs or connecting to the real GCP services. What is the recommended approach?",
     "options": [
-      {"id": "A", "text": "Mock the Pub/Sub client in unit tests using a mocking library", "is_correct": false},
-      {"id": "B", "text": "Use the Pub/Sub emulator running locally with PUBSUB_EMULATOR_HOST environment variable", "is_correct": true},
-      {"id": "C", "text": "Create a separate test project in GCP and run integration tests there", "is_correct": false},
-      {"id": "D", "text": "Use Cloud Build to run integration tests in an ephemeral environment", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Mock the Pub/Sub client in unit tests using a mocking library",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the Pub/Sub emulator running locally with PUBSUB_EMULATOR_HOST environment variable",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a separate test project in GCP and run integration tests there",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Build to run integration tests in an ephemeral environment",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -131,8 +241,14 @@
       "why_not_C": "A separate test project incurs costs and requires network access. It's a valid but not recommended alternative when local emulators are available.",
       "why_not_D": "Cloud Build integration tests connect to real GCP services, incurring costs. The question specifically asks about local testing without costs."
     },
-    "concept_ids": ["pcd-app-testing"],
-    "tags": ["pub-sub-emulator", "testing", "local-development"],
+    "concept_ids": [
+      "pcd-app-testing"
+    ],
+    "tags": [
+      "pub-sub-emulator",
+      "testing",
+      "local-development"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -147,10 +263,26 @@
     "difficulty": 3,
     "stem": "A Cloud Run service is experiencing higher-than-expected latency. Cloud Trace shows a chain of service calls with high latency in the 'database-query' span. The span takes 800ms on average. What should you investigate first?",
     "options": [
-      {"id": "A", "text": "Increase Cloud Run memory allocation for the service", "is_correct": false},
-      {"id": "B", "text": "Review the database query execution plan for missing indexes using Cloud SQL Insights", "is_correct": true},
-      {"id": "C", "text": "Add more Cloud Run instances by increasing minimum instances", "is_correct": false},
-      {"id": "D", "text": "Increase the VPC connector throughput", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Increase Cloud Run memory allocation for the service",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Review the database query execution plan for missing indexes using Cloud SQL Insights",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Add more Cloud Run instances by increasing minimum instances",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the VPC connector throughput",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -159,12 +291,19 @@
       "why_not_C": "More Cloud Run instances increase throughput (concurrent requests) but don't reduce per-request latency caused by slow database queries.",
       "why_not_D": "VPC connector throughput affects total bandwidth. An 800ms query latency is likely query performance, not network bandwidth saturation."
     },
-    "concept_ids": ["pcd-error-handling"],
-    "tags": ["cloud-trace", "cloud-sql", "latency", "troubleshooting"],
+    "concept_ids": [
+      "pcd-error-handling"
+    ],
+    "tags": [
+      "cloud-trace",
+      "cloud-sql",
+      "latency",
+      "troubleshooting"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -175,10 +314,26 @@
     "difficulty": 2,
     "stem": "A mobile application needs to store user profile data with real-time sync across multiple devices. When a user updates their profile on one device, all other signed-in devices should reflect the change within 1 second. Which GCP service is best suited?",
     "options": [
-      {"id": "A", "text": "Cloud SQL with polling from mobile clients every 1 second", "is_correct": false},
-      {"id": "B", "text": "Firestore in Native mode with real-time listeners", "is_correct": true},
-      {"id": "C", "text": "Bigtable with client-side polling", "is_correct": false},
-      {"id": "D", "text": "BigQuery with streaming inserts", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Cloud SQL with polling from mobile clients every 1 second",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Firestore in Native mode with real-time listeners",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Bigtable with client-side polling",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "BigQuery with streaming inserts",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -187,8 +342,15 @@
       "why_not_C": "Bigtable is a NoSQL database for time-series/analytics, not real-time mobile sync. It has no built-in client SDK or real-time listener capability.",
       "why_not_D": "BigQuery is an analytical data warehouse, not suited for real-time mobile data sync or operational CRUD operations."
     },
-    "concept_ids": ["pcd-firestore"],
-    "tags": ["firestore", "real-time", "mobile", "listeners"],
+    "concept_ids": [
+      "pcd-firestore"
+    ],
+    "tags": [
+      "firestore",
+      "real-time",
+      "mobile",
+      "listeners"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -203,24 +365,47 @@
     "difficulty": 3,
     "stem": "Your Cloud Run service needs to access a database password stored in Secret Manager. The service account for Cloud Run has the secretmanager.secretAccessor role. How should the secret be accessed in the application code?",
     "options": [
-      {"id": "A", "text": "Mount the secret as an environment variable in Cloud Run configuration referencing the secret version", "is_correct": true},
-      {"id": "B", "text": "Hardcode the Secret Manager secret path in the application and call the API at startup", "is_correct": false},
-      {"id": "C", "text": "Download the secret to a file during Docker build and bake it into the image", "is_correct": false},
-      {"id": "D", "text": "Pass the secret as a build argument in Cloud Build and set it in the container image", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Mount the secret as an environment variable in Cloud Run configuration referencing the secret version",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Hardcode the Secret Manager secret path in the application and call the API at startup",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Download the secret to a file during Docker build and bake it into the image",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Pass the secret as a build argument in Cloud Build and set it in the container image",
+        "is_correct": false
+      }
     ],
     "correct_answer": "A",
     "explanation": {
       "why_correct": "Cloud Run natively integrates with Secret Manager: you can mount a secret as an environment variable or volume in the Cloud Run service configuration. This avoids application code changes and Secret Manager API calls in code, and the secret value is injected at container startup.",
       "why_not_B": "Calling the Secret Manager API in application code works but requires error handling for API failures and adds startup latency. The native integration is simpler and more secure.",
       "why_not_C": "Baking secrets into Docker images is a severe security anti-pattern; the secret is visible in the image layers and can be extracted by anyone with image access.",
-      "why_not_D": "Build arguments are baked into image layers and visible in docker inspect — the same security problem as baking secrets directly into the image."
+      "why_not_D": "Build arguments are baked into image layers and visible in docker inspect \u2014 the same security problem as baking secrets directly into the image."
     },
-    "concept_ids": ["pcd-security-dev"],
-    "tags": ["secret-manager", "cloud-run", "security", "environment-variables"],
+    "concept_ids": [
+      "pcd-security-dev"
+    ],
+    "tags": [
+      "secret-manager",
+      "cloud-run",
+      "security",
+      "environment-variables"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -231,10 +416,26 @@
     "difficulty": 3,
     "stem": "You need to deploy a containerized application that runs nightly batch processing jobs (not HTTP-triggered). The job takes 2 hours to complete. Cloud Run with scale-to-zero is preferred. Which Cloud Run construct should you use?",
     "options": [
-      {"id": "A", "text": "Cloud Run Service triggered by Cloud Scheduler via HTTP", "is_correct": false},
-      {"id": "B", "text": "Cloud Run Job executed via Cloud Scheduler", "is_correct": true},
-      {"id": "C", "text": "Cloud Run Service with a Pub/Sub push trigger", "is_correct": false},
-      {"id": "D", "text": "App Engine Cron service for scheduled batch jobs", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Cloud Run Service triggered by Cloud Scheduler via HTTP",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Run Job executed via Cloud Scheduler",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Run Service with a Pub/Sub push trigger",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "App Engine Cron service for scheduled batch jobs",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -243,8 +444,14 @@
       "why_not_C": "Pub/Sub push triggers still go through the Cloud Run Service timeout; not suitable for 2-hour jobs.",
       "why_not_D": "App Engine Cron is App Engine-specific and requires running an App Engine application. The question specifies Cloud Run is preferred."
     },
-    "concept_ids": ["pcd-cloud-run-deploy"],
-    "tags": ["cloud-run-jobs", "batch-processing", "scheduled-jobs"],
+    "concept_ids": [
+      "pcd-cloud-run-deploy"
+    ],
+    "tags": [
+      "cloud-run-jobs",
+      "batch-processing",
+      "scheduled-jobs"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -259,10 +466,26 @@
     "difficulty": 3,
     "stem": "A Cloud Storage bucket receives file uploads from users. You want to trigger a Cloud Function to process each uploaded file within seconds of upload. What is the recommended trigger configuration?",
     "options": [
-      {"id": "A", "text": "Poll the Cloud Storage bucket every 30 seconds from a scheduled Cloud Function", "is_correct": false},
-      {"id": "B", "text": "Enable Cloud Storage object notifications via Pub/Sub and trigger the Cloud Function with a Pub/Sub trigger", "is_correct": false},
-      {"id": "C", "text": "Configure an Eventarc trigger on the Cloud Function for google.cloud.storage.object.v1.finalized events", "is_correct": true},
-      {"id": "D", "text": "Use Cloud Scheduler to call the Cloud Function API every minute", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Poll the Cloud Storage bucket every 30 seconds from a scheduled Cloud Function",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Cloud Storage object notifications via Pub/Sub and trigger the Cloud Function with a Pub/Sub trigger",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure an Eventarc trigger on the Cloud Function for google.cloud.storage.object.v1.finalized events",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Scheduler to call the Cloud Function API every minute",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -271,11 +494,19 @@
       "why_not_B": "While Pub/Sub with Cloud Storage notifications works for Cloud Functions 1st gen, Eventarc is the modern recommended approach for Cloud Functions 2nd gen and provides better event management.",
       "why_not_D": "Cloud Scheduler triggers on time intervals, not on file uploads. This approach adds latency and can't respond to individual file arrivals."
     },
-    "concept_ids": ["pcd-cloud-functions", "pcd-storage-cloud-native"],
-    "tags": ["cloud-functions", "eventarc", "cloud-storage", "event-driven"],
+    "concept_ids": [
+      "pcd-cloud-functions",
+      "pcd-storage-cloud-native"
+    ],
+    "tags": [
+      "cloud-functions",
+      "eventarc",
+      "cloud-storage",
+      "event-driven"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -287,24 +518,47 @@
     "difficulty": 2,
     "stem": "A GKE Deployment is using a Rolling Update strategy. You want to ensure that during the update, at least 3 instances of the old version remain available (current replicas = 5, desired replicas after = 5). What configuration achieves this?",
     "options": [
-      {"id": "A", "text": "maxUnavailable: 2, maxSurge: 1", "is_correct": true},
-      {"id": "B", "text": "maxUnavailable: 0, maxSurge: 5", "is_correct": false},
-      {"id": "C", "text": "maxUnavailable: 5, maxSurge: 0", "is_correct": false},
-      {"id": "D", "text": "maxUnavailable: 3, maxSurge: 3", "is_correct": false}
+      {
+        "id": "A",
+        "text": "maxUnavailable: 2, maxSurge: 1",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "maxUnavailable: 0, maxSurge: 5",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "maxUnavailable: 5, maxSurge: 0",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "maxUnavailable: 3, maxSurge: 3",
+        "is_correct": false
+      }
     ],
     "correct_answer": "A",
     "explanation": {
       "why_correct": "maxUnavailable: 2 means at most 2 old pods can be terminated at once, ensuring at least 3 (5-2) old pods remain available during the update. maxSurge: 1 allows 1 extra pod (6 total) during the update for smooth replacement.",
-      "why_not_B": "maxUnavailable: 0 means no pods can go down — all 5 must remain running. This would require extra capacity (maxSurge) to deploy new pods before terminating old ones. While correct for zero-downtime, it doesn't match the stated requirement.",
-      "why_not_C": "maxUnavailable: 5 means all 5 pods could be terminated at once — during the update, 0 instances would be available, violating the 'at least 3' requirement.",
+      "why_not_B": "maxUnavailable: 0 means no pods can go down \u2014 all 5 must remain running. This would require extra capacity (maxSurge) to deploy new pods before terminating old ones. While correct for zero-downtime, it doesn't match the stated requirement.",
+      "why_not_C": "maxUnavailable: 5 means all 5 pods could be terminated at once \u2014 during the update, 0 instances would be available, violating the 'at least 3' requirement.",
       "why_not_D": "maxUnavailable: 3 allows 3 pods to go down (leaving only 2), which violates the requirement of at least 3 remaining available."
     },
-    "concept_ids": ["pcd-gke-deployment"],
-    "tags": ["gke", "rolling-update", "maxunavailable", "maxsurge"],
+    "concept_ids": [
+      "pcd-gke-deployment"
+    ],
+    "tags": [
+      "gke",
+      "rolling-update",
+      "maxunavailable",
+      "maxsurge"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -315,10 +569,26 @@
     "difficulty": 3,
     "stem": "Your Cloud Run service writes logs to stdout in plain text format. Operations team says they cannot filter logs by error type or HTTP status code using Cloud Logging filters. What change should you make?",
     "options": [
-      {"id": "A", "text": "Enable Cloud Trace on the Cloud Run service", "is_correct": false},
-      {"id": "B", "text": "Change the application to output structured JSON logs with severity, httpRequest, and other fields", "is_correct": true},
-      {"id": "C", "text": "Add a sidecar container to parse and forward logs to Cloud Logging", "is_correct": false},
-      {"id": "D", "text": "Enable Cloud Profiler to capture detailed runtime metrics", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable Cloud Trace on the Cloud Run service",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Change the application to output structured JSON logs with severity, httpRequest, and other fields",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Add a sidecar container to parse and forward logs to Cloud Logging",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable Cloud Profiler to capture detailed runtime metrics",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -327,8 +597,15 @@
       "why_not_C": "Cloud Run doesn't support sidecar containers in the traditional sense. Structured logging is the correct and simpler solution.",
       "why_not_D": "Cloud Profiler captures CPU/memory profiles; it doesn't provide filterable logs."
     },
-    "concept_ids": ["pcd-error-handling"],
-    "tags": ["structured-logging", "cloud-logging", "json-logs", "observability"],
+    "concept_ids": [
+      "pcd-error-handling"
+    ],
+    "tags": [
+      "structured-logging",
+      "cloud-logging",
+      "json-logs",
+      "observability"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -343,24 +620,47 @@
     "difficulty": 3,
     "stem": "You need to expose 10 different microservices through a single API endpoint with authentication via Firebase JWT tokens and rate limiting at 1000 requests/minute per client. Cloud Run hosts all microservices. Which API management approach is most appropriate?",
     "options": [
-      {"id": "A", "text": "Configure Cloud Armor security policies on the Load Balancer", "is_correct": false},
-      {"id": "B", "text": "API Gateway with an OpenAPI spec defining all 10 service backends and Firebase authentication", "is_correct": true},
-      {"id": "C", "text": "Expose each Cloud Run service directly with its own URL and implement auth in each service", "is_correct": false},
-      {"id": "D", "text": "Use Cloud Functions as a proxy layer in front of each microservice", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Configure Cloud Armor security policies on the Load Balancer",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "API Gateway with an OpenAPI spec defining all 10 service backends and Firebase authentication",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Expose each Cloud Run service directly with its own URL and implement auth in each service",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Functions as a proxy layer in front of each microservice",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
-      "why_correct": "API Gateway provides a single managed endpoint that routes to multiple backends based on the OpenAPI spec. It natively integrates with Firebase Auth for JWT validation and supports quotas/rate limiting per API consumer — exactly what's required.",
+      "why_correct": "API Gateway provides a single managed endpoint that routes to multiple backends based on the OpenAPI spec. It natively integrates with Firebase Auth for JWT validation and supports quotas/rate limiting per API consumer \u2014 exactly what's required.",
       "why_not_A": "Cloud Armor is a WAF/DDoS protection layer; it doesn't handle API routing, JWT authentication, or per-client rate limiting.",
-      "why_not_C": "Exposing 10 services directly means each service must implement auth and rate limiting independently — duplicated effort, harder to manage, inconsistent behavior.",
-      "why_not_D": "Cloud Functions as a proxy layer adds latency and cost; it requires implementing auth and rate limiting in each proxy function — more complexity than API Gateway."
+      "why_not_C": "Exposing 10 services directly means each service must implement auth and rate limiting independently \u2014 duplicated effort, harder to manage, inconsistent behavior.",
+      "why_not_D": "Cloud Functions as a proxy layer adds latency and cost; it requires implementing auth and rate limiting in each proxy function \u2014 more complexity than API Gateway."
     },
-    "concept_ids": ["pcd-api-gateway"],
-    "tags": ["api-gateway", "firebase-auth", "rate-limiting", "microservices"],
+    "concept_ids": [
+      "pcd-api-gateway"
+    ],
+    "tags": [
+      "api-gateway",
+      "firebase-auth",
+      "rate-limiting",
+      "microservices"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -371,10 +671,26 @@
     "difficulty": 4,
     "stem": "A Cloud Run service experiences a 10x traffic spike every day at 9 AM when the business opens. Users report slow responses during the first 2 minutes of the spike due to cold starts. How should you configure Cloud Run to prevent this?",
     "options": [
-      {"id": "A", "text": "Increase the Cloud Run CPU allocation to 4 vCPUs", "is_correct": false},
-      {"id": "B", "text": "Set Cloud Run minimum instances to a value that handles the pre-spike baseline load", "is_correct": true},
-      {"id": "C", "text": "Switch from Cloud Run to GKE with node auto-provisioning", "is_correct": false},
-      {"id": "D", "text": "Increase Cloud Run max instances to handle the 10x spike", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Increase the Cloud Run CPU allocation to 4 vCPUs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set Cloud Run minimum instances to a value that handles the pre-spike baseline load",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from Cloud Run to GKE with node auto-provisioning",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase Cloud Run max instances to handle the 10x spike",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -383,12 +699,19 @@
       "why_not_C": "Migrating to GKE is a significant operational change that's not needed. Cloud Run minimum instances solves the problem elegantly.",
       "why_not_D": "Max instances controls the upper bound of scaling, not the lower bound. Cold starts happen on the way UP from zero or low instance counts; max instances doesn't prevent this."
     },
-    "concept_ids": ["pcd-app-scaling"],
-    "tags": ["cloud-run", "cold-start", "minimum-instances", "performance"],
+    "concept_ids": [
+      "pcd-app-scaling"
+    ],
+    "tags": [
+      "cloud-run",
+      "cold-start",
+      "minimum-instances",
+      "performance"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
-    "bkt_p_transit": 0.10,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   },
   {
@@ -399,10 +722,26 @@
     "difficulty": 3,
     "stem": "Your CI/CD pipeline builds and pushes Docker images to Artifact Registry. You want to prevent deployment of any container image that has critical CVE vulnerabilities to production GKE clusters. What configuration enforces this?",
     "options": [
-      {"id": "A", "text": "Enable Container Analysis scanning in Artifact Registry and review scan reports manually", "is_correct": false},
-      {"id": "B", "text": "Configure Binary Authorization policy requiring a vulnerability-scan attestation before deployment, triggered by Container Analysis scan passing", "is_correct": true},
-      {"id": "C", "text": "Add a gcloud container images scan step in Cloud Build before deployment", "is_correct": false},
-      {"id": "D", "text": "Enable VPC Service Controls around the Artifact Registry project", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable Container Analysis scanning in Artifact Registry and review scan reports manually",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure Binary Authorization policy requiring a vulnerability-scan attestation before deployment, triggered by Container Analysis scan passing",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Add a gcloud container images scan step in Cloud Build before deployment",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable VPC Service Controls around the Artifact Registry project",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -411,12 +750,2651 @@
       "why_not_C": "A Cloud Build scan step can fail the build but doesn't prevent re-deploying an old vulnerable image using kubectl or gcloud directly, bypassing the pipeline.",
       "why_not_D": "VPC Service Controls restricts which services can access Artifact Registry; it doesn't evaluate image contents for vulnerabilities."
     },
-    "concept_ids": ["pcd-security-dev"],
-    "tags": ["binary-authorization", "container-analysis", "vulnerability-scanning", "security"],
+    "concept_ids": [
+      "pcd-security-dev"
+    ],
+    "tags": [
+      "binary-authorization",
+      "container-analysis",
+      "vulnerability-scanning",
+      "security"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.08,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your team is designing a microservices-based application on Google Kubernetes Engine (GKE). You need to ensure that a failure in one service does not cause a cascading failure across the entire system when a downstream dependency becomes slow or unresponsive. Which pattern should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a Retry mechanism with exponential backoff on all service calls.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement the Circuit Breaker pattern to fail fast when a service is unhealthy.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the CPU and Memory limits for the pods to handle higher latency.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a synchronous REST API for all inter-service communication to ensure immediate consistency.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Circuit Breaker pattern prevents a service from repeatedly trying to execute an operation that is likely to fail, preventing resource exhaustion and cascading failures by 'tripping' the circuit and returning an error immediately.",
+      "why_not_A": "While retries are useful for transient errors, retrying against a slow or failing service can actually worsen the situation by overloading the failing service (retry storm).",
+      "why_not_C": "Increasing resources does not solve the architectural problem of a dependency failure; it only delays the point at which the service runs out of memory or threads.",
+      "why_not_D": "Synchronous communication increases coupling and makes the system more susceptible to cascading failures compared to asynchronous patterns."
+    },
+    "tags": [
+      "resiliency",
+      "circuit-breaker",
+      "cascading-failures"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-016",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A retail application experiences massive traffic spikes during flash sales. You need to ensure the system remains available and responsive, even if some non-critical background processing (like sending confirmation emails) is delayed. Which architectural approach is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Scale the application vertically by increasing the machine type of the GKE nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a synchronous request-response pattern for all operations to ensure data integrity.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Introduce an asynchronous messaging queue (e.g., Pub/Sub) to decouple the order process from the email process.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Implement a global load balancer with a strict timeout of 1 second for all requests.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Asynchronous messaging decouples the producer (order service) from the consumer (email service), allowing the system to buffer requests during spikes and process them as resources become available, ensuring high availability for the critical path.",
+      "why_not_A": "Vertical scaling has a hard ceiling and does not address the architectural bottleneck of synchronous dependencies.",
+      "why_not_B": "Synchronous patterns create tight coupling; if the email service slows down, the order service will also slow down, potentially leading to timeouts and crashes.",
+      "why_not_D": "Strict timeouts without a queuing mechanism will simply result in failed requests and a poor user experience during spikes."
+    },
+    "tags": [
+      "scalability",
+      "pubsub",
+      "asynchronous-processing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-017",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are designing a globally distributed application that requires low-latency access to user profile data. The data is read frequently but updated infrequently. Which Google Cloud storage strategy provides the best balance of availability and performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Store all data in a single Cloud SQL instance in one region to ensure strong consistency.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud Storage buckets in every region and manually sync files via scripts.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Cloud Spanner with a multi-region configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Store data in a local disk (Persistent Disk) attached to a single VM instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Spanner is designed for global scale, providing high availability, strong consistency, and low-latency reads across multiple regions, making it ideal for globally distributed user profiles.",
+      "why_not_A": "A single-region Cloud SQL instance introduces high latency for users far from that region and creates a single point of failure.",
+      "why_not_B": "Manual syncing is error-prone, inefficient, and does not provide the transactional consistency or performance of a managed database.",
+      "why_not_D": "Local disks are not shared across regions or instances, making this solution neither scalable nor highly available."
+    },
+    "tags": [
+      "global-availability",
+      "cloud-spanner",
+      "data-locality"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-018",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your application uses a distributed cache to improve performance. You notice that when the cache is cleared or a node fails, the underlying database is overwhelmed by a surge of simultaneous requests for the same data. How should you mitigate this 'cache stampede'?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the database instance size to handle the surge.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a locking mechanism or 'singleflight' pattern to ensure only one request fetches the data from the DB.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable the cache entirely and rely solely on the database.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set the cache TTL (Time to Live) to be exactly the same for all keys.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using a locking mechanism or a pattern like 'singleflight' ensures that when a cache miss occurs for a specific key, only one worker fetches the value from the database while others wait for the result, preventing the database from being overwhelmed.",
+      "why_not_A": "Scaling the database is a reactive approach that doesn't solve the root cause and is costly and potentially insufficient for extreme spikes.",
+      "why_not_C": "Removing the cache will permanently increase the load on the database and increase latency for all requests.",
+      "why_not_D": "Setting the same TTL for all keys actually causes a 'cache expiration storm' where many keys expire at once, triggering the exact stampede you are trying to avoid."
+    },
+    "tags": [
+      "reliability",
+      "caching",
+      "cache-stampede"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-019",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are implementing a health check for a critical service in GKE. You want to ensure that the service is not only 'running' (process is alive) but also 'ready' to serve traffic (dependencies are initialized). Which probe should you configure for this specific requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Liveness Probe",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Startup Probe",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Readiness Probe",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Liveness and Startup Probes only",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Readiness Probe determines if a container is ready to start accepting traffic. If it fails, the endpoints controller removes the Pod's IP address from the corresponding Service, ensuring traffic is only sent to healthy, initialized pods.",
+      "why_not_A": "Liveness Probes determine if a container is running. If it fails, Kubernetes kills the container and it is subjected to its restart policy. This is for recovery from deadlocks, not for traffic management.",
+      "why_not_B": "Startup Probes are used to determine when an application has started. They disable liveness and readiness checks until the startup probe succeeds, but they don't control traffic routing during normal operation.",
+      "why_not_D": "Liveness and Startup probes do not manage the routing of traffic to the pod based on its ability to handle requests."
+    },
+    "tags": [
+      "gke",
+      "health-checks",
+      "readiness-probe"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-020",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your team is designing a global e-commerce platform where users frequently update their shopping carts. To ensure high availability and low latency across multiple regions, you need to choose a database strategy that handles high write throughput and provides eventual consistency for non-critical data while maintaining strong consistency for checkout. Which architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a single Cloud SQL instance with Read Replicas in each region.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud Spanner with a multi-region configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Cloud Bigtable with a single-cluster setup in the primary region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Firestore in Datastore mode with a single-region configuration.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Spanner is designed for global scale, providing both strong consistency and high availability across regions through its synchronous replication and Paxos-based consensus, making it ideal for critical checkout transactions and scalable cart management.",
+      "why_not_A": "Cloud SQL is a regional service; while read replicas help with latency, writes must go to the primary instance, creating a bottleneck and a single point of failure for writes.",
+      "why_not_C": "Bigtable is excellent for high throughput but does not provide the ACID compliance and strong consistency required for a checkout process across multiple regions without significant application-level complexity.",
+      "why_not_D": "A single-region Firestore configuration fails the requirement for high availability and low latency for a global user base."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Global Consistency",
+      "Database Selection"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-021",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A microservices-based application is experiencing intermittent timeouts during peak traffic. You suspect a 'cascading failure' where one slow downstream service is exhausting the thread pool of several upstream services. Which pattern should you implement to increase the reliability of the system?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a Retry policy with exponential backoff on all service calls.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the timeout limits on the upstream services to allow more time for responses.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a Circuit Breaker pattern to fail fast when a downstream service is unhealthy.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy more replicas of the upstream services to handle the increased thread demand.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Circuit Breaker pattern prevents a service from repeatedly trying to call a failing downstream service, thereby protecting the upstream service's resources (like thread pools) and allowing the downstream service time to recover.",
+      "why_not_A": "Retries can actually worsen a cascading failure by increasing the load on an already struggling downstream service (the 'retry storm' effect).",
+      "why_not_B": "Increasing timeouts keeps threads occupied for longer, accelerating the exhaustion of the thread pool and speeding up the system collapse.",
+      "why_not_D": "Scaling upstream services only masks the problem temporarily; the root cause is the blocked threads, and the downstream service will still be overwhelmed."
+    },
+    "tags": [
+      "Resiliency Patterns",
+      "Circuit Breaker",
+      "Cascading Failures"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcd-mock1-022",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are building a data processing pipeline that must handle unpredictable spikes in volume. The system must be decoupled to ensure that a surge in incoming messages does not crash the processing backend. Which architecture is most appropriate for this cloud-native requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a synchronous REST API call from the producer to the consumer with a load balancer.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Pub/Sub to buffer messages and a GKE cluster with Horizontal Pod Autoscaler (HPA) for the consumers.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a shared Cloud SQL database as a queue where producers insert rows and consumers poll for them.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Functions triggered by HTTP requests with a maximum instance limit set to a high value.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pub/Sub acts as a shock absorber (buffer), decoupling the producer from the consumer. GKE with HPA allows the processing layer to scale dynamically based on the number of unacknowledged messages in the subscription.",
+      "why_not_A": "Synchronous calls create a tight coupling; if the consumer is overwhelmed, the producer will experience failures or timeouts immediately.",
+      "why_not_C": "Using a relational database as a queue leads to locking contention and performance degradation under high volume, failing the scalability requirement.",
+      "why_not_D": "While Cloud Functions scale, relying on direct HTTP triggers without a buffer means the system is still susceptible to spikes that could exceed concurrency limits or overwhelm downstream dependencies."
+    },
+    "tags": [
+      "Asynchronous Messaging",
+      "Pub/Sub",
+      "Autoscaling"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-gcp-pcd-mock1-023",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An application requires a way to manage shared state across multiple distributed instances of a service to implement a distributed lock for a critical resource. Which Google Cloud service is most suitable for this specific need?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud Storage with object versioning enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Memorystore for Redis using the Redlock algorithm or similar atomic operations.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Bigtable using row-level locking.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud Spanner using read-only snapshots.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Memorystore for Redis provides the low-latency, atomic operations (like SETNX) required to implement distributed locks efficiently across multiple service instances.",
+      "why_not_A": "Cloud Storage is an object store with high latency for metadata updates; it is not suitable for the high-frequency updates required for locking.",
+      "why_not_C": "Bigtable does not support traditional row-level locking in a way that is efficient for a distributed lock manager; it is designed for high-throughput analytical data.",
+      "why_not_D": "Read-only snapshots are used for consistent reads of old data, not for coordinating active locks on a shared resource."
+    },
+    "tags": [
+      "Distributed State",
+      "Memorystore",
+      "Distributed Locking"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcd-mock1-024",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a system that must be 'highly available' even during a total regional outage. Your application uses a combination of a frontend, a business logic layer, and a database. Which strategy ensures the lowest Recovery Time Objective (RTO) and Recovery Point Objective (RPO)?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Daily backups of the database to a multi-regional Cloud Storage bucket and regional GKE clusters.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Active-Passive deployment with a manual failover script to promote a standby region.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Active-Active deployment across two regions using a Global External HTTP(S) Load Balancer and a multi-region database.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deployment in a single region across three different zones with a Regional Managed Instance Group (MIG).",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "An Active-Active multi-region setup with a Global Load Balancer automatically routes traffic to the healthy region if one fails, providing the lowest RTO. A multi-region database ensures data is available and synchronized, providing the lowest RPO.",
+      "why_not_A": "Daily backups lead to a high RPO (up to 24 hours of data loss) and high RTO (time to restore from backup).",
+      "why_not_B": "Manual failover increases RTO significantly compared to automated global load balancing.",
+      "why_not_D": "Zonal redundancy protects against a zone failure, but the scenario specifically requires protection against a 'total regional outage'."
+    },
+    "tags": [
+      "Disaster Recovery",
+      "Multi-region Architecture",
+      "RTO/RPO"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-025",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your application uses a globally distributed Spanner database to manage user profiles. You are experiencing high latency for users in Asia, while the database is configured with a regional instance in North America. You need to improve read performance for Asian users while maintaining strong consistency for writes. Which architecture change is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a read-only replica in the Asia region and configure the application to perform reads from the local replica.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Migrate the Spanner instance to a multi-region configuration that includes regions in both North America and Asia.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement a Redis Memorystore cache in the Asia region to cache profile data with a short TTL.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch from Spanner to a Firestore database in Datastore mode with multi-region replication.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Multi-region Spanner configurations provide synchronous replication across regions, allowing for low-latency reads globally while maintaining the strong consistency guarantees required for writes via the Paxos consensus protocol.",
+      "why_not_A": "Spanner does not support standalone 'read-only replicas' in the way some traditional SQL databases do; replication is managed at the instance configuration level (Regional vs Multi-Regional).",
+      "why_not_C": "While caching improves read speed, it introduces eventual consistency (stale data), which violates the requirement to maintain strong consistency.",
+      "why_not_D": "While Firestore is multi-regional, migrating the entire data model from a relational Spanner schema to a NoSQL Firestore schema is a significant architectural rewrite and may not support the same complex querying needs."
+    },
+    "tags": [
+      "Spanner",
+      "GlobalAvailability",
+      "Consistency"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-026",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a microservices-based order processing system. The 'Payment Service' is intermittently slow, causing a ripple effect that exhausts the thread pool of the 'Order Service', leading to a total system collapse. You need to implement a pattern to prevent this cascading failure. Which approach is the most resilient?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the timeout settings on the Order Service's HTTP client to wait longer for the Payment Service.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a retry mechanism with exponential backoff in the Order Service.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a Circuit Breaker pattern that trips after a threshold of failures, returning a fallback response.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy the Payment Service to a larger machine type to handle the increased load.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Circuit Breaker pattern prevents a service from repeatedly trying to call a failing or slow downstream service, thereby protecting the caller's resources (threads/memory) and allowing the failing service time to recover.",
+      "why_not_A": "Increasing timeouts actually worsens the problem by holding onto threads for longer periods, accelerating thread pool exhaustion.",
+      "why_not_B": "Retries with backoff are good for transient errors, but if the service is consistently slow or overloaded, retries increase the total load on the failing service, potentially exacerbating the outage.",
+      "why_not_D": "Scaling vertically does not address the architectural flaw of cascading failures; if the Payment Service fails due to a downstream dependency or bug, more CPU/RAM will not solve the thread exhaustion in the Order Service."
+    },
+    "tags": [
+      "Resiliency",
+      "CircuitBreaker",
+      "CascadingFailures"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-027",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your team is building a high-throughput data ingestion pipeline. The system receives bursts of millions of events per minute. You are using a Pub/Sub topic to decouple the ingestion from the processing. You notice that some messages are being processed multiple times, leading to duplicate entries in your database. How should you handle this to ensure reliability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure Pub/Sub to use 'Exactly-once delivery' settings to ensure no duplicates are sent.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement idempotency logic in the subscriber service by tracking unique message IDs in a transactional store.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from Pub/Sub to a synchronous REST API call to ensure the producer knows the message was processed.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Reduce the acknowledgment deadline to force Pub/Sub to redeliver messages faster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pub/Sub guarantees 'at-least-once' delivery. The industry standard for ensuring reliability and correctness in this model is to make the consumer idempotent, meaning processing the same message multiple times has the same effect as processing it once.",
+      "why_not_A": "Pub/Sub does not provide a native 'Exactly-once delivery' toggle that guarantees no duplicates across all failure scenarios; it provides at-least-once delivery.",
+      "why_not_C": "Synchronous calls remove the decoupling and buffering benefits of Pub/Sub, making the system unable to handle the 'bursts' mentioned in the scenario.",
+      "why_not_D": "Reducing the acknowledgment deadline would actually increase the number of duplicates, as messages would be redelivered before the subscriber has a chance to finish processing."
+    },
+    "tags": [
+      "PubSub",
+      "Idempotency",
+      "Reliability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-028",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are deploying a stateful application on Google Kubernetes Engine (GKE) that requires high availability across three zones in a region. The application requires a shared filesystem for configuration and logs that must be accessible by all pods regardless of which zone they are scheduled in. Which storage solution meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GCE Persistent Disk (PD) with 'ReadWriteOnce' access mode.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Regional Persistent Disk (RePD) configured for synchronous replication.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Google Cloud Filestore using a multi-share configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Local SSDs attached to the GKE nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Filestore provides a managed NFS (Network Attached Storage) that supports 'ReadWriteMany' (RWX), allowing multiple pods across different zones to read and write to the same filesystem simultaneously.",
+      "why_not_A": "ReadWriteOnce (RWO) disks can only be attached to a single node at a time, preventing shared access across a multi-zone cluster.",
+      "why_not_B": "Regional PDs provide high availability for a single pod (by replicating data across two zones), but they still only support RWO, meaning they cannot be shared across multiple pods simultaneously.",
+      "why_not_D": "Local SSDs are ephemeral and tied to a specific physical node; they cannot be shared across nodes or zones and data is lost if the node is deleted."
+    },
+    "tags": [
+      "GKE",
+      "Storage",
+      "Filestore"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-029",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A cloud-native application is experiencing performance degradation during peak hours. Analysis shows the bottleneck is a set of legacy API calls to an external third-party vendor. You want to implement a strategy to ensure that the failure or slowness of this external API does not impact the core functionality of your application. Which design pattern is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Saga Pattern to manage distributed transactions across the internal and external services.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Bulkhead Pattern to isolate the resources used for external API calls from the rest of the application.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Sidecar Pattern to offload the API call logic to a separate container.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Fan-out Pattern to call the external API from multiple concurrent threads.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Bulkhead pattern isolates elements of an application into pools (e.g., separate thread pools or separate services). By isolating the external API calls into their own bulkhead, you ensure that if the external API hangs, only that specific pool is exhausted, leaving the rest of the application functional.",
+      "why_not_A": "The Saga pattern is used for maintaining data consistency across microservices via compensating transactions; it does not address resource exhaustion or performance isolation.",
+      "why_not_C": "A sidecar can handle the network logic, but if the sidecar waits for a slow response, the main application container still waits for the sidecar, meaning the resource exhaustion still occurs.",
+      "why_not_D": "Fan-out would increase the number of concurrent requests to the already struggling external API, likely worsening the performance degradation or triggering rate limits."
+    },
+    "tags": [
+      "Resiliency",
+      "BulkheadPattern",
+      "CloudNative"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-030",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your team is designing a microservices-based payment processing system that must maintain strict data consistency for transaction logs while ensuring high availability across multiple regions. The system must handle sudden bursts of traffic without losing messages. Which architecture pattern best meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a synchronous REST API call chain between services with a distributed lock manager to ensure consistency.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement an event-driven architecture using Pub/Sub for asynchronous communication and Cloud Spanner for the transaction database.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy a monolithic database using Cloud SQL with cross-region read replicas and synchronous application-level mirroring.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Bigtable for transaction logs to ensure low-latency writes and use a global load balancer to route traffic to the nearest region.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pub/Sub provides the necessary buffering to handle traffic bursts (scalability) and decouple services (availability). Cloud Spanner provides external consistency and high availability across regions, solving the strict consistency requirement for transaction logs.",
+      "why_not_A": "Synchronous chains create tight coupling; if one service fails, the entire request fails, reducing availability. Distributed locks introduce significant latency and single points of failure.",
+      "why_not_C": "Cloud SQL read replicas are asynchronous, meaning they do not provide the strict consistency required for transaction logs across regions. Synchronous mirroring at the app level is complex and prone to failure.",
+      "why_not_D": "While Bigtable is highly scalable, it does not provide the relational ACID consistency across multiple rows/tables that is typically required for financial transaction logs compared to Spanner."
+    },
+    "tags": [
+      "event-driven",
+      "cloud-spanner",
+      "pubsub"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-031",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A global e-commerce application experiences intermittent timeouts during peak sales events. Analysis shows that a downstream inventory service is struggling to keep up with requests, causing a cascading failure that crashes the frontend API gateway. How should you redesign the communication to improve reliability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the timeout values on the API gateway to give the inventory service more time to respond.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a retry strategy with exponential backoff and jitter on the API gateway for all failed requests.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement the Circuit Breaker pattern to fail fast when the inventory service is unhealthy and provide a cached fallback response.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Migrate the inventory service to a larger machine type and enable autoscaling based on CPU utilization.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Circuit Breaker pattern prevents a struggling service from crashing the entire system by stopping requests to the failing service once a threshold is reached. Providing a cached fallback ensures the user still sees data, maintaining a degraded but functional user experience.",
+      "why_not_A": "Increasing timeouts actually worsens cascading failures because it holds onto connections longer, consuming more resources (threads/memory) on the gateway and potentially exhausting the connection pool.",
+      "why_not_B": "While retries are useful for transient errors, retrying against a service that is already overloaded (the 'thundering herd' problem) will likely exacerbate the failure and crash the service completely.",
+      "why_not_D": "Scaling the service may help with capacity, but it does not solve the reliability issue of cascading failures. If the underlying cause is a database lock or a slow dependency, adding more compute nodes will not fix the timeout loop."
+    },
+    "tags": [
+      "circuit-breaker",
+      "resiliency",
+      "cascading-failure"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-032",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-cloud-native",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a system that must process a high volume of telemetry data from IoT devices. The system must ensure that data is processed exactly once and that the order of events per device is preserved. Which combination of GCP services and configurations is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Pub/Sub with ordering keys and a Dataflow pipeline utilizing the 'exactly-once' processing semantics.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud Tasks to queue messages and a Cloud Function to process them sequentially.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Pub/Sub standard topics and a GKE cluster running a custom Kafka-like consumer group.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Storage to upload JSON files and a Cloud Scheduler trigger to process files in batches.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Pub/Sub ordering keys ensure that messages with the same key are delivered in the order they were published. Dataflow provides built-in exactly-once processing semantics, ensuring that duplicates are handled and data integrity is maintained during the transformation phase.",
+      "why_not_B": "Cloud Tasks is designed for asynchronous task execution, not high-throughput telemetry streaming. It cannot scale to the volume of IoT telemetry as efficiently as Pub/Sub and Dataflow.",
+      "why_not_C": "Standard Pub/Sub topics do not guarantee order. Implementing a custom Kafka-like consumer on GKE adds significant operational overhead and does not natively provide the exactly-once guarantee without complex custom logic.",
+      "why_not_D": "Batch processing via Cloud Storage and Scheduler introduces high latency and does not satisfy the requirement for real-time or near-real-time telemetry processing, nor does it inherently handle ordering per device."
+    },
+    "tags": [
+      "dataflow",
+      "pubsub-ordering",
+      "exactly-once"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-033",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your team is developing a microservice on Google Kubernetes Engine (GKE) that needs to retrieve a database password securely. You want to avoid hardcoding secrets in your container image or using environment variables that are visible in the pod spec. Which approach follows Google Cloud best practices for secret management?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Store the password in a Kubernetes ConfigMap and mount it as a volume.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Store the password in Secret Manager and use the Secret Manager API to fetch it at runtime.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store the password in a Kubernetes Secret and pass it as a plain-text environment variable.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Store the password in a private Cloud Storage bucket and read the file during the container startup script.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Secret Manager is the dedicated GCP service for managing sensitive data. Fetching it via API at runtime ensures the secret is not stored in the cluster configuration and allows for centralized auditing and rotation.",
+      "why_not_A": "ConfigMaps are designed for non-confidential configuration data and are stored in plaintext, making them insecure for passwords.",
+      "why_not_C": "While Kubernetes Secrets are better than ConfigMaps, passing them as environment variables can expose them in logs or via the 'describe pod' command, and they are only base64 encoded, not encrypted by default at the application layer.",
+      "why_not_D": "Storing secrets in files on Cloud Storage increases the attack surface and complicates rotation and access control compared to a dedicated secret management service."
+    },
+    "tags": [
+      "Secret Manager",
+      "GKE",
+      "Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-034",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are designing a Cloud Function to process images uploaded to a Cloud Storage bucket. The function must trigger immediately upon upload. Which trigger type should you use to ensure the most reliable and scalable event-driven architecture?",
+    "options": [
+      {
+        "id": "A",
+        "text": "An HTTP trigger that is called by a cron job every minute to poll the bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "A Pub/Sub trigger where the bucket sends a notification to a topic, which then triggers the function.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "A Cloud Scheduler trigger that invokes the function based on a fixed interval.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A direct API call from the client application after the upload is complete.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using Cloud Storage notifications to Pub/Sub is the standard asynchronous pattern for event-driven processing. It ensures decoupling and provides reliability through Pub/Sub's queuing mechanism.",
+      "why_not_A": "Polling is inefficient, introduces latency, and does not scale well as the number of files increases.",
+      "why_not_C": "Cloud Scheduler is for time-based tasks, not event-based triggers; it cannot detect when a specific file is uploaded.",
+      "why_not_D": "Relying on the client to trigger the function creates a tight coupling and is unreliable, as the client might crash or lose connection after the upload but before the trigger call."
+    },
+    "tags": [
+      "Cloud Functions",
+      "Pub/Sub",
+      "Event-driven"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-gcp-pcd-mock1-035",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your application is experiencing intermittent timeouts when calling a downstream third-party API. You want to implement a pattern that prevents your application from repeatedly attempting to call the failing service, which is currently overloading the downstream system. Which pattern should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Retry pattern with exponential backoff.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Circuit Breaker pattern.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Sidecar pattern to proxy the requests.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Saga pattern for distributed transactions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Circuit Breaker pattern detects failures and 'opens' the circuit to stop requests from being sent to a failing service for a period, allowing the downstream system to recover and preventing resource exhaustion in the caller.",
+      "why_not_A": "Retry with exponential backoff helps with transient errors but can actually worsen an overload situation (thundering herd problem) if the downstream service is already struggling.",
+      "why_not_C": "A sidecar proxy can help with networking and observability, but it is not a logic pattern for handling downstream service failures.",
+      "why_not_D": "The Saga pattern is used to manage consistency across multiple microservices in a distributed transaction, not for handling API timeouts."
+    },
+    "tags": [
+      "Resiliency",
+      "Microservices",
+      "Design Patterns"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-036",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are building a CI/CD pipeline using Cloud Build. You need to ensure that your container images are only pushed to the Artifact Registry after they have passed a series of automated integration tests. How should you structure your cloudbuild.yaml?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Define a single step that runs both tests and the push command in a shell script.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a 'waitFor' dependency in the push step to ensure it only executes if the test step completes successfully.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Push the image first, then run tests, and delete the image if the tests fail.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a separate Cloud Build trigger for tests and another for pushing, with no linkage between them.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Build executes steps sequentially by default. By placing the test step before the push step, Cloud Build will stop the pipeline if the test step returns a non-zero exit code, preventing the push of a broken image.",
+      "why_not_A": "While possible, this bypasses the visibility and logging benefits of separate Cloud Build steps, making it harder to debug which specific part of the process failed.",
+      "why_not_C": "Pushing an unstable image to the registry is a bad practice and can lead to accidental deployments of broken code to production.",
+      "why_not_D": "Without linkage, there is no guarantee that the image being pushed is the same one that passed the tests, breaking the integrity of the CI/CD process."
+    },
+    "tags": [
+      "Cloud Build",
+      "CI/CD",
+      "Artifact Registry"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcd-mock1-037",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are developing a Go application on App Engine Standard. You need to implement a caching mechanism for expensive database queries that should be shared across all instances of your application to ensure consistency and reduce database load. Which storage option is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "In-memory global variables within the Go application.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Memorystore for Redis.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Storage buckets storing JSON cache files.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Local SSD disks attached to the App Engine instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Memorystore (Redis) provides a managed, high-performance, distributed in-memory data store that can be accessed by all App Engine instances, making it ideal for a shared cache.",
+      "why_not_A": "In-memory variables are local to a single instance. Since App Engine scales horizontally, different instances would have different cache states, leading to inconsistency and redundant DB calls.",
+      "why_not_C": "Cloud Storage is too slow for a caching layer (high latency) and is designed for objects, not the rapid read/write operations required for a query cache.",
+      "why_not_D": "App Engine Standard does not provide access to local SSDs for persistent or shared storage across instances; the filesystem is ephemeral and local to the instance."
+    },
+    "tags": [
+      "Memorystore",
+      "App Engine",
+      "Caching"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-gcp-pcd-mock1-038",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your team is developing a high-throughput microservice on Google Kubernetes Engine (GKE) that processes asynchronous events from Pub/Sub. You are observing intermittent 503 errors and high latency during traffic spikes. You suspect that the application is struggling with connection pooling to a Cloud SQL instance, causing the JVM to exhaust memory during garbage collection. You need to implement a strategy to improve reliability and observability without modifying the core business logic of the application code.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a Sidecar pattern using a service mesh like Anthos Service Mesh (ASM) to handle connection pooling and circuit breaking at the network layer.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy the Cloud SQL Auth Proxy as a sidecar container and implement a Readiness Probe that checks the health of the proxy connection before allowing traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Cloud SQL Proxy sidecar and integrate a connection pooler like PgBouncer or HikariCP configured as a separate proxy layer to decouple application connections from database sessions.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the GKE node machine type to a memory-optimized family and implement a Horizontal Pod Autoscaler (HPA) based on custom memory utilization metrics.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In high-throughput scenarios, the overhead of establishing new TCP connections to Cloud SQL can lead to resource exhaustion. Using a dedicated connection pooler (like PgBouncer for PostgreSQL) decouples the application's connection requests from the actual database sessions, reducing the memory pressure on the JVM and preventing 503s caused by connection timeouts.",
+      "why_not_A": "While ASM provides circuit breaking, it operates at the L7/L4 network layer for service-to-service communication; it does not manage the internal state of database connection pooling or the specific session management required by Cloud SQL.",
+      "why_not_B": "The Cloud SQL Auth Proxy handles authentication and encryption, but it does not provide connection pooling. A Readiness Probe would only prevent traffic to a dead pod, not solve the underlying resource exhaustion caused by too many open connections.",
+      "why_not_D": "Increasing memory (vertical scaling) treats the symptom rather than the cause. If the application continues to leak or over-allocate connections, it will eventually exhaust any amount of memory provided, and HPA based on memory often triggers too late to prevent the 503 errors during rapid spikes."
+    },
+    "tags": [
+      "GKE",
+      "Cloud SQL",
+      "Connection Pooling",
+      "Observability"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcd-mock1-039",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "building-testing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a CI/CD pipeline for a critical payment processing application. The application requires a complex set of dependencies and a specific version of a database schema to run integration tests. You want to ensure that the test environment is identical to production, is ephemeral, and does not introduce 'flaky tests' due to shared state between concurrent pipeline runs. Which approach best meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a persistent staging environment with a dedicated Cloud SQL instance and execute a 'cleanup' script after every test suite to reset the data.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Utilize Google Cloud Build to trigger a workflow that spins up a temporary GKE cluster and deploys the application using Helm charts with a unique namespace for each build.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a 'Test Double' strategy using an in-memory database (like H2) for all integration tests to ensure maximum speed and isolation.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Build to launch a temporary environment where the application and a containerized version of the database (using the same image as production) are deployed as a single pod or via Docker Compose, using a unique build ID for isolation.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Containerizing the database (using the same image as production) and deploying it alongside the app in an ephemeral environment ensures that the environment is identical to production, is completely isolated from other builds (preventing flaky tests), and is destroyed after the test, fulfilling all requirements.",
+      "why_not_A": "Persistent environments with cleanup scripts are prone to 'flaky tests' if a cleanup fails or if two builds run concurrently and interfere with the same database instance.",
+      "why_not_B": "Spinning up a full GKE cluster for every build is excessively slow and resource-heavy, significantly increasing the feedback loop time for developers without providing more isolation than a container-based approach.",
+      "why_not_C": "In-memory databases (Test Doubles) often behave differently than production databases (e.g., different SQL dialects, transaction handling), violating the requirement that the test environment must be identical to production."
+    },
+    "tags": [
+      "CI/CD",
+      "Cloud Build",
+      "Integration Testing",
+      "Ephemeral Environments"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-040",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your team is deploying a microservice to Google Kubernetes Engine (GKE). You need to ensure that the application can be updated to a new version without any downtime, and if the new version fails health checks, the system should automatically stop the rollout and keep the old version running. Which deployment strategy should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a new Deployment and manually delete the old one after verification.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Rolling Update strategy with configured readiness probes and maxUnavailable parameters.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Recreate strategy to ensure no two versions of the app run simultaneously.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy the app as a StatefulSet to maintain the identity of the pods during the update.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Rolling Updates in GKE replace pods incrementally. By configuring readiness probes, GKE ensures a pod is healthy before routing traffic to it. If the new pods fail the probe, the rollout pauses, preventing the entire service from going down.",
+      "why_not_A": "Manual deletion is prone to human error and does not provide an automated mechanism to stop a failing rollout based on health checks.",
+      "why_not_C": "The Recreate strategy kills all existing pods before starting new ones, which inherently causes downtime, violating the 'no downtime' requirement.",
+      "why_not_D": "StatefulSets are used for applications requiring stable identifiers or persistent storage; they do not provide the specific zero-downtime automated rollback mechanism requested here."
+    },
+    "tags": [
+      "GKE",
+      "Deployment-Strategies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-041",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer wants to deploy a containerized application to Google Cloud that requires minimal operational overhead. The application handles varying amounts of traffic and must scale to zero when there are no requests. Which compute option is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Compute Engine with an Autoscaling Managed Instance Group (MIG).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Google Kubernetes Engine (GKE) Standard cluster.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Run.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "App Engine Standard environment.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Run is a fully managed serverless platform that abstracts infrastructure (minimal overhead), supports containers, and natively scales to zero when there is no incoming traffic.",
+      "why_not_A": "Compute Engine MIGs require managing the OS and cannot scale to zero instances while maintaining a responsive 'request-driven' trigger without significant custom engineering.",
+      "why_not_B": "GKE Standard requires managing nodes and clusters. While the Horizontal Pod Autoscaler can scale pods, the underlying nodes typically do not scale to zero without complex configuration.",
+      "why_not_D": "While App Engine Standard scales to zero, it is not primarily a container-based deployment (it uses specific language runtimes), whereas the prompt specifically mentions a 'containerized application'."
+    },
+    "tags": [
+      "Cloud-Run",
+      "Serverless"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-gcp-pcd-mock1-042",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are configuring a CI/CD pipeline using Cloud Build. You want to ensure that the deployment to the production environment only occurs after a lead engineer manually approves the build in the Google Cloud Console. How should you achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Add a 'pause' step in the cloudbuild.yaml configuration file.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud Build triggers with the 'Require manual approval' setting enabled.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure a Pub/Sub notification to alert the engineer to manually run the deploy command.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a separate Cloud Build trigger for production and remove the source repository link.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Build triggers support a built-in 'Require manual approval' feature, which halts the pipeline execution until an authorized user manually approves the build in the console.",
+      "why_not_A": "There is no standard 'pause' keyword in cloudbuild.yaml that creates a UI-based approval gate for humans.",
+      "why_not_C": "While this provides a notification, it is not a formal approval gate integrated into the pipeline's state management.",
+      "why_not_D": "Removing the source link would break the automation of the CI/CD pipeline and is not a standard way to implement approval gates."
+    },
+    "tags": [
+      "Cloud-Build",
+      "CI-CD"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcd-mock1-043",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is migrating a legacy application to Google Cloud. The application requires a specific version of a Linux kernel and needs root access to modify system-level network configurations during startup. Which deployment target is most suitable?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud Run",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "App Engine Standard",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Compute Engine (Virtual Machine)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "GKE Autopilot",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Compute Engine provides full control over the VM, including the ability to choose the OS image, modify the kernel, and provide full root/sudo access to the system.",
+      "why_not_A": "Cloud Run is a serverless container environment where the underlying kernel is managed by Google and cannot be modified by the user.",
+      "why_not_B": "App Engine Standard is a highly restricted sandbox environment that does not allow kernel modifications or root access.",
+      "why_not_D": "GKE Autopilot restricts several privileged operations and does not allow the user to modify the underlying node's kernel for security and management reasons."
+    },
+    "tags": [
+      "Compute-Engine",
+      "Infrastructure-Selection"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-gcp-pcd-mock1-044",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are deploying a containerized application to GKE. You need to provide the application with a database password and an API key. To follow security best practices and avoid hardcoding secrets in the container image or environment variables in plain text, what should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Store the secrets in a private Git repository and mount it as a volume.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Kubernetes ConfigMaps to store the API key and password.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Secret Manager and integrate it with GKE using the Secret Manager CSI driver.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Pass the secrets as command-line arguments during the 'kubectl apply' process.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Secret Manager is the dedicated GCP service for sensitive data. Using the CSI (Container Storage Interface) driver allows GKE pods to mount these secrets as volumes or environment variables securely without storing them in the cluster's etcd in plain text.",
+      "why_not_A": "Storing secrets in Git, even in a private repo, is a major security risk and violates industry standards (Secret Sprawl).",
+      "why_not_B": "ConfigMaps are intended for non-sensitive configuration data; they store data in plain text and are not encrypted at rest by default.",
+      "why_not_D": "Passing secrets as command-line arguments leaves them visible in the shell history and in the pod specification (visible via 'kubectl describe'), which is insecure."
+    },
+    "tags": [
+      "Secret-Manager",
+      "GKE-Security"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcd-mock1-045",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your team is deploying a microservice to Google Kubernetes Engine (GKE) that requires a specific version of a library available only in a custom Docker image. You need to implement a deployment strategy that allows you to test the new version with a small percentage of real traffic before fully promoting it to production. Which approach is the most efficient?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a second GKE cluster, deploy the new version, and use Cloud DNS to split traffic between clusters."
+      },
+      {
+        "id": "B",
+        "text": "Deploy the new version as a separate Deployment with a different label and use a Kubernetes Service to distribute traffic based on selector weights."
+      },
+      {
+        "id": "C",
+        "text": "Deploy the new version as a separate Deployment and use an Ingress controller (like Istio or Anthos Service Mesh) to implement a traffic split based on percentages."
+      },
+      {
+        "id": "D",
+        "text": "Use a RollingUpdate strategy in the existing Deployment and monitor the pods until 100% are updated."
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A Canary deployment requires fine-grained traffic control (e.g., 5% to new, 95% to old). Standard Kubernetes Services only provide random round-robin distribution. An Ingress controller or Service Mesh (Istio) allows precise percentage-based routing.",
+      "why_not_A": "Creating a whole new cluster for a single version update is operationally expensive, slow, and overkill for a canary deployment.",
+      "why_not_B": "Standard Kubernetes Services do not support weighted traffic splitting; they distribute traffic evenly across all pods matching the selector.",
+      "why_not_D": "RollingUpdate replaces pods incrementally but does not allow you to 'pin' a small percentage of traffic for testing; once the rollout finishes, all traffic goes to the new version."
+    },
+    "tags": [
+      "GKE",
+      "Canary Deployment",
+      "Traffic Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-046",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is deploying a Python application to Cloud Run. The application needs to access a secret key stored in Secret Manager. To ensure the application follows the principle of least privilege and minimizes latency during startup, how should the secret be integrated?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use the Secret Manager API within the application code to fetch the secret at runtime during every request."
+      },
+      {
+        "id": "B",
+        "text": "Grant the Cloud Run service account the 'Secret Manager Secret Accessor' role and mount the secret as a volume or environment variable via the Cloud Run configuration."
+      },
+      {
+        "id": "C",
+        "text": "Store the secret as a plain-text environment variable in the Cloud Run YAML configuration file."
+      },
+      {
+        "id": "D",
+        "text": "Create a custom IAM role with 'secretmanager.versions.get' and apply it to the Default Compute Service Account."
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Mounting secrets as volumes or environment variables via the Cloud Run integration is the recommended pattern. It allows Cloud Run to handle the retrieval at container start, reducing API calls and ensuring the secret is available as a local resource.",
+      "why_not_A": "Fetching the secret on every request introduces significant latency and increases the risk of hitting Secret Manager API quotas.",
+      "why_not_C": "Storing secrets in plain text in configuration files is a major security vulnerability and violates all security best practices.",
+      "why_not_D": "Using the Default Compute Service Account is a violation of the principle of least privilege, as it often has broader permissions than necessary."
+    },
+    "tags": [
+      "Cloud Run",
+      "Secret Manager",
+      "Security"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcd-mock1-047",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a CI/CD pipeline using Cloud Build to deploy a containerized application to App Engine Flexible. You want to ensure that the deployment is automatically rolled back if the new version fails to pass health checks. Which configuration is required?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable 'automatic-rollback' in the app.yaml file."
+      },
+      {
+        "id": "B",
+        "text": "Configure the 'gcloud app deploy' command with the --stop-traffic flag to manually verify before routing."
+      },
+      {
+        "id": "C",
+        "text": "Use the 'traffic-splitting' feature in App Engine to gradually shift traffic and manually trigger a rollback via the Console if errors spike."
+      },
+      {
+        "id": "D",
+        "text": "App Engine Flexible does not support automatic rollback; you must implement a custom script in Cloud Build to monitor health and run 'gcloud app versions migrate'."
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Unlike App Engine Standard, App Engine Flexible does not have a built-in 'automatic rollback' mechanism based on health checks. The developer must implement custom logic in the pipeline (e.g., using Cloud Build and Cloud Monitoring) to detect failures and trigger a migration back to the previous version.",
+      "why_not_A": "There is no 'automatic-rollback' setting in the app.yaml specification for App Engine Flexible.",
+      "why_not_B": "The --stop-traffic flag prevents traffic from hitting the version, but it doesn't provide an automatic rollback mechanism based on health check failures.",
+      "why_not_C": "Traffic splitting allows for manual or gradual shifts, but it is not an 'automatic rollback' based on health checks."
+    },
+    "tags": [
+      "App Engine Flexible",
+      "Cloud Build",
+      "CI/CD"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcd-mock1-048",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An application deployed on GKE is experiencing intermittent crashes due to 'Out of Memory' (OOM) errors. The pods are being restarted, but the application is not scaling horizontally. You observe that the memory usage spikes during a specific batch processing task. What is the best way to resolve this while optimizing costs?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the machine type of the GKE nodes to a high-memory family."
+      },
+      {
+        "id": "B",
+        "text": "Set the memory 'requests' equal to the 'limits' to guarantee the pod has the maximum memory available."
+      },
+      {
+        "id": "C",
+        "text": "Implement a Vertical Pod Autoscaler (VPA) in 'Auto' mode to dynamically adjust memory requests and limits based on usage."
+      },
+      {
+        "id": "D",
+        "text": "Increase the memory 'limit' significantly while keeping the 'request' low to allow for bursting."
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "VPA automatically analyzes the memory usage of pods and adjusts the requests and limits. This ensures the pod has enough memory for the spikes without over-provisioning (wasting money) during idle periods.",
+      "why_not_A": "Increasing node size is a 'brute force' approach that increases costs for all pods on the node, regardless of whether they need the memory.",
+      "why_not_B": "Setting requests equal to limits (Guaranteed QoS) prevents OOM if the limit is high enough, but it leads to wasted resources and prevents efficient bin-packing on nodes.",
+      "why_not_D": "If the request is too low, the pod may be scheduled on a node that doesn't actually have the physical memory to support the burst, leading to the node itself becoming unstable or the pod being killed anyway."
+    },
+    "tags": [
+      "GKE",
+      "VPA",
+      "Resource Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-049",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You need to deploy a global application that requires low-latency access for users worldwide. The application consists of a frontend and a backend API. You decide to use a Global External HTTP(S) Load Balancer. How should you configure the backend to ensure the best performance and availability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy the backend to a single region and use Cloud CDN to cache all API responses."
+      },
+      {
+        "id": "B",
+        "text": "Deploy the backend to multiple regions using a Managed Instance Group (MIG) in each region and add them as backends to the Global Load Balancer."
+      },
+      {
+        "id": "C",
+        "text": "Deploy the backend to a single region and use a Global VPC to route traffic to the nearest instance."
+      },
+      {
+        "id": "D",
+        "text": "Use a Regional External Load Balancer in every region and use DNS Round Robin to distribute users."
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Global External HTTP(S) Load Balancer can route traffic to the nearest healthy backend in a multi-region setup. By using MIGs in multiple regions, the load balancer automatically directs users to the closest geographic region, minimizing latency.",
+      "why_not_A": "API responses are often dynamic and cannot be cached by Cloud CDN, and a single region creates a single point of failure and high latency for distant users.",
+      "why_not_C": "A Global VPC allows connectivity, but it does not provide the intelligent traffic routing and load balancing required to minimize latency for global users.",
+      "why_not_D": "Regional Load Balancers are not global. Using DNS Round Robin is less efficient than a Global Load Balancer because it doesn't account for real-time health or precise proximity as effectively as Google's Anycast IP."
+    },
+    "tags": [
+      "Cloud Load Balancing",
+      "Global Architecture",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcd-mock1-050",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploying-apps",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your team is deploying a critical microservice to Google Kubernetes Engine (GKE) using a Canary deployment strategy. You need to ensure that only 5% of total traffic is routed to the new version (v2), and you must be able to instantly roll back to v1 without modifying the Kubernetes Service selector or deleting pods. You are using a Service Mesh for traffic management. Which approach provides the most precise control and meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Scale the v2 Deployment to have 5 replicas and the v1 Deployment to have 95 replicas, using a single Kubernetes Service to load balance across all pods.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a VirtualService and DestinationRule in Istio to split traffic by weight, directing 5% to the v2 subset and 95% to the v1 subset.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a GKE Ingress controller with a BackendConfig policy to distribute traffic based on a weighted load balancing rule across two separate services.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Kubernetes Horizontal Pod Autoscaler (HPA) to maintain a 5:95 ratio of pods between the two versions based on CPU utilization.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a Service Mesh environment (like Istio/Anthos Service Mesh), VirtualServices allow for fine-grained traffic shifting based on weights regardless of the number of pods. This decouples traffic routing from pod scaling, allowing an instant rollback by simply updating the weight in the VirtualService manifest.",
+      "why_not_A": "Scaling pods to achieve a percentage is imprecise because it depends on the exact pod count and does not allow for 'instant' rollback without changing the replica count, which takes time for pods to spin up/down.",
+      "why_not_C": "While GKE Ingress supports some advanced routing, the requirement specifically mentions a Service Mesh for traffic management, and VirtualServices provide more granular, application-level control than standard BackendConfigs.",
+      "why_not_D": "HPA is used for scaling based on resource metrics, not for controlling traffic distribution percentages for Canary deployments."
+    },
+    "tags": [
+      "GKE",
+      "Istio",
+      "Canary Deployment",
+      "Traffic Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-051",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your application needs to trigger a Cloud Function whenever a new image is uploaded to a specific Cloud Storage bucket. You want to ensure the system is decoupled and can handle spikes in upload volume without losing events. Which integration pattern should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure the Cloud Function to poll the Cloud Storage bucket every 60 seconds using a Cloud Scheduler trigger.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set up a Cloud Storage trigger that sends a notification to a Pub/Sub topic, which then triggers the Cloud Function.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a direct HTTP trigger on the Cloud Function and call it from the client-side application immediately after the upload completes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable Cloud Storage 'Object Change Notifications' to send a webhook directly to the Cloud Function endpoint.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using Pub/Sub as an intermediary between Cloud Storage and Cloud Functions provides an asynchronous, decoupled architecture. Pub/Sub acts as a buffer, ensuring that if the function hits concurrency limits during a spike, messages are retained and retried.",
+      "why_not_A": "Polling is inefficient, introduces latency, and does not scale well with high volumes of files.",
+      "why_not_C": "Client-side triggering is unreliable; if the client crashes after upload but before the trigger, the function never runs. It also exposes the function endpoint to the public internet.",
+      "why_not_D": "While webhooks exist, the Pub/Sub integration is the native, recommended GCP pattern for reliable, scalable event-driven processing from GCS."
+    },
+    "tags": [
+      "Cloud Storage",
+      "Pub/Sub",
+      "Cloud Functions",
+      "Event-Driven Architecture"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-052",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are developing a microservice on GKE that needs to access a Secret Manager secret to retrieve a database password. To adhere to the principle of least privilege and avoid hardcoding credentials, how should you integrate the service with Secret Manager?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a service account key JSON file, store it as a Kubernetes Secret, and mount it as a volume in the pod.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the default Compute Engine default service account and grant it the Secret Manager Secret Accessor role project-wide.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Workload Identity to map a Kubernetes service account to a Google service account with the Secret Manager Secret Accessor role for that specific secret.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use an API Key generated in the Google Cloud Console and pass it as an environment variable to the GKE pod.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Workload Identity is the recommended way for GKE workloads to access GCP services. It eliminates the need for static service account keys and allows granular IAM permissions per pod/service account.",
+      "why_not_A": "Storing service account keys in Kubernetes Secrets is a security risk (key leakage) and creates a management overhead for key rotation.",
+      "why_not_B": "Using the default compute service account violates the principle of least privilege, as it often has broad permissions across the project.",
+      "why_not_D": "API Keys are for public API access and cannot be used to authenticate requests to Secret Manager, which requires IAM authentication."
+    },
+    "tags": [
+      "Secret Manager",
+      "GKE",
+      "Workload Identity",
+      "IAM"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-053",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer needs to integrate a legacy on-premises application with a Google Cloud SQL (PostgreSQL) instance. The application requires a persistent IP address to connect and must communicate over a private connection to avoid the public internet. What is the best integration strategy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign a Public IP to the Cloud SQL instance and use an authorized network firewall rule to allow the on-premises IP.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Cloud VPN or Interconnect and enable Private Services Access (PSA) for the Cloud SQL instance.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Cloud Proxy on a GCE instance and use that instance as a jump host for the on-premises application.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud SQL Auth Proxy on the on-premises server and connect via the public internet using SSL certificates.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud VPN/Interconnect provides the private tunnel from on-prem to GCP. Private Services Access (PSA) allows the VPC to connect to the Google-managed service producer VPC where Cloud SQL resides using a private IP.",
+      "why_not_A": "This uses the public internet, which violates the requirement for a private connection.",
+      "why_not_C": "While a jump host works, it is an inefficient architectural pattern and does not provide a native private network path for the application traffic.",
+      "why_not_D": "The Cloud SQL Auth Proxy provides secure authentication, but the traffic still traverses the public internet unless combined with a private IP configuration."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Cloud VPN",
+      "Private Services Access",
+      "Networking"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-054",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are building a real-time analytics dashboard. Data is streaming into a Pub/Sub topic. You need to process this data in real-time to calculate windowed averages and then store the results in BigQuery. Which service combination is most appropriate for this integration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Pub/Sub -> Cloud Functions -> BigQuery",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Pub/Sub -> Dataflow -> BigQuery",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Pub/Sub -> Cloud Run -> BigQuery",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Pub/Sub -> BigQuery (via BigQuery Subscription)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dataflow (based on Apache Beam) is specifically designed for stream processing and complex windowing operations (e.g., sliding or tumbling windows) before sinking data into BigQuery.",
+      "why_not_A": "Cloud Functions are better for simple event-driven triggers. Implementing complex windowing logic in a stateless function is difficult and inefficient.",
+      "why_not_C": "Cloud Run is for containerized requests. Like Cloud Functions, it lacks the native state management and windowing capabilities required for stream processing.",
+      "why_not_D": "A BigQuery subscription allows direct ingestion from Pub/Sub, but it does not allow for real-time processing or windowed calculations; it simply loads the raw data."
+    },
+    "tags": [
+      "Pub/Sub",
+      "Dataflow",
+      "BigQuery",
+      "Stream Processing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-055",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your application uses Cloud Spanner for its database. You need to implement a caching layer to reduce the number of read requests to Spanner for frequently accessed configuration data. Which GCP service should you integrate to achieve this with the lowest latency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud Storage (using a cached bucket)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Memorystore for Redis",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Firestore in Datastore mode",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Bigtable",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Memorystore for Redis is an in-memory data store that provides sub-millisecond latency, making it the ideal choice for a caching layer to reduce database load.",
+      "why_not_A": "Cloud Storage is an object store with much higher latency than an in-memory cache.",
+      "why_not_C": "Firestore is a NoSQL document database. While fast, it is not an in-memory cache and will have higher latency than Redis.",
+      "why_not_D": "Bigtable is designed for massive analytical workloads and high throughput, but it does not provide the sub-millisecond response times of a dedicated Redis cache for simple key-value lookups."
+    },
+    "tags": [
+      "Cloud Spanner",
+      "Memorystore",
+      "Caching",
+      "Latency"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-056",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your application runs on Google Kubernetes Engine (GKE) and needs to securely retrieve a database password stored in Secret Manager. To adhere to the principle of least privilege and avoid managing long-lived service account keys, how should you implement this integration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a service account key JSON file, upload it as a Kubernetes Secret, and mount it as a volume in the pod.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Workload Identity, associate a Kubernetes service account with a Google Cloud service account, and use the Secret Manager client library in the code.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use the default Compute Engine service account and grant it the 'Secret Manager Secret Accessor' role at the project level.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a VPC Service Control perimeter and use the metadata server to fetch the secret via a curl command.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Workload Identity is the recommended way for GKE workloads to access GCP services. It maps a K8s service account to a GCP service account, eliminating the need for static keys and providing fine-grained IAM control.",
+      "why_not_A": "Managing JSON keys manually is a security risk and violates the requirement to avoid long-lived service account keys.",
+      "why_not_C": "Using the default Compute Engine service account violates the principle of least privilege as it often has broad 'Editor' permissions and is shared across all nodes.",
+      "why_not_D": "VPC Service Controls provide network-level security but do not solve the identity/authentication problem for accessing Secret Manager."
+    },
+    "tags": [
+      "GKE",
+      "Secret Manager",
+      "Workload Identity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-057",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing an event-driven architecture where a Cloud Storage bucket triggers a Cloud Function to process an uploaded CSV file. The processing logic is computationally expensive and often exceeds the maximum timeout of a Cloud Function. What is the most scalable way to integrate these services?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the Cloud Function timeout to its maximum limit and use a larger instance size.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Change the trigger to a Pub/Sub topic and have the Cloud Function call the processing logic via a synchronous HTTP request.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use the Cloud Storage trigger to invoke a Cloud Function that publishes a message to a Pub/Sub topic, which then triggers a Cloud Run job for asynchronous processing.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Set up a polling mechanism within the Cloud Function to check for new files in the bucket every 60 seconds.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Run jobs are designed for long-running tasks that exceed the timeouts of Cloud Functions. Using Pub/Sub as an intermediary decouples the trigger from the execution and ensures scalability.",
+      "why_not_A": "Even the maximum timeout for Cloud Functions may be insufficient for 'computationally expensive' tasks, and it doesn't solve the fundamental architectural mismatch.",
+      "why_not_B": "A synchronous HTTP request from a Cloud Function to another service still subjects the original function to a timeout while waiting for the response.",
+      "why_not_D": "Polling is inefficient, introduces latency, and is not an event-driven pattern."
+    },
+    "tags": [
+      "Cloud Functions",
+      "Cloud Run",
+      "Pub/Sub",
+      "Event-driven"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-058",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your application needs to send personalized notifications to millions of users. You want to use Cloud Pub/Sub to decouple the notification generator from the delivery system. To ensure that a specific user's notifications are processed in the exact order they were generated, how should you configure the integration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a single subscription and set the acknowledgement deadline to a very high value.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable 'Message Ordering' on the topic and provide an ordering key (e.g., UserID) when publishing messages.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a separate topic for every user to ensure sequential processing.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Push subscription and configure the endpoint to process messages one by one using a mutex lock.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pub/Sub supports ordering keys. When enabled, messages with the same ordering key are delivered to the subscriber in the order they were published.",
+      "why_not_A": "Increasing the ack deadline does not guarantee the order of delivery; it only gives the subscriber more time to process a message.",
+      "why_not_C": "Creating millions of topics is not scalable and exceeds GCP quota limits.",
+      "why_not_D": "A mutex lock at the endpoint level does not prevent Pub/Sub from delivering messages out of order to the endpoint."
+    },
+    "tags": [
+      "Pub/Sub",
+      "Message Ordering",
+      "Asynchronous Messaging"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-059",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are integrating a third-party API that requires a static IP address for allowlisting. Your application is hosted on App Engine Standard. How can you ensure all outgoing requests to the third-party API originate from a fixed IP address?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign a static external IP address directly to the App Engine Standard instance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Cloud NAT gateway attached to the App Engine default network.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Route outgoing traffic through a Serverless VPC Access connector and use a Cloud NAT gateway on the connected VPC.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure the App Engine firewall rules to force all egress traffic through a specific IP address.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "App Engine Standard doesn't have static IPs. By using Serverless VPC Access, traffic is routed into a VPC. From there, Cloud NAT can be used to provide a stable, static external IP for all egress traffic.",
+      "why_not_A": "App Engine Standard is a fully managed platform; you cannot assign static IPs directly to its instances.",
+      "why_not_B": "Cloud NAT requires a VPC. App Engine Standard traffic does not enter a VPC by default; it needs the VPC Access connector first.",
+      "why_not_D": "Firewall rules control what traffic is allowed in/out, but they cannot assign or change the source IP address of the outgoing packet."
+    },
+    "tags": [
+      "App Engine",
+      "Cloud NAT",
+      "Serverless VPC Access"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-060",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "integrating-gcp",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You have a microservices architecture where Service A needs to call Service B. Service B is hosted on Cloud Run and must only accept requests originating from Service A. What is the most secure way to implement this authentication?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Share a secret API key between Service A and Service B via Secret Manager and validate it in the request header.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure Service B to 'Allow unauthenticated invocations' and use a VPC firewall to restrict access to Service A's IP.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Set Service B to 'Require authentication', and have Service A generate an OIDC ID token using its own service account to include in the Authorization header.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use an API Gateway to manage the traffic and implement a custom authorizer that checks the source IP of the request.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Run natively supports IAM-based authentication. By requiring authentication and using an OIDC token, Service B can verify the identity of Service A via Google's identity platform.",
+      "why_not_A": "API keys are less secure than IAM-based tokens and require manual rotation and management.",
+      "why_not_B": "Cloud Run services have dynamic IPs; restricting by IP is not feasible and 'unauthenticated' means anyone with the URL could potentially bypass the firewall if it's misconfigured.",
+      "why_not_D": "IP-based authorization is unreliable in serverless environments and is less secure than identity-based (IAM) authorization."
+    },
+    "tags": [
+      "Cloud Run",
+      "IAM",
+      "OIDC",
+      "Service-to-Service"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-061",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your team has deployed a microservice to Google Kubernetes Engine (GKE). You need to implement a strategy to update the application to a new version while ensuring that if the new version fails health checks, the system automatically reverts to the previous stable version without manual intervention. Which approach should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a Kubernetes Deployment with a carefully configured 'maxUnavailable' and 'maxSurge' parameter.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a Blue/Green deployment using two separate GKE clusters and switch traffic at the Load Balancer level.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Kubernetes Deployment with a rolling update strategy and configure Readiness Probes to prevent traffic from reaching unhealthy pods.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Manually apply the new image and use 'kubectl rollout undo' if the monitoring dashboard shows an increase in 5xx errors.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Readiness probes ensure that a container is ready to accept traffic. In a rolling update, GKE will not mark a new pod as 'Ready' (and thus won't kill an old pod) until the probe passes. If the new version fails the probe, the rollout stalls, preventing the outage and allowing for an automated halt of the deployment.",
+      "why_not_A": "While maxUnavailable and maxSurge control the pace of the rollout, they do not provide the health-check-driven logic required to stop a failing deployment automatically.",
+      "why_not_B": "While Blue/Green is a valid strategy, using two separate clusters for a simple version update is over-engineering and does not inherently provide 'automatic' reversion based on health checks without an external orchestrator.",
+      "why_not_D": "This describes a manual process, which violates the requirement for the system to handle the reversion without manual intervention."
+    },
+    "tags": [
+      "GKE",
+      "Deployment-Strategies",
+      "Health-Checks"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-062",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are managing a Cloud Run service that experiences sudden spikes in traffic. You notice that some requests are failing with 429 (Too Many Requests) errors because the service is hitting its maximum instance limit. You want to ensure the service can handle these spikes while minimizing cold start latency for users. What is the best configuration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the maximum number of instances and set the minimum number of instances to a value greater than zero.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Increase the memory limit per instance to allow each instance to handle more concurrent requests.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Decrease the concurrency setting to force Cloud Run to spin up more instances faster.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a Cloud Pub/Sub queue in front of the Cloud Run service to buffer the spikes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Increasing the maximum instances prevents 429 errors by allowing the platform to scale further. Setting a minimum number of instances (min-instances) keeps a baseline of warm containers ready, directly reducing cold start latency during spikes.",
+      "why_not_B": "Increasing memory may help if the app is crashing due to OOM, but it doesn't solve the instance limit (429) or the cold start latency issue.",
+      "why_not_C": "Decreasing concurrency means each instance handles fewer requests, which actually causes the service to hit the max-instance limit faster, potentially increasing 429 errors.",
+      "why_not_D": "While buffering helps with load leveling, it changes the architecture to asynchronous processing, which may not be acceptable for a user-facing request and doesn't address the cold start of the instances themselves."
+    },
+    "tags": [
+      "Cloud-Run",
+      "Scaling",
+      "Cold-Starts"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-063",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your application is deployed on App Engine flexible environment. You need to update the application's environment variables without causing downtime or triggering a full redeployment of the application code. How should you achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Update the app.yaml file and run 'gcloud app deploy'.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the Google Cloud Console to edit the environment variables in the App Engine settings.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Store the variables in Secret Manager and have the application fetch them at runtime via the API.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use 'gcloud app versions create' with the --env-vars flag.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In App Engine (and most GCP compute services), changing environment variables in the config file requires a new version deployment (restart). By using Secret Manager, the application can poll for updates or fetch the latest value at runtime without requiring a restart or redeploy of the container.",
+      "why_not_A": "Updating app.yaml and deploying creates a new version and triggers a rollout, which is a full redeployment.",
+      "why_not_B": "App Engine environment variables are immutable for a specific version; changing them requires the deployment of a new version.",
+      "why_not_D": "Creating a new version is exactly what the user wants to avoid (a full redeployment/rollout)."
+    },
+    "tags": [
+      "App-Engine",
+      "Configuration-Management",
+      "Secret-Manager"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-064",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You have a production application running on GKE. You need to troubleshoot a recurring intermittent crash that only happens under specific load conditions. You need to capture the logs and the state of the container immediately after it crashes before the pod is restarted by the Kubelet. What is the best approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure a Liveness Probe that restarts the container immediately upon failure.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use 'kubectl logs --previous' to retrieve the logs of the crashed container.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the CPU and Memory limits to prevent the crash from occurring.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set the pod's restartPolicy to 'Never' and manually restart it after analyzing the node.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The '--previous' flag in 'kubectl logs' allows you to retrieve the logs from the previous instance of the container in the pod, which is essential for debugging crashes (CrashLoopBackOff) where the current container is fresh and the evidence is in the dead one.",
+      "why_not_A": "Liveness probes cause the restart; they don't help you capture the state of the crashed container after the fact.",
+      "why_not_C": "This is a 'guessing' approach to mitigation, not a troubleshooting approach to identify the root cause.",
+      "why_not_D": "Setting restartPolicy to 'Never' for a production deployment is dangerous as it leads to permanent downtime for that pod until manual intervention, which is not a standard troubleshooting practice for intermittent crashes."
+    },
+    "tags": [
+      "GKE",
+      "Troubleshooting",
+      "Logging"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-065",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are using Cloud Monitoring to track the health of your deployed application. You want to be alerted only when the 95th percentile of request latency exceeds 500ms for more than 5 minutes, but you want to avoid 'flapping' alerts caused by single-request outliers. Which configuration is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create an alert based on the average latency with a threshold of 500ms.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an alert using the 95th percentile alignment and set the 'Condition' to trigger only after the threshold is violated for 5 consecutive minutes.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Set up a Log-based alert that triggers every time a single request exceeds 500ms.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a dashboard with a heat map to manually monitor the latency and set a manual reminder.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using the 95th percentile (p95) ignores the top 5% of outliers, providing a stable view of the 'worst' typical user experience. Setting a duration (5 minutes) ensures that transient spikes don't trigger the alert, preventing 'flapping'.",
+      "why_not_A": "Average latency is heavily skewed by outliers and often hides the poor experience of a significant minority of users.",
+      "why_not_C": "Log-based alerts for single requests would cause an enormous amount of noise (alert fatigue) and do not satisfy the '5-minute' duration requirement.",
+      "why_not_D": "Manual monitoring is not an automated alerting strategy and is not scalable for production environments."
+    },
+    "tags": [
+      "Cloud-Monitoring",
+      "SLIs-SLOs",
+      "Alerting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-066",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your team has deployed a microservice to Google Kubernetes Engine (GKE) that processes asynchronous messages from a Pub/Sub subscription. During peak hours, the application experiences significant latency, and messages are piling up in the subscription. You have already configured a Horizontal Pod Autoscaler (HPA) based on CPU utilization, but the pods are not scaling up because the processing is I/O bound, not CPU bound. How should you modify the scaling strategy to ensure the application handles the load efficiently?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the CPU request and limit in the pod specification to trigger the HPA more frequently.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a Custom Metrics Stackdriver adapter to scale the HPA based on the 'num_undelivered_messages' metric from Pub/Sub.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from HPA to Vertical Pod Autoscaler (VPA) to increase the memory and CPU of existing pods.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable the GKE Cluster Autoscaler to add more nodes to the cluster automatically.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Since the workload is I/O bound, CPU metrics are not a reliable indicator of load. Scaling based on the actual queue depth (undelivered messages) ensures that the number of pods scales proportionally to the amount of work pending in Pub/Sub.",
+      "why_not_A": "Increasing CPU requests/limits does not solve the problem because the bottleneck is not CPU; the pods will still not trigger scaling if CPU usage remains low despite the message backlog.",
+      "why_not_C": "VPA adjusts the size of the pods, but if the workload is I/O bound, giving a single pod more CPU/RAM won't necessarily increase the throughput of message processing as much as adding more parallel workers (pods) would.",
+      "why_not_D": "Cluster Autoscaler adds nodes when pods cannot be scheduled due to lack of resources. It does not decide when to create new pods; that is the responsibility of the HPA."
+    },
+    "tags": [
+      "GKE",
+      "HPA",
+      "Custom Metrics",
+      "PubSub"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-067",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are managing a production application deployed on App Engine Flexible. You need to deploy a new version of the application and want to ensure that the new version is fully functional and stable before shifting all traffic to it. You also need the ability to instantly roll back if the new version exhibits errors. Which deployment strategy should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a 'Rolling Update' by updating the existing version's configuration files.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy the new version with 0% traffic, perform smoke tests, and then use a gradual traffic split to migrate users.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Blue/Green deployment by deleting the old version immediately after the new version reports a 'Healthy' status.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy the new version and use the App Engine 'Automatic Scaling' feature to distribute traffic based on load.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Deploying with 0% traffic allows for validation in the production environment without affecting users. A gradual traffic split (canary deployment) minimizes risk, and since the old version remains active, rolling back is as simple as shifting traffic back to 100% on the previous version.",
+      "why_not_A": "Rolling updates in App Engine Flexible can be disruptive and don't allow for the same level of isolated validation as a separate version deployment with 0% traffic.",
+      "why_not_C": "Deleting the old version immediately removes the ability to perform an 'instant' rollback, as you would have to redeploy the previous version from scratch.",
+      "why_not_D": "Automatic scaling manages the number of instances within a version, but it does not control the distribution of traffic between two different versions of an application."
+    },
+    "tags": [
+      "App Engine",
+      "Traffic Splitting",
+      "Deployment Strategies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-068",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-deployed",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A critical application running on Cloud Run is experiencing intermittent 503 errors. You suspect that the application is crashing during startup due to a dependency failure, but the logs are not capturing the crash because the container terminates too quickly. You need to debug the startup process without modifying the application code.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the container memory limit to prevent Out-Of-Memory (OOM) kills during startup.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Change the concurrency setting to 1 to ensure only one request is processed at a time.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Wrap the application entry point in a shell script that logs environment variables and sleeps for a period, then manually exec into the container.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use the Cloud Run 'Debug' mode to attach a remote debugger to the running instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "While the prompt asks for no code changes, modifying the container's entry point (via the Dockerfile or a wrapper script) is the standard way to debug 'crash-looping' containers in serverless environments. By introducing a sleep command, you keep the container alive long enough to use a tool like `gcloud beta run services proxy` or check logs before the crash occurs.",
+      "why_not_A": "If the crash is due to a dependency failure (e.g., a missing environment variable or failed API call), increasing memory will not resolve the issue.",
+      "why_not_B": "Concurrency affects how many requests a container handles simultaneously; it does not affect the startup sequence or the ability to debug a crash during initialization.",
+      "why_not_D": "Cloud Run does not provide a built-in 'Debug mode' or native remote debugger attachment in the way a traditional VM or IDE would."
+    },
+    "tags": [
+      "Cloud Run",
+      "Troubleshooting",
+      "Container Lifecycle"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcd-mock1-069",
+    "exam_id": "gcp-pcd",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   }
 ]

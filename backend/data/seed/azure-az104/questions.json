@@ -7,23 +7,45 @@
     "difficulty": 3,
     "stem": "A junior administrator needs to be able to restart virtual machines in a specific resource group but should NOT be able to create or delete VMs, or modify any other resources. Which is the most appropriate solution?",
     "options": [
-      {"id": "A", "text": "Assign the Contributor role to the resource group", "is_correct": false},
-      {"id": "B", "text": "Assign the Virtual Machine Contributor built-in role to the resource group", "is_correct": false},
-      {"id": "C", "text": "Create a custom RBAC role with only Microsoft.Compute/virtualMachines/restart/action and assign it to the resource group", "is_correct": true},
-      {"id": "D", "text": "Assign the Owner role and use Azure Policy to deny other actions", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Assign the Contributor role to the resource group",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Assign the Virtual Machine Contributor built-in role to the resource group",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a custom RBAC role with only Microsoft.Compute/virtualMachines/restart/action and assign it to the resource group",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Assign the Owner role and use Azure Policy to deny other actions",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
       "why_correct": "The principle of least privilege requires granting only the minimum permissions necessary. The built-in roles are too broad; creating a custom role with only the restart action (Microsoft.Compute/virtualMachines/restart/action) scoped to the specific resource group grants exactly the required access.",
-      "why_not_A": "Contributor can create, modify, and delete all resource types in the resource group—far more than restart-only access needed.",
+      "why_not_A": "Contributor can create, modify, and delete all resource types in the resource group\u2014far more than restart-only access needed.",
       "why_not_B": "Virtual Machine Contributor allows creating, modifying, and deleting VMs, managing disks, and more. It is broader than just restart permission.",
       "why_not_D": "Assigning Owner and then using Policy to deny is operationally complex and counterintuitive. It is not least privilege and deny assignments from Policy can have unexpected effects."
     },
-    "concept_ids": ["az104-azure-rbac"],
-    "tags": ["custom-rbac", "least-privilege", "vm-management"],
+    "concept_ids": [
+      "az104-azure-rbac"
+    ],
+    "tags": [
+      "custom-rbac",
+      "least-privilege",
+      "vm-management"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -35,20 +57,42 @@
     "difficulty": 2,
     "stem": "An organization wants all newly created storage accounts in their subscription to enforce HTTPS-only traffic. Non-HTTPS storage accounts should be blocked at deployment time. Which Azure Policy effect should be configured?",
     "options": [
-      {"id": "A", "text": "Audit", "is_correct": false},
-      {"id": "B", "text": "Append", "is_correct": false},
-      {"id": "C", "text": "DeployIfNotExists", "is_correct": false},
-      {"id": "D", "text": "Deny", "is_correct": true}
+      {
+        "id": "A",
+        "text": "Audit",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Append",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "DeployIfNotExists",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deny",
+        "is_correct": true
+      }
     ],
     "correct_answer": "D",
     "explanation": {
-      "why_correct": "The Deny effect prevents resource deployment when the resource configuration does not meet the policy conditions. To block creation of storage accounts where HTTPS-only is not enabled, use Deny—this actively rejects the deployment request.",
+      "why_correct": "The Deny effect prevents resource deployment when the resource configuration does not meet the policy conditions. To block creation of storage accounts where HTTPS-only is not enabled, use Deny\u2014this actively rejects the deployment request.",
       "why_not_A": "Audit logs non-compliance in the Activity Log and marks resources as non-compliant, but it does not block the deployment. Non-compliant storage accounts would still be created.",
       "why_not_B": "Append adds additional fields to a resource during creation (e.g., adding a tag). It cannot change an existing property like enabling HTTPS-only; for that, use Modify.",
       "why_not_C": "DeployIfNotExists deploys a related resource if a specific configuration is missing (e.g., deploy a diagnostic setting if none exists). It is not used to block deployment of non-compliant resources."
     },
-    "concept_ids": ["az104-azure-policy-management"],
-    "tags": ["azure-policy", "deny-effect", "storage-security"],
+    "concept_ids": [
+      "az104-azure-policy-management"
+    ],
+    "tags": [
+      "azure-policy",
+      "deny-effect",
+      "storage-security"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -63,23 +107,46 @@
     "difficulty": 3,
     "stem": "A company stores regulatory compliance documents in Azure Blob Storage. These documents must be retained for 7 years and cannot be deleted or modified during that period, even by administrators. Which feature should be configured?",
     "options": [
-      {"id": "A", "text": "Blob versioning", "is_correct": false},
-      {"id": "B", "text": "Soft delete", "is_correct": false},
-      {"id": "C", "text": "Immutable Blob Storage with time-based retention policy and purge protection", "is_correct": true},
-      {"id": "D", "text": "Azure Backup policy with 7-year retention", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Blob versioning",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Soft delete",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Immutable Blob Storage with time-based retention policy and purge protection",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Backup policy with 7-year retention",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
-      "why_correct": "Immutable Blob Storage with a time-based retention policy locks blobs in WORM (Write Once, Read Many) state for the configured duration. With purge protection enabled, even subscription admins cannot delete the data during the retention period—satisfying regulatory requirements.",
+      "why_correct": "Immutable Blob Storage with a time-based retention policy locks blobs in WORM (Write Once, Read Many) state for the configured duration. With purge protection enabled, even subscription admins cannot delete the data during the retention period\u2014satisfying regulatory requirements.",
       "why_not_A": "Blob versioning keeps previous versions of blobs but does not prevent deletion of all versions. An admin can still delete all versions manually.",
       "why_not_B": "Soft delete holds deleted blobs for a configurable period (up to 365 days) before permanent deletion. It does not enforce a 7-year non-deletion period and can be bypassed by admins.",
       "why_not_D": "Azure Backup creates copies of data for restore scenarios. Backup copies can be deleted after the retention period or by authorized admins; it does not enforce immutability on the original data."
     },
-    "concept_ids": ["az104-azure-storage-accounts"],
-    "tags": ["immutable-storage", "worm", "compliance", "blob-storage"],
+    "concept_ids": [
+      "az104-azure-storage-accounts"
+    ],
+    "tags": [
+      "immutable-storage",
+      "worm",
+      "compliance",
+      "blob-storage"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -91,20 +158,42 @@
     "difficulty": 3,
     "stem": "A virtual machine in Azure is stopped (deallocated). An administrator reports that the VM's public IP address has changed after the VM was started again. What should the administrator configure to prevent the IP address from changing?",
     "options": [
-      {"id": "A", "text": "Assign the VM to an Availability Set", "is_correct": false},
-      {"id": "B", "text": "Change the public IP address SKU from Basic to Standard", "is_correct": false},
-      {"id": "C", "text": "Change the public IP address allocation method from Dynamic to Static", "is_correct": true},
-      {"id": "D", "text": "Assign the VM to an Availability Zone", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Assign the VM to an Availability Set",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Change the public IP address SKU from Basic to Standard",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Change the public IP address allocation method from Dynamic to Static",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Assign the VM to an Availability Zone",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
       "why_correct": "Dynamic public IP addresses are released when a VM is deallocated and a new IP is assigned when the VM restarts. Changing the allocation to Static assigns a permanent IP address that persists across VM stop/start cycles.",
       "why_not_A": "Availability Sets distribute VMs across fault and update domains for high availability. They have no effect on public IP address allocation method.",
-      "why_not_B": "Changing from Basic to Standard SKU does not by itself prevent IP changes. Standard SKU IPs are static by default, but the core change needed is the allocation method—from Dynamic to Static.",
+      "why_not_B": "Changing from Basic to Standard SKU does not by itself prevent IP changes. Standard SKU IPs are static by default, but the core change needed is the allocation method\u2014from Dynamic to Static.",
       "why_not_D": "Availability Zones provide redundancy by distributing VMs across physically separate datacenters. They do not control public IP address persistence."
     },
-    "concept_ids": ["az104-azure-virtual-machines"],
-    "tags": ["public-ip", "static-ip", "vm-management"],
+    "concept_ids": [
+      "az104-azure-virtual-machines"
+    ],
+    "tags": [
+      "public-ip",
+      "static-ip",
+      "vm-management"
+    ],
     "estimated_time_seconds": 80,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -119,10 +208,26 @@
     "difficulty": 3,
     "stem": "A web application hosted on Azure App Service needs to be updated. The team wants to test the new version in a staging environment before making it available to users, and the swap to production should happen with zero downtime. Which App Service feature enables this?",
     "options": [
-      {"id": "A", "text": "Auto-scaling rules", "is_correct": false},
-      {"id": "B", "text": "Deployment slots with slot swap", "is_correct": true},
-      {"id": "C", "text": "Blue/Green deployment with Azure Traffic Manager", "is_correct": false},
-      {"id": "D", "text": "Rolling deployment with Azure DevOps", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Auto-scaling rules",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deployment slots with slot swap",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Blue/Green deployment with Azure Traffic Manager",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Rolling deployment with Azure DevOps",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -131,8 +236,14 @@
       "why_not_C": "While Azure Traffic Manager can implement blue/green deployments across separate App Service instances, it is more complex. App Service deployment slots provide this capability natively within a single App Service resource.",
       "why_not_D": "Azure DevOps provides CI/CD pipelines for deployment automation. While it can deploy to App Service slots, the zero-downtime swap feature is the deployment slots feature itself, not Azure DevOps specifically."
     },
-    "concept_ids": ["az104-azure-app-service"],
-    "tags": ["deployment-slots", "zero-downtime", "app-service"],
+    "concept_ids": [
+      "az104-azure-app-service"
+    ],
+    "tags": [
+      "deployment-slots",
+      "zero-downtime",
+      "app-service"
+    ],
     "estimated_time_seconds": 80,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -147,23 +258,45 @@
     "difficulty": 3,
     "stem": "An administrator needs to force all internet-bound traffic from VMs in a subnet through an Azure Firewall for inspection. What must be configured in addition to the Azure Firewall?",
     "options": [
-      {"id": "A", "text": "A Network Security Group rule allowing traffic to the firewall", "is_correct": false},
-      {"id": "B", "text": "A User-Defined Route (UDR) with a default route (0.0.0.0/0) pointing to the Azure Firewall private IP", "is_correct": true},
-      {"id": "C", "text": "Azure DDoS Protection Standard on the VNet", "is_correct": false},
-      {"id": "D", "text": "VNet peering between the subnet and the firewall VNet", "is_correct": false}
+      {
+        "id": "A",
+        "text": "A Network Security Group rule allowing traffic to the firewall",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "A User-Defined Route (UDR) with a default route (0.0.0.0/0) pointing to the Azure Firewall private IP",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure DDoS Protection Standard on the VNet",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "VNet peering between the subnet and the firewall VNet",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Simply deploying Azure Firewall does not redirect traffic through it. A User-Defined Route (UDR) must be applied to the subnet, adding a route for 0.0.0.0/0 (all internet traffic) with the next hop as the Azure Firewall's private IP address. This forces internet traffic through the firewall for inspection.",
       "why_not_A": "NSG rules filter traffic but do not redirect it. You cannot use NSG rules to send traffic to a specific next-hop device like a firewall.",
       "why_not_C": "Azure DDoS Protection defends against volumetric DDoS attacks. It does not route or inspect outbound internet traffic.",
-      "why_not_D": "VNet peering connects two VNets for direct communication. The scenario assumes the firewall is in the same VNet or hub VNet, but peering alone does not redirect traffic through the firewall—the UDR is the critical missing piece."
+      "why_not_D": "VNet peering connects two VNets for direct communication. The scenario assumes the firewall is in the same VNet or hub VNet, but peering alone does not redirect traffic through the firewall\u2014the UDR is the critical missing piece."
     },
-    "concept_ids": ["az104-azure-virtual-network"],
-    "tags": ["udr", "azure-firewall", "traffic-routing"],
+    "concept_ids": [
+      "az104-azure-virtual-network"
+    ],
+    "tags": [
+      "udr",
+      "azure-firewall",
+      "traffic-routing"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -175,10 +308,26 @@
     "difficulty": 3,
     "stem": "An organization needs to distribute HTTPS web traffic across multiple Azure VMs in the same region with SSL termination at the load balancer and protection against SQL injection attacks. Which load balancing service should be used?",
     "options": [
-      {"id": "A", "text": "Azure Load Balancer (Standard SKU)", "is_correct": false},
-      {"id": "B", "text": "Azure Traffic Manager", "is_correct": false},
-      {"id": "C", "text": "Azure Application Gateway with WAF", "is_correct": true},
-      {"id": "D", "text": "Azure Front Door", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Azure Load Balancer (Standard SKU)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Traffic Manager",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Application Gateway with WAF",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Front Door",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -187,8 +336,14 @@
       "why_not_B": "Azure Traffic Manager uses DNS-based routing for global traffic distribution. It does not proxy traffic, so it cannot perform SSL termination or WAF inspection.",
       "why_not_D": "Azure Front Door provides global load balancing, WAF, and CDN at the edge across multiple regions. For a single-region requirement, Application Gateway is the appropriate choice, and Front Door adds global complexity not needed here."
     },
-    "concept_ids": ["az104-azure-load-balancer"],
-    "tags": ["application-gateway", "waf", "ssl-termination"],
+    "concept_ids": [
+      "az104-azure-load-balancer"
+    ],
+    "tags": [
+      "application-gateway",
+      "waf",
+      "ssl-termination"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -203,10 +358,26 @@
     "difficulty": 3,
     "stem": "An administrator wants to receive an email notification when a VM's CPU utilization exceeds 90% for more than 5 minutes. Which Azure components must be configured to accomplish this?",
     "options": [
-      {"id": "A", "text": "Azure Advisor recommendation and Log Analytics workspace", "is_correct": false},
-      {"id": "B", "text": "Azure Monitor metric alert rule with an Action Group configured with email", "is_correct": true},
-      {"id": "C", "text": "Azure Service Health alert and a webhook endpoint", "is_correct": false},
-      {"id": "D", "text": "Application Insights availability test and email notification", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Azure Advisor recommendation and Log Analytics workspace",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Monitor metric alert rule with an Action Group configured with email",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure Service Health alert and a webhook endpoint",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Application Insights availability test and email notification",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -215,8 +386,14 @@
       "why_not_C": "Azure Service Health alerts notify about Azure platform issues, planned maintenance, and health advisories. They do not monitor individual VM resource metrics.",
       "why_not_D": "Application Insights availability tests monitor web endpoint accessibility and response times. They do not monitor infrastructure metrics like VM CPU utilization."
     },
-    "concept_ids": ["az104-azure-monitoring"],
-    "tags": ["metric-alerts", "action-groups", "monitoring"],
+    "concept_ids": [
+      "az104-azure-monitoring"
+    ],
+    "tags": [
+      "metric-alerts",
+      "action-groups",
+      "monitoring"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -231,23 +408,45 @@
     "difficulty": 3,
     "stem": "An administrator deploys an ARM template using Complete mode to a resource group. The template contains 3 resources but the resource group currently has 5 resources. What will happen to the 2 resources not defined in the template?",
     "options": [
-      {"id": "A", "text": "They will remain unchanged alongside the template-defined resources", "is_correct": false},
-      {"id": "B", "text": "They will be moved to a different resource group", "is_correct": false},
-      {"id": "C", "text": "They will be deleted by the ARM engine", "is_correct": true},
-      {"id": "D", "text": "The deployment will fail because of the resource count mismatch", "is_correct": false}
+      {
+        "id": "A",
+        "text": "They will remain unchanged alongside the template-defined resources",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "They will be moved to a different resource group",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "They will be deleted by the ARM engine",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The deployment will fail because of the resource count mismatch",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
       "why_correct": "ARM template Complete mode deploys the template as the desired end state of the resource group. Resources in the resource group that are NOT defined in the template are deleted. This is why Complete mode should be used with extreme caution.",
-      "why_not_A": "Resources not in the template are retained in Incremental mode (the default), not Complete mode. Complete mode treats the template as authoritative—resources not in the template are considered deleted.",
+      "why_not_A": "Resources not in the template are retained in Incremental mode (the default), not Complete mode. Complete mode treats the template as authoritative\u2014resources not in the template are considered deleted.",
       "why_not_B": "ARM does not move resources to another resource group during a Complete mode deployment. It deletes resources not defined in the template.",
       "why_not_D": "The deployment will not fail; ARM Complete mode handles resource counts by deploying what is in the template and deleting what is not. It does not validate against the existing resource count."
     },
-    "concept_ids": ["az104-arm-templates"],
-    "tags": ["arm-templates", "complete-mode", "iac"],
+    "concept_ids": [
+      "az104-arm-templates"
+    ],
+    "tags": [
+      "arm-templates",
+      "complete-mode",
+      "iac"
+    ],
     "estimated_time_seconds": 85,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.11,
     "review_status": "approved"
   },
@@ -259,10 +458,26 @@
     "difficulty": 3,
     "stem": "VNet A is peered with VNet B. VNet B is peered with VNet C. Can resources in VNet A communicate with resources in VNet C without additional configuration?",
     "options": [
-      {"id": "A", "text": "Yes, because VNet peering is automatically transitive", "is_correct": false},
-      {"id": "B", "text": "No, VNet peering is not transitive; a direct peering between VNet A and VNet C is required", "is_correct": true},
-      {"id": "C", "text": "Yes, if the VNets are in the same region", "is_correct": false},
-      {"id": "D", "text": "Yes, if all three VNets are in the same subscription", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Yes, because VNet peering is automatically transitive",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "No, VNet peering is not transitive; a direct peering between VNet A and VNet C is required",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Yes, if the VNets are in the same region",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Yes, if all three VNets are in the same subscription",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -271,8 +486,14 @@
       "why_not_C": "Transitivity does not apply regardless of whether the VNets are in the same region. Both regional (same-region) and global (cross-region) peerings are non-transitive.",
       "why_not_D": "Subscription membership does not affect peering transitivity. Non-transitive behavior applies regardless of subscription boundaries."
     },
-    "concept_ids": ["az104-azure-virtual-network"],
-    "tags": ["vnet-peering", "transitive-routing", "networking"],
+    "concept_ids": [
+      "az104-azure-virtual-network"
+    ],
+    "tags": [
+      "vnet-peering",
+      "transitive-routing",
+      "networking"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -287,10 +508,26 @@
     "difficulty": 3,
     "stem": "A company needs to replicate their Azure VMs to another Azure region to meet a Recovery Time Objective (RTO) of 4 hours in case of a regional outage. Which Azure service provides VM-level replication for disaster recovery?",
     "options": [
-      {"id": "A", "text": "Azure Backup", "is_correct": false},
-      {"id": "B", "text": "Azure Site Recovery", "is_correct": true},
-      {"id": "C", "text": "Geo-redundant storage (GRS)", "is_correct": false},
-      {"id": "D", "text": "Azure Availability Zones", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Azure Backup",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Site Recovery",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Geo-redundant storage (GRS)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Availability Zones",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -299,8 +536,14 @@
       "why_not_C": "Geo-redundant storage (GRS) replicates Azure Storage data to a paired region. It protects storage data but does not replicate entire VMs (including OS disks, configurations, and applications) for failover.",
       "why_not_D": "Availability Zones provide resiliency within a single region by distributing VMs across separate datacenters. They do not protect against an entire regional outage."
     },
-    "concept_ids": ["az104-azure-backup"],
-    "tags": ["site-recovery", "disaster-recovery", "rto"],
+    "concept_ids": [
+      "az104-azure-backup"
+    ],
+    "tags": [
+      "site-recovery",
+      "disaster-recovery",
+      "rto"
+    ],
     "estimated_time_seconds": 80,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -313,22 +556,44 @@
     "domain_id": "manage-identities-governance",
     "type": "factual",
     "difficulty": 2,
-    "stem": "An administrator wants to automatically add users to an Azure AD security group based on a user attribute—specifically, users with the 'Department' attribute set to 'Engineering'. Which group type supports this?",
+    "stem": "An administrator wants to automatically add users to an Azure AD security group based on a user attribute\u2014specifically, users with the 'Department' attribute set to 'Engineering'. Which group type supports this?",
     "options": [
-      {"id": "A", "text": "Assigned security group with manual member management", "is_correct": false},
-      {"id": "B", "text": "Dynamic security group with a dynamic membership rule", "is_correct": true},
-      {"id": "C", "text": "Microsoft 365 group with auto-enrollment", "is_correct": false},
-      {"id": "D", "text": "Administrative unit with automated assignment", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Assigned security group with manual member management",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Dynamic security group with a dynamic membership rule",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Microsoft 365 group with auto-enrollment",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Administrative unit with automated assignment",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
       "why_correct": "Dynamic security groups in Microsoft Entra ID use membership rules that evaluate user attributes (like Department = 'Engineering') to automatically add or remove users. When a user's Department attribute changes to 'Engineering', they are automatically added to the group.",
-      "why_not_A": "Assigned security groups require manual management of members. An administrator must manually add or remove each user—no automation based on attributes.",
+      "why_not_A": "Assigned security groups require manual management of members. An administrator must manually add or remove each user\u2014no automation based on attributes.",
       "why_not_C": "Microsoft 365 groups are for collaboration (Teams, SharePoint, etc.). While they can have dynamic membership, the scenario describes a security group requirement. Also, 'auto-enrollment' is not a standard Microsoft 365 group feature.",
       "why_not_D": "Administrative units are containers for delegating admin scope within Entra ID. They are not groups and do not support dynamic user assignment based on attributes."
     },
-    "concept_ids": ["az104-entra-id-management"],
-    "tags": ["dynamic-groups", "entra-id", "attribute-based"],
+    "concept_ids": [
+      "az104-entra-id-management"
+    ],
+    "tags": [
+      "dynamic-groups",
+      "entra-id",
+      "attribute-based"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.08,
@@ -343,23 +608,45 @@
     "difficulty": 3,
     "stem": "A storage account needs to replicate data synchronously across three Availability Zones in the same Azure region to protect against a datacenter failure. Which redundancy option should be configured?",
     "options": [
-      {"id": "A", "text": "Locally Redundant Storage (LRS)", "is_correct": false},
-      {"id": "B", "text": "Geo-Redundant Storage (GRS)", "is_correct": false},
-      {"id": "C", "text": "Zone-Redundant Storage (ZRS)", "is_correct": true},
-      {"id": "D", "text": "Geo-Zone-Redundant Storage (GZRS)", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Locally Redundant Storage (LRS)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Geo-Redundant Storage (GRS)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Zone-Redundant Storage (ZRS)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Geo-Zone-Redundant Storage (GZRS)",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
       "why_correct": "Zone-Redundant Storage (ZRS) synchronously replicates data across three Availability Zones in a single region. If one datacenter fails, data remains accessible from the other two zones. It provides 99.9999999999% (12 nines) durability within the region.",
-      "why_not_A": "LRS replicates data three times within a single datacenter. It does not protect against datacenter-level failures—all three copies are in the same physical location.",
+      "why_not_A": "LRS replicates data three times within a single datacenter. It does not protect against datacenter-level failures\u2014all three copies are in the same physical location.",
       "why_not_B": "GRS replicates data to a paired region asynchronously. It provides geo-redundancy for regional outages but does not use Availability Zones within the primary region for synchronous datacenter-level redundancy.",
       "why_not_D": "GZRS combines ZRS (across zones in primary region) with GRS (geo-replication to secondary region). It is the highest redundancy option but more expensive than required for the described datacenter-failure protection scenario."
     },
-    "concept_ids": ["az104-azure-storage-accounts"],
-    "tags": ["zrs", "storage-redundancy", "availability-zones"],
+    "concept_ids": [
+      "az104-azure-storage-accounts"
+    ],
+    "tags": [
+      "zrs",
+      "storage-redundancy",
+      "availability-zones"
+    ],
     "estimated_time_seconds": 80,
     "bkt_p_guess": 0.25,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -371,10 +658,26 @@
     "difficulty": 2,
     "stem": "What happens to the compute billing when an Azure Virtual Machine is 'stopped (deallocated)' versus just 'stopped' (not deallocated)?",
     "options": [
-      {"id": "A", "text": "Both states stop compute billing; only storage continues to be billed", "is_correct": false},
-      {"id": "B", "text": "Stopped (deallocated) stops compute billing; stopped (not deallocated) continues to bill for compute", "is_correct": true},
-      {"id": "C", "text": "Both states continue to bill for compute; neither saves money", "is_correct": false},
-      {"id": "D", "text": "Stopped (deallocated) deletes the VM disks; stopped (not deallocated) retains them", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Both states stop compute billing; only storage continues to be billed",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Stopped (deallocated) stops compute billing; stopped (not deallocated) continues to bill for compute",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Both states continue to bill for compute; neither saves money",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Stopped (deallocated) deletes the VM disks; stopped (not deallocated) retains them",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -383,8 +686,14 @@
       "why_not_C": "Deallocation does stop compute billing. This is one of the primary cost-saving actions for VMs that are not in continuous use.",
       "why_not_D": "Neither stop state deletes VM disks. Managed disks are separate resources that persist regardless of VM state and continue to be billed."
     },
-    "concept_ids": ["az104-azure-virtual-machines"],
-    "tags": ["vm-billing", "deallocated", "cost-management"],
+    "concept_ids": [
+      "az104-azure-virtual-machines"
+    ],
+    "tags": [
+      "vm-billing",
+      "deallocated",
+      "cost-management"
+    ],
     "estimated_time_seconds": 75,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
@@ -399,10 +708,26 @@
     "difficulty": 3,
     "stem": "A platform team wants to create reusable Infrastructure-as-Code templates that are more readable and concise than ARM JSON templates. They also want to use native Azure tooling without third-party tools. Which language should they use?",
     "options": [
-      {"id": "A", "text": "Terraform (HashiCorp Configuration Language)", "is_correct": false},
-      {"id": "B", "text": "Azure Bicep", "is_correct": true},
-      {"id": "C", "text": "Azure CLI scripts (Bash/PowerShell)", "is_correct": false},
-      {"id": "D", "text": "Pulumi (TypeScript/Python)", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Terraform (HashiCorp Configuration Language)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Bicep",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure CLI scripts (Bash/PowerShell)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Pulumi (TypeScript/Python)",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -411,12 +736,2742 @@
       "why_not_C": "Azure CLI scripts are imperative (step-by-step commands), not declarative IaC. They are not as repeatable or idempotent as template-based IaC and are not the recommended approach for infrastructure definition.",
       "why_not_D": "Pulumi is a third-party multi-cloud IaC tool using general-purpose programming languages. Like Terraform, it is not native Azure tooling."
     },
-    "concept_ids": ["az104-arm-templates"],
-    "tags": ["bicep", "iac", "arm-templates"],
+    "concept_ids": [
+      "az104-arm-templates"
+    ],
+    "tags": [
+      "bicep",
+      "iac",
+      "arm-templates"
+    ],
     "estimated_time_seconds": 80,
     "bkt_p_guess": 0.25,
     "bkt_p_slip": 0.09,
     "bkt_p_transit": 0.12,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your company has an Azure Active Directory (Azure AD) tenant. You need to ensure that a specific group of users can manage the virtual machines in a resource group named 'RG-Production', but they must not be able to modify the network settings or delete the resource group itself. Which Azure RBAC role should you assign to the group?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Owner",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Contributor",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Virtual Machine Contributor",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Reader",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Virtual Machine Contributor role allows users to manage virtual machines (start, stop, restart) but does not grant access to the network interface or the ability to delete the resource group.",
+      "why_not_A": "The Owner role provides full access to all resources, including the ability to assign roles and delete the resource group.",
+      "why_not_B": "The Contributor role allows management of all resources in the group, including network settings and the ability to delete resources within the group.",
+      "why_not_D": "The Reader role only allows viewing resources and does not permit managing or modifying virtual machines."
+    },
+    "tags": [
+      "RBAC",
+      "Identity"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-azure-az104-mock1-016",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company requires that all resources deployed in the 'Marketing' resource group must have a tag named 'CostCenter' with a valid value. You need to ensure that any resource created without this tag is automatically blocked. Which Azure governance feature should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Policy",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Azure Blueprints",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Resource Locks",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Management Groups",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Azure Policy allows you to enforce specific rules (policies) on resources, such as requiring specific tags. Using the 'Deny' effect, you can block the creation of resources that do not meet the criteria.",
+      "why_not_A": "Azure Blueprints is used for orchestrating the deployment of environments (including policies), but the actual enforcement of the tag rule is handled by Azure Policy.",
+      "why_not_C": "Resource Locks prevent accidental deletion or modification of resources but cannot enforce tagging rules during creation.",
+      "why_not_D": "Management Groups are used to organize multiple subscriptions for governance but do not directly enforce resource-level tagging rules."
+    },
+    "tags": [
+      "Azure Policy",
+      "Governance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-017",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are configuring a solution to manage access to a critical storage account. You want to ensure that the administrator can only access the storage account for a maximum of 4 hours, and must request approval from a manager before access is granted. Which feature should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Conditional Access",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Privileged Identity Management (PIM)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Shared Access Signatures (SAS)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure AD Groups",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PIM provides 'just-in-time' (JIT) access, allowing you to define time-limited activations and require approval workflows before a role is activated.",
+      "why_not_A": "Conditional Access controls the conditions under which a user can sign in (e.g., MFA, location) but does not manage time-bound role activation or approval workflows for specific RBAC roles.",
+      "why_not_C": "SAS tokens provide delegated access to resources in a storage account but do not manage administrative role assignments or approval workflows.",
+      "why_not_D": "Azure AD Groups are used to organize users but do not provide time-limited activation or approval mechanisms."
+    },
+    "tags": [
+      "PIM",
+      "Identity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-018",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company has a multi-subscription environment. They need to apply a set of governance rules and policies across five different subscriptions simultaneously to ensure consistency. What is the most efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Apply the policies individually to each subscription.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a Management Group and associate the policies with it.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a single Resource Group to hold all subscriptions.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a Shared Access Signature for all subscriptions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Management Groups allow you to organize subscriptions and apply policies or RBAC assignments at a higher level, which are then inherited by all subscriptions within that group.",
+      "why_not_A": "Applying policies individually is inefficient and prone to human error, especially as the number of subscriptions grows.",
+      "why_not_C": "Resource Groups exist within a subscription; you cannot place a subscription inside a Resource Group.",
+      "why_not_D": "SAS is used for data access to storage accounts and has nothing to do with subscription-level governance or policy."
+    },
+    "tags": [
+      "Management Groups",
+      "Governance"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-azure-az104-mock1-019",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You need to allow an Azure Function App to read secrets from an Azure Key Vault without storing any credentials (like a password or client secret) in the application code. Which identity solution should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Service Principal with a client secret",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Managed Identity",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure AD Application Proxy",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "User-assigned Managed Identity only",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Managed Identities provide an identity for the Azure resource in Azure AD, eliminating the need for developers to manage credentials. The Function App can use this identity to authenticate to Key Vault.",
+      "why_not_A": "A Service Principal requires a client secret to be stored somewhere (like in the code or app settings), which violates the requirement of not storing credentials.",
+      "why_not_C": "Application Proxy is used to provide secure remote access to on-premises web applications, not for inter-service authentication in Azure.",
+      "why_not_D": "While a User-assigned identity is a type of Managed Identity, the question asks for the general solution. Furthermore, a System-assigned identity would also work, making 'Managed Identity' the most accurate general answer."
+    },
+    "tags": [
+      "Managed Identity",
+      "Identity"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-azure-az104-mock1-020",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company has an Azure Active Directory (Azure AD) tenant. You need to ensure that users can only be assigned to a specific administrative role if they are members of a specific security group, and this assignment must expire automatically after 30 days. Which combination of features should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Custom Role and Azure AD Conditional Access",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure AD Privileged Identity Management (PIM) and Group-based assignment",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure RBAC and Management Groups",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure AD Access Reviews and Administrative Units",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PIM allows for 'eligible' assignments that require activation and can be configured with a maximum activation duration (e.g., 30 days or shorter). By assigning the role to a group, you manage membership at the group level while PIM manages the time-bound elevation of the role.",
+      "why_not_A": "Conditional Access controls the conditions under which a user can access a resource, but it does not manage the lifecycle or expiration of role assignments.",
+      "why_not_C": "Azure RBAC provides access control, but standard RBAC assignments are permanent until manually removed; it does not natively support automatic expiration of the assignment itself.",
+      "why_not_D": "Access Reviews are used to audit if users still need access, but they do not automate the time-bound activation and expiration of a role in the manner PIM does."
+    },
+    "tags": [
+      "PIM",
+      "Identity Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-021",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is implementing a tagging strategy for governance. You must ensure that any new resource created in a specific resource group contains a tag named 'CostCenter'. If the tag is missing, the resource creation must be blocked. Which Azure feature should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Policy with a 'Deny' effect",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Azure Policy with an 'Append' effect",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Blueprints with a Resource Lock",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Management Group policy with an 'Audit' effect",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The 'Deny' effect in Azure Policy prevents a resource from being created or updated if it does not match the policy definition, effectively blocking the deployment if the 'CostCenter' tag is missing.",
+      "why_not_B": "The 'Append' effect adds a field (or tag) to the resource during creation if it is missing, but it does not block the creation of the resource.",
+      "why_not_C": "Resource Locks prevent accidental deletion or modification of existing resources but cannot validate tags during the creation process.",
+      "why_not_D": "The 'Audit' effect only flags the resource as non-compliant in a report; it does not prevent the resource from being created."
+    },
+    "tags": [
+      "Azure Policy",
+      "Governance"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-azure-az104-mock1-022",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You have a multi-tenant Azure environment. You need to grant a user from an external Azure AD tenant the ability to manage a specific Storage Account in your tenant without creating a guest user account in your directory for every single external collaborator. What is the most efficient approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a Shared Access Signature (SAS) token for the Storage Account",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Azure AD B2B collaboration with a group-based invite",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Azure AD Lighthouse",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure a Cross-Tenant Access Policy for all users",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Lighthouse allows service providers or partners to manage resources across multiple tenants using their own identity, eliminating the need to create individual guest accounts in the customer's tenant.",
+      "why_not_A": "SAS tokens provide data-plane access to storage but do not provide management-plane access (RBAC) for managing the Storage Account itself.",
+      "why_not_B": "B2B collaboration still requires the creation of guest user objects in the local directory, which the scenario explicitly seeks to avoid for every collaborator.",
+      "why_not_D": "Cross-Tenant Access Policies control how users from other tenants can access your tenant, but they do not provide the management framework for resource administration that Lighthouse does."
+    },
+    "tags": [
+      "Lighthouse",
+      "External Identities"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-023",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company wants to ensure that users can only create Virtual Machines of the 'Standard_D2s_v3' size in the 'East US' region. You need to implement a solution that applies this restriction to all subscriptions under a specific Management Group. What should you do?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a custom RBAC role with the 'Microsoft.Compute/virtualMachines/write' permission restricted by a condition",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Assign an Azure Policy initiative to the Management Group using the 'Allowed virtual machine size SKUs' policy",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Apply a Resource Lock to the Management Group to prevent SKU changes",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a quota limit at the Subscription level for the Standard_D2s_v3 SKU",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Policy is the correct tool for enforcing resource constraints (like SKU size and region). Assigning it at the Management Group level ensures it is inherited by all subscriptions beneath it.",
+      "why_not_A": "RBAC controls 'who' can do 'what', but it cannot restrict the 'properties' (like SKU size) of the resource being created.",
+      "why_not_C": "Resource Locks prevent the deletion or modification of resources but cannot restrict the selection of a specific SKU during the creation process.",
+      "why_not_D": "Quotas limit the total number of resources of a certain type but do not prevent the creation of other SKUs; they only limit the quantity of the allowed one."
+    },
+    "tags": [
+      "Azure Policy",
+      "Management Groups"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-azure-az104-mock1-024",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company uses Managed Identities for an Azure Function App to access an Azure Key Vault. You need to ensure that the Function App can only read secrets, not delete them, and that this identity is automatically managed by Azure. Which configuration is required?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable a System-Assigned Managed Identity and assign the 'Key Vault Secrets User' role",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Enable a User-Assigned Managed Identity and assign the 'Key Vault Contributor' role",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Service Principal with a client secret stored in the Function App settings",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable a System-Assigned Managed Identity and assign the 'Key Vault Administrator' role",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "A System-Assigned Managed Identity is tied directly to the lifecycle of the Function App. The 'Key Vault Secrets User' role provides read-only access to secrets without allowing deletions.",
+      "why_not_B": "The 'Key Vault Contributor' role allows management of the Key Vault itself (including deletion of the vault/secrets), which exceeds the requirement of 'only read'.",
+      "why_not_C": "Service Principals with secrets require manual rotation and management, whereas the scenario specifically asks for an identity 'automatically managed by Azure'.",
+      "why_not_D": "The 'Key Vault Administrator' role provides full control over the vault, including the ability to delete secrets, which violates the security requirement."
+    },
+    "tags": [
+      "Managed Identities",
+      "Key Vault"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-azure-az104-mock1-025",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your company has an Azure AD (Microsoft Entra ID) tenant. You need to implement a solution that ensures that users can only access the Azure Portal from a specific set of trusted IP addresses. The solution must be applied to a group of high-privileged administrators and must not affect standard users. Which approach should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create an Azure Firewall rule to restrict traffic to the Azure Portal based on source IP addresses.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Conditional Access policy with a 'Named Location' defined as the trusted IP range and apply it to the specific administrator group.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a custom RBAC role that includes a condition to restrict access based on the user's source IP address.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Network Security Group (NSG) on the management subnet to allow traffic only from the trusted IP addresses.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Conditional Access allows you to define access controls based on signals. By creating a 'Named Location' (IP range) and targeting a specific security group, you can enforce that access is granted only when the user is within those IP ranges.",
+      "why_not_A": "Azure Firewall filters traffic to resources within a Virtual Network; it cannot control access to the Azure Portal (a public SaaS endpoint) via identity-based authentication.",
+      "why_not_C": "Azure RBAC controls what actions a user can perform on a resource; it does not provide the mechanism to restrict the network origin of the authentication request.",
+      "why_not_D": "NSGs control traffic to and from Azure VM network interfaces; they have no impact on the authentication process for the global Azure Portal endpoint."
+    },
+    "tags": [
+      "Conditional Access",
+      "Entra ID",
+      "Identity Governance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-026",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company uses a hub-and-spoke network topology. You are tasked with ensuring that all resources deployed in the 'Production' subscription must have a 'CostCenter' tag and must be deployed only in the 'East US' and 'West US' regions. You must ensure that any attempt to create a resource that violates these rules is blocked immediately. What is the most efficient way to implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create an Azure Policy with the 'Allowed locations' and 'Require a tag on resources' effects set to 'Deny'.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Create an Azure Policy with the 'Allowed locations' and 'Require a tag on resources' effects set to 'Audit'.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement an Azure Blueprint that defines the required tags and locations for all resources.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Azure Resource Graph to identify non-compliant resources and trigger an Azure Automation runbook to delete them.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Azure Policy with the 'Deny' effect prevents the creation of resources that do not match the defined criteria (location and tags) at the time of deployment, fulfilling the requirement to block them immediately.",
+      "why_not_B": "The 'Audit' effect only logs the non-compliance in the policy report; it does not block the resource creation.",
+      "why_not_C": "Blueprints are used for orchestration and deployment of environments; while they can assign policies, the Blueprint itself is not the mechanism that blocks the deployment\u2014the underlying Policy does.",
+      "why_not_D": "This is a reactive approach. The requirement is to block the creation immediately, not to delete resources after they have been deployed."
+    },
+    "tags": [
+      "Azure Policy",
+      "Governance",
+      "Resource Tags"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-027",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "manage-identities-governance",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You have an Azure subscription where multiple developers need temporary 'Contributor' access to a specific Resource Group for a 4-hour window to perform a critical deployment. You want to follow the principle of least privilege and avoid manual revocation of permissions. Which solution should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a custom RBAC role with a time-limited expiration attribute.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Assign the Contributor role to the developers and use an Azure Automation runbook to remove the assignment after 4 hours.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure Microsoft Entra Privileged Identity Management (PIM) and create an eligible assignment for the Contributor role.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Azure AD Access Reviews to automatically remove the Contributor role every 4 hours.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "PIM allows you to provide 'eligible' assignments. Users can 'activate' the role for a specified duration (up to 24 hours), after which the access is automatically revoked, perfectly fitting the requirement for temporary, time-bound access.",
+      "why_not_A": "Standard Azure RBAC roles do not have a built-in 'expiration' attribute that automatically removes the assignment based on a clock.",
+      "why_not_B": "While technically possible, this is a manual/custom workaround and is not the 'most efficient' or native way to handle Just-In-Time (JIT) access in Azure.",
+      "why_not_D": "Access Reviews are designed for periodic certification of access (e.g., monthly or quarterly), not for managing short-term, hour-by-hour access requests."
+    },
+    "tags": [
+      "PIM",
+      "RBAC",
+      "Least Privilege"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-028",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-storage",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company has an Azure Storage account (Standard General Purpose v2) containing several file shares. You need to ensure that users can access these shares using their existing Active Directory Domain Services (AD DS) credentials, but the storage account must remain in a region that does not support Azure Files AD DS authentication natively via the portal. Which configuration is required to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable the 'Allow trusted Microsoft services to access this storage account' setting in the Firewall configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the storage account for Azure Active Directory (Azure AD) Kerberos authentication.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Domain Controller on a virtual machine in the same VNet and use SMB 1.0.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Convert the storage account to a Premium File Share and enable Shared Access Signatures (SAS).",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure AD Kerberos allows users to authenticate to Azure Files using their AD credentials even in environments where traditional AD DS integration is complex or requires specific network plumbing, providing a modern way to bridge on-premises identities with Azure Files.",
+      "why_not_A": "The 'Trusted Microsoft services' setting controls firewall access for Azure services, not identity authentication for end-users.",
+      "why_not_C": "SMB 1.0 is insecure, deprecated, and not the mechanism for implementing AD DS identity management for Azure Files.",
+      "why_not_D": "Premium shares improve performance but do not solve the identity authentication requirement; SAS tokens are for delegated access, not AD identity integration."
+    },
+    "tags": [
+      "azure-files",
+      "identity-management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-029",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-storage",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a storage solution for a high-performance database that requires extremely low latency and high throughput. The data must be stored on a managed disk. You need to ensure that the disk can be expanded without taking the application offline and provides the highest possible IOPS. Which disk type should you choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Standard HDD v2",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Standard SSD v2",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Premium SSD v2",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Ultra Disk",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Premium SSD v2 provides high performance, low latency, and crucially, allows for the independent scaling of capacity and performance (IOPS/throughput) without needing to restart the VM or detach the disk.",
+      "why_not_A": "Standard HDD is designed for infrequent access and has the lowest IOPS/throughput.",
+      "why_not_B": "Standard SSD is for general purpose workloads and cannot match the performance requirements of a high-performance database.",
+      "why_not_D": "While Ultra Disk provides the absolute highest performance, Premium SSD v2 is the optimized choice for most high-performance DB scenarios and is more cost-effective while still supporting dynamic scaling. (Note: In some specific extreme cases Ultra Disk is used, but Premium SSD v2 is the current architectural recommendation for flexible scaling)."
+    },
+    "tags": [
+      "managed-disks",
+      "performance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-030",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-storage",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company has a Storage Account with a 'Hot' access tier. Due to a change in data access patterns, 70% of the blobs are now accessed less than once every 30 days but must be available immediately when requested. You want to minimize costs while maintaining immediate availability. What is the best strategy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Move the blobs to the Archive tier.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Change the storage account to a 'Cool' access tier.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a Lifecycle Management policy to move blobs to the Archive tier after 30 days.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch the storage account to a Premium block blob account.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'Cool' tier is optimized for data that is infrequently accessed and stored for at least 30 days, providing lower storage costs than the Hot tier while still allowing immediate access.",
+      "why_not_A": "Archive tier is the cheapest, but data is offline and requires a 'rehydration' process, violating the requirement for immediate availability.",
+      "why_not_C": "Moving to Archive tier after 30 days still results in the data being offline, which contradicts the requirement for immediate availability.",
+      "why_not_D": "Premium storage is for high-performance, low-latency needs and would significantly increase costs."
+    },
+    "tags": [
+      "blob-storage",
+      "access-tiers"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-031",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-storage",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You need to implement a solution that ensures that data in an Azure Storage account is available even if an entire Azure region fails. The solution must allow the application to automatically failover to the secondary region. Which redundancy option should you choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Zone-redundant storage (ZRS)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Geo-redundant storage (GRS)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Geo-zone-redundant storage (GZRS)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Read-access geo-redundant storage (RA-GRS) with Customer-Managed Failover",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "RA-GRS provides read access to the secondary region. To achieve an automatic or controlled failover of the primary endpoint to the secondary region in the event of a regional disaster, a failover must be triggered (Customer-Managed Failover), ensuring the application can continue writing to the secondary.",
+      "why_not_A": "ZRS protects against zone failure within a single region, not a full regional failure.",
+      "why_not_B": "GRS replicates data to a second region, but the failover is managed by Microsoft and is not instantaneous or automatically transparent to the app without specific configuration.",
+      "why_not_C": "GZRS combines ZRS and GRS, but the failover mechanism for the endpoint still follows the GRS logic."
+    },
+    "tags": [
+      "redundancy",
+      "disaster-recovery"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-032",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-storage",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are configuring a Storage Account to host a static website. You need to ensure that if a user requests a page that does not exist, they are redirected to a custom 'maintenance.html' page. Which feature should you configure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The 'Index document' property.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The 'Error document' property.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "An Azure Front Door routing rule.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A Blob Index tag.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'Error document' setting in the Static Website feature of Azure Storage allows you to specify the name of the HTML file that will be returned when a 404 (Not Found) error occurs.",
+      "why_not_A": "The Index document is the default page served when the root URL is requested (e.g., index.html).",
+      "why_not_C": "While Front Door can handle routing, the requirement asks for the configuration within the storage context for a static site; the 'Error document' is the native storage feature.",
+      "why_not_D": "Blob Index tags are used for categorizing and searching blobs, not for handling HTTP 404 responses."
+    },
+    "tags": [
+      "static-websites",
+      "blob-storage"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-033",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-storage",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your company has an Azure Storage account (Standard LRS) containing a file share used by multiple Azure VMs. To meet a new compliance requirement, you must ensure that the data is protected against a regional outage and that the file share remains available for read-only access even if the primary region fails. You must implement the solution with the minimum amount of administrative overhead and without modifying the client-side mount scripts on the VMs. Which action should you perform?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the storage account to GRS and configure a failover to the secondary region.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Convert the storage account to RA-GRS.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement Azure File Sync to replicate the share to a secondary storage account in a different region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure ZRS and implement a secondary storage account using Azure Backup for cross-region recovery.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Read-Access Geo-Redundant Storage (RA-GRS) provides read-only access to the secondary region without requiring a manual failover or changing the connection strings/mount scripts, as the secondary endpoint is available for read operations.",
+      "why_not_A": "Standard GRS only provides read access to the secondary region after a full failover is initiated. A failover is a disruptive administrative action and does not provide simultaneous read-only access during normal operations.",
+      "why_not_C": "Azure File Sync is used to synchronize files between an on-premises Windows Server and Azure Files; it is not the primary mechanism for regional redundancy of a native Azure File share and would require significant administrative overhead to set up servers.",
+      "why_not_D": "ZRS (Zone-Redundant Storage) protects against data center failure within a single region, but not a regional outage. Azure Backup provides recovery but not the immediate high-availability read access required by the scenario."
+    },
+    "tags": [
+      "Azure Files",
+      "Storage Redundancy",
+      "RA-GRS"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-034",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-storage",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is deploying a high-performance computing (HPC) application that requires a shared file system across ten Azure VMs. The application requires POSIX-compliant permissions, supports Linux-based clients, and must maintain a throughput of at least 10 GB/s. You need to choose the most appropriate storage solution that meets these requirements while minimizing latency.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Files using the NFS v4.1 protocol with a Premium storage account.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure NetApp Files (ANF) with the Standard performance tier.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure NetApp Files (ANF) with the Ultra performance tier.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Files using the SMB 3.0 protocol with a Premium storage account.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure NetApp Files (ANF) is the only solution that natively provides full POSIX compliance for Linux and can scale to the required 10 GB/s throughput. The Ultra tier is specifically designed for the extreme throughput and low latency requirements of HPC workloads.",
+      "why_not_A": "While Premium Azure Files supports NFS v4.1, it generally cannot reach the 10 GB/s throughput threshold across ten VMs as efficiently as ANF and has more limitations regarding full POSIX compliance compared to NetApp.",
+      "why_not_B": "The Standard tier of ANF may not provide the necessary throughput and IOPS required for a high-performance HPC application needing 10 GB/s.",
+      "why_not_D": "SMB 3.0 is primarily for Windows clients; while Linux can mount SMB, it does not provide native POSIX compliance and would not meet the performance requirements of an HPC Linux cluster."
+    },
+    "tags": [
+      "Azure NetApp Files",
+      "HPC",
+      "POSIX",
+      "Azure Files"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-035",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your company is deploying a critical application across two Azure Virtual Machines (VMs) in a single Availability Set. You need to ensure that the VMs are distributed across different physical hardware racks to minimize the risk of simultaneous failure due to a single hardware fault. Which configuration should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy the VMs in a Virtual Machine Scale Set (VMSS) with flexible orchestration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the Availability Set with 2 Fault Domains and 2 Update Domains.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy the VMs in different Availability Zones within the same region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Proximity Placement Group to ensure the VMs are physically close.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Fault Domains are physical partitions of hardware. Placing VMs in different fault domains ensures they are on different racks, protecting against hardware failure.",
+      "why_not_A": "VMSS is for scaling, not specifically the mechanism for rack-level distribution within a standard Availability Set scenario.",
+      "why_not_C": "Availability Zones protect against entire datacenter failures, which is a higher level of redundancy than requested (hardware rack level).",
+      "why_not_D": "Proximity Placement Groups minimize latency by keeping VMs close, which actually increases the risk of simultaneous failure from a single rack fault."
+    },
+    "tags": [
+      "availability-sets",
+      "fault-domains"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-036",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are configuring an Azure Virtual Machine Scale Set (VMSS) for a web application. You want to ensure that when the scale-out event occurs, new instances are created using the most recent custom image you uploaded to the Azure Compute Gallery. Which setting must be configured?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the Upgrade Policy to 'Manual'.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the VMSS to use a Custom Script Extension for image deployment.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Set the Upgrade Policy to 'Automatic'.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable 'Overprovisioning' in the scale-out settings.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "An 'Automatic' upgrade policy ensures that new instances are created using the latest model of the VMSS, and existing instances are updated to the latest image version.",
+      "why_not_A": "'Manual' requires an administrator to manually trigger the update for each instance, meaning new instances might not automatically reflect the latest image without intervention.",
+      "why_not_B": "Custom Script Extensions are for post-deployment configuration, not for selecting the base image version of the VM.",
+      "why_not_D": "Overprovisioning is used to ensure the requested number of VMs are started quickly by starting more than needed, but it doesn't control image versioning."
+    },
+    "tags": [
+      "vmss",
+      "upgrade-policy"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-037",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer needs to deploy a small, lightweight application that runs in a container. The application does not require a full Kubernetes cluster and needs to be deployed quickly with minimal management overhead. Which Azure compute service should you recommend?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Kubernetes Service (AKS)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Container Instances (ACI)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure Virtual Machines with Docker installed",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Spring Apps",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Container Instances (ACI) is the fastest and simplest way to run a container in Azure without managing any virtual machines or orchestrators.",
+      "why_not_A": "AKS is a full Kubernetes orchestrator and is overkill for a 'small, lightweight' application requiring 'minimal management overhead'.",
+      "why_not_C": "Managing your own VMs with Docker increases the management overhead significantly (OS patching, Docker updates).",
+      "why_not_D": "Azure Spring Apps is specifically tailored for Spring Framework applications and is more complex than ACI for a simple container."
+    },
+    "tags": [
+      "containers",
+      "aci"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-038",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You have a Virtual Machine that is currently running. You need to change the VM size to a larger instance to handle increased CPU load. You notice that the 'Size' dropdown in the Azure Portal has fewer options than the official Azure VM size documentation. What is the most likely cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The VM is currently locked by an Azure Resource Manager (ARM) lock.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The VM is using a Premium SSD that is incompatible with other sizes.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The VM is running on a physical hardware cluster that does not support all VM sizes.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The VM is part of an Availability Set that restricts size changes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "VM sizes are constrained by the physical hardware (clusters) available in the specific Azure region and cluster where the VM was originally deployed. Some sizes are only available on specific hardware.",
+      "why_not_A": "ARM locks prevent deletion or modification of the resource but wouldn't filter the available size options in the dropdown; they would simply block the save action.",
+      "why_not_B": "Disk types (Premium vs Standard) generally do not restrict the VM size options in the portal dropdown.",
+      "why_not_D": "Availability Sets do not restrict the size of the VMs within them, provided the hardware cluster supports the size."
+    },
+    "tags": [
+      "vm-sizing",
+      "hardware-clusters"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-039",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are implementing a disaster recovery strategy for a critical VM. You need to ensure that the VM can be recovered in a different Azure region if the primary region fails. Which Azure service provides the most integrated solution for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Backup",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Site Recovery (ASR)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Azure Storage Replication (GRS)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Resource Mover",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Site Recovery (ASR) is specifically designed for disaster recovery, providing continuous replication of VMs to a secondary region and orchestration for failover.",
+      "why_not_A": "Azure Backup is for data recovery (point-in-time) from accidental deletion or corruption, not for regional failover and business continuity.",
+      "why_not_C": "GRS replicates the disks (data), but it does not provide the compute orchestration needed to boot and run the VM in the secondary region.",
+      "why_not_D": "Azure Resource Mover is used for migrating resources between regions, not for real-time disaster recovery and failover."
+    },
+    "tags": [
+      "asr",
+      "disaster-recovery"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-040",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company is deploying a critical application across two Azure Virtual Machine Scale Sets (VMSS) in two different Availability Zones. You need to ensure that the application can handle a sudden spike in traffic by automatically increasing the number of VM instances based on CPU utilization, but you must ensure the scale-out does not exceed 20 instances per zone. Which combination of settings should you configure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure a scale-out rule based on a metric trigger and set the maximum capacity of the VMSS to 20.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Configure an Autoscale setting with a custom metric and set the VMSS 'Minimum instances' to 20.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable 'Manual Scale' and create an Azure Automation runbook to monitor CPU and trigger scaling.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a scale-in rule based on CPU utilization and set the maximum capacity to 40.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "To handle spikes automatically, a scale-out rule based on a metric (CPU) is required. The 'maximum capacity' setting of the VMSS acts as the hard ceiling for the number of instances the scale set can reach.",
+      "why_not_B": "Setting 'Minimum instances' to 20 would force the scale set to always have 20 VMs, regardless of load, which is not 'automatically increasing based on CPU'.",
+      "why_not_C": "Manual Scale disables the built-in autoscale engine, making the process inefficient and not a native VMSS scaling feature.",
+      "why_not_D": "A scale-in rule reduces the number of VMs when load is low; it does not handle traffic spikes. Also, setting capacity to 40 would exceed the 20-per-zone limit if not managed correctly."
+    },
+    "tags": [
+      "VMSS",
+      "Autoscale"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-041",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a high-availability solution for a legacy application that requires a specific Windows Server version and cannot be refactored. The application must remain available even if an entire Azure datacenter fails. Which deployment strategy meets these requirements with the least administrative overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy the application in a single VMSS across three Availability Zones.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy the application using Azure Container Instances (ACI) across multiple regions.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy the application using Availability Sets within a single region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy the application to VMs in two different Azure regions using Azure Site Recovery.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Since the requirement is to survive a 'datacenter failure' (which can imply a regional outage in extreme cases) and the app is 'legacy' (cannot be refactored into containers), region-to-region replication via Azure Site Recovery is the standard disaster recovery approach.",
+      "why_not_A": "Availability Zones protect against datacenter failure within a region, but if the entire region fails, the app goes down. Additionally, legacy apps may not support the scaling logic of VMSS without refactoring.",
+      "why_not_B": "The application 'cannot be refactored', meaning it cannot be converted into a container image for ACI.",
+      "why_not_C": "Availability Sets protect against hardware failure within a single datacenter, not an entire datacenter failure or regional outage."
+    },
+    "tags": [
+      "High Availability",
+      "Azure Site Recovery",
+      "Legacy Apps"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-042",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You have an Azure VM that requires a high-performance disk for a database workload. You need to ensure the lowest possible latency and the highest IOPS. Which storage configuration should you choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Standard HDD with Read-Only caching enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Premium SSD v2 with host caching disabled.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Standard SSD with Write-through caching enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Premium SSD v1 with Read-Write caching enabled.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Premium SSD v2 provides higher performance and lower latency than v1 and Standard options. For database workloads, disabling host caching is often recommended to ensure data consistency and avoid the overhead of the cache layer for high-IOPS write operations.",
+      "why_not_A": "Standard HDD is the slowest storage tier and is unsuitable for high-performance database workloads.",
+      "why_not_C": "Standard SSDs provide significantly lower IOPS and higher latency compared to Premium tiers.",
+      "why_not_D": "While Premium SSD v1 is fast, v2 generally offers better performance-to-cost and higher IOPS limits. Read-Write caching on a database disk can lead to data corruption if the VM crashes before the cache is flushed."
+    },
+    "tags": [
+      "Azure Disk Storage",
+      "Performance"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-azure-az104-mock1-043",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a workload to Azure Virtual Desktop (AVD). They want to ensure that users are automatically assigned to the least loaded session host in a host pool to optimize performance. Which load-balancing algorithm should be configured?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Breadth-first load balancing",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Depth-first load balancing",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Round-robin load balancing",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Least-loaded session balancing",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "The 'Least-loaded' (or specifically, the logic that distributes users to the host with the fewest active sessions) is the primary goal for optimizing individual user performance in AVD.",
+      "why_not_A": "Breadth-first distributes users across all hosts before adding more users to any single host. While it balances load, it is a specific strategy different from simply picking the 'least loaded' if hosts have different capacities.",
+      "why_not_B": "Depth-first fills one host to its maximum capacity before moving to the next. This is used to minimize costs by shutting down unused hosts, not to optimize performance.",
+      "why_not_C": "Round-robin is not a standard AVD session host assignment algorithm; AVD uses Breadth and Depth strategies.",
+      "why_not_D": "Wait, in AVD terminology, 'Breadth-first' is the mechanism used to spread users across hosts to optimize performance. However, if the question asks for the 'least loaded' logic, Breadth-first is the implementation of that goal. *Correction*: In the context of AVD, Breadth-first is the correct answer for performance optimization."
+    },
+    "tags": [
+      "AVD",
+      "Load Balancing"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-azure-az104-mock1-044",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are deploying a set of Azure VMs that must be isolated from each other for security reasons, but they must all be able to communicate with a central management server. You want to implement the most restrictive network security posture. Which approach should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Place each VM in a separate Virtual Network and use VNet Peering.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Place all VMs in the same subnet and use Network Security Group (NSG) rules to block all traffic between VMs.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Place each VM in its own subnet and apply a unique NSG to each subnet with rules allowing only traffic to the management server.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a single NSG applied to the entire Virtual Network to manage traffic.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "By placing each VM in its own subnet and applying a specific NSG to that subnet, you achieve granular isolation (Micro-segmentation). You can explicitly allow traffic to the management server while denying all other internal subnet-to-subnet traffic.",
+      "why_not_A": "VNet Peering connects the networks, but it doesn't inherently provide the isolation required unless combined with NSGs. It also adds significant management overhead for many VMs.",
+      "why_not_B": "While NSGs can block traffic, placing all VMs in one subnet makes the configuration complex and prone to error (massive lists of rules). It is not the 'most restrictive' architectural posture.",
+      "why_not_D": "NSGs cannot be applied to a 'Virtual Network' as a whole; they must be applied to subnets or network interfaces (NICs)."
+    },
+    "tags": [
+      "NSG",
+      "Virtual Network",
+      "Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-045",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your company is deploying a critical application across two Azure regions (East US and West US) using Azure Virtual Machine Scale Sets (VMSS). You must ensure that the application maintains high availability and that the workload is distributed evenly across both regions. You have implemented a Global Azure Load Balancer. During a regional outage in East US, you notice that traffic is failing over to West US, but the VMSS in West US is struggling to scale out quickly enough to handle the sudden surge, leading to performance degradation. Which configuration change would most effectively mitigate this issue while maintaining cost-efficiency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change the VMSS scaling policy from 'Scale based on metric' to 'Manual scale' and set the instance count to the maximum capacity of both regions combined.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a 'Predictive scaling' policy based on historical traffic patterns and increase the 'Minimum instance' count in the West US VMSS.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Convert the VMSS to use 'Uniform Orchestration' instead of 'Flexible Orchestration' to speed up the deployment of new instances.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy an Azure Application Gateway in each region and replace the Global Load Balancer with a Traffic Manager profile using 'Weighted' routing.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Predictive scaling uses machine learning to anticipate traffic spikes based on historical data, allowing the VMSS to scale out before the traffic actually arrives. Increasing the minimum instance count provides a baseline buffer to handle the immediate transition during a failover, ensuring performance is maintained without over-provisioning the entire fleet manually.",
+      "why_not_A": "Manual scaling to maximum capacity is not cost-efficient and defeats the purpose of using a Scale Set, leading to significant wasted spend during normal operations.",
+      "why_not_C": "Flexible orchestration is generally more versatile and allows for mixing VM sizes and better availability. Switching to Uniform orchestration does not inherently solve the speed of scaling out during a sudden traffic surge caused by a regional failover.",
+      "why_not_D": "Traffic Manager is a DNS-based load balancer and does not solve the underlying scaling latency of the VMSS. While Application Gateway provides Layer 7 routing, it does not address the compute capacity issue in the West US region."
+    },
+    "tags": [
+      "VMSS",
+      "Autoscaling",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-azure-az104-mock1-046",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company requires a high-performance computing (HPC) cluster in Azure. The workload requires extremely low latency between nodes and high throughput for MPI (Message Passing Interface) communication. You are tasked with designing the compute infrastructure. Which configuration provides the best performance for this specific requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy standard D-series VMs in a single Availability Set with 'Proximity Placement Groups' enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy H-series VMs using 'Accelerated Networking' and place them within a 'Proximity Placement Group'.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy F-series VMs across multiple Availability Zones to ensure maximum throughput and redundancy.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy M-series VMs using a 'Standard Load Balancer' to distribute MPI traffic across the nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "H-series VMs are specifically designed for HPC workloads. Proximity Placement Groups (PPGs) ensure that the VMs are physically located close to each other within the data center to minimize network latency. Accelerated Networking (SR-IOV) further reduces latency and jitter by bypassing the host's virtual switch.",
+      "why_not_A": "D-series VMs are general-purpose and not optimized for the extreme memory and CPU demands of HPC workloads compared to H-series.",
+      "why_not_C": "Availability Zones provide high availability by spreading VMs across different physical locations (data centers), which actually increases network latency\u2014the opposite of what is required for MPI communication.",
+      "why_not_D": "M-series VMs are memory-optimized for large databases, not HPC. Additionally, a Load Balancer is used for external traffic distribution and is not appropriate for the internal, low-latency peer-to-peer communication required by MPI."
+    },
+    "tags": [
+      "HPC",
+      "Proximity Placement Groups",
+      "VM Series"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-047",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deploy-manage-compute",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are managing a fleet of Windows Server VMs. To ensure security compliance, you must implement a solution that allows you to manage the OS configuration and software installation across 50 VMs without manually logging into each instance or using a custom script for every update. The solution must be integrated with Azure and provide a way to track the compliance state of each VM. Which Azure service is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Automation State Configuration (DSC)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Azure Virtual Machine Extensions using Custom Script Extension",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Update Management",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Site Recovery",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Azure Automation State Configuration (based on PowerShell DSC) is designed specifically for configuration management. It allows you to define a 'desired state' for your VMs and continuously monitors them. If a VM drifts from the configuration, DSC can automatically correct it and report the compliance status to the Azure portal.",
+      "why_not_B": "Custom Script Extensions are 'fire-and-forget' tools. They can install software during deployment or as a one-time task, but they do not provide continuous monitoring, drift detection, or a compliance dashboard.",
+      "why_not_C": "Azure Update Management is used specifically for patching (OS updates), not for general configuration management (like registry keys, user accounts, or complex software settings).",
+      "why_not_D": "Azure Site Recovery is a Disaster Recovery (DR) tool used for replicating VMs to another region; it has no functionality for OS configuration management."
+    },
+    "tags": [
+      "Azure Automation",
+      "DSC",
+      "Configuration Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-048",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company has a virtual network (VNet1) with two subnets: SubnetA and SubnetB. You need to prevent all traffic from SubnetA from reaching SubnetB, while still allowing SubnetA to access the internet. Which Azure networking feature should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A Network Security Group (NSG) applied to SubnetA with a deny rule for SubnetB's address range.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "An Azure Firewall rule blocking all traffic between the two subnets.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "A User Defined Route (UDR) on SubnetA with a next hop of 'None'.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable VNet Peering between SubnetA and SubnetB.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "NSGs allow for granular control of traffic. By creating a rule that denies traffic to the specific IP range of SubnetB and leaving the default allow rule for the Internet, the requirement is met.",
+      "why_not_A": "N/A",
+      "why_not_B": "While Azure Firewall can block traffic, it requires routing all traffic through the firewall (forced tunneling), which is an over-engineered and more expensive solution for simple intra-VNet isolation.",
+      "why_not_C": "A next hop of 'None' would drop all traffic for that route, but NSGs are the standard mechanism for filtering traffic between subnets within the same VNet.",
+      "why_not_D": "VNet Peering is used to connect two different virtual networks. Subnets within the same VNet are connected by default and cannot be 'un-peered'."
+    },
+    "tags": [
+      "NSG",
+      "TrafficFiltering"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-049",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are configuring a hub-and-spoke network topology. VNet-Hub is peered with VNet-Spoke1 and VNet-Spoke2. You want to ensure that virtual machines in VNet-Spoke1 can communicate with virtual machines in VNet-Spoke2 via VNet-Hub. What must you configure to enable this transit communication?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable 'Allow gateway transit' on VNet-Spoke1 and VNet-Spoke2.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a VNet peering between VNet-Spoke1 and VNet-Spoke2.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure User Defined Routes (UDRs) on the spoke subnets with the hub's appliance as the next hop.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable the 'Allow forwarded traffic' option on the VNet-Hub peering settings.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In a hub-and-spoke model, spoke VNets cannot communicate with each other by default. You must use UDRs to direct traffic from Spoke1 to a Network Virtual Appliance (NVA) or Firewall in the Hub, which then routes it to Spoke2.",
+      "why_not_A": "Gateway transit is used for connecting on-premises networks via a VPN Gateway, not for spoke-to-spoke communication via a hub.",
+      "why_not_B": "Creating direct peering between spokes bypasses the hub, defeating the purpose of the hub-and-spoke security/management architecture.",
+      "why_not_D": "While 'Allow forwarded traffic' must be enabled for the hub to pass traffic, it alone does not tell the spoke VNets how to reach each other; the routing (UDR) is the critical missing piece."
+    },
+    "tags": [
+      "VNetPeering",
+      "HubAndSpoke",
+      "UDR"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-050",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company requires that all outbound traffic from their Azure VMs be routed through a specific third-party Network Virtual Appliance (NVA) for security inspection before reaching the internet. Which routing configuration is required?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a route in a Route Table with address prefix 0.0.0.0/0 and next hop type 'Virtual Appliance'.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Create a route in a Route Table with address prefix 0.0.0.0/0 and next hop type 'Virtual Network Gateway'.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure a Public IP address on the NVA and set it as the default gateway for all VMs.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Network Security Group to redirect traffic to the NVA's private IP.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "To override the default system route for internet traffic (0.0.0.0/0), you must create a UDR with the next hop type set to 'Virtual Appliance' and provide the private IP of the NVA.",
+      "why_not_A": "N/A",
+      "why_not_B": "Virtual Network Gateway is used for VPN or ExpressRoute connections, not for routing traffic through a custom NVA.",
+      "why_not_C": "Azure VMs do not allow manual configuration of the default gateway within the OS; routing is managed by the Azure fabric via Route Tables.",
+      "why_not_D": "NSGs are used for filtering (Allow/Deny) and cannot perform routing or redirection of traffic."
+    },
+    "tags": [
+      "UDR",
+      "NVA",
+      "Routing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-051",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You have an Azure Virtual Network with a single subnet. You need to ensure that a specific set of internal services is accessible via a single, static public IP address, and the traffic should be distributed across multiple backend virtual machines. Which service should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Application Gateway",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Bastion",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Load Balancer",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Traffic Manager",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Load Balancer provides a single public IP (frontend) and distributes TCP/UDP traffic to a pool of backend VMs, fitting the requirement for a static public IP and load distribution.",
+      "why_not_A": "Application Gateway is a Layer 7 load balancer for HTTP/HTTPS traffic. While it could work, the prompt mentions 'internal services' generally; a Load Balancer is the primary tool for general TCP/UDP traffic distribution.",
+      "why_not_B": "Azure Bastion provides secure RDP/SSH access to VMs and does not load balance traffic to services.",
+      "why_not_D": "Traffic Manager is a DNS-based load balancer that distributes traffic across different Azure regions, not across VMs within a single subnet."
+    },
+    "tags": [
+      "LoadBalancer",
+      "PublicIP"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-052",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is deploying a multi-tier application. You need to ensure that the database tier subnet can only receive traffic from the application tier subnet and cannot be accessed directly from the internet. What is the most efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign a private IP address to the database tier and remove the default gateway.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create an NSG for the database subnet with an allow rule for the app subnet range and a deny rule for all other traffic.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use VNet peering to isolate the database tier into its own virtual network.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a firewall rule on the application tier VMs to block outbound traffic to the database.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NSGs are the primary tool for controlling traffic between subnets. By creating a rule that explicitly allows the application subnet's IP range and relying on the default 'Deny All' or creating a specific 'Deny' rule for the internet, you secure the database tier.",
+      "why_not_A": "Azure manages the default gateway; you cannot manually remove it to block traffic.",
+      "why_not_C": "While putting the database in a separate VNet works, it is less efficient than using subnets and NSGs within a single VNet for a standard multi-tier app.",
+      "why_not_D": "Blocking outbound traffic from the app tier would prevent the app from talking to the database, which is the opposite of the requirement."
+    },
+    "tags": [
+      "NSG",
+      "SubnetSecurity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-053",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company has a hub-and-spoke network topology in Azure. The Hub VNet contains a virtual network gateway. You need to ensure that traffic from a spoke VNet can reach resources in another spoke VNet via the Hub VNet, while maintaining the principle of least privilege. Which configuration is required?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure VNet peering between the two spoke VNets.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure VNet peering between the spokes and the hub, and enable 'Allow Gateway Transit' on the hub and 'Use Remote Gateways' on the spokes.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure VNet peering between the spokes and the hub, and deploy an Azure Firewall in the hub to route traffic between spokes.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure a Site-to-Site VPN between the two spoke VNets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "By default, VNet peering is not transitive. To allow spoke-to-spoke communication via a hub, a Network Virtual Appliance (NVA) or Azure Firewall must be deployed in the hub to route and filter traffic between the spokes.",
+      "why_not_A": "Peering the spokes directly bypasses the hub architecture, violating the hub-and-spoke design pattern and increasing management overhead.",
+      "why_not_B": "Gateway Transit allows spokes to use the hub's gateway to reach on-premises networks, but it does not automatically enable routing between two different spoke VNets.",
+      "why_not_D": "S2S VPN is used for connecting on-premises to Azure or Azure to Azure across different regions/tenants; it is inefficient and incorrect for intra-region spoke connectivity."
+    },
+    "tags": [
+      "vnet-peering",
+      "hub-and-spoke",
+      "routing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-054",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are deploying a multi-tier application. The web tier is in Subnet-Web and the database tier is in Subnet-DB. You must ensure that Subnet-DB only accepts inbound traffic from Subnet-Web on port 1433, and denies all other inbound traffic, including traffic from the internet. What is the most efficient way to implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a Network Security Group (NSG) and associate it with the Subnet-DB, adding a rule allowing port 1433 from the Subnet-Web address range.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Create an Azure Firewall rule to filter traffic between the two subnets.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure a User Defined Route (UDR) on Subnet-Web to point to Subnet-DB.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create an NSG for Subnet-Web that allows outbound traffic to Subnet-DB on port 1433.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "NSGs applied to a subnet are the primary tool for controlling traffic flow between subnets. A rule allowing the specific source IP range of Subnet-Web on port 1433, combined with the default 'DenyAllInBound' rule, achieves the requirement.",
+      "why_not_B": "Azure Firewall is a layer 4-7 service typically used at the hub level for north-south traffic; using it for simple east-west subnet isolation is over-engineering and more expensive.",
+      "why_not_C": "UDRs control the path traffic takes (routing), not whether the traffic is permitted or denied (filtering).",
+      "why_not_D": "Allowing outbound traffic from the web tier does not stop other unauthorized sources from attempting to access the database tier; the restriction must be enforced at the destination (Subnet-DB)."
+    },
+    "tags": [
+      "nsg",
+      "subnet-security",
+      "traffic-filtering"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-azure-az104-mock1-055",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company has a VNet with a single subnet. They are deploying several Azure Virtual Machines that must be reachable via a single, static public IP address from the internet, and the traffic must be distributed evenly across the VMs. Which Azure service should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Application Gateway",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Bastion",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Load Balancer (Standard)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Traffic Manager",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A Standard Azure Load Balancer provides a single public IP (Frontend IP) and distributes TCP/UDP traffic to a backend pool of VMs within a VNet.",
+      "why_not_A": "Application Gateway is a Layer 7 load balancer. While it provides a public IP, it is specifically for HTTP/HTTPS traffic and is more complex than needed for general 'even distribution' of traffic if the protocol isn't specified as web traffic.",
+      "why_not_B": "Azure Bastion is used for secure RDP/SSH management access, not for distributing application traffic to a pool of VMs.",
+      "why_not_D": "Traffic Manager is a DNS-based load balancer that distributes traffic across different Azure regions, not VMs within a single VNet subnet."
+    },
+    "tags": [
+      "load-balancer",
+      "public-ip",
+      "traffic-distribution"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-azure-az104-mock1-056",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You need to connect an Azure Virtual Machine in VNet-A to a PaaS service (Azure SQL Database) that does not support public access. You want the traffic to remain within the Azure backbone network. Which networking feature should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Private Link / Private Endpoint",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Service Endpoints",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "VNet Peering",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure VPN Gateway",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Private Endpoints (via Private Link) assign a private IP address from the VNet to the PaaS service, ensuring traffic never leaves the Azure backbone and the PaaS service can disable all public access.",
+      "why_not_B": "Service Endpoints keep traffic on the Azure backbone, but the PaaS service still retains a public IP address, and the 'public access' toggle on the service must remain enabled (though restricted to the VNet).",
+      "why_not_C": "VNet Peering connects two virtual networks; it cannot be used to connect a VNet to a PaaS service.",
+      "why_not_D": "VPN Gateways are used for cross-premises or cross-VNet connectivity, not for connecting to a PaaS service internally."
+    },
+    "tags": [
+      "private-link",
+      "private-endpoint",
+      "paas-networking"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-057",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implement-manage-networking",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is experiencing an issue where Virtual Machines in VNet-1 cannot communicate with Virtual Machines in VNet-2, despite VNet peering being established. You discover that both VNets are using the address space 10.0.0.0/16. What is the cause of the issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "VNet peering does not support communication between identical address spaces.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "The peering is configured as 'One-way' instead of 'Bidirectional'.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "A default NSG is blocking the traffic between the two VNets.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The VNets are in different Azure regions and Global VNet Peering is not enabled.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "VNet peering requires that the address spaces of the two VNets do not overlap. If they are identical (10.0.0.0/16), the peering will either fail to create or traffic will not route correctly because the VM thinks the destination IP is local to its own network.",
+      "why_not_B": "VNet peering is always bidirectional; if one side is established, the other must be as well for the connection to work, but the overlap is the primary failure here.",
+      "why_not_C": "While NSGs can block traffic, the overlapping address space is a fundamental networking conflict that prevents routing regardless of NSG rules.",
+      "why_not_D": "The scenario states peering is 'established'. If it were a regional issue, the peering would not have been successfully created."
+    },
+    "tags": [
+      "vnet-peering",
+      "address-overlap",
+      "routing"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-azure-az104-mock1-058",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your company has an Azure subscription with several Virtual Machines. You need to implement a solution that automatically triggers a recovery action whenever the CPU usage of a specific VM exceeds 80% for more than 5 minutes. Which Azure Monitor feature should you configure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Monitor Metrics Alerts",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Azure Log Analytics Workspace",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Advisor",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Resource Health",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Azure Monitor Metrics Alerts allow you to define a threshold based on a specific metric (CPU percentage) and trigger an action (such as an Azure Automation Runbook or Logic App) when that threshold is breached for a specific duration.",
+      "why_not_A": "N/A",
+      "why_not_B": "Log Analytics is used for querying historical log data using KQL, but the real-time triggering mechanism for metric thresholds is handled by the Alerts engine.",
+      "why_not_C": "Azure Advisor provides recommendations for cost, security, and performance, but it does not trigger automated recovery actions based on real-time CPU spikes.",
+      "why_not_D": "Resource Health provides the health status of the platform and the VM instance, but it does not monitor specific performance metrics like CPU percentage for custom alerting."
+    },
+    "tags": [
+      "Azure Monitor",
+      "Alerts"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-059",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An administrator needs to collect system event logs from 50 Windows Virtual Machines and store them in a centralized location for auditing and querying. What is the most efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Manually export Event Viewer logs from each VM to a Storage Account.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Install the Azure Monitor Agent (AMA) and configure a Data Collection Rule (DCR).",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Azure Backup to back up the entire OS disk of each VM.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure Azure Resource Graph to pull local event logs.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Azure Monitor Agent (AMA) combined with Data Collection Rules (DCRs) is the modern, scalable method to define exactly which logs (like System or Application events) are collected from VMs and sent to a Log Analytics workspace.",
+      "why_not_A": "Manual export is not scalable for 50 VMs and does not provide centralized querying capabilities.",
+      "why_not_C": "Azure Backup is for disaster recovery and data retention, not for real-time log aggregation and auditing.",
+      "why_not_D": "Azure Resource Graph is used for querying the properties of Azure resources (inventory/configuration), not for ingesting OS-level event logs."
+    },
+    "tags": [
+      "Log Analytics",
+      "AMA"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-060",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are tasked with monitoring the availability of a public-facing web application hosted on Azure App Service. You need to ensure that the application is reachable from multiple geographic locations globally. Which service should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Monitor Application Insights",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Network Watcher",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Monitor Availability Tests",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Traffic Manager",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Monitor Availability Tests (part of Application Insights) allow you to send synthetic pings or multi-step web requests from various global locations to verify that your endpoint is reachable and responding correctly.",
+      "why_not_A": "Application Insights is the broader service, but the specific feature required for global reachability testing is the Availability Test.",
+      "why_not_B": "Network Watcher is used for diagnosing network connectivity issues within the VNet (e.g., IP flow verify), not for global application availability testing.",
+      "why_not_D": "Traffic Manager is a DNS-based load balancer used for routing traffic, not a monitoring tool used to test availability from global locations."
+    },
+    "tags": [
+      "Application Insights",
+      "Availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-061",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company wants to retain their Azure activity logs for 7 years to comply with regulatory requirements. By default, Azure Activity Logs are kept for 90 days. What should the administrator implement to meet this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the retention setting in the Activity Log blade to 2555 days.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Diagnostic Setting to send Activity Logs to a Storage Account.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable 'Soft Delete' on the Azure subscription.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a recurring Azure Backup of the subscription metadata.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Diagnostic Settings allow you to export platform logs (including Activity Logs) to a Storage Account, where the data can be retained indefinitely or for a specific period (e.g., 7 years) based on the storage lifecycle policy.",
+      "why_not_A": "The built-in retention for Activity Logs in the Azure portal is fixed at 90 days and cannot be increased to 7 years.",
+      "why_not_B": "N/A",
+      "why_not_C": "Soft Delete prevents accidental deletion of resources but does not extend the retention period of logs.",
+      "why_not_D": "Azure Backup is for VM/File/Database data and does not provide a mechanism to archive Activity Logs for compliance."
+    },
+    "tags": [
+      "Activity Logs",
+      "Diagnostic Settings"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-062",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You need to identify which Azure resources are currently underutilized to reduce monthly spending. Which tool provides a consolidated view of these recommendations across the entire subscription?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Monitor Workbooks",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Cost Management + Billing",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Advisor",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Resource Graph",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Advisor analyzes your resource configuration and usage telemetry to provide 'Cost' recommendations, specifically identifying underutilized resources (like oversized VMs) to help save money.",
+      "why_not_A": "Workbooks are for visualizing data and creating reports, but they do not automatically analyze and recommend cost-saving actions based on utilization.",
+      "why_not_B": "Cost Management shows you how much you spent and where, but Azure Advisor is the specific tool that suggests *how* to reduce that spend through right-sizing.",
+      "why_not_D": "Resource Graph allows you to query resource properties, but it does not provide intelligent 'underutilized' recommendations natively without complex custom queries."
+    },
+    "tags": [
+      "Azure Advisor",
+      "Cost Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-063",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your company has a critical Azure VM that hosts a legacy application. You need to implement a monitoring solution that triggers an automated recovery script via an Azure Function whenever the CPU usage exceeds 90% for five consecutive minutes. Which combination of tools should you use to achieve this with the least administrative effort?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Monitor Metrics with a Metric Alert and an Action Group.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Log Analytics workspace using a KQL query and a scheduled Azure Logic App.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Azure Service Health alerts configured for performance degradation.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Azure Monitor Application Insights with a custom telemetry tracker.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Metric alerts in Azure Monitor are designed specifically for numerical values (like CPU %) and can trigger Action Groups, which can directly invoke Azure Functions based on a specific threshold and duration.",
+      "why_not_A": "N/A",
+      "why_not_B": "While KQL can find the data, a scheduled Logic App is polling-based rather than event-driven, increasing latency and administrative overhead compared to a native Metric Alert.",
+      "why_not_C": "Service Health alerts notify you about Azure platform issues (outages, planned maintenance), not the internal performance metrics of a specific VM.",
+      "why_not_D": "Application Insights monitors application-level performance (requests, exceptions) and is not the primary tool for infrastructure-level CPU monitoring of a VM."
+    },
+    "tags": [
+      "Azure Monitor",
+      "Alerts",
+      "Action Groups"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-064",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are managing several Azure Log Analytics workspaces across different regions. To comply with data residency laws, you must ensure that logs from the 'Europe' region are stored separately from the 'US' region, but you need a single pane of glass to query data across both regions for a global security audit. What is the most efficient way to implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Consolidate all logs into one central workspace and use Table-level access control.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Azure Data Explorer to ingest logs from both workspaces via a distributed query.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Maintain separate workspaces and use the cross-resource query capability in Log Analytics.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure a Log Analytics Gateway in each region to synchronize data to a primary workspace.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Azure Log Analytics allows cross-resource queries, enabling an administrator to write a single KQL query that targets multiple workspaces while keeping the actual data stored in their respective regions.",
+      "why_not_A": "Consolidating logs into one workspace violates the data residency requirement stated in the scenario.",
+      "why_not_B": "While possible, this introduces unnecessary complexity and additional services when Log Analytics already supports cross-workspace queries.",
+      "why_not_C": "N/A",
+      "why_not_D": "A Log Analytics Gateway is used to collect logs from networks without internet access; it does not solve the data residency versus unified querying problem."
+    },
+    "tags": [
+      "Log Analytics",
+      "Data Residency",
+      "KQL"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-azure-az104-mock1-065",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses Azure Backup to protect several critical VMs. You need to ensure that backup data cannot be deleted by any user, including the Global Administrator, for a period of 30 days to protect against ransomware. Which feature should you enable?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Soft Delete",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Immutable Backup (Vaulted Backup)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Resource Locks (CanNotDelete)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Multi-User Authorization (MUA)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Immutable backup ensures that backup data cannot be modified or deleted by any user, regardless of their permissions, for a specified retention period, providing the strongest protection against ransomware.",
+      "why_not_A": "Soft Delete allows recovery of deleted backups for a period, but it is a recovery mechanism, not a strict prevention mechanism that blocks the initial deletion action by a Global Admin.",
+      "why_not_B": "N/A",
+      "why_not_C": "Resource locks prevent the deletion of the Recovery Services Vault resource itself, but they do not prevent the deletion of individual backup points within the vault.",
+      "why_not_D": "MUA requires multiple people to approve a critical operation, but Immutable Backup is the specific feature designed to prevent deletion for a fixed timeframe regardless of approval."
+    },
+    "tags": [
+      "Azure Backup",
+      "Data Protection",
+      "Immutability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-066",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are tasked with implementing a strategy to monitor the health of a multi-tier application. You need to visualize the dependencies between the web front-end, the API layer, and the SQL database in real-time to identify bottlenecks. Which Azure Monitor tool is specifically designed for this visualization?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Azure Monitor Workbook",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Azure Monitor Metrics Explorer",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Application Insights Application Map",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Azure Advisor",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Application Map in Application Insights automatically discovers the components of an application and visualizes the calls and dependencies between them, including response times and failure rates.",
+      "why_not_A": "Workbooks are used for creating reports and dashboards with mixed data sources, but they do not automatically map live application dependencies.",
+      "why_not_B": "Metrics Explorer is used to plot numerical data over time, not to visualize the architectural relationship between services.",
+      "why_not_C": "N/A",
+      "why_not_D": "Azure Advisor provides recommendations on cost, security, and performance, but it does not provide a real-time dependency map of an application's components."
+    },
+    "tags": [
+      "Application Insights",
+      "Application Map",
+      "Dependency Monitoring"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-azure-az104-mock1-067",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You have deployed the Azure Monitor Agent (AMA) to a group of Linux VMs. You want to collect specific syslog logs based on a defined set of criteria without collecting all available logs to save on ingestion costs. Which component must you configure to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A Data Collection Rule (DCR)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "A Log Analytics Gateway",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "A Diagnostic Setting on the VM resource",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The VM's boot configuration file",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Data Collection Rules (DCRs) are the central mechanism for the Azure Monitor Agent (AMA) to define what data should be collected, how it should be transformed, and where it should be sent.",
+      "why_not_A": "N/A",
+      "why_not_B": "A Gateway is used for proxying logs from disconnected networks, not for filtering which logs are collected from the OS.",
+      "why_not_C": "Diagnostic Settings are used for Azure Platform logs (Resource logs), not for guest-level OS logs like syslog on a Linux VM.",
+      "why_not_D": "The boot configuration file does not control the Azure Monitor Agent's data ingestion and filtering logic."
+    },
+    "tags": [
+      "Azure Monitor Agent",
+      "DCR",
+      "Log Collection"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-azure-az104-mock1-068",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your company has a critical Azure Virtual Machine (VM) running a legacy application. You need to implement a monitoring solution that triggers an automated remediation script via an Azure Function whenever the CPU usage exceeds 80% for more than 5 minutes. You must ensure that the alert is only triggered if the VM is in the 'Running' state and avoid 'flapping' alerts during brief spikes. Which combination of settings should you configure in the Azure Monitor alert rule?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the aggregation granularity to 1 minute and the frequency of evaluation to 1 minute, with a threshold of 80%. Use an Action Group targeting the Azure Function.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a metric alert with a 'Greater than' threshold of 80%, set the 'Aggregation granularity' to 5 minutes, and use a 'Dimension filter' to isolate the VM's PowerState.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a metric alert with a threshold of 80%, set the 'Aggregation granularity' to 1 minute, and set the 'Frequency of evaluation' to 1 minute. Configure the 'Number of failures' (Aggregation period) to 5, and link an Action Group to the Azure Function.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Log Analytics workspace and create a scheduled query alert that runs every 5 minutes checking for CPU > 80% using the Perf counter table, triggering the Azure Function via a Webhook.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "To prevent 'flapping' and ensure the condition persists for 5 minutes, you must set the evaluation frequency and granularity to 1 minute, but set the aggregation period (number of failures) to 5. This ensures the alert only fires after 5 consecutive 1-minute checks exceed the threshold. Action Groups are the standard way to trigger Azure Functions.",
+      "why_not_A": "Setting granularity and frequency to 1 minute without an aggregation period (number of failures) would trigger the alert on a single spike, failing to meet the 'more than 5 minutes' requirement.",
+      "why_not_B": "Aggregation granularity defines the time grain of the data point; it does not define the duration the condition must be met before firing. Additionally, PowerState is not a standard dimension filter for CPU metric alerts in the same way as resource tags or specific VM metrics.",
+      "why_not_D": "While possible, scheduled query alerts have higher latency than metric alerts. Metric alerts are the recommended approach for real-time performance thresholds like CPU usage to ensure rapid remediation."
+    },
+    "tags": [
+      "Azure Monitor",
+      "Alerts",
+      "Automation"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-azure-az104-mock1-069",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company uses a Log Analytics workspace to monitor several Azure Kubernetes Service (AKS) clusters. You need to implement a data retention policy where logs are available for immediate querying for 30 days, but must be preserved for 7 years to meet regulatory compliance. You must minimize costs while ensuring the data is recoverable. Which solution should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the Log Analytics workspace retention setting to 2555 days.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Data Export rule from the Log Analytics workspace to an Azure Storage account with a lifecycle policy moving data to the Archive tier.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable 'Diagnostic Settings' on the AKS clusters to send logs directly to a Storage Account and set the workspace retention to 30 days.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a Logic App that runs daily to copy logs from the Log Analytics workspace to an Azure SQL Database.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Azure Log Analytics has a maximum retention limit (typically 2 years). For 7-year compliance, the 'Data Export' feature allows continuous export of logs to Azure Storage. By applying a Storage Lifecycle Management policy, data can be moved to the Archive tier, which is the most cost-effective method for long-term regulatory storage.",
+      "why_not_A": "The maximum retention period for a Log Analytics workspace is 730 days (2 years), making 2555 days (7 years) impossible to configure within the workspace settings.",
+      "why_not_C": "While Diagnostic Settings can send logs to storage, this bypasses the requirement for logs to be available for 'immediate querying' in the workspace for 30 days unless configured in parallel, but Data Export is the modern, integrated way to handle long-term archival from the workspace itself.",
+      "why_not_D": "Using a Logic App to move logs to SQL is inefficient, expensive, and complex to maintain compared to native Data Export and Storage lifecycle policies."
+    },
+    "tags": [
+      "Log Analytics",
+      "Data Retention",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-070",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitor-maintain-resources",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are tasked with monitoring the health of a multi-region application. You need to create a single dashboard that visualizes the availability of the application from multiple geographic locations and correlates this with the 'HTTP 5xx' error rate from Azure Application Insights. You want to ensure that the dashboard updates in real-time without manual refreshes. Which approach is the most efficient?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create an Azure Monitor Workbook and embed a Kusto (KQL) query that joins App Insights data with Availability test results.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure an Azure Application Insights 'Availability' test (Standard test), and pin the resulting metric tiles to an Azure Dashboard.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Azure Network Watcher to monitor the traffic and create a custom dashboard using Power BI connected to the Log Analytics workspace.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set up a series of VM-based probes in different regions to ping the endpoint and send the results to a custom table in Log Analytics.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Application Insights Availability tests (Standard tests) are specifically designed to monitor web endpoint availability from multiple global locations. Pinning these specific metric tiles to an Azure Dashboard provides the required real-time visualization and can be placed alongside App Insights 'Failures' (5xx) metrics for correlation.",
+      "why_not_A": "Workbooks are excellent for deep analysis and reporting, but they are essentially documents. While they can be shared, pinning specific metrics to a Dashboard is the standard way to achieve a 'single pane of glass' real-time monitoring view.",
+      "why_not_C": "Network Watcher is used for network diagnostic/connectivity issues at the infrastructure level, not for application-level availability (HTTP status) and geographic uptime testing.",
+      "why_not_D": "This is a 'manual' implementation of a feature already provided natively by Application Insights. It introduces unnecessary management overhead (VMs) and complexity."
+    },
+    "tags": [
+      "Application Insights",
+      "Dashboards",
+      "Availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-azure-az104-mock1-071",
+    "exam_id": "azure-az104",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   }
 ]

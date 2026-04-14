@@ -1,22 +1,3200 @@
 [
-  {"id":"q-nvidia-ncp-ain-001","exam_id":"nvidia-ncp-ain","domain_id":"infiniband-fundamentals","type":"factual","difficulty":2,"stem":"What component manages routing tables and assigns addresses in an InfiniBand subnet?","options":[{"id":"A","text":"DNS server","is_correct":false},{"id":"B","text":"Subnet Manager (SM)","is_correct":true},{"id":"C","text":"DHCP server","is_correct":false},{"id":"D","text":"Load balancer","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"The Subnet Manager discovers the InfiniBand fabric topology, assigns Local IDs (LIDs) to each port, computes routing tables, and distributes them to switches and adapters.","why_not_A":"DNS resolves domain names to IP addresses. InfiniBand uses its own addressing scheme managed by the SM.","why_not_C":"DHCP assigns IP addresses for Ethernet networks. InfiniBand uses LIDs assigned by the Subnet Manager.","why_not_D":"Load balancers distribute application traffic. The SM manages the fabric infrastructure itself."},"concept_ids":["nvidia-ncp-ain-ib-architecture"],"tags":["subnet-manager","infiniband"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-002","exam_id":"nvidia-ncp-ain","domain_id":"infiniband-fundamentals","type":"factual","difficulty":3,"stem":"What are Queue Pairs (QPs) in InfiniBand?","options":[{"id":"A","text":"Physical cable connectors","is_correct":false},{"id":"B","text":"The fundamental communication abstraction providing send/receive endpoints","is_correct":true},{"id":"C","text":"Switch configuration parameters","is_correct":false},{"id":"D","text":"Memory allocation units","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"Queue Pairs consist of a Send Queue and Receive Queue and are the fundamental communication endpoints in InfiniBand. Applications post work requests to QPs to send or receive data, supporting reliable or unreliable transport.","why_not_A":"Physical connectors are cables and ports. QPs are a software/protocol abstraction.","why_not_C":"Switch configuration is managed by the Subnet Manager, not QPs.","why_not_D":"Memory is managed through Memory Regions (MRs), not Queue Pairs."},"concept_ids":["nvidia-ncp-ain-ib-architecture"],"tags":["queue-pairs","infiniband"],"estimated_time_seconds":60,"bkt_p_guess":0.20,"bkt_p_slip":0.12,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-003","exam_id":"nvidia-ncp-ain","domain_id":"infiniband-fundamentals","type":"factual","difficulty":2,"stem":"What bandwidth does InfiniBand NDR provide per port?","options":[{"id":"A","text":"100 Gb/s","is_correct":false},{"id":"B","text":"200 Gb/s","is_correct":false},{"id":"C","text":"400 Gb/s","is_correct":true},{"id":"D","text":"25 Gb/s","is_correct":false}],"correct_answer":"C","explanation":{"why_correct":"InfiniBand NDR provides 400 Gb/s per port using 4 lanes of 100 Gb/s each (4x NDR), making it the primary interconnect for modern AI training clusters.","why_not_A":"100 Gb/s is the per-lane rate. A standard 4x port aggregates to 400 Gb/s.","why_not_B":"200 Gb/s was the per-port bandwidth of the previous generation HDR InfiniBand.","why_not_D":"25 Gb/s is a common Ethernet speed, far below InfiniBand NDR capabilities."},"concept_ids":["nvidia-ncp-ain-ib-speeds"],"tags":["ndr","bandwidth"],"estimated_time_seconds":30,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-004","exam_id":"nvidia-ncp-ain","domain_id":"infiniband-fundamentals","type":"factual","difficulty":3,"stem":"What is the role of OpenSM in InfiniBand fabrics?","options":[{"id":"A","text":"It provides GPU-accelerated computation","is_correct":false},{"id":"B","text":"It is the open-source Subnet Manager implementation for InfiniBand","is_correct":true},{"id":"C","text":"It manages storage volumes","is_correct":false},{"id":"D","text":"It provides DNS services for InfiniBand","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"OpenSM is the standard open-source implementation of the InfiniBand Subnet Manager. It performs fabric discovery, LID assignment, routing computation, and distributes forwarding tables to switches.","why_not_A":"GPU computation is handled by CUDA and GPU hardware, not OpenSM.","why_not_C":"Storage volume management is handled by file system and storage management tools.","why_not_D":"InfiniBand uses its own addressing (LIDs/GIDs), not DNS."},"concept_ids":["nvidia-ncp-ain-ib-subnet-mgmt"],"tags":["opensm","subnet-manager"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-005","exam_id":"nvidia-ncp-ain","domain_id":"ethernet-for-ai","type":"factual","difficulty":2,"stem":"What is required to enable RDMA over Ethernet (RoCE)?","options":[{"id":"A","text":"Standard Ethernet switches with no special configuration","is_correct":false},{"id":"B","text":"Lossless Ethernet with Priority Flow Control (PFC) and ECN configured","is_correct":true},{"id":"C","text":"WiFi access points","is_correct":false},{"id":"D","text":"Only NVIDIA GPUs, no switch configuration needed","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"RoCE requires a lossless Ethernet fabric achieved through Priority Flow Control (PFC) configuration on both NICs and switches, along with ECN (Explicit Congestion Notification) for congestion management.","why_not_A":"Standard Ethernet is lossy. RoCE requires specific PFC and ECN configuration for lossless operation.","why_not_C":"WiFi does not support the lossless, low-latency requirements of RDMA.","why_not_D":"Both NICs and switches must be properly configured for RoCE to work correctly."},"concept_ids":["nvidia-ncp-ain-ethernet-ai","nvidia-ncp-ain-roce-config"],"tags":["roce","pfc","lossless-ethernet"],"estimated_time_seconds":60,"bkt_p_guess":0.25,"bkt_p_slip":0.12,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-006","exam_id":"nvidia-ncp-ain","domain_id":"ethernet-for-ai","type":"factual","difficulty":3,"stem":"What is the DOCA SDK used for?","options":[{"id":"A","text":"Training deep learning models","is_correct":false},{"id":"B","text":"Programming NVIDIA BlueField DPUs","is_correct":true},{"id":"C","text":"Managing GPU clusters","is_correct":false},{"id":"D","text":"Visualizing network topologies","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"DOCA (Data Center Infrastructure on a Chip Architecture) is the SDK for developing applications that run on NVIDIA BlueField DPUs, enabling programming of networking, storage, and security acceleration functions.","why_not_A":"Deep learning training uses frameworks like PyTorch and NeMo, not DOCA.","why_not_C":"GPU cluster management is handled by Base Command Manager and Kubernetes tools, not DOCA.","why_not_D":"Network topology visualization is provided by UFM, not DOCA."},"concept_ids":["nvidia-ncp-ain-bluefield-dpu"],"tags":["doca","bluefield","dpu"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-007","exam_id":"nvidia-ncp-ain","domain_id":"rdma-roce","type":"factual","difficulty":3,"stem":"What is the primary benefit of RDMA compared to traditional TCP/IP networking?","options":[{"id":"A","text":"Higher bandwidth cables","is_correct":false},{"id":"B","text":"Microsecond-level latency by bypassing the CPU in the data path","is_correct":true},{"id":"C","text":"Longer cable reach","is_correct":false},{"id":"D","text":"Simpler network configuration","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"RDMA enables direct memory-to-memory data transfer between machines without CPU involvement in the data path, achieving microsecond-level latency compared to millisecond latency in traditional TCP/IP networking.","why_not_A":"Cable technology is independent of the protocol. RDMA's advantage is in software/protocol efficiency.","why_not_C":"Cable reach depends on physical medium (copper, fiber), not the protocol.","why_not_D":"RDMA configuration is more complex than standard TCP/IP due to QP setup, memory registration, and fabric management."},"concept_ids":["nvidia-ncp-ain-rdma-fundamentals"],"tags":["rdma","latency"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-008","exam_id":"nvidia-ncp-ain","domain_id":"rdma-roce","type":"comparison","difficulty":3,"stem":"What is the key difference between RoCEv1 and RoCEv2?","options":[{"id":"A","text":"RoCEv1 is faster than RoCEv2","is_correct":false},{"id":"B","text":"RoCEv1 is L2-only while RoCEv2 supports L3 routing over UDP/IP","is_correct":true},{"id":"C","text":"RoCEv2 only works with InfiniBand switches","is_correct":false},{"id":"D","text":"RoCEv1 is newer than RoCEv2","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"RoCEv1 encapsulates RDMA directly over Ethernet (L2 only, cannot cross routers). RoCEv2 encapsulates RDMA over UDP/IP, enabling routing across L3 network boundaries.","why_not_A":"RoCEv2 has similar performance to RoCEv1 with the added benefit of L3 routability.","why_not_C":"RoCEv2 works with standard Ethernet switches, not InfiniBand switches.","why_not_D":"RoCEv2 is the newer, improved version of the protocol."},"concept_ids":["nvidia-ncp-ain-roce-config"],"tags":["rocev1","rocev2","comparison"],"estimated_time_seconds":60,"bkt_p_guess":0.20,"bkt_p_slip":0.12,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-009","exam_id":"nvidia-ncp-ain","domain_id":"rdma-roce","type":"factual","difficulty":3,"stem":"What is DCQCN in the context of RoCE networking?","options":[{"id":"A","text":"A GPU driver version","is_correct":false},{"id":"B","text":"A congestion control algorithm that uses ECN feedback to prevent PFC storms","is_correct":true},{"id":"C","text":"A file transfer protocol","is_correct":false},{"id":"D","text":"A container management tool","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"DCQCN (Data Center Quantized Congestion Notification) is a congestion control algorithm for RoCE that uses ECN marking to detect congestion and reduces sending rates before PFC pause frames cause head-of-line blocking or PFC storms.","why_not_A":"DCQCN is a network congestion control algorithm, not a GPU driver.","why_not_C":"DCQCN manages network congestion, it does not transfer files.","why_not_D":"Container management is handled by Docker and Kubernetes, not DCQCN."},"concept_ids":["nvidia-ncp-ain-roce-config"],"tags":["dcqcn","congestion-control"],"estimated_time_seconds":60,"bkt_p_guess":0.20,"bkt_p_slip":0.12,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-010","exam_id":"nvidia-ncp-ain","domain_id":"network-management","type":"factual","difficulty":2,"stem":"What does NVIDIA UFM provide for InfiniBand fabrics?","options":[{"id":"A","text":"GPU training frameworks","is_correct":false},{"id":"B","text":"Centralized InfiniBand fabric management and monitoring","is_correct":true},{"id":"C","text":"Container image registry","is_correct":false},{"id":"D","text":"Model serving endpoints","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"NVIDIA UFM (Unified Fabric Manager) provides centralized management of InfiniBand fabrics including topology discovery, health monitoring, event logging, performance analysis, and configuration management.","why_not_A":"Training frameworks like NeMo and PyTorch handle model training, not UFM.","why_not_C":"Container registries like NGC host container images, not UFM.","why_not_D":"Model serving is handled by Triton and NIM, not UFM."},"concept_ids":["nvidia-ncp-ain-fabric-management"],"tags":["ufm","fabric-management"],"estimated_time_seconds":30,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-011","exam_id":"nvidia-ncp-ain","domain_id":"network-management","type":"factual","difficulty":2,"stem":"What metrics do port counters on InfiniBand switches track?","options":[{"id":"A","text":"GPU utilization and memory usage","is_correct":false},{"id":"B","text":"Bytes, packets, errors, and discards on each switch port","is_correct":true},{"id":"C","text":"CPU temperature and clock speed","is_correct":false},{"id":"D","text":"Model training loss values","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"InfiniBand switch port counters track network traffic metrics including bytes transmitted/received, packet counts, error counts (symbol errors, link errors), and discards, providing visibility into network health and utilization.","why_not_A":"GPU metrics are tracked by nvidia-smi and DCGM, not network switch counters.","why_not_C":"CPU temperature and clock speed are host-level metrics, not network switch counters.","why_not_D":"Training loss is an ML metric, not a network metric."},"concept_ids":["nvidia-ncp-ain-telemetry"],"tags":["port-counters","monitoring"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-012","exam_id":"nvidia-ncp-ain","domain_id":"performance-tuning","type":"factual","difficulty":3,"stem":"What collective operations does NCCL optimize for distributed training?","options":[{"id":"A","text":"File system operations","is_correct":false},{"id":"B","text":"AllReduce, AllGather, and ReduceScatter","is_correct":true},{"id":"C","text":"Database queries","is_correct":false},{"id":"D","text":"Web API calls","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"NCCL implements optimized collective communication operations including AllReduce (sum gradients across GPUs), AllGather (collect data from all GPUs), and ReduceScatter (reduce and distribute results), which are essential for distributed training.","why_not_A":"File system operations are handled by the OS and file system drivers, not NCCL.","why_not_C":"Database queries use SQL and database protocols, not NCCL.","why_not_D":"Web API calls use HTTP/HTTPS, not NCCL."},"concept_ids":["nvidia-ncp-ain-nccl-tuning"],"tags":["nccl","collectives"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-013","exam_id":"nvidia-ncp-ain","domain_id":"performance-tuning","type":"factual","difficulty":3,"stem":"What environment variable specifies which InfiniBand HCA ports NCCL should use?","options":[{"id":"A","text":"NCCL_SOCKET_IFNAME","is_correct":false},{"id":"B","text":"NCCL_IB_HCA","is_correct":true},{"id":"C","text":"NCCL_DEBUG","is_correct":false},{"id":"D","text":"CUDA_VISIBLE_DEVICES","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"NCCL_IB_HCA specifies which InfiniBand Host Channel Adapter ports NCCL should use for inter-node communication, enabling control over which network interfaces participate in distributed training.","why_not_A":"NCCL_SOCKET_IFNAME specifies the IP interface for socket-based communication, not InfiniBand HCA selection.","why_not_C":"NCCL_DEBUG controls the verbosity of NCCL debug logging, not HCA selection.","why_not_D":"CUDA_VISIBLE_DEVICES controls GPU visibility, not network interface selection."},"concept_ids":["nvidia-ncp-ain-nccl-tuning"],"tags":["nccl","ib-hca","tuning"],"estimated_time_seconds":60,"bkt_p_guess":0.20,"bkt_p_slip":0.12,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-014","exam_id":"nvidia-ncp-ain","domain_id":"rdma-roce","type":"factual","difficulty":3,"stem":"Why must memory regions be registered before RDMA operations?","options":[{"id":"A","text":"To encrypt the data","is_correct":false},{"id":"B","text":"To pin memory and provide the RDMA adapter with physical addresses for direct access","is_correct":true},{"id":"C","text":"To compress the data","is_correct":false},{"id":"D","text":"To convert data to a network format","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"Memory registration pins the virtual memory to physical pages (preventing swapping) and provides the RDMA adapter with physical addresses and access permissions needed to perform direct memory transfers without OS involvement.","why_not_A":"Memory registration is about access control and address translation, not encryption.","why_not_C":"RDMA transfers data directly without compression as part of memory registration.","why_not_D":"RDMA transfers data in its native format without protocol-level conversion."},"concept_ids":["nvidia-ncp-ain-rdma-fundamentals"],"tags":["memory-registration","rdma"],"estimated_time_seconds":60,"bkt_p_guess":0.20,"bkt_p_slip":0.12,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-015","exam_id":"nvidia-ncp-ain","domain_id":"infiniband-fundamentals","type":"factual","difficulty":2,"stem":"What provides high availability for InfiniBand Subnet Management?","options":[{"id":"A","text":"Running multiple applications simultaneously","is_correct":false},{"id":"B","text":"Standby Subnet Managers that take over if the active SM fails","is_correct":true},{"id":"C","text":"GPU redundancy","is_correct":false},{"id":"D","text":"Using InfiniBand and Ethernet simultaneously","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"Multiple Subnet Managers can run on an InfiniBand fabric with one active and others in standby mode. If the active SM fails, a standby SM with the highest priority takes over fabric management automatically.","why_not_A":"Application redundancy is separate from fabric management redundancy.","why_not_C":"GPU redundancy does not address InfiniBand fabric management availability.","why_not_D":"Dual-stack networking does not provide Subnet Manager high availability."},"concept_ids":["nvidia-ncp-ain-ib-subnet-mgmt"],"tags":["high-availability","subnet-manager"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-016","exam_id":"nvidia-ncp-ain","domain_id":"ethernet-for-ai","type":"factual","difficulty":2,"stem":"What do NVIDIA Spectrum-4 switches provide for AI clusters?","options":[{"id":"A","text":"GPU computing resources","is_correct":false},{"id":"B","text":"400 GbE and 800 GbE Ethernet switching for AI network fabrics","is_correct":true},{"id":"C","text":"Storage array management","is_correct":false},{"id":"D","text":"CPU processing for AI inference","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"NVIDIA Spectrum-4 Ethernet switches provide 400 GbE and 800 GbE port speeds with features optimized for AI workloads including congestion control, telemetry, and support for RoCE.","why_not_A":"GPU computing is provided by NVIDIA GPUs, not Ethernet switches.","why_not_C":"Storage management is handled by storage controllers, not Ethernet switches.","why_not_D":"CPU processing for inference is done on servers, not network switches."},"concept_ids":["nvidia-ncp-ain-ethernet-ai"],"tags":["spectrum-4","ethernet"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-017","exam_id":"nvidia-ncp-ain","domain_id":"ethernet-for-ai","type":"comparison","difficulty":3,"stem":"What distinguishes a DPU from a SmartNIC?","options":[{"id":"A","text":"DPUs are slower than SmartNICs","is_correct":false},{"id":"B","text":"DPUs have their own OS and compute capabilities independent of the host CPU","is_correct":true},{"id":"C","text":"SmartNICs have more memory than DPUs","is_correct":false},{"id":"D","text":"DPUs only work with InfiniBand","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"DPUs (Data Processing Units) like BlueField combine a SmartNIC with Arm CPU cores running their own OS, enabling infrastructure functions (networking, storage, security) to run independently from the host without consuming host CPU cycles.","why_not_A":"DPUs are more capable than traditional SmartNICs, not slower.","why_not_C":"DPUs typically have more processing capability than standard SmartNICs.","why_not_D":"BlueField DPUs support both InfiniBand and Ethernet connectivity."},"concept_ids":["nvidia-ncp-ain-bluefield-dpu"],"tags":["dpu","smartnic","comparison"],"estimated_time_seconds":60,"bkt_p_guess":0.20,"bkt_p_slip":0.12,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-018","exam_id":"nvidia-ncp-ain","domain_id":"network-management","type":"factual","difficulty":2,"stem":"What tool provides network monitoring and troubleshooting for Ethernet-based AI networks?","options":[{"id":"A","text":"nvidia-smi","is_correct":false},{"id":"B","text":"NVIDIA NetQ","is_correct":true},{"id":"C","text":"NVIDIA TensorRT","is_correct":false},{"id":"D","text":"NVIDIA cuDNN","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"NVIDIA NetQ provides real-time monitoring, troubleshooting, and validation for Ethernet network fabrics used in AI infrastructure, complementing UFM which handles InfiniBand fabrics.","why_not_A":"nvidia-smi monitors GPU status, not network infrastructure.","why_not_C":"TensorRT is an inference optimization toolkit, not a network management tool.","why_not_D":"cuDNN provides deep learning primitives, not network monitoring."},"concept_ids":["nvidia-ncp-ain-fabric-management"],"tags":["netq","ethernet-monitoring"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-019","exam_id":"nvidia-ncp-ain","domain_id":"performance-tuning","type":"comparison","difficulty":3,"stem":"How can tuning NCCL variables improve distributed training performance?","options":[{"id":"A","text":"NCCL tuning can improve performance by 10-30% through algorithm and transport selection","is_correct":true},{"id":"B","text":"NCCL tuning has no measurable impact","is_correct":false},{"id":"C","text":"NCCL tuning only affects single-GPU performance","is_correct":false},{"id":"D","text":"NCCL tuning reduces model accuracy","is_correct":false}],"correct_answer":"A","explanation":{"why_correct":"Tuning NCCL environment variables (algorithm selection, transport configuration, buffer sizes) can improve distributed training communication performance by 10-30% by optimizing for the specific cluster topology and workload.","why_not_B":"NCCL tuning can have significant impact, especially on large-scale clusters where communication is a major overhead.","why_not_C":"NCCL is specifically for multi-GPU and multi-node communication, not single-GPU operation.","why_not_D":"NCCL tuning optimizes communication speed without affecting model computations or accuracy."},"concept_ids":["nvidia-ncp-ain-nccl-tuning"],"tags":["nccl-tuning","performance"],"estimated_time_seconds":60,"bkt_p_guess":0.20,"bkt_p_slip":0.12,"bkt_p_transit":0.10,"review_status":"approved"},
-  {"id":"q-nvidia-ncp-ain-020","exam_id":"nvidia-ncp-ain","domain_id":"infiniband-fundamentals","type":"factual","difficulty":2,"stem":"What does adaptive routing in InfiniBand switches accomplish?","options":[{"id":"A","text":"Automatically upgrades switch firmware","is_correct":false},{"id":"B","text":"Dynamically selects paths to avoid congestion in the fabric","is_correct":true},{"id":"C","text":"Reduces the number of switches needed","is_correct":false},{"id":"D","text":"Encrypts all traffic on the fabric","is_correct":false}],"correct_answer":"B","explanation":{"why_correct":"Adaptive routing on NVIDIA Quantum switches dynamically selects alternate paths for traffic when it detects congestion on the primary path, improving overall fabric utilization and reducing latency.","why_not_A":"Firmware updates are managed through separate management tools, not adaptive routing.","why_not_C":"Adaptive routing optimizes traffic on existing switches, it does not change the physical topology.","why_not_D":"Traffic encryption is a separate security function, not related to adaptive routing."},"concept_ids":["nvidia-ncp-ain-ib-architecture"],"tags":["adaptive-routing","congestion"],"estimated_time_seconds":45,"bkt_p_guess":0.25,"bkt_p_slip":0.10,"bkt_p_transit":0.10,"review_status":"approved"}
+  {
+    "id": "q-nvidia-ncp-ain-001",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What component manages routing tables and assigns addresses in an InfiniBand subnet?",
+    "options": [
+      {
+        "id": "A",
+        "text": "DNS server",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Subnet Manager (SM)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "DHCP server",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Load balancer",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Subnet Manager discovers the InfiniBand fabric topology, assigns Local IDs (LIDs) to each port, computes routing tables, and distributes them to switches and adapters.",
+      "why_not_A": "DNS resolves domain names to IP addresses. InfiniBand uses its own addressing scheme managed by the SM.",
+      "why_not_C": "DHCP assigns IP addresses for Ethernet networks. InfiniBand uses LIDs assigned by the Subnet Manager.",
+      "why_not_D": "Load balancers distribute application traffic. The SM manages the fabric infrastructure itself."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-ib-architecture"
+    ],
+    "tags": [
+      "subnet-manager",
+      "infiniband"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-002",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What are Queue Pairs (QPs) in InfiniBand?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Physical cable connectors",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The fundamental communication abstraction providing send/receive endpoints",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch configuration parameters",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Memory allocation units",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Queue Pairs consist of a Send Queue and Receive Queue and are the fundamental communication endpoints in InfiniBand. Applications post work requests to QPs to send or receive data, supporting reliable or unreliable transport.",
+      "why_not_A": "Physical connectors are cables and ports. QPs are a software/protocol abstraction.",
+      "why_not_C": "Switch configuration is managed by the Subnet Manager, not QPs.",
+      "why_not_D": "Memory is managed through Memory Regions (MRs), not Queue Pairs."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-ib-architecture"
+    ],
+    "tags": [
+      "queue-pairs",
+      "infiniband"
+    ],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.2,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-003",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What bandwidth does InfiniBand NDR provide per port?",
+    "options": [
+      {
+        "id": "A",
+        "text": "100 Gb/s",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "200 Gb/s",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "400 Gb/s",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "25 Gb/s",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "InfiniBand NDR provides 400 Gb/s per port using 4 lanes of 100 Gb/s each (4x NDR), making it the primary interconnect for modern AI training clusters.",
+      "why_not_A": "100 Gb/s is the per-lane rate. A standard 4x port aggregates to 400 Gb/s.",
+      "why_not_B": "200 Gb/s was the per-port bandwidth of the previous generation HDR InfiniBand.",
+      "why_not_D": "25 Gb/s is a common Ethernet speed, far below InfiniBand NDR capabilities."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-ib-speeds"
+    ],
+    "tags": [
+      "ndr",
+      "bandwidth"
+    ],
+    "estimated_time_seconds": 30,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-004",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What is the role of OpenSM in InfiniBand fabrics?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It provides GPU-accelerated computation",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It is the open-source Subnet Manager implementation for InfiniBand",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "It manages storage volumes",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "It provides DNS services for InfiniBand",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "OpenSM is the standard open-source implementation of the InfiniBand Subnet Manager. It performs fabric discovery, LID assignment, routing computation, and distributes forwarding tables to switches.",
+      "why_not_A": "GPU computation is handled by CUDA and GPU hardware, not OpenSM.",
+      "why_not_C": "Storage volume management is handled by file system and storage management tools.",
+      "why_not_D": "InfiniBand uses its own addressing (LIDs/GIDs), not DNS."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-ib-subnet-mgmt"
+    ],
+    "tags": [
+      "opensm",
+      "subnet-manager"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-005",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "ethernet-for-ai",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What is required to enable RDMA over Ethernet (RoCE)?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Standard Ethernet switches with no special configuration",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Lossless Ethernet with Priority Flow Control (PFC) and ECN configured",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "WiFi access points",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Only NVIDIA GPUs, no switch configuration needed",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoCE requires a lossless Ethernet fabric achieved through Priority Flow Control (PFC) configuration on both NICs and switches, along with ECN (Explicit Congestion Notification) for congestion management.",
+      "why_not_A": "Standard Ethernet is lossy. RoCE requires specific PFC and ECN configuration for lossless operation.",
+      "why_not_C": "WiFi does not support the lossless, low-latency requirements of RDMA.",
+      "why_not_D": "Both NICs and switches must be properly configured for RoCE to work correctly."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-ethernet-ai",
+      "nvidia-ncp-ain-roce-config"
+    ],
+    "tags": [
+      "roce",
+      "pfc",
+      "lossless-ethernet"
+    ],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-006",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "ethernet-for-ai",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What is the DOCA SDK used for?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Training deep learning models",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Programming NVIDIA BlueField DPUs",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Managing GPU clusters",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Visualizing network topologies",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DOCA (Data Center Infrastructure on a Chip Architecture) is the SDK for developing applications that run on NVIDIA BlueField DPUs, enabling programming of networking, storage, and security acceleration functions.",
+      "why_not_A": "Deep learning training uses frameworks like PyTorch and NeMo, not DOCA.",
+      "why_not_C": "GPU cluster management is handled by Base Command Manager and Kubernetes tools, not DOCA.",
+      "why_not_D": "Network topology visualization is provided by UFM, not DOCA."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-bluefield-dpu"
+    ],
+    "tags": [
+      "doca",
+      "bluefield",
+      "dpu"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-007",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "rdma-roce",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What is the primary benefit of RDMA compared to traditional TCP/IP networking?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Higher bandwidth cables",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Microsecond-level latency by bypassing the CPU in the data path",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Longer cable reach",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Simpler network configuration",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RDMA enables direct memory-to-memory data transfer between machines without CPU involvement in the data path, achieving microsecond-level latency compared to millisecond latency in traditional TCP/IP networking.",
+      "why_not_A": "Cable technology is independent of the protocol. RDMA's advantage is in software/protocol efficiency.",
+      "why_not_C": "Cable reach depends on physical medium (copper, fiber), not the protocol.",
+      "why_not_D": "RDMA configuration is more complex than standard TCP/IP due to QP setup, memory registration, and fabric management."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-rdma-fundamentals"
+    ],
+    "tags": [
+      "rdma",
+      "latency"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-008",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "rdma-roce",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "What is the key difference between RoCEv1 and RoCEv2?",
+    "options": [
+      {
+        "id": "A",
+        "text": "RoCEv1 is faster than RoCEv2",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "RoCEv1 is L2-only while RoCEv2 supports L3 routing over UDP/IP",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "RoCEv2 only works with InfiniBand switches",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "RoCEv1 is newer than RoCEv2",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoCEv1 encapsulates RDMA directly over Ethernet (L2 only, cannot cross routers). RoCEv2 encapsulates RDMA over UDP/IP, enabling routing across L3 network boundaries.",
+      "why_not_A": "RoCEv2 has similar performance to RoCEv1 with the added benefit of L3 routability.",
+      "why_not_C": "RoCEv2 works with standard Ethernet switches, not InfiniBand switches.",
+      "why_not_D": "RoCEv2 is the newer, improved version of the protocol."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-roce-config"
+    ],
+    "tags": [
+      "rocev1",
+      "rocev2",
+      "comparison"
+    ],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.2,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-009",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "rdma-roce",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What is DCQCN in the context of RoCE networking?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A GPU driver version",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "A congestion control algorithm that uses ECN feedback to prevent PFC storms",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "A file transfer protocol",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A container management tool",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DCQCN (Data Center Quantized Congestion Notification) is a congestion control algorithm for RoCE that uses ECN marking to detect congestion and reduces sending rates before PFC pause frames cause head-of-line blocking or PFC storms.",
+      "why_not_A": "DCQCN is a network congestion control algorithm, not a GPU driver.",
+      "why_not_C": "DCQCN manages network congestion, it does not transfer files.",
+      "why_not_D": "Container management is handled by Docker and Kubernetes, not DCQCN."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-roce-config"
+    ],
+    "tags": [
+      "dcqcn",
+      "congestion-control"
+    ],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.2,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-010",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "network-management",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What does NVIDIA UFM provide for InfiniBand fabrics?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GPU training frameworks",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Centralized InfiniBand fabric management and monitoring",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Container image registry",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Model serving endpoints",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA UFM (Unified Fabric Manager) provides centralized management of InfiniBand fabrics including topology discovery, health monitoring, event logging, performance analysis, and configuration management.",
+      "why_not_A": "Training frameworks like NeMo and PyTorch handle model training, not UFM.",
+      "why_not_C": "Container registries like NGC host container images, not UFM.",
+      "why_not_D": "Model serving is handled by Triton and NIM, not UFM."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-fabric-management"
+    ],
+    "tags": [
+      "ufm",
+      "fabric-management"
+    ],
+    "estimated_time_seconds": 30,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-011",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "network-management",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What metrics do port counters on InfiniBand switches track?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GPU utilization and memory usage",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Bytes, packets, errors, and discards on each switch port",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "CPU temperature and clock speed",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Model training loss values",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "InfiniBand switch port counters track network traffic metrics including bytes transmitted/received, packet counts, error counts (symbol errors, link errors), and discards, providing visibility into network health and utilization.",
+      "why_not_A": "GPU metrics are tracked by nvidia-smi and DCGM, not network switch counters.",
+      "why_not_C": "CPU temperature and clock speed are host-level metrics, not network switch counters.",
+      "why_not_D": "Training loss is an ML metric, not a network metric."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-telemetry"
+    ],
+    "tags": [
+      "port-counters",
+      "monitoring"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-012",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "performance-tuning",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What collective operations does NCCL optimize for distributed training?",
+    "options": [
+      {
+        "id": "A",
+        "text": "File system operations",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AllReduce, AllGather, and ReduceScatter",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Database queries",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Web API calls",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NCCL implements optimized collective communication operations including AllReduce (sum gradients across GPUs), AllGather (collect data from all GPUs), and ReduceScatter (reduce and distribute results), which are essential for distributed training.",
+      "why_not_A": "File system operations are handled by the OS and file system drivers, not NCCL.",
+      "why_not_C": "Database queries use SQL and database protocols, not NCCL.",
+      "why_not_D": "Web API calls use HTTP/HTTPS, not NCCL."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-nccl-tuning"
+    ],
+    "tags": [
+      "nccl",
+      "collectives"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-013",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "performance-tuning",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "What environment variable specifies which InfiniBand HCA ports NCCL should use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NCCL_SOCKET_IFNAME",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NCCL_IB_HCA",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NCCL_DEBUG",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "CUDA_VISIBLE_DEVICES",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NCCL_IB_HCA specifies which InfiniBand Host Channel Adapter ports NCCL should use for inter-node communication, enabling control over which network interfaces participate in distributed training.",
+      "why_not_A": "NCCL_SOCKET_IFNAME specifies the IP interface for socket-based communication, not InfiniBand HCA selection.",
+      "why_not_C": "NCCL_DEBUG controls the verbosity of NCCL debug logging, not HCA selection.",
+      "why_not_D": "CUDA_VISIBLE_DEVICES controls GPU visibility, not network interface selection."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-nccl-tuning"
+    ],
+    "tags": [
+      "nccl",
+      "ib-hca",
+      "tuning"
+    ],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.2,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-014",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "rdma-roce",
+    "type": "factual",
+    "difficulty": 3,
+    "stem": "Why must memory regions be registered before RDMA operations?",
+    "options": [
+      {
+        "id": "A",
+        "text": "To encrypt the data",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "To pin memory and provide the RDMA adapter with physical addresses for direct access",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "To compress the data",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "To convert data to a network format",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Memory registration pins the virtual memory to physical pages (preventing swapping) and provides the RDMA adapter with physical addresses and access permissions needed to perform direct memory transfers without OS involvement.",
+      "why_not_A": "Memory registration is about access control and address translation, not encryption.",
+      "why_not_C": "RDMA transfers data directly without compression as part of memory registration.",
+      "why_not_D": "RDMA transfers data in its native format without protocol-level conversion."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-rdma-fundamentals"
+    ],
+    "tags": [
+      "memory-registration",
+      "rdma"
+    ],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.2,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-015",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What provides high availability for InfiniBand Subnet Management?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Running multiple applications simultaneously",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Standby Subnet Managers that take over if the active SM fails",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "GPU redundancy",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Using InfiniBand and Ethernet simultaneously",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Multiple Subnet Managers can run on an InfiniBand fabric with one active and others in standby mode. If the active SM fails, a standby SM with the highest priority takes over fabric management automatically.",
+      "why_not_A": "Application redundancy is separate from fabric management redundancy.",
+      "why_not_C": "GPU redundancy does not address InfiniBand fabric management availability.",
+      "why_not_D": "Dual-stack networking does not provide Subnet Manager high availability."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-ib-subnet-mgmt"
+    ],
+    "tags": [
+      "high-availability",
+      "subnet-manager"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-016",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "ethernet-for-ai",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What do NVIDIA Spectrum-4 switches provide for AI clusters?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GPU computing resources",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "400 GbE and 800 GbE Ethernet switching for AI network fabrics",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Storage array management",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "CPU processing for AI inference",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA Spectrum-4 Ethernet switches provide 400 GbE and 800 GbE port speeds with features optimized for AI workloads including congestion control, telemetry, and support for RoCE.",
+      "why_not_A": "GPU computing is provided by NVIDIA GPUs, not Ethernet switches.",
+      "why_not_C": "Storage management is handled by storage controllers, not Ethernet switches.",
+      "why_not_D": "CPU processing for inference is done on servers, not network switches."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-ethernet-ai"
+    ],
+    "tags": [
+      "spectrum-4",
+      "ethernet"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-017",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "ethernet-for-ai",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "What distinguishes a DPU from a SmartNIC?",
+    "options": [
+      {
+        "id": "A",
+        "text": "DPUs are slower than SmartNICs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "DPUs have their own OS and compute capabilities independent of the host CPU",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "SmartNICs have more memory than DPUs",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "DPUs only work with InfiniBand",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DPUs (Data Processing Units) like BlueField combine a SmartNIC with Arm CPU cores running their own OS, enabling infrastructure functions (networking, storage, security) to run independently from the host without consuming host CPU cycles.",
+      "why_not_A": "DPUs are more capable than traditional SmartNICs, not slower.",
+      "why_not_C": "DPUs typically have more processing capability than standard SmartNICs.",
+      "why_not_D": "BlueField DPUs support both InfiniBand and Ethernet connectivity."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-bluefield-dpu"
+    ],
+    "tags": [
+      "dpu",
+      "smartnic",
+      "comparison"
+    ],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.2,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-018",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "network-management",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What tool provides network monitoring and troubleshooting for Ethernet-based AI networks?",
+    "options": [
+      {
+        "id": "A",
+        "text": "nvidia-smi",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA NetQ",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA TensorRT",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA cuDNN",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA NetQ provides real-time monitoring, troubleshooting, and validation for Ethernet network fabrics used in AI infrastructure, complementing UFM which handles InfiniBand fabrics.",
+      "why_not_A": "nvidia-smi monitors GPU status, not network infrastructure.",
+      "why_not_C": "TensorRT is an inference optimization toolkit, not a network management tool.",
+      "why_not_D": "cuDNN provides deep learning primitives, not network monitoring."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-fabric-management"
+    ],
+    "tags": [
+      "netq",
+      "ethernet-monitoring"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-019",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "performance-tuning",
+    "type": "comparison",
+    "difficulty": 3,
+    "stem": "How can tuning NCCL variables improve distributed training performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NCCL tuning can improve performance by 10-30% through algorithm and transport selection",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "NCCL tuning has no measurable impact",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NCCL tuning only affects single-GPU performance",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NCCL tuning reduces model accuracy",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Tuning NCCL environment variables (algorithm selection, transport configuration, buffer sizes) can improve distributed training communication performance by 10-30% by optimizing for the specific cluster topology and workload.",
+      "why_not_B": "NCCL tuning can have significant impact, especially on large-scale clusters where communication is a major overhead.",
+      "why_not_C": "NCCL is specifically for multi-GPU and multi-node communication, not single-GPU operation.",
+      "why_not_D": "NCCL tuning optimizes communication speed without affecting model computations or accuracy."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-nccl-tuning"
+    ],
+    "tags": [
+      "nccl-tuning",
+      "performance"
+    ],
+    "estimated_time_seconds": 60,
+    "bkt_p_guess": 0.2,
+    "bkt_p_slip": 0.12,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "id": "q-nvidia-ncp-ain-020",
+    "exam_id": "nvidia-ncp-ain",
+    "domain_id": "infiniband-fundamentals",
+    "type": "factual",
+    "difficulty": 2,
+    "stem": "What does adaptive routing in InfiniBand switches accomplish?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Automatically upgrades switch firmware",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Dynamically selects paths to avoid congestion in the fabric",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Reduces the number of switches needed",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Encrypts all traffic on the fabric",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Adaptive routing on NVIDIA Quantum switches dynamically selects alternate paths for traffic when it detects congestion on the primary path, improving overall fabric utilization and reducing latency.",
+      "why_not_A": "Firmware updates are managed through separate management tools, not adaptive routing.",
+      "why_not_C": "Adaptive routing optimizes traffic on existing switches, it does not change the physical topology.",
+      "why_not_D": "Traffic encryption is a separate security function, not related to adaptive routing."
+    },
+    "concept_ids": [
+      "nvidia-ncp-ain-ib-architecture"
+    ],
+    "tags": [
+      "adaptive-routing",
+      "congestion"
+    ],
+    "estimated_time_seconds": 45,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "infiniband-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A network engineer is deploying an InfiniBand fabric for a GPU cluster. During the initial configuration, they notice that the Subnet Manager (SM) is not assigning LIDs to several nodes, and the fabric is not reaching a 'Full' state. After verifying physical cabling, the engineer suspects a conflict in the SM configuration. Which of the following scenarios is most likely causing this behavior?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The fabric has multiple active Subnet Managers, but only one is designated as the Master SM.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The fabric is configured with a single SM, but the nodes are using an incompatible GUID range.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Two Subnet Managers are competing for mastery due to a priority tie, and neither has successfully completed the sweep phase.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The nodes are configured for RDMA Write operations, which bypasses the need for LID assignment during the boot phase.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In an InfiniBand fabric, only one Master SM can be active to manage LIDs and routing. If two SMs have the same priority and cannot resolve who the Master is, the fabric will not be properly initialized, and LIDs will not be assigned to ports.",
+      "why_not_A": "Having multiple SMs is standard for redundancy; as long as one is the Master, the fabric functions normally.",
+      "why_not_B": "GUIDs are burned into the hardware and are used by the SM to identify nodes; they do not prevent the SM from assigning LIDs.",
+      "why_not_D": "RDMA operations occur at the transport layer and require a valid LID to route packets; they cannot bypass the fundamental addressing of the fabric."
+    },
+    "tags": [
+      "Subnet Manager",
+      "LID Assignment",
+      "Fabric Initialization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-021",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "infiniband-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI workload is experiencing intermittent performance drops. The administrator observes that while the physical links are up at 200Gbps (HDR), the actual throughput is significantly lower. Upon inspection, it is discovered that the fabric is experiencing 'credit starvation' on specific ports. What is the primary cause of this phenomenon in InfiniBand?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The Subnet Manager has assigned the same LID to multiple endpoints, causing packet collisions.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The receiving port's buffer is full, and it cannot issue flow-control credits back to the sender.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The MTU size is mismatched between the HCA and the switch, causing packet fragmentation.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The fabric is utilizing a Fat-Tree topology which inherently limits credit availability during all-to-all communication.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "InfiniBand uses a credit-based flow control mechanism. A sender can only transmit data if the receiver has advertised available buffer space (credits). If the receiver is overwhelmed or slow, it stops issuing credits, leading to credit starvation and backpressure.",
+      "why_not_A": "LIDs are unique per subnet; the SM ensures no two ports share a LID, and collisions are not a characteristic of IB's switched architecture.",
+      "why_not_C": "InfiniBand does not support packet fragmentation at the link layer; MTU mismatches typically result in dropped packets or initialization failures, not credit starvation.",
+      "why_not_D": "Fat-Tree is a non-blocking topology designed specifically to maximize throughput and avoid congestion; it does not inherently cause credit starvation."
+    },
+    "tags": [
+      "Flow Control",
+      "Credit-Based Mechanism",
+      "Performance Tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-022",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "infiniband-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center is transitioning from a small cluster to a larger scale-out architecture. The architect needs to implement a routing strategy that minimizes congestion for an All-Reduce collective communication pattern. Which InfiniBand routing approach is most appropriate for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Linear Forwarding Tables (LFTs) using a simple destination-based routing algorithm.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Static routing with a fixed path for every source-destination pair to ensure deterministic latency.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Adaptive Routing (AR) to dynamically distribute traffic across less congested paths in the fabric.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Using a single-path routing table to avoid out-of-order packet delivery.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Adaptive Routing allows the switch to select the best output port based on real-time congestion levels, which is critical for collective patterns like All-Reduce that generate heavy, synchronized traffic across the fabric.",
+      "why_not_A": "Simple LFTs are static and do not account for congestion, leading to 'hot spots' in the network.",
+      "why_not_B": "Static routing is deterministic but cannot react to transient congestion, which is a primary requirement for high-performance AI workloads.",
+      "why_not_D": "Single-path routing maximizes the chance of congestion and fails to utilize the available bandwidth of a multi-path topology like Fat-Tree."
+    },
+    "tags": [
+      "Routing",
+      "Adaptive Routing",
+      "Fabric Topology"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-023",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "infiniband-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An administrator is configuring a new InfiniBand fabric and needs to ensure that the HCA (Host Channel Adapter) can communicate directly with the remote memory of another node without involving the remote CPU. Which InfiniBand feature is primarily responsible for enabling this capability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The Subnet Manager's LID assignment process.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The use of the Local Identifier (LID) in the packet header.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Remote Direct Memory Access (RDMA) using Queue Pairs (QP).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The implementation of the InfiniBand link-layer flow control.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "RDMA allows a device to read or write memory on a remote machine without involving that machine's OS or CPU. This is implemented via Queue Pairs (QPs) that handle the send/receive and poll/complete operations.",
+      "why_not_A": "The SM manages the fabric topology and addressing, but it does not handle the data transfer mechanism between memory spaces.",
+      "why_not_B": "LIDs are used for routing packets to the correct destination port; they do not provide the mechanism for direct memory access.",
+      "why_not_D": "Flow control prevents buffer overflow at the link layer; it is unrelated to the high-level memory access semantics of RDMA."
+    },
+    "tags": [
+      "RDMA",
+      "Queue Pairs",
+      "Zero-Copy"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-024",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "infiniband-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During a fabric audit, an engineer notices that several ports are reporting 'Symbol Errors' in the port counters. The links are currently operating at 100Gbps (EDR). What is the most likely physical layer cause for this specific error type?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The Subnet Manager is sending routing updates too frequently, causing packet collisions.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "A mismatch in the LID range between the switch and the HCA.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Physical layer degradation, such as a dirty fiber connector or a failing transceiver.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The HCA is configured with an incorrect MTU size, leading to malformed packets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Symbol Errors occur at the physical layer (Layer 1) when the receiving port cannot decode the incoming bitstream into valid symbols. This is almost always caused by hardware issues like bad cables, dirty optics, or electromagnetic interference.",
+      "why_not_A": "Routing updates occur at the management level and do not cause physical 'symbol' errors; collisions do not exist in the IB switched architecture.",
+      "why_not_B": "LID mismatches are logical addressing issues and would result in unreachable nodes, not physical symbol errors.",
+      "why_not_D": "MTU mismatches cause packet drops or errors at the transport/network layer, but the physical symbols themselves remain valid."
+    },
+    "tags": [
+      "Physical Layer",
+      "Troubleshooting",
+      "Symbol Errors"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-025",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "infiniband-fundamentals",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A high-performance computing (HPC) cluster is experiencing intermittent packet loss and performance degradation across a Fat-Tree topology. Upon inspection, the Subnet Manager (SM) reports that several links are flapping, and the routing engine is frequently recalculating paths. The administrator notices that the current routing algorithm is set to 'UpDown'. Which of the following is the most likely cause of the instability and the correct architectural remedy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The network has developed a physical loop; change the routing algorithm to 'LFT' to eliminate the cycle.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The topology contains a non-tree cycle causing deadlock; implement a different routing algorithm or ensure a strict deadlock-free routing configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The SM is overloading the CPU of the switches; increase the polling interval of the SM to reduce control plane traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The MTU is mismatched between the HCA and the switch; standardize the MTU to 2048 bytes across the fabric.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In InfiniBand, deadlock occurs when a cycle of dependencies is created in the buffers. The UpDown routing algorithm is designed to prevent deadly cycles by assigning directions (Up or Down) to links. If the physical topology deviates from a strict tree or if misconfigurations occur, cycles can emerge, leading to credit exhaustion and packet loss, necessitating a deadlock-free routing strategy.",
+      "why_not_A": "LFT (Linear Forwarding Table) is a mechanism for how the SM programs the switches, not a routing algorithm itself that solves loops.",
+      "why_not_C": "While SM load can affect convergence time, it would not cause intermittent packet loss and flapping links in a stable physical topology.",
+      "why_not_D": "MTU mismatches typically result in total communication failure for specific packet sizes rather than intermittent flapping and routing recalculations across a Fat-Tree."
+    },
+    "tags": [
+      "routing",
+      "deadlock",
+      "fat-tree"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-026",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "infiniband-fundamentals",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An architect is designing a multi-tenant AI cloud using InfiniBand. To ensure strict isolation and quality of service (QoS) between different training jobs, the architect decides to implement Virtual Lanes (VLs). The design requires that high-priority traffic (Control Plane) never suffers from head-of-line blocking caused by bulk data transfers (Data Plane). Which mechanism must be configured to achieve this goal?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of Queue Pairs (QP) per HCA to distribute the load across more hardware resources.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Adaptive Routing (AR) to dynamically steer traffic around congested links.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure VL Arbitration tables to assign specific weights and limits to different Service Levels (SLs).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Implement Credit-Based Flow Control at the physical layer to prevent buffer overflows.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "VL Arbitration allows the administrator to define how the switch allocates bandwidth between different Virtual Lanes. By mapping high-priority SLs to specific VLs and configuring the arbitration table (High Priority and Low Priority tables), the architect can guarantee that control traffic is serviced regardless of the congestion in the bulk data VLs.",
+      "why_not_A": "Increasing QPs improves parallelism but does not solve head-of-line blocking at the switch buffer level.",
+      "why_not_B": "Adaptive Routing helps with congestion by choosing alternative paths, but it does not provide the strict priority isolation required for different traffic classes.",
+      "why_not_D": "Credit-Based Flow Control is a fundamental part of InfiniBand that prevents packet loss, but it is the cause of head-of-line blocking if all traffic shares the same VL."
+    },
+    "tags": [
+      "qos",
+      "virtual-lanes",
+      "arbitration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-027",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "infiniband-fundamentals",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "During the commissioning of a large-scale InfiniBand fabric, a technician reports that several nodes are unable to join the fabric. The Subnet Manager (SM) logs indicate that these nodes are stuck in the 'Initializing' state. A packet capture shows that the nodes are sending 'SMI' (Subnet Management Interface) requests, but the responses are not being received. What is the most probable cause of this issue in a managed InfiniBand environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The nodes are configured with the wrong GUIDs, preventing the SM from identifying the target HCA.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The switch ports are configured as 'Down' in the SM configuration file, preventing the SM from scanning them.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "A mismatch in the Subnet Prefix (Prefix) between the SM and the HCAs is preventing the assignment of LIDs.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The SM is unable to complete the handshaking process because the nodes are not responding to the SM's discovery packets due to a partition key (PKey) mismatch.",
+        "is_correct": false
+      },
+      {
+        "id": "E",
+        "text": "The SM is unable to communicate with the HCAs because the ports are not in the 'Armed' state or there is a physical layer issue preventing the SM from assigning a Local Identifier (LID).",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "E",
+    "explanation": {
+      "why_correct": "In InfiniBand, a node cannot communicate until the SM assigns it a LID. If the port is not 'Armed' or if there is a physical link issue, the SM cannot complete the discovery and configuration process. Since the nodes are sending SMI requests but not receiving responses, it indicates a failure in the initial SM-to-node handshake required for LID assignment.",
+      "why_not_A": "GUIDs are burned into the hardware; the SM discovers GUIDs to assign LIDs, not the other way around.",
+      "why_not_B": "If ports were manually set to 'Down', the SM would simply ignore them, but it wouldn't explain why nodes are actively sending SMI requests.",
+      "why_not_C": "Subnet Prefixes are generally managed by the SM and pushed to the nodes; a mismatch is rare and usually results in routing errors rather than a failure to initialize.",
+      "why_not_D": "PKeys are checked during the data transport phase (after LID assignment). A node must first be initialized and assigned a LID before PKey enforcement occurs."
+    },
+    "tags": [
+      "sm",
+      "lid",
+      "initialization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-028",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data center architect is designing a cluster for large-scale LLM training. To minimize the impact of packet loss and avoid the TCP slow-start mechanism which severely degrades GPU utilization, which combination of technologies should be implemented on the Ethernet fabric?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Standard TCP with oversized buffers and Spanning Tree Protocol (STP)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "RoCE v2 with Priority Flow Control (PFC) and Explicit Congestion Notification (ECN)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "UDP-based transport without any flow control or congestion management",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Traditional iSCSI over a standard Layer 2 switched network",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoCE v2 allows RDMA over Ethernet. PFC prevents packet loss by pausing transmission when buffers fill, and ECN provides a mechanism to signal congestion to the endpoints to throttle rates before drops occur, maintaining high GPU throughput.",
+      "why_not_A": "TCP slow-start is exactly what the scenario aims to avoid, and STP is inefficient for AI fabrics as it disables redundant paths.",
+      "why_not_C": "Pure UDP without flow control would lead to massive packet loss during the 'all-reduce' bursts typical in AI workloads, triggering retransmissions and stalling the GPUs.",
+      "why_not_D": "iSCSI is designed for storage traffic and does not provide the low-latency, zero-copy capabilities required for high-performance AI collective communications."
+    },
+    "tags": [
+      "RoCEv2",
+      "CongestionControl",
+      "LosslessEthernet"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-029",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI cluster is experiencing 'incast' congestion where multiple GPUs send data to a single receiver simultaneously, causing buffer overflows. The engineer decides to implement Data Center Quantized Congestion Notification (DCQCN). Which components are required for DCQCN to function effectively?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Only the switch hardware is required to drop packets",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "LACP for link aggregation and STP for loop prevention",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "A congestion-aware switch and compatible NICs that can respond to ECN marks",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "A centralized software controller that manages every single packet flow",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "DCQCN is a combination of ECN (at the switch) and a rate-limiting algorithm (at the NIC). The switch marks the packets, and the NIC (the reaction point) reduces the transmission rate.",
+      "why_not_A": "DCQCN aims to avoid packet drops by throttling the source; simply dropping packets is the behavior DCQCN is designed to prevent.",
+      "why_not_B": "LACP and STP are basic connectivity and loop-prevention tools and have no role in the end-to-end congestion control logic of DCQCN.",
+      "why_not_D": "DCQCN is a distributed mechanism implemented in hardware (NIC/Switch), not a centralized software controller, to ensure the microsecond-level response times needed for AI."
+    },
+    "tags": [
+      "DCQCN",
+      "ECN",
+      "Incast"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-030",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A network engineer is configuring a leaf-spine topology for an AI workload. To ensure optimal load balancing across all available paths and prevent 'polarization' or 'hash collisions' when using ECMP, which approach is most effective for AI traffic?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Using a single large VLAN for all GPUs to simplify routing",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing a strict Spanning Tree blocking policy on 50% of links",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Using Adaptive Routing to dynamically shift traffic based on real-time switch port congestion",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disabling ECMP and using static routes for every GPU pair",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Adaptive Routing allows the switch to move traffic to less congested paths in real-time, overcoming the limitations of static hashing in ECMP which can lead to skewed link utilization in AI bursts.",
+      "why_not_A": "VLANs do not solve load balancing or polarization issues; they only define broadcast domains.",
+      "why_not_B": "STP reduces available bandwidth by blocking paths, which is the opposite of what is needed for high-throughput AI workloads.",
+      "why_not_D": "Static routes for every pair are administratively impossible to maintain in a large cluster and do not provide dynamic load balancing."
+    },
+    "tags": [
+      "ECMP",
+      "AdaptiveRouting",
+      "LoadBalancing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-031",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During the deployment of a RoCE v2 fabric, an engineer notices that PFC (Priority Flow Control) is causing 'head-of-line blocking' and potentially leading to fabric deadlock. Which architectural strategy best mitigates this while maintaining a lossless environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the MTU to 9000 bytes on all interfaces",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Disable PFC entirely and rely solely on TCP retransmissions",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a properly tuned ECN threshold to trigger rate reduction before PFC pause frames are sent",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Replace all leaf switches with unmanaged hubs",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "ECN is a 'soft' congestion control that tells the sender to slow down. By triggering ECN before the buffers hit the PFC threshold, the network reduces the frequency of pause frames, thereby reducing head-of-line blocking and deadlock risks.",
+      "why_not_A": "Jumbo frames improve efficiency but do not solve the logic of flow control or the occurrence of PFC-induced deadlocks.",
+      "why_not_B": "Disabling PFC makes the network 'lossy,' which triggers TCP slow-start or RoCE retransmissions, severely impacting AI training performance.",
+      "why_not_D": "Unmanaged hubs cannot handle the bandwidth or the logic required for AI networking and would cause massive collision issues."
+    },
+    "tags": [
+      "PFC",
+      "Deadlock",
+      "ECN"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-032",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is comparing the performance of a standard Ethernet fabric versus an AI-optimized Ethernet fabric for a distributed training job. They observe that the 'all-reduce' operation is the primary bottleneck. Which feature of AI-optimized Ethernet specifically addresses the efficiency of these collective operations?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The use of 802.1Q tagging for traffic separation",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Hardware-offloaded collective communications (e.g., SHARP)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The implementation of DHCP for automatic IP assignment",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Using standard Cat6 cabling instead of fiber",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Scalable Hierarchical Aggregation and Reduction Protocol (SHARP) offloads the mathematical reduction operations (like summing gradients in all-reduce) from the GPUs to the switch hardware, drastically reducing the amount of data traversing the network.",
+      "why_not_A": "VLAN tagging (802.1Q) is a basic networking function and does not accelerate the mathematical operations of AI collectives.",
+      "why_not_C": "DHCP is for address management and has zero impact on the data plane performance of all-reduce operations.",
+      "why_not_D": "Cat6 cabling is insufficient for the 100G/200G/400G speeds required for AI and would actually degrade performance compared to fiber."
+    },
+    "tags": [
+      "SHARP",
+      "CollectiveCommunications",
+      "AllReduce"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-033",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center architect is designing a scale-out AI cluster using NVIDIA Spectrum-4 switches. To minimize tail latency for All-Reduce operations in a large-scale training job, the architect needs to implement a congestion control mechanism that provides granular, flow-level feedback. Which combination of technologies should be deployed to achieve the lowest possible latency and avoid buffer overflow?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Standard IEEE 802.3x Pause frames and static priority queuing",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Data Center Quantized Congestion Notification (DCQCN) using ECN and PFC",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "TCP NewReno with standard window scaling",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Pure Priority Flow Control (PFC) without Explicit Congestion Notification (ECN)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DCQCN is the industry standard for RoCEv2 deployments in AI clusters. It combines ECN (to signal congestion at the switch) and PFC (as a lossless fail-safe), allowing the NIC to throttle the specific offending flow rather than pausing the entire link, thus minimizing tail latency.",
+      "why_not_A": "IEEE 802.3x Pause frames are link-level and not priority-aware, leading to head-of-line blocking and significantly higher tail latency.",
+      "why_not_C": "TCP NewReno is too slow for AI workloads due to the high overhead of the TCP stack and the lack of hardware-offloaded congestion control required for microsecond-level latency.",
+      "why_not_D": "Relying solely on PFC can lead to congestion spreading (pause frames propagating backward) and potential deadlock scenarios, without the proactive rate-limiting provided by ECN."
+    },
+    "tags": [
+      "congestion-control",
+      "RoCEv2",
+      "DCQCN"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-034",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI cluster is experiencing 'incast' congestion during the gradient synchronization phase of a distributed training job. The network utilizes a leaf-spine topology. Which feature of the NVIDIA Spectrum-4 platform would be most effective in reducing the impact of this bursty traffic on the switch buffers?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increasing the MTU to 9000 bytes (Jumbo Frames)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing Static Hash-based ECMP",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Adaptive Routing (AR)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disabling PFC on all leaf switches",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Adaptive Routing allows the switch to dynamically distribute traffic across all available paths based on real-time load and congestion, rather than relying on a static hash. This effectively mitigates incast by utilizing under-utilized paths to prevent buffer saturation.",
+      "why_not_A": "Jumbo frames improve throughput efficiency for large payloads but can actually exacerbate burstiness and increase the time a buffer is occupied by a single packet.",
+      "why_not_B": "Static ECMP is prone to hash collisions, where multiple high-bandwidth flows are mapped to the same physical link, creating hotspots even when other links are idle.",
+      "why_not_D": "Disabling PFC would lead to packet drops during incast, which triggers RoCEv2 retransmissions, causing a massive drop in effective throughput and increasing training time."
+    },
+    "tags": [
+      "traffic-engineering",
+      "Adaptive-Routing",
+      "Incast"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-035",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A network engineer is configuring a RoCEv2 environment for a GPU cluster. They observe that while the physical links are 400Gbps, the actual throughput for collective operations is significantly lower than expected, and they suspect a mismatch in the Maximum Transmission Unit (MTU) across the fabric. What is the recommended MTU configuration for an optimized NVIDIA AI networking fabric?",
+    "options": [
+      {
+        "id": "A",
+        "text": "1500 bytes across all hops to ensure compatibility",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "4096 bytes on the switches and 1500 bytes on the NICs",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "9000 bytes (Jumbo Frames) consistently across NICs and switches",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "MTU should be left to auto-negotiation between the NIC and switch",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "For AI workloads, Jumbo Frames (typically 9000 bytes) are critical. They reduce the number of packets processed by the CPU/NIC and reduce the overhead of packet headers, maximizing the effective bandwidth for large data transfers like model weights.",
+      "why_not_A": "1500 bytes results in high packet overhead and increased interrupt processing on the NIC, limiting the total achievable throughput for GPU-to-GPU communication.",
+      "why_not_B": "An MTU mismatch (where the switch allows larger packets than the NIC or vice versa) leads to packet fragmentation or drops, which is catastrophic for RoCEv2 performance.",
+      "why_not_D": "Auto-negotiation for MTU is not a standard feature for Ethernet frames; MTU must be explicitly configured to ensure end-to-end consistency."
+    },
+    "tags": [
+      "MTU",
+      "RoCEv2",
+      "Performance-Tuning"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-ncp-ai-networking-mock1-036",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "In a large-scale AI deployment, the administrator is configuring Priority Flow Control (PFC). They need to ensure that RoCEv2 traffic is treated as 'lossless' while standard management traffic remains 'lossy'. Which configuration approach is required to achieve this separation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign RoCEv2 to a specific Priority Code Point (PCP) and enable PFC only for that priority",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Enable PFC globally on all ports regardless of the traffic type",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use VLAN tagging to separate traffic and disable all flow control",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Map all traffic to Priority 0 and use ECN to manage drops",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "PFC operates on a per-priority basis (8 priorities). By mapping RoCEv2 traffic to a specific priority (e.g., Priority 3) and enabling PFC for only that priority, the network can pause AI traffic to prevent drops while allowing other traffic to be dropped normally if congestion occurs.",
+      "why_not_B": "Global PFC (Pause frames) would pause all traffic on the link, including management traffic, which can lead to network-wide instability and head-of-line blocking.",
+      "why_not_C": "VLANs provide logical separation but do not provide the lossless mechanisms (PFC) required for RoCEv2 to function efficiently without massive retransmission overhead.",
+      "why_not_D": "Mapping all traffic to a single priority defeats the purpose of differentiated services; ECN manages the rate but does not guarantee losslessness like PFC does."
+    },
+    "tags": [
+      "PFC",
+      "QoS",
+      "RoCEv2"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-037",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A cluster is utilizing RoCEv2 and experiencing intermittent packet loss. The engineer notices that the 'Pause' frames are being sent, but the congestion persists. Upon analysis, it is found that the switch is dropping packets despite PFC being enabled. What is the most likely cause of this behavior in an AI networking context?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The MTU is set too low on the leaf switches",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "PFC deadlock caused by cyclic buffer dependencies",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The NICs are not supporting ECN",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The use of L3 routing instead of L2 switching",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PFC deadlock occurs when a cycle of dependencies is created (Switch A pauses B, B pauses C, C pauses A), causing the buffers to fill and the network to hang. In such cases, switches may eventually drop packets as a recovery mechanism or the traffic simply stops flowing.",
+      "why_not_A": "Low MTU reduces efficiency but does not cause packet drops in a PFC-enabled environment unless there is a mismatch.",
+      "why_not_C": "Lack of ECN support would lead to more PFC pauses (coarser control), but it would not explain why packets are being dropped if PFC is functioning correctly.",
+      "why_not_D": "RoCEv2 is specifically designed to operate over L3 (UDP/IP), so using L3 routing is the intended design and not the cause of the loss."
+    },
+    "tags": [
+      "PFC",
+      "Troubleshooting",
+      "RoCEv2"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-ncp-ai-networking-mock1-038",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ethernet-for-ai",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A large-scale AI training cluster utilizing RoCEv2 is experiencing intermittent 'packet drops' and 'out-of-order delivery' during the All-Reduce collective communication phase, despite having a non-blocking fat-tree topology. Monitoring indicates that while the average link utilization is only 60%, there are significant micro-bursts causing buffer overflows at the leaf switches. The network is configured with Priority Flow Control (PFC) and Explicit Congestion Notification (ECN). Which adjustment would most effectively mitigate these drops while minimizing the risk of PFC deadlock in this specific AI workload environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the PFC pause threshold to allow more packets to enter the buffer before triggering a pause frame.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Lower the ECN marking threshold (Kmin) and adjust the DCQCN target rate to trigger congestion notification earlier.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable PFC and rely solely on ECN and TCP retransmissions to handle buffer overflows.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch the topology from a fat-tree to a torus topology to distribute the All-Reduce traffic across more paths.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In AI workloads, micro-bursts often exceed the buffer capacity before PFC can react. By lowering the ECN Kmin threshold, the switch starts marking packets earlier, signaling the NICs via DCQCN to throttle the sending rate before the buffer reaches the PFC pause threshold. This prevents the 'hard stop' of PFC and reduces the likelihood of buffer overflows and PFC deadlock.",
+      "why_not_A": "Increasing the PFC pause threshold allows the buffer to fill more, which actually increases the risk of buffer overflow if the burst is large enough, and increases the latency for packets already in the queue.",
+      "why_not_C": "Disabling PFC in a RoCEv2 environment leads to packet loss during congestion. Since RoCEv2 is designed for loss-less Ethernet, relying on standard TCP-like retransmissions would severely degrade AI training performance due to the high overhead of recovery in a GPU-to-GPU environment.",
+      "why_not_D": "Changing the physical topology is a drastic architectural change that does not address the fundamental issue of buffer management and congestion control for bursty AI traffic; a fat-tree is generally superior for All-Reduce patterns than a torus."
+    },
+    "tags": [
+      "RoCEv2",
+      "DCQCN",
+      "PFC",
+      "CongestionControl"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-039",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A network administrator is deploying RoCEv2 in a data center and observes significant packet loss during high-burst AI training workloads. The switches are configured for Priority Flow Control (PFC), but the administrator notices 'pause frames' are causing head-of-line blocking across unrelated traffic flows. Which mechanism should be implemented to mitigate this while maintaining a lossless fabric?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable PFC and rely solely on standard TCP congestion control.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Explicit Congestion Notification (ECN) to throttle senders before PFC is triggered.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the MTU to 9000 bytes on all interfaces to reduce packet overhead.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch from RoCEv2 to RoCEv1 to eliminate the UDP encapsulation layer.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ECN allows switches to mark packets when queues reach a certain threshold. The receiver sees these marks and notifies the sender to reduce the transmission rate, preventing the queue from filling up and triggering PFC pause frames, which reduces head-of-line blocking.",
+      "why_not_A": "RoCEv2 requires a lossless fabric to perform optimally; disabling PFC without a replacement congestion mechanism would lead to packet drops and severe performance degradation in RDMA.",
+      "why_not_C": "While Jumbo Frames improve throughput, they do not solve the congestion management or head-of-line blocking issues associated with PFC pause frames.",
+      "why_not_D": "RoCEv1 is a Layer 2 protocol and cannot be routed across subnets, making it unsuitable for modern scalable AI data centers compared to RoCEv2."
+    },
+    "tags": [
+      "congestion-control",
+      "ECN",
+      "PFC"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-040",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI cluster is experiencing intermittent connectivity issues. Upon inspecting the NIC configuration, it is discovered that the 'QP' (Queue Pair) state is frequently transitioning to an error state. The application logs indicate a 'Local Length Error'. Which of the following is the most likely cause of this RDMA error?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A mismatch between the requested data length and the registered memory region size.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "The physical link speed is mismatched between the NIC and the switch.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The MTU size on the switch is smaller than the packet size sent by the NIC.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The PFC priority is not mapped correctly to the DSCP value.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "A Local Length Error in RDMA typically occurs when the application attempts to send or receive more data than the allocated and registered memory region (MR) allows, leading to a Queue Pair error state.",
+      "why_not_B": "Link speed mismatches generally cause total loss of connectivity or physical layer flapping, not specific RDMA QP length errors.",
+      "why_not_C": "MTU mismatches usually result in packet drops at the switch level or 'Packet Too Big' errors, rather than a Local Length Error within the NIC's QP state.",
+      "why_not_D": "PFC/DSCP misconfigurations lead to congestion and packet loss, not memory-related length errors in the RDMA transport layer."
+    },
+    "tags": [
+      "RDMA-verbs",
+      "Queue-Pairs",
+      "Memory-Registration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-041",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer is optimizing an AI application using RDMA. They need to transfer data from the memory of Server A directly to the memory of Server B without involving the CPU of Server B in the data movement process. Which RDMA operation should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "RDMA Send",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "RDMA Read",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "RDMA Write",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "TCP Socket Transfer",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "RDMA Write is a one-sided operation that allows the source to push data directly into a specific memory address on the target machine without the target CPU's involvement.",
+      "why_not_A": "RDMA Send is a two-sided operation; the receiver must be actively involved to post a receive buffer to accept the data.",
+      "why_not_B": "RDMA Read is used by the source to pull data from the target's memory, not to transfer data from source to target.",
+      "why_not_D": "TCP Socket transfers are traditional network operations that require heavy CPU involvement for protocol processing and data copying."
+    },
+    "tags": [
+      "RDMA-operations",
+      "One-Sided-Communication"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-042",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is deploying RoCEv2 across multiple L3 subnets. The network engineer is configuring the switches to ensure that RoCEv2 traffic is prioritized over standard management traffic. Which field in the packet header is primarily used by the switches to determine the priority queue for RoCEv2 traffic?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The Ethernet 802.1Q tag (PCP)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The IP header Differentiated Services Code Point (DSCP)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The UDP destination port",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The RDMA BTH (Base Transport Header) opcode",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoCEv2 is encapsulated in UDP/IP. Because it is routed across L3 boundaries, the DSCP field in the IP header is used by switches to map the traffic to specific priority queues (Class of Service).",
+      "why_not_A": "802.1Q PCP is a Layer 2 field. While used in RoCEv1, it is stripped or ignored when traffic crosses a router/L3 boundary.",
+      "why_not_C": "The UDP port identifies the service (e.g., 4791 for RoCEv2) but is not used by switches for QoS queuing decisions.",
+      "why_not_D": "The BTH is part of the RDMA payload; switches do not deep-packet inspect into the BTH to make queuing decisions."
+    },
+    "tags": [
+      "RoCEv2-encapsulation",
+      "QoS",
+      "DSCP"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-043",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During a performance audit of an NVIDIA ConnectX-6 network, an engineer notices that while the link is 100Gbps, the RDMA throughput is significantly lower than expected. The engineer finds that the 'Adaptive Routing' feature is disabled on the switches. How would enabling Adaptive Routing improve RDMA performance in a Clos topology?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It allows the NIC to bypass the switch and communicate directly with the target.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It eliminates the need for PFC by automatically rerouting packets during congestion.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "It prevents hash-based polarization and distributes traffic across all available paths based on real-time load.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "It increases the maximum transmission unit (MTU) dynamically based on the path length.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Adaptive Routing allows the switch to select the best output port based on current congestion levels rather than relying on a static ECMP hash, which can lead to 'collisions' where multiple heavy flows share one link while others are empty.",
+      "why_not_A": "Adaptive Routing is a switch-level feature; it does not enable NICs to bypass switches.",
+      "why_not_B": "Adaptive Routing helps avoid congestion, but it does not replace PFC. PFC is still required to ensure the fabric remains lossless for RoCEv2.",
+      "why_not_D": "MTU is a static configuration per interface/network; Adaptive Routing does not modify the packet size."
+    },
+    "tags": [
+      "adaptive-routing",
+      "ECMP",
+      "Clos-Topology"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-044",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center is deploying RoCEv2 across a L3 leaf-spine topology. During heavy GPU-to-GPU communication, the administrator observes significant packet loss and 'out-of-order' delivery errors on the receiving end. Which combination of network settings is most likely required to resolve this while maintaining lossless transport?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable Priority Flow Control (PFC) and enable TCP Selective Acknowledgments (SACK).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure PFC on the specific priority queue used for RoCEv2 and ensure ECMP is configured for per-flow hashing.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable PFC on all priority queues and configure Adaptive Routing to distribute packets across all available paths.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement Explicit Congestion Notification (ECN) only, removing PFC to prevent head-of-line blocking.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoCEv2 requires a lossless fabric, typically achieved via PFC. To prevent out-of-order packets (which RoCEv2 cannot handle without specific hardware support), ECMP must be configured for per-flow hashing so that all packets of a single RDMA flow follow the same path.",
+      "why_not_A": "Disabling PFC removes the lossless guarantee required for standard RoCEv2 deployments, and SACK is a TCP mechanism, whereas RoCEv2 uses UDP/IP.",
+      "why_not_C": "While Adaptive Routing improves utilization, if not specifically supported by the NIC/Switch hardware for RDMA, it can cause packets within a single flow to arrive out-of-order, triggering RDMA transport errors.",
+      "why_not_D": "ECN provides congestion signaling to slow down the sender, but it does not prevent buffer overflow and packet loss in the same way PFC does; it is a complement to, not a replacement for, PFC in most RoCEv2 designs."
+    },
+    "tags": [
+      "RoCEv2",
+      "PFC",
+      "ECMP"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-045",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI cluster is experiencing 'PFC Storms' where pause frames are propagating across the fabric, causing a widespread collapse of throughput. The engineer decides to implement DCQCN (Data Center Quantized Congestion Notification). Which component is responsible for calculating the rate reduction on the sender side based on the CNP (Congestion Notification Packet)?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The Spine Switch",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The Destination NIC (Reaction Point)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The Source NIC (Reaction Point)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The SDN Controller",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In DCQCN, the source NIC (the Reaction Point) is responsible for reducing the transmission rate upon receiving a CNP to alleviate congestion at the switch.",
+      "why_not_A": "The switch is the Congestion Point; it marks packets (ECN) but does not calculate the rate reduction for the host.",
+      "why_not_B": "The destination NIC is the Notification Point; it detects the ECN mark in the packet and generates the CNP sent back to the source, but it does not perform the rate reduction itself.",
+      "why_not_D": "DCQCN is a hardware-level congestion control mechanism implemented in the NICs and switches; it does not rely on a centralized SDN controller for real-time rate adjustment."
+    },
+    "tags": [
+      "DCQCN",
+      "ECN",
+      "Congestion Control"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-ncp-ai-networking-mock1-046",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is optimizing an application using RDMA Write operations. They notice that the CPU on the target machine is not being interrupted, but the data is successfully appearing in the target memory. Which RDMA mechanism is being utilized to achieve this behavior?",
+    "options": [
+      {
+        "id": "A",
+        "text": "RDMA Send/Receive with Immediate Data",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Zero-Copy via Memory Registration",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "One-Sided Operation",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Kernel Bypass via User-space Drivers",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "RDMA Write is a 'one-sided' operation. The source NIC writes directly into the target's memory using a remote key (R_Key) and virtual address, requiring no CPU involvement or notification on the target side.",
+      "why_not_A": "Send/Receive is a 'two-sided' operation; the target CPU must post a receive buffer and is typically notified upon completion.",
+      "why_not_B": "Memory registration is a prerequisite for all RDMA operations, not the mechanism that defines whether the target CPU is involved.",
+      "why_not_D": "Kernel bypass allows the application to talk to the NIC without OS intervention, but the 'one-sided' nature of the Write operation is what specifically removes the target CPU from the data transfer path."
+    },
+    "tags": [
+      "RDMA Operations",
+      "One-Sided",
+      "Zero-Copy"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-nvidia-ncp-ai-networking-mock1-047",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During the configuration of a RoCEv2 network, an engineer must ensure that the 'Lossless' traffic class is correctly isolated from 'Lossy' traffic. If the engineer configures the DSCP value to 46 (EF) for RoCEv2 but the switch is configured to map all traffic to a single queue (Default), what will be the most likely result?",
+    "options": [
+      {
+        "id": "A",
+        "text": "RoCEv2 traffic will be automatically prioritized by the NIC regardless of switch config.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The network will function normally as long as the bandwidth is not saturated.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "PFC will be applied to all traffic, including lossy traffic, leading to potential fabric deadlock.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "PFC will not be triggered for RoCEv2 traffic because it is not mapped to a PFC-enabled queue.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "PFC operates on a per-priority (per-queue) basis. If the switch does not map the DSCP 46 traffic to a specific queue that has PFC enabled, the switch will treat it as standard lossy traffic and will not send pause frames, defeating the purpose of the lossless configuration.",
+      "why_not_A": "The NIC can mark packets, but the switch controls the queuing and the triggering of PFC based on those marks.",
+      "why_not_B": "While it might 'work' under low load, it is not a correct configuration and will fail (drop packets) as soon as congestion occurs, which is unacceptable for RoCEv2.",
+      "why_not_C": "PFC is only applied to queues explicitly configured for it. If all traffic is in one queue and that queue is NOT configured for PFC, no PFC occurs. If it IS configured for PFC, then all traffic is paused, but the scenario states it's mapped to a 'Default' queue (usually lossy)."
+    },
+    "tags": [
+      "DSCP",
+      "PFC",
+      "Traffic Class"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-ncp-ai-networking-mock1-048",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An administrator is troubleshooting a connection between two NVIDIA BlueField-3 DPUs. The 'ibv_rc_pingpong' test fails with a 'Remote Access Error'. The administrator confirms that the IP connectivity is fine and the ports are up. Which of the following is the most probable cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The MTU is mismatched between the source and destination NICs.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The Memory Region (MR) was not registered or the R_Key is invalid.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The switch is dropping packets due to a VLAN mismatch.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The RoCEv2 UDP port 4791 is blocked by a firewall.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A 'Remote Access Error' in RDMA typically indicates that the remote NIC rejected the request because the memory address was invalid or the Remote Key (R_Key) provided by the sender did not match the registered memory region on the target.",
+      "why_not_A": "MTU mismatches usually result in packet drops or timeouts, not a specific 'Remote Access Error' returned by the remote HCA.",
+      "why_not_C": "VLAN mismatches would cause a total lack of connectivity (no ping, no connection), whereas a Remote Access Error implies the connection was established but the memory operation failed.",
+      "why_not_D": "If port 4791 were blocked, the connection would fail to establish (timeout), and the ping-pong test would never reach the stage of attempting a memory operation."
+    },
+    "tags": [
+      "RDMA Troubleshooting",
+      "Memory Registration",
+      "R_Key"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-049",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rdma-roce",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A large-scale AI cluster utilizing RoCEv2 is experiencing intermittent 'Packet Drops' and 'Out-of-Order' delivery errors during heavy All-Reduce collective operations, despite having Priority Flow Control (PFC) enabled on all switches. The network team observes that while PFC is preventing buffer overflow, the application is suffering from severe throughput degradation and 'PFC Storms' that propagate back to the source. Which of the following architectural changes would most effectively resolve the stability issues while maintaining high throughput for the AI workload?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable PFC and implement standard TCP congestion control to allow the network to drop packets and trigger retransmissions.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Data Center Quantized Congestion Notification (DCQCN) by configuring ECN thresholds on the switches and enabling congestion control on the NICs.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the PFC buffer allocation for the specific priority queue used by RoCEv2 to eliminate the trigger for pause frames.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch from RoCEv2 to RoCEv1 to remove the UDP encapsulation layer and reduce the overhead on the switch ASICs.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DCQCN is the industry-standard congestion control mechanism for RoCEv2. It combines ECN (Explicit Congestion Notification) from the switches with rate-limiting at the NICs. By throttling the sender before the switch buffers overflow, DCQCN prevents the PFC pause frames from ever being triggered, thereby eliminating PFC storms and head-of-line blocking while maintaining high throughput.",
+      "why_not_A": "Disabling PFC and relying on TCP-style drops is catastrophic for RDMA performance. RoCEv2 is a lossless protocol; allowing packet drops leads to massive retransmission timeouts (RTO) and collapses the throughput of collective operations like All-Reduce.",
+      "why_not_C": "Increasing buffer size is a temporary fix and does not address the root cause of congestion. Eventually, buffers will still fill up, and PFC will still trigger. This does not prevent the propagation of pause frames (PFC storms) across the fabric.",
+      "why_not_D": "RoCEv1 is a Layer 2 protocol and is not routable. In a modern AI cluster (which requires a Layer 3 leaf-spine architecture), RoCEv1 is technically infeasible. Furthermore, it does not solve the congestion management problem."
+    },
+    "tags": [
+      "RoCEv2",
+      "DCQCN",
+      "PFC",
+      "CongestionControl"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-050",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A network administrator is deploying NVIDIA NetQ to monitor a large-scale AI cluster. During a performance audit, the administrator notices that telemetry data is being dropped at the collector level, leading to gaps in the visibility of congestion events. Which action should be taken to resolve this while maintaining high-resolution visibility into buffer utilization?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable streaming telemetry and switch to SNMP polling every 30 seconds.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the telemetry sampling interval on the switches to reduce the volume of data sent to NetQ.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Scale the NetQ collector cluster horizontally to increase the ingestion capacity for telemetry streams.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure the switches to only send telemetry data when a threshold violation occurs (Event-driven telemetry).",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NetQ relies on high-frequency streaming telemetry to detect micro-bursts and buffer congestion in AI workloads. If the collector is dropping packets, the bottleneck is the ingestion layer. Scaling the collector cluster horizontally increases the processing capacity, allowing for the required high-resolution data without sacrificing visibility.",
+      "why_not_A": "SNMP polling is too slow to capture the transient congestion events typical of AI traffic (micro-bursts) and would result in a total loss of real-time visibility.",
+      "why_not_B": "Increasing the sampling interval reduces the resolution of the data, meaning the administrator would miss the very congestion events they are trying to monitor.",
+      "why_not_D": "While event-driven telemetry reduces volume, it may miss the lead-up to a congestion event or fail to provide the continuous baseline needed for deep network analysis in AI fabrics."
+    },
+    "tags": [
+      "NetQ",
+      "Telemetry",
+      "Scalability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-051",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI infrastructure team is using NVIDIA Cumulus Linux on their Spectrum-3 switches. They need to implement a consistent configuration management strategy across 128 switches to ensure that MTU settings and VLAN configurations are identical across the fabric. Which approach is the most scalable and aligned with NVIDIA's recommended management practices?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Manually configure each switch via SSH using a standardized checklist.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Utilize an Infrastructure-as-Code (IaC) tool like Ansible using the Cumulus Linux modules to push configurations.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a golden image of the OS and flash it to all switches via USB.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a basic DHCP server to push the full configuration file to the switches upon boot.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Ansible is the industry standard for managing Cumulus Linux environments. It allows for declarative configuration management, ensuring consistency across a large fleet of switches and enabling version control via Git.",
+      "why_not_A": "Manual configuration is prone to human error and is not scalable for 128 switches.",
+      "why_not_C": "Flashing an image handles the OS version, but not the device-specific configuration (like IP addresses and interface assignments) which must be unique per switch.",
+      "why_not_D": "DHCP can provide basic boot information and IP addresses, but it is not a robust mechanism for managing complex network configurations or performing updates."
+    },
+    "tags": [
+      "Cumulus Linux",
+      "Configuration Management",
+      "Ansible"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-052",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During the validation of a RoCEv2 fabric, a network engineer observes that some nodes are experiencing intermittent packet loss. The engineer decides to use the 'NVIDIA NetQ' tool to analyze the 'Adaptive Routing' performance. What is the primary indicator in NetQ that would suggest Adaptive Routing is not functioning optimally across the fabric?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A high number of BGP route flaps in the spine layer.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "High CPU utilization on the leaf switches.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Significant imbalances in link utilization (flow asymmetry) across the ECMP paths.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The presence of PFC (Priority Flow Control) pause frames on all ports.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The purpose of Adaptive Routing is to dynamically distribute traffic across available paths to avoid congestion. If NetQ shows that some links are saturated while others are idle (flow asymmetry), it indicates that Adaptive Routing is either disabled or not effectively balancing the load.",
+      "why_not_A": "BGP route flaps indicate control plane instability, not necessarily a failure of the data plane's adaptive routing mechanism.",
+      "why_not_B": "CPU utilization is generally unrelated to the hardware-based forwarding and adaptive routing logic of the Spectrum switches.",
+      "why_not_D": "PFC pause frames indicate congestion management is working to prevent packet loss, but they do not directly indicate whether the traffic is being balanced across paths."
+    },
+    "tags": [
+      "Adaptive Routing",
+      "NetQ",
+      "RoCEv2"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-053",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center operator is configuring Zero Touch Zero Touch Provisioning (ZTP) for a new cluster of NVIDIA Spectrum switches. The switches are booting but failing to pull the configuration file from the ZTP server. Upon inspection, the operator finds the switches are reaching the server via DHCP but cannot authenticate the configuration download. What is the most likely cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The switches are unable to resolve the DNS name of the ZTP server.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The DHCP scope is exhausted, preventing the switches from getting IP addresses.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "There is a mismatch between the switch serial number/MAC address and the allowed entries in the ZTP server's authorization list.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The ZTP server is configured for HTTP, but the switches require HTTPS.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In a professional ZTP deployment, servers often use the device's unique identifier (MAC or Serial) to map the device to a specific configuration file. If the device is not registered or the mapping is incorrect, the server will refuse to provide the configuration file.",
+      "why_not_A": "The scenario states the switches are reaching the server via DHCP, implying network connectivity is established.",
+      "why_not_B": "The scenario states the switches are reaching the server, meaning they have successfully obtained an IP address from the DHCP server.",
+      "why_not_D": "While protocol mismatches can occur, 'failure to authenticate' specifically points to an identity/authorization issue rather than a protocol negotiation failure."
+    },
+    "tags": [
+      "ZTP",
+      "Provisioning",
+      "Spectrum"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-054",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI cluster is experiencing 'incast' congestion, leading to high latency for certain GPU-to-GPU communications. The network manager wants to implement an NVIDIA-recommended congestion control mechanism to mitigate this. Which combination of settings is essential for the correct operation of this mechanism in a RoCEv2 environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable PFC and enable standard TCP congestion control.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable ECN (Explicit Congestion Notification) on the switches and configure DCQCN on the NICs.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Jumbo Frames and disable all flow control mechanisms.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure Static Routing and disable ECMP to prevent out-of-order packets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DCQCN (Data Center Quantized Congestion Notification) is the standard for RoCEv2. It requires the switch to mark packets using ECN when buffers reach a certain threshold, and the receiving NIC to notify the sender to throttle the rate, effectively managing incast congestion.",
+      "why_not_A": "RoCEv2 is a lossless protocol; disabling PFC without a robust alternative like DCQCN would lead to packet drops and massive performance degradation in AI workloads.",
+      "why_not_C": "Jumbo frames improve efficiency but do not solve congestion. Disabling flow control would lead to packet loss during incast events.",
+      "why_not_D": "Static routing and disabling ECMP would severely limit the bandwidth and resiliency of the fabric and does not address the root cause of buffer congestion."
+    },
+    "tags": [
+      "Congestion Control",
+      "ECN",
+      "DCQCN"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-055",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-management",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A large-scale AI cluster utilizing NVIDIA Spectrum-X is experiencing intermittent packet loss during high-burst RDMA traffic. The network administrator observes that while global throughput is high, specific leaf-spine links are hitting congestion thresholds. The administrator wants to implement a strategy to minimize tail latency and prevent head-of-line blocking without manually tuning static buffers on every switch. Which management approach is most effective for this scenario?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable Adaptive Routing (AR) and implement static Equal-Cost Multi-Path (ECMP) to ensure deterministic pathing.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure NVIDIA NetQ to monitor telemetry and enable Dynamic Buffer Management to redistribute shared buffer space in real-time.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the MTU to 9000 bytes across all interfaces to reduce the number of packets per flow.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement strict priority queuing for all RDMA traffic, overriding the Weighted Round Robin (WRR) settings.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA NetQ provides the visibility needed to identify congestion hotspots, and Dynamic Buffer Management allows the hardware to optimally allocate shared buffers to ports experiencing bursts, which is critical for mitigating tail latency in AI workloads.",
+      "why_not_A": "Disabling Adaptive Routing (AR) would worsen the problem; AR is specifically designed to route around congestion in real-time, whereas static ECMP can lead to polarization and hot-spotting.",
+      "why_not_C": "Increasing MTU reduces header overhead but does not address the underlying buffer exhaustion or congestion management causing the packet loss.",
+      "why_not_D": "Strict priority queuing can lead to starvation of other critical management traffic and does not solve the buffer overflow issue on the specific congested links.",
+      "tags": [
+        "Spectrum-X",
+        "Congestion-Management",
+        "NetQ"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-nvidia-ncp-ai-networking-mock1-056",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
+  },
+  {
+    "domain_id": "network-management",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An operator is deploying a multi-tenant AI cloud using NVIDIA BlueField-3 DPUs. To ensure seamless network management and orchestration, the operator needs to implement a mechanism where the host OS remains unaware of the underlying physical network configuration and the DPU handles all routing and security policies. Which configuration pattern best achieves this management isolation while maintaining high-performance data paths?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure the DPU in 'Transparent' mode, allowing the host to manage the physical NIC via SR-IOV.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a bridged configuration where the DPU acts as a Layer 2 switch, passing all management traffic directly to the host.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement the 'Embedded Switch' (eSwitch) model with Representative ports, where the DPU manages the physical wire and exposes virtual functions to the host.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy the DPU in 'Pass-through' mode to bypass the DPU ARM cores for all network management tasks.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The eSwitch model with Representative ports allows the DPU to act as the network gateway. The host sees 'representative' interfaces, while the DPU's control plane manages the actual physical connectivity, routing, and security, achieving full management isolation.",
+      "why_not_A": "Transparent mode typically implies the host has more control over the hardware, which contradicts the requirement for the host to remain unaware of the physical configuration.",
+      "why_not_B": "A simple bridge does not provide the necessary Layer 3 isolation and policy enforcement required for a multi-tenant AI cloud.",
+      "why_not_D": "Pass-through mode bypasses the DPU's ability to manage the network, essentially turning the DPU into a standard NIC and removing the management isolation layer.",
+      "tags": [
+        "BlueField-3",
+        "DPU-Architecture",
+        "Network-Isolation"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-nvidia-ncp-ai-networking-mock1-057",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
+  },
+  {
+    "domain_id": "performance-tuning",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A network engineer observes that an AI training workload using GPUDirect RDMA is experiencing higher than expected latency. Upon inspecting the system, it is found that the CPU is frequently interrupting the data transfer process. Which configuration change would most effectively reduce this CPU overhead and improve throughput?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the CPU clock speed to process interrupts faster.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Adaptive Routing on the InfiniBand switches.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure CPU affinity and isolate the cores handling the network interrupts.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disable the IOMMU (Input-Output Memory Management Unit) in the BIOS.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "CPU affinity and core isolation ensure that network interrupts are handled by specific cores, preventing the 'noisy neighbor' effect where the OS scheduler moves processes across cores, which causes cache misses and increases latency in high-performance RDMA environments.",
+      "why_not_A": "Increasing clock speed does not address the architectural bottleneck of interrupt handling and context switching.",
+      "why_not_B": "Adaptive Routing optimizes path selection to avoid congestion in the fabric, but it does not reduce CPU overhead on the host.",
+      "why_not_D": "While IOMMU can introduce slight overhead, disabling it is a security risk and does not solve the specific problem of CPU interrupt contention."
+    },
+    "tags": [
+      "GPUDirect RDMA",
+      "CPU Affinity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-058",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "performance-tuning",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI cluster utilizing RoCE v2 is experiencing intermittent packet loss and performance degradation during large-scale All-Reduce operations. The engineer notices that the PFC (Priority Flow Control) frames are being triggered frequently, leading to head-of-line blocking. Which tuning parameter should be adjusted to better balance the flow control and throughput?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Decrease the PFC Watermark thresholds on the switches.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement ECN (Explicit Congestion Notification) and tune the Kmin/Kmax thresholds.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable PFC entirely and rely on TCP retransmissions.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the MTU size to 9000 bytes on the host only.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ECN allows the network to signal congestion to the endpoints before buffers overflow, triggering the NIC to slow down the transmission rate. This prevents the 'hard stop' of PFC and reduces head-of-line blocking.",
+      "why_not_A": "Decreasing watermark thresholds would cause PFC to trigger even sooner, potentially increasing the frequency of pauses and worsening the throughput.",
+      "why_not_C": "Disabling PFC in a RoCE v2 environment without a robust congestion control mechanism leads to massive packet loss and catastrophic performance collapse.",
+      "why_not_D": "MTU must be consistent across the entire path (Host and Switch); changing it on the host only will lead to fragmented packets or dropped traffic."
+    },
+    "tags": [
+      "RoCE v2",
+      "Congestion Control",
+      "ECN"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-059",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "performance-tuning",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A researcher is deploying a multi-node AI model and notices that the GPU utilization is low while the network interface is saturated. Analysis shows a high number of small packets are being sent. Which NVIDIA Collective Communications Library (NCCL) tuning parameter should be adjusted to improve the efficiency of data transfers?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NCCL_BUFFSIZE",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "NCCL_P2P_DISABLE",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NCCL_IB_HCA",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NCCL_DEBUG=INFO",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "NCCL_BUFFSIZE controls the size of the internal buffers used for collective operations. Increasing this can allow for larger chunks of data to be aggregated, reducing the number of small packets and improving overall throughput.",
+      "why_not_B": "NCCL_P2P_DISABLE would disable Peer-to-Peer communication, forcing data through the CPU/System memory, which would drastically decrease performance.",
+      "why_not_C": "NCCL_IB_HCA is used to specify which InfiniBand HCAs to use, not to tune the efficiency of the data transfer size.",
+      "why_not_D": "NCCL_DEBUG is a logging level for troubleshooting and has no impact on the actual performance tuning of the data path."
+    },
+    "tags": [
+      "NCCL",
+      "Throughput"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-060",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "performance-tuning",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During the performance validation of a Quantum-2 InfiniBand fabric, it is observed that certain links are consistently more utilized than others, causing 'hot spots' and reducing the overall effective bandwidth of the AI workload. Which feature should be enabled to distribute traffic more evenly across the fabric?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Static Routing",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Quality of Service (QoS) mapping",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Adaptive Routing (AR)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "LACP (Link Aggregation Control Protocol)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Adaptive Routing allows the switch to dynamically select the least congested path for a packet, effectively balancing the load across all available links in the fabric and eliminating hot spots.",
+      "why_not_A": "Static Routing assigns a fixed path based on the destination LID, which often leads to imbalances if the traffic pattern does not match the routing algorithm.",
+      "why_not_B": "QoS manages priority and bandwidth allocation for different traffic classes, but it does not change the physical path a packet takes to avoid congestion.",
+      "why_not_D": "LACP is an Ethernet standard for bundling links; InfiniBand uses different mechanisms for multi-pathing and fabric management."
+    },
+    "tags": [
+      "InfiniBand",
+      "Adaptive Routing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-061",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "performance-tuning",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A system administrator is optimizing a GPU server for an AI workload. They want to ensure that the network interface card (NIC) can access GPU memory directly without involving the CPU for data movement. Which hardware/software requirement must be met to enable this performance optimization?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NIC must support 100GbE minimum.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "PCIe Peer-to-Peer (P2P) must be enabled in the BIOS and supported by the chipset.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The system must use a RAID 0 disk configuration for swap space.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPU must be running in integrated graphics mode.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GPUDirect RDMA requires PCIe Peer-to-Peer communication, allowing the NIC to read/write directly to the GPU's BAR (Base Address Register) space without copying data to system RAM first.",
+      "why_not_A": "While high bandwidth is preferred, the ability to perform direct memory access is a functional capability of the hardware/PCIe bus, not dependent on the specific line rate (e.g., 100G vs 200G).",
+      "why_not_C": "Disk configuration for swap space has no impact on the direct memory path between the NIC and the GPU.",
+      "why_not_D": "Integrated graphics mode is irrelevant for high-performance AI clusters which use discrete GPUs (like H100s) and dedicated high-speed networking."
+    },
+    "tags": [
+      "GPUDirect RDMA",
+      "PCIe P2P"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-062",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "performance-tuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services firm is deploying a GPU cluster for high-frequency trading models. During testing, they observe high tail latency and sporadic packet drops in the RoCEv2 fabric, despite the aggregate bandwidth being well below the link capacity. The network is configured with Priority Flow Control (PFC). Which tuning action is most likely to resolve this specific performance degradation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the MTU size to 9000 bytes across all switches and NICs to reduce header overhead.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Adjust the PFC Watermark thresholds to trigger pause frames earlier, preventing buffer overflow.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable PFC and implement ECN (Explicit Congestion Notification) as the sole congestion management mechanism.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the number of Virtual Lanes (VLs) to distribute traffic more evenly across the switch fabric.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In RoCEv2 environments, tail latency and packet drops are often caused by buffer overflows before PFC can trigger. Tuning the PFC watermarks (the threshold at which the switch sends a PAUSE frame) ensures that the sender is throttled before the switch buffer is completely exhausted, eliminating drops and reducing jitter.",
+      "why_not_A": "While Jumbo frames improve throughput efficiency, they do not address the underlying cause of packet drops due to buffer overflow and can actually exacerbate burstiness.",
+      "why_not_C": "ECN is a critical complement to PFC, but disabling PFC entirely in a lossless RoCEv2 environment would lead to massive packet loss during congestion, as ECN only signals the sender to slow down and does not provide an immediate hardware-level stop.",
+      "why_not_D": "Adding more VLs helps with head-of-line blocking between different traffic classes, but it does not solve the issue of a single congested flow overflowing its assigned buffer quota."
+    },
+    "tags": [
+      "RoCEv2",
+      "PFC",
+      "Congestion-Control"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-063",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "performance-tuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI research team is running a Large Language Model (LLM) training job across 64 NVIDIA H100 GPUs. They notice that the GPU utilization is fluctuating and not reaching its peak, and the profiling data shows a significant bottleneck in the 'All-Reduce' collective communication phase. The network is a non-blocking Fat-Tree topology. Which configuration change would most effectively improve the performance of these collectives?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from a Fat-Tree topology to a 3D Torus topology to reduce hop count for adjacent nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the TCP window size on the management network to ensure faster control plane communication.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Optimize the NCCL (NVIDIA Collective Communications Library) environment variables to align with the physical network topology.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Reduce the GPU clock speed to synchronize the execution time of all kernels across the cluster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NCCL is responsible for the efficiency of All-Reduce operations. If NCCL is not aware of the underlying topology (e.g., which GPUs share a PCIe switch or NVLink), it may choose suboptimal communication paths, leading to congestion and lower GPU utilization. Tuning NCCL_P2P_DISABLE or NCCL_SOCKET_IFNAME ensures the fastest paths are used.",
+      "why_not_A": "A non-blocking Fat-Tree is generally superior to a Torus for large-scale AI workloads due to lower average latency and higher bisection bandwidth.",
+      "why_not_B": "The bottleneck is in the data plane (All-Reduce), not the management plane. TCP window sizes on the management network have zero impact on GPU-to-GPU RDMA traffic.",
+      "why_not_D": "Reducing clock speed would lower overall performance and would not resolve a network communication bottleneck; it would only mask the symptom by making the compute phase slower."
+    },
+    "tags": [
+      "NCCL",
+      "Collective-Communication",
+      "LLM-Training"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-064",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "performance-tuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A cloud provider is experiencing 'incast' congestion on their AI networking fabric when multiple worker nodes send gradients to a single parameter server simultaneously. Despite having 100GbE links, the throughput is significantly lower than expected. Which combination of settings is the NVIDIA-recommended approach to mitigate this in a RoCEv2 environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Adaptive Routing on the switches and configure DCQCN (Data Center Quantized Congestion Notification).",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Implement Static Routing and disable ECN to prevent oscillation in the congestion window.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Increase the NIC ring buffer size and disable PFC to allow the buffers to absorb the burst.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure the network for Half-Duplex communication to prevent collisions during the incast event.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Adaptive Routing allows the fabric to dynamically route packets around congested links, which is critical during incast. DCQCN provides an end-to-end congestion control mechanism (combining ECN and PFC) that throttles the source rate based on network feedback, preventing the buffer overflow that causes incast-related performance collapse.",
+      "why_not_B": "Static routing exacerbates incast because it cannot react to real-time congestion. Disabling ECN removes the primary mechanism the NICs use to slow down transmission.",
+      "why_not_C": "Increasing ring buffers only delays the inevitable overflow during a sustained incast burst; disabling PFC would result in packet loss, triggering TCP-like retransmissions that destroy RoCEv2 performance.",
+      "why_not_D": "Half-Duplex is obsolete technology and completely incompatible with modern high-performance AI networking."
+    },
+    "tags": [
+      "Incast",
+      "DCQCN",
+      "Adaptive-Routing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-networking-mock1-065",
+    "exam_id": "nvidia-ncp-ain",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  }
 ]

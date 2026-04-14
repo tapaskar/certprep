@@ -7,10 +7,26 @@
     "difficulty": 3,
     "stem": "A company needs a relational database for their e-commerce platform that handles 50,000 transactions per second with automatic failover in under 30 seconds. The database must support PostgreSQL compatibility and scale storage automatically. Which solution BEST meets these requirements?",
     "options": [
-      {"id": "A", "text": "Amazon RDS for PostgreSQL with Multi-AZ deployment and provisioned IOPS storage", "is_correct": false},
-      {"id": "B", "text": "Amazon Aurora PostgreSQL with multiple read replicas across Availability Zones", "is_correct": true},
-      {"id": "C", "text": "Amazon RDS for PostgreSQL with cross-region read replicas for high availability", "is_correct": false},
-      {"id": "D", "text": "Self-managed PostgreSQL on EC2 instances with EBS volumes in an Auto Scaling group", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Amazon RDS for PostgreSQL with Multi-AZ deployment and provisioned IOPS storage",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Amazon Aurora PostgreSQL with multiple read replicas across Availability Zones",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Amazon RDS for PostgreSQL with cross-region read replicas for high availability",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Self-managed PostgreSQL on EC2 instances with EBS volumes in an Auto Scaling group",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -19,11 +35,18 @@
       "why_not_C": "Cross-region read replicas provide disaster recovery but not fast failover. Promotion of a cross-region replica requires manual intervention and takes significantly longer than 30 seconds.",
       "why_not_D": "Self-managed PostgreSQL on EC2 requires manual HA configuration, does not auto-scale storage, and imposes significant operational overhead for connection management and failover orchestration."
     },
-    "concept_ids": ["aws-dbs-aurora-vs-rds"],
-    "tags": ["aurora", "postgresql", "high-availability", "performance"],
+    "concept_ids": [
+      "aws-dbs-aurora-vs-rds"
+    ],
+    "tags": [
+      "aurora",
+      "postgresql",
+      "high-availability",
+      "performance"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -35,10 +58,26 @@
     "difficulty": 4,
     "stem": "A gaming company stores player profiles, inventory, and leaderboard data. Player profiles are accessed by player_id. Inventory queries need all items for a player sorted by acquisition date. Leaderboards require querying top scores across all players for a specific game. Which DynamoDB design BEST supports all three access patterns?",
     "options": [
-      {"id": "A", "text": "Three separate tables: Profiles (PK: player_id), Inventory (PK: player_id, SK: acquisition_date), and Leaderboard (PK: game_id, SK: score)", "is_correct": false},
-      {"id": "B", "text": "Single table with PK: player_id, SK: entity_type#sort_value, plus a GSI with PK: game_id and SK: score for leaderboard queries", "is_correct": true},
-      {"id": "C", "text": "Single table with PK: player_id, SK: entity_type, with a scan operation and filter expression for leaderboard queries", "is_correct": false},
-      {"id": "D", "text": "Three separate tables with DynamoDB Streams connecting them via Lambda for cross-table queries", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Three separate tables: Profiles (PK: player_id), Inventory (PK: player_id, SK: acquisition_date), and Leaderboard (PK: game_id, SK: score)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Single table with PK: player_id, SK: entity_type#sort_value, plus a GSI with PK: game_id and SK: score for leaderboard queries",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Single table with PK: player_id, SK: entity_type, with a scan operation and filter expression for leaderboard queries",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Three separate tables with DynamoDB Streams connecting them via Lambda for cross-table queries",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -47,8 +86,15 @@
       "why_not_C": "Scan operations read the entire table and are expensive and slow at scale. Filter expressions reduce returned data but still consume read capacity for all scanned items. This does not scale for leaderboards.",
       "why_not_D": "Using Streams and Lambda for cross-table queries adds latency, complexity, and cost. This is not a substitute for proper data modeling with GSIs."
     },
-    "concept_ids": ["aws-dbs-dynamodb-modeling"],
-    "tags": ["dynamodb", "data-modeling", "single-table", "gsi"],
+    "concept_ids": [
+      "aws-dbs-dynamodb-modeling"
+    ],
+    "tags": [
+      "dynamodb",
+      "data-modeling",
+      "single-table",
+      "gsi"
+    ],
     "estimated_time_seconds": 150,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
@@ -63,10 +109,26 @@
     "difficulty": 4,
     "stem": "A data analytics team needs to run complex SQL joins across 500 GB of structured data with ad-hoc query patterns. Queries filter on different columns unpredictably. Which Redshift table design optimizes query performance for this workload?",
     "options": [
-      {"id": "A", "text": "KEY distribution on the most common join column with a compound sort key on the most frequently filtered columns", "is_correct": false},
-      {"id": "B", "text": "EVEN distribution with an interleaved sort key on the most commonly filtered columns", "is_correct": true},
-      {"id": "C", "text": "ALL distribution for all tables with no sort keys to maximize flexibility", "is_correct": false},
-      {"id": "D", "text": "AUTO distribution with compound sort keys ordered by column selectivity", "is_correct": false}
+      {
+        "id": "A",
+        "text": "KEY distribution on the most common join column with a compound sort key on the most frequently filtered columns",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "EVEN distribution with an interleaved sort key on the most commonly filtered columns",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "ALL distribution for all tables with no sort keys to maximize flexibility",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "AUTO distribution with compound sort keys ordered by column selectivity",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -75,8 +137,15 @@
       "why_not_C": "ALL distribution replicates the entire table to every node. At 500 GB, this would consume massive storage across nodes and is only appropriate for small dimension tables.",
       "why_not_D": "AUTO distribution is a reasonable default but may not optimize for the specific workload. Compound sort keys with column selectivity ordering still favor prefix-based queries, which does not match ad-hoc patterns."
     },
-    "concept_ids": ["aws-dbs-redshift-design"],
-    "tags": ["redshift", "distribution-styles", "sort-keys", "analytics"],
+    "concept_ids": [
+      "aws-dbs-redshift-design"
+    ],
+    "tags": [
+      "redshift",
+      "distribution-styles",
+      "sort-keys",
+      "analytics"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
@@ -91,10 +160,26 @@
     "difficulty": 3,
     "stem": "A company needs to migrate a 2 TB Oracle database to Amazon Aurora PostgreSQL with less than 1 hour of downtime. The Oracle database uses stored procedures, triggers, and custom data types. Which migration approach is MOST appropriate?",
     "options": [
-      {"id": "A", "text": "Use pg_dump to export data from Oracle and pg_restore to import into Aurora PostgreSQL", "is_correct": false},
-      {"id": "B", "text": "Use AWS SCT to convert the schema and then AWS DMS with full load plus CDC to migrate data with minimal downtime", "is_correct": true},
-      {"id": "C", "text": "Use AWS DMS with full load migration only and schedule a maintenance window for the cutover", "is_correct": false},
-      {"id": "D", "text": "Create an Aurora PostgreSQL instance and use native Oracle Data Pump to export and import the data", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Use pg_dump to export data from Oracle and pg_restore to import into Aurora PostgreSQL",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS SCT to convert the schema and then AWS DMS with full load plus CDC to migrate data with minimal downtime",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use AWS DMS with full load migration only and schedule a maintenance window for the cutover",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create an Aurora PostgreSQL instance and use native Oracle Data Pump to export and import the data",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -103,11 +188,20 @@
       "why_not_C": "Full load only requires stopping writes during the entire migration process. For 2 TB of data, this could take several hours, exceeding the 1-hour downtime requirement.",
       "why_not_D": "Oracle Data Pump exports data in Oracle format, not PostgreSQL format. It cannot directly import into Aurora PostgreSQL and does not convert stored procedures or custom types."
     },
-    "concept_ids": ["aws-dbs-dms-migration", "aws-dbs-aurora-vs-rds"],
-    "tags": ["migration", "heterogeneous", "sct", "dms", "minimal-downtime"],
+    "concept_ids": [
+      "aws-dbs-dms-migration",
+      "aws-dbs-aurora-vs-rds"
+    ],
+    "tags": [
+      "migration",
+      "heterogeneous",
+      "sct",
+      "dms",
+      "minimal-downtime"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -119,10 +213,26 @@
     "difficulty": 3,
     "stem": "A development team needs to create an exact copy of their 5 TB Aurora MySQL production database for testing a major application upgrade. The copy must be available within 15 minutes and should minimize additional storage costs. Which approach meets these requirements?",
     "options": [
-      {"id": "A", "text": "Create an Aurora read replica and promote it to a standalone cluster for testing", "is_correct": false},
-      {"id": "B", "text": "Take a manual snapshot of the production cluster and restore it to a new cluster", "is_correct": false},
-      {"id": "C", "text": "Use Aurora cloning to create a copy-on-write clone of the production cluster", "is_correct": true},
-      {"id": "D", "text": "Use AWS DMS to replicate the production database to a new Aurora cluster", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Create an Aurora read replica and promote it to a standalone cluster for testing",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Take a manual snapshot of the production cluster and restore it to a new cluster",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Aurora cloning to create a copy-on-write clone of the production cluster",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use AWS DMS to replicate the production database to a new Aurora cluster",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -131,11 +241,19 @@
       "why_not_B": "Restoring from a snapshot of a 5 TB database can take hours depending on storage performance. This exceeds the 15-minute requirement.",
       "why_not_D": "DMS migration of 5 TB would take hours for the full load. This is designed for migrations, not rapid cloning for testing."
     },
-    "concept_ids": ["aws-dbs-rds-snapshots", "aws-dbs-aurora-vs-rds"],
-    "tags": ["aurora-cloning", "copy-on-write", "testing", "cost-optimization"],
+    "concept_ids": [
+      "aws-dbs-rds-snapshots",
+      "aws-dbs-aurora-vs-rds"
+    ],
+    "tags": [
+      "aurora-cloning",
+      "copy-on-write",
+      "testing",
+      "cost-optimization"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -147,10 +265,26 @@
     "difficulty": 4,
     "stem": "After modifying the max_connections parameter in an RDS MySQL parameter group from 150 to 500, a database administrator notices that the running instance still shows max_connections as 150. The parameter group status shows 'in-sync'. What is the MOST likely cause?",
     "options": [
-      {"id": "A", "text": "The parameter group is not associated with the RDS instance", "is_correct": false},
-      {"id": "B", "text": "max_connections is a static parameter that requires an instance reboot to take effect", "is_correct": true},
-      {"id": "C", "text": "The RDS instance class does not support 500 connections and the change was silently rejected", "is_correct": false},
-      {"id": "D", "text": "The modification was made to the default parameter group which cannot be changed", "is_correct": false}
+      {
+        "id": "A",
+        "text": "The parameter group is not associated with the RDS instance",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "max_connections is a static parameter that requires an instance reboot to take effect",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The RDS instance class does not support 500 connections and the change was silently rejected",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The modification was made to the default parameter group which cannot be changed",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -159,11 +293,18 @@
       "why_not_C": "RDS does not silently reject parameter changes. If a value is invalid, the parameter group modification itself would fail with an error.",
       "why_not_D": "The default parameter group cannot be modified, but the modification would have returned an error if attempted. The successful change indicates a custom parameter group."
     },
-    "concept_ids": ["aws-dbs-parameter-groups"],
-    "tags": ["troubleshooting", "parameter-groups", "static-parameters", "rds-mysql"],
+    "concept_ids": [
+      "aws-dbs-parameter-groups"
+    ],
+    "tags": [
+      "troubleshooting",
+      "parameter-groups",
+      "static-parameters",
+      "rds-mysql"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -175,10 +316,26 @@
     "difficulty": 4,
     "stem": "A serverless application uses AWS Lambda functions to query an Aurora MySQL database. During peak traffic, the application experiences intermittent database connection errors with 'Too many connections' messages. Each Lambda invocation creates a new database connection. Which solution addresses this with the LEAST application code changes?",
     "options": [
-      {"id": "A", "text": "Increase the max_connections parameter in the Aurora parameter group and scale up the instance class", "is_correct": false},
-      {"id": "B", "text": "Deploy Amazon RDS Proxy between Lambda and Aurora to pool and manage database connections", "is_correct": true},
-      {"id": "C", "text": "Implement connection pooling within the Lambda function code using a connection pool library", "is_correct": false},
-      {"id": "D", "text": "Replace Aurora MySQL with DynamoDB to eliminate connection management entirely", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Increase the max_connections parameter in the Aurora parameter group and scale up the instance class",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy Amazon RDS Proxy between Lambda and Aurora to pool and manage database connections",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement connection pooling within the Lambda function code using a connection pool library",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Replace Aurora MySQL with DynamoDB to eliminate connection management entirely",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -187,8 +344,16 @@
       "why_not_C": "Connection pooling within Lambda is limited because each Lambda execution environment is isolated. A pool inside a single Lambda container cannot share connections across containers or invocations efficiently.",
       "why_not_D": "Replacing the database engine requires rewriting the application data access layer, schema, and queries. This is the highest-effort option and may not be appropriate if the data requires relational features."
     },
-    "concept_ids": ["aws-dbs-performance-insights", "aws-dbs-parameter-groups"],
-    "tags": ["rds-proxy", "lambda", "connection-pooling", "aurora"],
+    "concept_ids": [
+      "aws-dbs-performance-insights",
+      "aws-dbs-parameter-groups"
+    ],
+    "tags": [
+      "rds-proxy",
+      "lambda",
+      "connection-pooling",
+      "aurora"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
@@ -203,10 +368,26 @@
     "difficulty": 4,
     "stem": "An Aurora PostgreSQL database shows high CPU utilization at 95% during business hours. Standard CloudWatch metrics show normal IOPS and network throughput. The database administrator needs to identify which SQL queries are causing the high CPU usage. Which tool provides the MOST direct visibility into this?",
     "options": [
-      {"id": "A", "text": "Enable Enhanced Monitoring to view per-process CPU consumption and identify the database process", "is_correct": false},
-      {"id": "B", "text": "Use Performance Insights to view the database load by top SQL statements and identify queries consuming the most CPU", "is_correct": true},
-      {"id": "C", "text": "Analyze VPC Flow Logs to determine which application servers are sending the most queries", "is_correct": false},
-      {"id": "D", "text": "Create a CloudWatch dashboard with CPUUtilization and DatabaseConnections metrics to correlate high CPU with connection count", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable Enhanced Monitoring to view per-process CPU consumption and identify the database process",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Performance Insights to view the database load by top SQL statements and identify queries consuming the most CPU",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Analyze VPC Flow Logs to determine which application servers are sending the most queries",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a CloudWatch dashboard with CPUUtilization and DatabaseConnections metrics to correlate high CPU with connection count",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -215,11 +396,19 @@
       "why_not_C": "VPC Flow Logs capture network traffic metadata and cannot identify SQL queries or database operations. They show packet-level information, not application-level database activity.",
       "why_not_D": "CloudWatch dashboards show trends and correlations but do not provide per-query CPU breakdown. Knowing that CPU is high when connections are high does not identify the specific problematic queries."
     },
-    "concept_ids": ["aws-dbs-cloudwatch-rds", "aws-dbs-performance-insights"],
-    "tags": ["troubleshooting", "performance-insights", "cpu-utilization", "query-optimization"],
+    "concept_ids": [
+      "aws-dbs-cloudwatch-rds",
+      "aws-dbs-performance-insights"
+    ],
+    "tags": [
+      "troubleshooting",
+      "performance-insights",
+      "cpu-utilization",
+      "query-optimization"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -231,10 +420,26 @@
     "difficulty": 5,
     "stem": "A Redshift cluster experiences query queuing during peak hours when both ETL jobs and business analyst queries run simultaneously. ETL jobs are long-running and consume most of the available memory, causing analyst queries to wait. The team wants analyst queries to always complete within 30 seconds. Which Redshift configuration addresses this?",
     "options": [
-      {"id": "A", "text": "Enable Concurrency Scaling and configure Short Query Acceleration (SQA) to route analyst queries to transient capacity", "is_correct": true},
-      {"id": "B", "text": "Create separate WLM queues for ETL and analyst workloads with fixed memory allocation percentages", "is_correct": false},
-      {"id": "C", "text": "Add more nodes to the cluster to increase total available memory and compute for all queries", "is_correct": false},
-      {"id": "D", "text": "Schedule ETL jobs to run outside business hours so they do not overlap with analyst queries", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Enable Concurrency Scaling and configure Short Query Acceleration (SQA) to route analyst queries to transient capacity",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Create separate WLM queues for ETL and analyst workloads with fixed memory allocation percentages",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Add more nodes to the cluster to increase total available memory and compute for all queries",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Schedule ETL jobs to run outside business hours so they do not overlap with analyst queries",
+        "is_correct": false
+      }
     ],
     "correct_answer": "A",
     "explanation": {
@@ -243,8 +448,17 @@
       "why_not_C": "Adding nodes increases capacity but is a static, expensive solution. It does not specifically prioritize short analyst queries over long ETL jobs. Both workloads still compete for the same resources.",
       "why_not_D": "Scheduling ETL outside business hours avoids the conflict but may not be feasible if ETL feeds real-time dashboards or if business hours span multiple time zones."
     },
-    "concept_ids": ["aws-dbs-redshift-wlm", "aws-dbs-redshift-design"],
-    "tags": ["redshift", "wlm", "concurrency-scaling", "sqa", "workload-management"],
+    "concept_ids": [
+      "aws-dbs-redshift-wlm",
+      "aws-dbs-redshift-design"
+    ],
+    "tags": [
+      "redshift",
+      "wlm",
+      "concurrency-scaling",
+      "sqa",
+      "workload-management"
+    ],
     "estimated_time_seconds": 150,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
@@ -259,10 +473,26 @@
     "difficulty": 3,
     "stem": "A company has an unencrypted RDS MySQL production database that now needs to be encrypted at rest to meet compliance requirements. The encryption must use a customer managed KMS key. What is the correct procedure to encrypt this database?",
     "options": [
-      {"id": "A", "text": "Modify the RDS instance to enable encryption and select the customer managed KMS key", "is_correct": false},
-      {"id": "B", "text": "Create a snapshot of the instance, copy the snapshot with encryption enabled using the customer managed KMS key, and restore a new instance from the encrypted snapshot", "is_correct": true},
-      {"id": "C", "text": "Enable encryption on the existing RDS instance storage volume using the AWS CLI modify-db-instance command with the --kms-key-id parameter", "is_correct": false},
-      {"id": "D", "text": "Create a read replica with encryption enabled, then promote the encrypted read replica to a standalone instance", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Modify the RDS instance to enable encryption and select the customer managed KMS key",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a snapshot of the instance, copy the snapshot with encryption enabled using the customer managed KMS key, and restore a new instance from the encrypted snapshot",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable encryption on the existing RDS instance storage volume using the AWS CLI modify-db-instance command with the --kms-key-id parameter",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a read replica with encryption enabled, then promote the encrypted read replica to a standalone instance",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -271,11 +501,19 @@
       "why_not_C": "There is no CLI command to enable encryption on an existing unencrypted RDS storage volume. Encryption is an immutable property set at instance creation.",
       "why_not_D": "You cannot create an encrypted read replica from an unencrypted source instance. The read replica inherits the encryption state of its source."
     },
-    "concept_ids": ["aws-dbs-rds-encryption", "aws-dbs-rds-snapshots"],
-    "tags": ["encryption", "rds", "kms", "compliance"],
+    "concept_ids": [
+      "aws-dbs-rds-encryption",
+      "aws-dbs-rds-snapshots"
+    ],
+    "tags": [
+      "encryption",
+      "rds",
+      "kms",
+      "compliance"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -287,10 +525,26 @@
     "difficulty": 4,
     "stem": "A microservices application running on Amazon EKS needs to authenticate to an Aurora PostgreSQL database. The security team requires that no long-lived database passwords be stored in the application configuration or Kubernetes secrets. Credentials must be rotated automatically. Which authentication approach meets these requirements?",
     "options": [
-      {"id": "A", "text": "Store database credentials in AWS Secrets Manager with automatic rotation and configure the application to retrieve them at startup", "is_correct": false},
-      {"id": "B", "text": "Use IAM database authentication with an IAM role attached to the EKS pods via IRSA (IAM Roles for Service Accounts)", "is_correct": true},
-      {"id": "C", "text": "Store the database password in an encrypted Kubernetes Secret and mount it as an environment variable in the pod spec", "is_correct": false},
-      {"id": "D", "text": "Configure PostgreSQL md5 authentication with a complex password and rotate it quarterly using a CronJob", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Store database credentials in AWS Secrets Manager with automatic rotation and configure the application to retrieve them at startup",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use IAM database authentication with an IAM role attached to the EKS pods via IRSA (IAM Roles for Service Accounts)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store the database password in an encrypted Kubernetes Secret and mount it as an environment variable in the pod spec",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure PostgreSQL md5 authentication with a complex password and rotate it quarterly using a CronJob",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -299,8 +553,15 @@
       "why_not_C": "Kubernetes Secrets, even encrypted, are still long-lived credentials stored in the cluster. They require manual rotation processes and pose a risk if the cluster is compromised.",
       "why_not_D": "Quarterly password rotation with a CronJob still uses long-lived passwords between rotations and requires storing the password in the application configuration."
     },
-    "concept_ids": ["aws-dbs-iam-db-auth"],
-    "tags": ["iam-auth", "eks", "passwordless", "irsa"],
+    "concept_ids": [
+      "aws-dbs-iam-db-auth"
+    ],
+    "tags": [
+      "iam-auth",
+      "eks",
+      "passwordless",
+      "irsa"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
@@ -315,10 +576,26 @@
     "difficulty": 3,
     "stem": "A social media company needs to build a recommendation engine that queries relationships between users, posts, and interests. The application must traverse complex many-to-many relationships efficiently, such as finding friends of friends who share common interests. Which database service is BEST suited for this workload?",
     "options": [
-      {"id": "A", "text": "Amazon DynamoDB with a single-table design using GSIs to model relationships", "is_correct": false},
-      {"id": "B", "text": "Amazon Aurora PostgreSQL using JOIN queries across normalized relationship tables", "is_correct": false},
-      {"id": "C", "text": "Amazon Neptune using Gremlin traversal queries to navigate the relationship graph", "is_correct": true},
-      {"id": "D", "text": "Amazon Redshift using denormalized tables with pre-computed relationship aggregations", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Amazon DynamoDB with a single-table design using GSIs to model relationships",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Amazon Aurora PostgreSQL using JOIN queries across normalized relationship tables",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Amazon Neptune using Gremlin traversal queries to navigate the relationship graph",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Amazon Redshift using denormalized tables with pre-computed relationship aggregations",
+        "is_correct": false
+      }
     ],
     "correct_answer": "C",
     "explanation": {
@@ -327,11 +604,19 @@
       "why_not_B": "Relational JOINs across multiple relationship tables degrade in performance as the depth of traversal increases. Finding friends-of-friends with common interests could require multiple self-joins and subqueries that are computationally expensive.",
       "why_not_D": "Redshift is an analytical data warehouse, not an operational database. Pre-computing relationship aggregations loses flexibility and is not suitable for real-time recommendation queries."
     },
-    "concept_ids": ["aws-dbs-neptune-graph", "aws-dbs-dynamodb-modeling"],
-    "tags": ["neptune", "graph-database", "gremlin", "relationship-queries"],
+    "concept_ids": [
+      "aws-dbs-neptune-graph",
+      "aws-dbs-dynamodb-modeling"
+    ],
+    "tags": [
+      "neptune",
+      "graph-database",
+      "gremlin",
+      "relationship-queries"
+    ],
     "estimated_time_seconds": 90,
-    "bkt_p_guess": 0.10,
-    "bkt_p_slip": 0.10,
+    "bkt_p_guess": 0.1,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.12,
     "review_status": "approved"
   },
@@ -343,10 +628,26 @@
     "difficulty": 4,
     "stem": "A company runs a critical Aurora MySQL database in us-east-1 and needs a disaster recovery strategy that provides an RPO of less than 1 second and an RTO of less than 1 minute in case of a regional failure. Which approach achieves this?",
     "options": [
-      {"id": "A", "text": "Configure automated daily snapshots and copy them to us-west-2, restoring from the latest snapshot during a disaster", "is_correct": false},
-      {"id": "B", "text": "Set up Aurora Global Database with a secondary region in us-west-2 and use managed planned failover for region switchover", "is_correct": true},
-      {"id": "C", "text": "Create a cross-region read replica in us-west-2 and manually promote it during a disaster", "is_correct": false},
-      {"id": "D", "text": "Use AWS DMS with continuous replication to a standalone Aurora cluster in us-west-2", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Configure automated daily snapshots and copy them to us-west-2, restoring from the latest snapshot during a disaster",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set up Aurora Global Database with a secondary region in us-west-2 and use managed planned failover for region switchover",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a cross-region read replica in us-west-2 and manually promote it during a disaster",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS DMS with continuous replication to a standalone Aurora cluster in us-west-2",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -355,8 +656,17 @@
       "why_not_C": "Cross-region read replicas have higher replication lag (potentially minutes) than Aurora Global Database. Manual promotion is slower and less automated than managed failover.",
       "why_not_D": "DMS continuous replication introduces additional replication lag and complexity. It is designed for migrations, not real-time DR with sub-second RPO requirements."
     },
-    "concept_ids": ["aws-dbs-cross-region-replicas", "aws-dbs-aurora-vs-rds"],
-    "tags": ["disaster-recovery", "global-database", "rpo", "rto", "cross-region"],
+    "concept_ids": [
+      "aws-dbs-cross-region-replicas",
+      "aws-dbs-aurora-vs-rds"
+    ],
+    "tags": [
+      "disaster-recovery",
+      "global-database",
+      "rpo",
+      "rto",
+      "cross-region"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
@@ -371,10 +681,26 @@
     "difficulty": 3,
     "stem": "An RDS MySQL database shows steadily increasing ReadLatency in CloudWatch over the past week, but CPUUtilization remains below 30% and FreeableMemory is stable. The application team reports no changes in query patterns. What is the MOST likely cause and the recommended investigation step?",
     "options": [
-      {"id": "A", "text": "The database is experiencing network congestion; check the NetworkReceiveThroughput and NetworkTransmitThroughput metrics", "is_correct": false},
-      {"id": "B", "text": "The storage volume is becoming I/O bound due to growing data volume; check the ReadIOPS metric against the provisioned IOPS limit and enable Enhanced Monitoring for I/O wait analysis", "is_correct": true},
-      {"id": "C", "text": "The database connections are not being closed properly; check the DatabaseConnections metric for connection leaks", "is_correct": false},
-      {"id": "D", "text": "The query cache is filling up; increase the query_cache_size parameter in the parameter group", "is_correct": false}
+      {
+        "id": "A",
+        "text": "The database is experiencing network congestion; check the NetworkReceiveThroughput and NetworkTransmitThroughput metrics",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The storage volume is becoming I/O bound due to growing data volume; check the ReadIOPS metric against the provisioned IOPS limit and enable Enhanced Monitoring for I/O wait analysis",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The database connections are not being closed properly; check the DatabaseConnections metric for connection leaks",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The query cache is filling up; increase the query_cache_size parameter in the parameter group",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -383,11 +709,19 @@
       "why_not_C": "Connection leaks would increase DatabaseConnections count and potentially cause connection errors, not increase ReadLatency. The symptom pattern does not match connection issues.",
       "why_not_D": "MySQL 8.0 removed the query cache entirely. Even in earlier versions, a query cache issue would manifest as increased CPU utilization from cache invalidation overhead, not increased ReadLatency."
     },
-    "concept_ids": ["aws-dbs-cloudwatch-rds", "aws-dbs-slow-query-logs"],
-    "tags": ["troubleshooting", "read-latency", "iops", "storage-performance"],
+    "concept_ids": [
+      "aws-dbs-cloudwatch-rds",
+      "aws-dbs-slow-query-logs"
+    ],
+    "tags": [
+      "troubleshooting",
+      "read-latency",
+      "iops",
+      "storage-performance"
+    ],
     "estimated_time_seconds": 90,
     "bkt_p_guess": 0.08,
-    "bkt_p_slip": 0.10,
+    "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.13,
     "review_status": "approved"
   },
@@ -399,10 +733,26 @@
     "difficulty": 5,
     "stem": "A financial institution needs to share an encrypted RDS snapshot with a partner organization in a different AWS account. The snapshot is encrypted with a customer managed KMS key. What steps are required to share this snapshot successfully?",
     "options": [
-      {"id": "A", "text": "Share the snapshot directly with the partner account; KMS encryption is transparent and handled automatically during cross-account sharing", "is_correct": false},
-      {"id": "B", "text": "Update the KMS key policy to grant the partner account access to the key, then share the RDS snapshot with the partner account", "is_correct": true},
-      {"id": "C", "text": "Create an unencrypted copy of the snapshot, share the unencrypted snapshot, and let the partner re-encrypt it in their account", "is_correct": false},
-      {"id": "D", "text": "Copy the snapshot to an S3 bucket, share the S3 bucket with the partner account using a bucket policy, and have them restore from S3", "is_correct": false}
+      {
+        "id": "A",
+        "text": "Share the snapshot directly with the partner account; KMS encryption is transparent and handled automatically during cross-account sharing",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Update the KMS key policy to grant the partner account access to the key, then share the RDS snapshot with the partner account",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create an unencrypted copy of the snapshot, share the unencrypted snapshot, and let the partner re-encrypt it in their account",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Copy the snapshot to an S3 bucket, share the S3 bucket with the partner account using a bucket policy, and have them restore from S3",
+        "is_correct": false
+      }
     ],
     "correct_answer": "B",
     "explanation": {
@@ -411,12 +761,1787 @@
       "why_not_C": "You cannot create an unencrypted copy of an encrypted snapshot. Copying an encrypted snapshot always produces an encrypted snapshot. AWS enforces that encryption cannot be removed from snapshots.",
       "why_not_D": "RDS snapshots cannot be exported to S3 as restorable database files. RDS snapshot export to S3 produces Apache Parquet format for analytics, not a format that can be used to restore an RDS instance."
     },
-    "concept_ids": ["aws-dbs-rds-encryption", "aws-dbs-rds-snapshots"],
-    "tags": ["cross-account", "encrypted-snapshots", "kms-key-policy", "snapshot-sharing"],
+    "concept_ids": [
+      "aws-dbs-rds-encryption",
+      "aws-dbs-rds-snapshots"
+    ],
+    "tags": [
+      "cross-account",
+      "encrypted-snapshots",
+      "kms-key-policy",
+      "snapshot-sharing"
+    ],
     "estimated_time_seconds": 120,
     "bkt_p_guess": 0.05,
     "bkt_p_slip": 0.08,
     "bkt_p_transit": 0.15,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "workload-specific-database-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A media company is designing a DynamoDB table to store user profiles and their associated preferences. The application requires the ability to retrieve a user's profile by their unique UserID, but also needs to list all users who share a specific preference (e.g., 'Gaming') across the entire platform. What is the most efficient design to support both access patterns?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use UserID as the Partition Key and create a Filter Expression to find users with the specific preference.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use UserID as the Partition Key and create a Global Secondary Index (GSI) with the Preference attribute as the Partition Key.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use UserID as the Partition Key and a Local Secondary Index (LSI) with the Preference attribute as the Sort Key.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Preference as the Partition Key and UserID as the Sort Key for the base table.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A GSI allows querying across all partitions. By making the Preference the partition key of the GSI, the application can efficiently retrieve all users with a specific preference regardless of their UserID.",
+      "why_not_A": "Filter Expressions are applied after the data is read from the disk; this would require a full table scan, which is inefficient and costly for large datasets.",
+      "why_not_C": "An LSI requires the query to specify the same partition key as the base table. It cannot be used to find all users with a preference across different UserIDs.",
+      "why_not_D": "This would make retrieving a specific user's profile by UserID inefficient, as it would require a scan or a separate index, reversing the primary access pattern."
+    },
+    "tags": [
+      "DynamoDB",
+      "GSI",
+      "Access Patterns"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-016",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "workload-specific-database-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An e-commerce application uses Amazon Aurora PostgreSQL. The application performs a high volume of read-heavy operations on a 'Products' table, but the data is updated infrequently. The development team wants to reduce the load on the primary writer instance and improve read latency. Which architectural change is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the Aurora cluster to a Single-AZ deployment to reduce network hops.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a read-replica and point the application's read traffic to the reader endpoint.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the instance size of the primary writer instance to handle both reads and writes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable Aurora Auto Scaling for the writer instance to handle spikes in read traffic.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Aurora Reader Endpoints allow the application to distribute read-heavy workloads across one or more Aurora Replicas, offloading the primary writer and improving overall throughput.",
+      "why_not_A": "Single-AZ deployment reduces availability and does not address the need to scale read capacity.",
+      "why_not_C": "Vertical scaling (increasing instance size) is a temporary fix and does not provide the architectural benefit of separating read and write traffic.",
+      "why_not_D": "Aurora Auto Scaling applies to Reader instances, not the Writer instance. The Writer cannot be 'auto-scaled' horizontally."
+    },
+    "tags": [
+      "Aurora",
+      "Read Replicas",
+      "Scalability"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-aws-dbs-mock1-017",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "workload-specific-database-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services company needs to store time-series data for stock market ticks. The data is written at a very high rate and is queried primarily by TickerSymbol and Timestamp. Which storage strategy is most effective for optimizing performance and cost in Amazon Timestream?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Store all data in the memory store indefinitely to ensure the fastest possible query response.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a standard relational database with a B-tree index on the timestamp column.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure a memory store for recent high-throughput writes and a magnetic store for long-term cost-effective storage.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disable the magnetic store and rely solely on S3-based external tables via Athena.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon Timestream is designed specifically for time-series data, using a memory store for fast ingestion and a magnetic store for cost-effective long-term storage, automating the movement of data between them.",
+      "why_not_A": "The memory store is expensive; storing all data there indefinitely would lead to prohibitive costs.",
+      "why_not_B": "Standard relational databases often struggle with the ingestion rate and storage volume of high-frequency tick data compared to purpose-built time-series databases.",
+      "why_not_D": "While Athena can query S3, it lacks the specialized time-series functions and the high-speed ingestion capabilities of Timestream's memory store."
+    },
+    "tags": [
+      "Timestream",
+      "Time-Series",
+      "Storage Tiers"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-018",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "workload-specific-database-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A logistics company is designing a database for tracking shipments. The data model involves complex relationships between shipments, carriers, warehouses, and customers. The company requires strong ACID compliance and the ability to perform complex joins across multiple tables. Which database choice is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Amazon DynamoDB with a single-table design.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Amazon DocumentDB for its flexible schema.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Amazon RDS for PostgreSQL.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Amazon Neptune for graph-based relationships.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "RDS PostgreSQL is a relational database that provides full ACID compliance and is optimized for complex joins and structured data relationships.",
+      "why_not_A": "DynamoDB is a NoSQL database; while it supports some ACID transactions, it does not support joins, making complex relational queries inefficient.",
+      "why_not_B": "DocumentDB is a document store; it is not designed for complex joins across multiple collections and does not provide the same level of relational integrity as PostgreSQL.",
+      "why_not_D": "Neptune is ideal for highly connected data (graphs), but for standard business entities like shipments and customers with structured requirements, a relational DB is more standard and efficient for reporting."
+    },
+    "tags": [
+      "RDS",
+      "Relational Design",
+      "ACID"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-aws-dbs-mock1-019",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "workload-specific-database-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A gaming company uses Amazon DynamoDB to store player session data. They notice a 'hot partition' problem where a few very popular players are causing high latency and throttling for other requests. Which design change would best resolve this issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the provisioned throughput for the entire table.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement write sharding by appending a random suffix to the partition key.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from Provisioned Capacity to On-Demand Capacity mode.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable DynamoDB Accelerator (DAX) to cache the hot items.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Write sharding (adding a random number or suffix to the partition key) distributes the writes across multiple partitions, preventing a single partition from exceeding its throughput limit.",
+      "why_not_A": "Increasing overall throughput does not solve the problem if a single partition is hitting its limit (1,000 WCU / 3,000 RCU), as the limit is per partition, not per table.",
+      "why_not_C": "On-Demand mode handles spikes in overall traffic but does not resolve the physical limitation of a single hot partition's throughput.",
+      "why_not_D": "DAX is a read-cache. While it helps with read-heavy hot partitions, the scenario implies a general performance issue which often includes writes in session data; sharding is the fundamental architectural fix for partition heat."
+    },
+    "tags": [
+      "DynamoDB",
+      "Hot Partitions",
+      "Write Sharding"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-020",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "workload-specific-database-design",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A gaming company is designing a global leaderboard system using Amazon DynamoDB. The system must support millions of players and provide real-time rankings based on a 'Score' attribute. The application requires the ability to query the top 100 players globally and also the top 100 players within specific geographic regions. The company wants to avoid the 'hot partition' problem associated with high-frequency updates to a single global ranking record. Which design pattern should the architect implement to meet these requirements while maintaining scalability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a single table with 'Region' as the Partition Key and 'Score' as the Sort Key, and use a Global Secondary Index (GSI) with a constant value as the Partition Key to track global rankings."
+      },
+      {
+        "id": "B",
+        "text": "Implement write-sharding by appending a random suffix (0-N) to the Partition Key for the global leaderboard, and use a scheduled Lambda function to aggregate the top scores into a separate summary table."
+      },
+      {
+        "id": "C",
+        "text": "Use a Partition Key consisting of the 'Region' and a 'ShardID' (e.g., 0-9), with 'Score' as the Sort Key. To retrieve the global top 100, query all shards across all regions in parallel and merge the results in the application layer."
+      },
+      {
+        "id": "D",
+        "text": "Create a DynamoDB table with 'PlayerID' as the Partition Key and use a Local Secondary Index (LSI) on the 'Score' attribute to allow for regional and global sorting."
+      },
+      {
+        "id": "E",
+        "text": "Use Amazon Aurora with a global database configuration, utilizing a materialized view to calculate rankings in real-time across all regions."
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "By using a combination of Region and a ShardID as the partition key, the write load is distributed across multiple partitions, preventing a 'hot partition' that would occur if all global updates hit one key. Querying shards in parallel and merging results in the application layer is the standard pattern for implementing high-scale leaderboards in DynamoDB.",
+      "why_not_A": "Using a constant value as a GSI partition key creates a massive hot partition, as every single update to any player's score would target the same GSI shard, leading to throttling.",
+      "why_not_B": "While write-sharding is correct, using a scheduled Lambda for aggregation introduces latency, meaning the leaderboard would not be 'real-time' as requested.",
+      "why_not_D": "LSIs require the same partition key as the table. If PlayerID is the partition key, you cannot query the 'top 100' across different players because you would have to perform a full table scan.",
+      "why_not_E": "The question specifically asks for a DynamoDB design pattern; additionally, Aurora materialized views do not scale globally with the same low-latency write performance as DynamoDB for millions of concurrent gamers."
+    },
+    "tags": [
+      "dynamodb",
+      "write-sharding",
+      "leaderboard-pattern"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-021",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is migrating a 2 TB on-premises MySQL database to Amazon RDS for MySQL. The company requires the migration to be performed with minimal downtime. The source database is currently active and cannot be taken offline for a full backup and restore. Which migration strategy should the company implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a full export using mysqldump, transfer the file to S3, and import it into RDS.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS Database Migration Service (DMS) with Change Data Capture (CDC) enabled.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use AWS Snowball Edge to transport the data and then manually apply binary logs.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create an RDS Read Replica of the on-premises MySQL instance using the RDS console.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS DMS with CDC allows for the initial full load of data followed by the continuous replication of changes from the source to the target, enabling a cutover with minimal downtime.",
+      "why_not_A": "A full mysqldump and import would require a long maintenance window (significant downtime) to ensure data consistency during the transfer of 2 TB.",
+      "why_not_C": "Snowball is used for massive data volumes (typically 10s of TBs) and is an offline transfer method, which does not natively handle the 'minimal downtime' requirement without complex manual log application.",
+      "why_not_D": "RDS Read Replicas can only be created from other RDS instances or Aurora clusters, not directly from an on-premises MySQL instance."
+    },
+    "tags": [
+      "DMS",
+      "MySQL",
+      "Migration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-022",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is migrating a large-scale Oracle database to Amazon Aurora PostgreSQL-Compatible Edition. The source database contains several proprietary PL/SQL stored procedures and complex triggers. Which tool should the migration team use to automate the conversion of the database schema and code?",
+    "options": [
+      {
+        "id": "A",
+        "text": "AWS DMS Schema Conversion Tool (SCT)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "AWS DataSync",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "AWS Database Migration Service (DMS) full-load task",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Amazon Aurora Global Database replication",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "AWS SCT is specifically designed to convert database schemas from one engine to another (heterogeneous migration), including the conversion of stored procedures, functions, and triggers.",
+      "why_not_B": "AWS DataSync is used for moving file-level data (NFS, SMB, S3) and cannot convert database schemas or SQL code.",
+      "why_not_C": "DMS is used for moving data (the rows in the tables), but it does not convert complex schema objects like stored procedures or triggers; it requires the schema to be pre-created.",
+      "why_not_D": "Aurora Global Database is for cross-region replication of the same Aurora engine, not for migrating from Oracle to PostgreSQL."
+    },
+    "tags": [
+      "SCT",
+      "Heterogeneous Migration",
+      "Aurora"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-023",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is deploying a new Amazon Aurora cluster. They want to ensure that the database is highly available across multiple Availability Zones (AZs) and can handle a sudden increase in read traffic without manual intervention. Which configuration should they choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a single-AZ cluster and use a Read Replica in a different region.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy a Multi-AZ cluster and enable Aurora Auto Scaling for Read Replicas.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Multi-AZ cluster and manually add read replicas when CPU utilization exceeds 80%.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy a single-AZ cluster and use an Application Load Balancer to distribute read queries.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Multi-AZ deployment ensures high availability. Aurora Auto Scaling automatically adds or removes Aurora Replicas based on actual load (CPU or connections), meeting the requirement for no manual intervention.",
+      "why_not_A": "A single-AZ cluster is a single point of failure and does not provide the required high availability.",
+      "why_not_C": "Manual addition of replicas contradicts the requirement for 'no manual intervention'.",
+      "why_not_D": "Application Load Balancers are for HTTP/HTTPS traffic to compute instances, not for routing database queries to Aurora endpoints."
+    },
+    "tags": [
+      "Aurora",
+      "High Availability",
+      "Auto Scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-024",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer needs to migrate a small MongoDB database to Amazon DocumentDB. The developer wants to ensure that the migration process does not impact the performance of the production MongoDB instance. Which approach is recommended?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a direct migration from the production primary node using a DMS task.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a mongoexport/mongoimport process directly on the production primary node.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Perform the migration from a secondary node in the MongoDB replica set.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disable all indexes on the production MongoDB instance before starting the migration.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Performing migrations or backups from a secondary node offloads the read pressure from the primary node, ensuring that production write operations are not impacted.",
+      "why_not_A": "Running a DMS task against the primary node can consume significant CPU and IOPS, potentially degrading production performance.",
+      "why_not_B": "mongoexport on the primary node creates heavy read load and can lock collections, impacting application performance.",
+      "why_not_D": "Disabling indexes would severely degrade the performance of the production application and is not a standard migration practice."
+    },
+    "tags": [
+      "DocumentDB",
+      "MongoDB",
+      "Migration Performance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-025",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is migrating a legacy SQL Server database to Amazon RDS for SQL Server. The current database uses Windows Authentication for all users. The company wants to maintain this authentication method in AWS. Which service should they integrate with Amazon RDS?",
+    "options": [
+      {
+        "id": "A",
+        "text": "AWS IAM Roles",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "AWS Directory Service for Microsoft Active Directory",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Amazon Cognito",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "AWS Secrets Manager",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon RDS for SQL Server supports Windows Authentication by integrating with AWS Directory Service (Managed Microsoft AD) or an on-premises AD via a trust relationship.",
+      "why_not_A": "IAM Roles are used for AWS resource permissions and cannot be used as the primary authentication mechanism for SQL Server Windows Authentication.",
+      "why_not_C": "Amazon Cognito is used for user identity pools in mobile and web apps, not for database-level Windows Authentication.",
+      "why_not_D": "Secrets Manager stores credentials securely but does not provide the directory infrastructure required for Windows Authentication."
+    },
+    "tags": [
+      "RDS SQL Server",
+      "Active Directory",
+      "Authentication"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-026",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a 10 TB on-premises PostgreSQL database to Amazon RDS for PostgreSQL. The business requires the migration to be completed with minimal downtime. The source database is under heavy write load. Which migration strategy provides the lowest downtime while ensuring data consistency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a full logical dump using pg_dump and restore it to the RDS instance during a scheduled maintenance window.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS Database Migration Service (DMS) with Full Load and Change Data Capture (CDC) enabled, using a replication instance with high memory.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a snapshot of the on-premises database and upload it to Amazon S3, then import the snapshot into RDS.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Snowball Edge to transport the initial data load and then manually apply WAL logs to synchronize the target.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS DMS with CDC allows for an initial full load of the data followed by the continuous replication of changes from the source to the target. This minimizes downtime to only the time it takes to switch the application connection string.",
+      "why_not_A": "pg_dump is a logical backup and for 10 TB of data, the restore process would take far too long, resulting in significant downtime.",
+      "why_not_C": "RDS does not support direct import of on-premises snapshots via S3 in a way that supports minimal downtime and continuous synchronization.",
+      "why_not_D": "While Snowball handles large data volumes, manually applying WAL logs is complex, error-prone, and not a standard AWS-managed migration path for minimal downtime."
+    },
+    "tags": [
+      "AWS DMS",
+      "PostgreSQL",
+      "CDC"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-027",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is migrating a large Oracle database to Amazon Aurora PostgreSQL. The schema contains complex stored procedures and proprietary Oracle-specific data types. What is the most efficient way to handle the schema conversion process?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use AWS DMS to automatically convert the schema and stored procedures during the data migration process.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the AWS Schema Conversion Tool (SCT) to analyze the source schema and convert it to Aurora PostgreSQL, then use DMS for data movement.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Export the Oracle data to CSV files, upload them to S3, and use the Aurora PostgreSQL 'COPY' command to import the data.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use AWS Glue to perform an ETL process that transforms the Oracle schema into a PostgreSQL compatible format in real-time.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS SCT is specifically designed for heterogeneous migrations. It converts the database schema and provides an assessment report highlighting manual actions needed for complex stored procedures that cannot be converted automatically.",
+      "why_not_A": "AWS DMS handles data movement and basic schema creation but cannot convert complex stored procedures or proprietary logic from Oracle to PostgreSQL.",
+      "why_not_C": "CSV exports do not handle schema conversion, constraints, or stored procedures; it only moves raw data.",
+      "why_not_D": "AWS Glue is an ETL tool for data lakes and analytics, not a database schema migration tool for operational databases."
+    },
+    "tags": [
+      "AWS SCT",
+      "Heterogeneous Migration",
+      "Aurora PostgreSQL"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-dbs-mock1-028",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is deploying a globally distributed application using Amazon Aurora Global Database. They need to ensure that the secondary regions can be promoted to primary with the lowest possible Recovery Point Objective (RPO). Which configuration should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure Aurora Global Database with asynchronous replication and use a custom script to monitor lag.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a multi-master cluster across all regions to ensure simultaneous writes.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable Aurora Global Database and monitor the 'AuroraGlobalDBReplicationLag' metric to manage failover timing.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use RDS Read Replicas across regions instead of Aurora Global Database to allow for more granular control over replication.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Aurora Global Database uses storage-level replication with typical latency of less than 1 second. Monitoring the replication lag allows the team to understand the potential RPO before promoting a secondary region.",
+      "why_not_A": "Aurora Global Database replication is managed by the storage layer, not by user-defined scripts; while it is asynchronous, the metric is the standard way to track lag.",
+      "why_not_B": "Aurora Multi-Master is only available within a single region, not across global regions.",
+      "why_not_D": "Standard RDS Read Replicas use binlog replication which is generally slower and has higher overhead than Aurora's storage-based global replication."
+    },
+    "tags": [
+      "Aurora Global Database",
+      "RPO",
+      "Disaster Recovery"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-aws-dbs-mock1-029",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a legacy SQL Server database to Amazon RDS for SQL Server. The source database uses Windows Authentication and integrates with an on-premises Active Directory (AD). The company wants to maintain this authentication mechanism in AWS. What is the recommended architecture?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create local SQL Server logins on the RDS instance and map them to AD users using a custom application layer.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS Directory Service for Microsoft AD and join the RDS for SQL Server instance to the directory.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure the RDS instance to use IAM Database Authentication to replace the AD requirements.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Site-to-Site VPN to allow the RDS instance to communicate directly with the on-premises AD Domain Controller without joining the directory.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "AWS Directory Service for Microsoft AD allows RDS for SQL Server to support Windows Authentication, enabling users to authenticate using their existing AD credentials.",
+      "why_not_A": "This creates a management nightmare and does not actually maintain the AD authentication mechanism.",
+      "why_not_C": "IAM Database Authentication is supported for Aurora and some RDS engines (like MySQL/Postgres), but it does not replace Windows AD authentication for SQL Server.",
+      "why_not_D": "Simply having a VPN is not enough; the RDS instance must be joined to a domain (via AWS Directory Service or an AD in EC2) to support Windows Authentication."
+    },
+    "tags": [
+      "RDS SQL Server",
+      "AWS Directory Service",
+      "Authentication"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-aws-dbs-mock1-030",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a high-volume DynamoDB table to a new table to change the partition key. They want to migrate the data without impacting the performance of the live application. Which approach is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a Scan operation to read all items from the source table and PutItem operations to write to the target table.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable DynamoDB Streams on the source table and use a Lambda function to replicate changes to the target table, combined with a point-in-time recovery export to S3.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use the DynamoDB 'Export to S3' feature and then use a Glue job to import the data into the new table.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the provisioned write capacity of the target table to maximum and perform a bulk upload using a multi-threaded script.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "To migrate data without impacting performance and capturing ongoing changes, a combination of an initial bulk load (e.g., via S3 export/import) and a DynamoDB Stream for real-time updates is the best practice.",
+      "why_not_A": "A Scan operation consumes significant Read Capacity Units (RCU) and can throttle the live application's performance.",
+      "why_not_C": "Export to S3 is great for the initial load, but it does not capture changes that occur after the export starts, leading to data loss.",
+      "why_not_D": "High write capacity on the target does not solve the performance impact (RCU consumption) on the source table during the read phase."
+    },
+    "tags": [
+      "DynamoDB",
+      "DynamoDB Streams",
+      "Data Migration"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-aws-dbs-mock1-031",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company is migrating a 10 TB on-premises Oracle database to Amazon Aurora PostgreSQL-Compatible Edition. The database is critical, and the business requirement specifies a maximum allowable downtime of 30 minutes. The source database has several complex stored procedures and custom data types that are not natively supported by PostgreSQL. Which migration strategy should the company implement to meet the downtime and compatibility requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a full backup of the Oracle database to S3, use the AWS Schema Conversion Tool (SCT) to convert the schema, and use AWS Database Migration Service (DMS) for a full load and Change Data Capture (CDC).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use AWS SCT to convert the schema and identify incompatibilities. Deploy the converted schema to Aurora. Use AWS DMS with a full load and CDC, implementing a custom transformation script for the unsupported data types during the migration process.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Export the Oracle data to CSV files, upload them to Amazon S3, and use the Aurora 'LOAD DATA FROM S3' feature. Use a manual script to synchronize the delta changes before the final cutover.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Migrate the Oracle database to Amazon RDS for Oracle first using a snapshot. Then, use the AWS SCT and DMS to perform an in-place upgrade to Aurora PostgreSQL.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "This is the standard architectural pattern for heterogeneous migrations. SCT handles the schema conversion and highlights complex objects (like stored procedures) that require manual rewriting. DMS provides the mechanism for minimal downtime via CDC, and transformation rules/scripts can handle data type discrepancies during the stream.",
+      "why_not_A": "A full backup to S3 is used for homogeneous migrations (e.g., Oracle to Oracle). For heterogeneous migrations (Oracle to PostgreSQL), the data formats are incompatible, making a direct backup restore impossible.",
+      "why_not_C": "CSV exports and manual delta synchronization are error-prone and cannot guarantee a 30-minute downtime window for a 10 TB database due to the lack of a robust CDC mechanism.",
+      "why_not_D": "There is no 'in-place upgrade' from RDS Oracle to Aurora PostgreSQL. These are entirely different database engines; a migration process (SCT + DMS) is required."
+    },
+    "tags": [
+      "SCT",
+      "DMS",
+      "Heterogeneous Migration"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-dbs-mock1-032",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "deployment-migration",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is migrating a high-throughput MySQL database from on-premises to Amazon Aurora MySQL. To minimize downtime, they are using AWS DMS. During the validation phase, the company notices that the DMS task is experiencing significant latency in applying changes to the target Aurora cluster, causing the replication lag to increase. The source database is optimized and has high IOPS. Which modification will most effectively reduce the replication lag?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the instance size of the AWS DMS replication instance to a larger class with more CPU and RAM.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable 'Full Load' mode again to refresh the data and restart the CDC process from a newer snapshot.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Disable binary logging on the target Aurora MySQL cluster to reduce write overhead.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Modify the DMS task settings to enable 'Parallel Apply' and configure the 'BatchApplyEnabled' setting to true.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "In high-throughput scenarios, the bottleneck is often the single-threaded application of changes on the target. 'Parallel Apply' allows DMS to apply transactions in parallel across multiple threads, and 'BatchApplyEnabled' groups multiple changes into a single transaction, significantly increasing the write throughput to Aurora.",
+      "why_not_A": "While a larger instance helps if the replication instance is CPU/RAM bound, the scenario specifies the source is optimized and the lag is in 'applying' changes. The bottleneck is usually the target application logic or network commit latency, not the instance size.",
+      "why_not_B": "Restarting the full load does not address the underlying performance bottleneck of the CDC application phase; the lag will simply recur once the CDC phase begins again.",
+      "why_not_C": "Aurora MySQL manages binary logs differently than standard MySQL. Disabling logs (if even possible in the Aurora managed context) would compromise recoverability and does not address the primary throughput bottleneck of the DMS apply process."
+    },
+    "tags": [
+      "DMS",
+      "Performance Tuning",
+      "Aurora MySQL"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-033",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "management-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A global financial services firm uses an Amazon Aurora MySQL cluster across three Availability Zones. During a peak processing window, the application experiences intermittent 'Too many connections' errors. The DBA observes that while the primary instance has available CPU and memory, the connection count is spiking due to a large number of short-lived sessions from a microservices architecture. The firm requires a solution that minimizes latency and reduces the overhead of establishing new connections without modifying the application code to implement client-side pooling.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the max_connections parameter in the DB cluster parameter group and perform a manual reboot of the primary instance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy Amazon RDS Proxy and configure the application to connect to the proxy endpoint instead of the cluster endpoint.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Aurora Auto Scaling for read replicas to distribute the connection load across more instances.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a Network Load Balancer (NLB) in front of the Aurora cluster to distribute TCP connections across the primary and replicas.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon RDS Proxy provides a fully managed database proxy that pools and shares established database connections. This specifically addresses the 'Too many connections' error caused by short-lived sessions in microservices by reducing the CPU overhead of creating new connections and allowing the database to handle more application connections than it has physical database connections.",
+      "why_not_A": "Increasing max_connections may provide a temporary fix but can lead to memory exhaustion (OOM) as each connection consumes memory. It does not solve the underlying overhead of the TCP handshake and authentication for short-lived sessions.",
+      "why_not_C": "Auto Scaling for read replicas helps with read-heavy workloads, but the 'Too many connections' error on the primary is typically related to write operations or session management that cannot be offloaded to replicas.",
+      "why_not_D": "An NLB operates at Layer 4 and does not understand database protocols or connection pooling. It cannot manage database sessions or prevent the 'Too many connections' error at the database engine level."
+    },
+    "tags": [
+      "Aurora",
+      "RDS Proxy",
+      "Connection Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-034",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "management-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is migrating a critical PostgreSQL workload to Amazon RDS. The database must comply with strict regulatory requirements that mandate the ability to perform a point-in-time recovery (PITR) to any second within the last 35 days. However, the company also requires the ability to retain a specific snapshot of the database for 7 years for legal auditing purposes, even if the database instance is deleted. Which combination of strategies ensures these requirements are met with the least operational overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable automated backups with a 35-day retention period and use AWS Backup to create a vault-locked recovery point with a 7-year lifecycle policy.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Enable automated backups with a 35-day retention period and manually create a DB snapshot every month, storing the snapshots in S3 via an export task.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Set the automated backup retention period to 35 days and use a Lambda function to copy the daily snapshot to a different AWS region every 24 hours for 7 years.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable automated backups to save costs and implement a custom script using pg_dump to upload backups to S3 every hour, with a 7-year S3 Glacier lifecycle policy.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "RDS automated backups provide PITR for the configured retention period (up to 35 days). AWS Backup integrates with RDS to allow the creation of long-term snapshots with defined lifecycles and 'Vault Lock' to prevent accidental or malicious deletion, meeting the 7-year regulatory requirement with minimal overhead.",
+      "why_not_B": "Manual snapshots and S3 exports are operationally intensive and do not provide the automated lifecycle management or the immutability (Vault Lock) required for strict regulatory auditing.",
+      "why_not_C": "Copying snapshots to another region does not automatically manage a 7-year retention policy and increases operational complexity and cost without providing the specific 'vault' protections offered by AWS Backup.",
+      "why_not_D": "Disabling automated backups removes the ability to perform second-by-second PITR, which is a primary requirement. pg_dump is a logical backup and is significantly slower to restore than snapshot-based recovery."
+    },
+    "tags": [
+      "RDS",
+      "PostgreSQL",
+      "AWS Backup",
+      "PITR"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-035",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An application using an Amazon RDS for MySQL DB instance is experiencing intermittent connection timeouts. The CloudWatch metrics show that the CPU utilization is low, but the 'DatabaseConnections' metric is spiking. The developer notices that the application is not closing connections properly. Which action should the administrator take to mitigate this issue while maintaining performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the instance class to a larger size to provide more CPU and RAM.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Modify the DB parameter group to decrease the 'wait_timeout' and 'interactive_timeout' values.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable Multi-AZ deployment to distribute the connection load across two Availability Zones.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a read replica to offload the connection overhead from the primary instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'wait_timeout' and 'interactive_timeout' parameters control how long the server waits for activity on a connection before closing it. Reducing these values ensures that idle, leaked connections are terminated by the server more quickly, freeing up connection slots.",
+      "why_not_A": "Increasing the instance size provides more resources, but it does not solve the root cause of connection leakage; the new instance will eventually hit its max_connections limit as well.",
+      "why_not_C": "Multi-AZ is for high availability and failover, not for load balancing connections. All write traffic and primary connections still hit a single primary instance.",
+      "why_not_D": "Read replicas help with read-heavy workloads, but they do not solve the issue of the primary instance running out of connection slots due to application-level leaks."
+    },
+    "tags": [
+      "RDS",
+      "MySQL",
+      "Parameter Groups"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-036",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is running a production Amazon Aurora PostgreSQL cluster. During peak hours, the application experiences significant latency. The administrator checks Performance Insights and observes a high number of 'LWLock: buffer_content' wait events. What is the most likely cause of this performance bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The cluster is experiencing CPU exhaustion due to complex joins.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "There is high contention for data pages in the shared buffer cache.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The storage volume has reached its maximum IOPS limit.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The database is experiencing a deadlock between two competing transactions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In PostgreSQL, 'LWLock: buffer_content' (Lightweight Lock) typically occurs when multiple sessions are trying to access the same data page in the shared buffer cache simultaneously, indicating a hot block or contention for a specific piece of data.",
+      "why_not_A": "CPU exhaustion would typically show as 'CPU' or 'OS' wait events, not specific buffer content locks.",
+      "why_not_C": "Aurora storage is automatically scalable and manages IOPS dynamically; storage bottlenecks would manifest as different I/O wait events (e.g., IO:DataFileRead).",
+      "why_not_D": "Deadlocks are transaction-level locks and would be reported as 'Lock' wait events, not Lightweight Locks (LWLock) which are internal memory-structure locks."
+    },
+    "tags": [
+      "Aurora",
+      "Performance Insights",
+      "PostgreSQL"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-037",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An administrator is monitoring an Amazon DynamoDB table and notices that some read requests are failing with 'ProvisionedThroughputExceededException', despite the aggregate read capacity units (RCU) being below the provisioned limit. What is the most likely reason for this behavior?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The table has reached its maximum storage limit.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The application is performing too many strongly consistent reads.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The workload is unevenly distributed, causing a 'hot partition'.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The DynamoDB table is currently undergoing a backup process.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "DynamoDB distributes throughput across partitions. If a disproportionate amount of requests target a single partition key (a 'hot partition'), that partition's limit may be exceeded even if the total table-level RCU is not fully utilized.",
+      "why_not_A": "DynamoDB scales storage automatically; there is no fixed storage limit that would trigger a throughput exception.",
+      "why_not_B": "Strongly consistent reads consume double the RCU of eventually consistent reads, but they would contribute to the aggregate RCU count. The scenario specifies aggregate RCU is below the limit.",
+      "why_not_D": "Backups in DynamoDB are performed without impacting the provisioned throughput of the table."
+    },
+    "tags": [
+      "DynamoDB",
+      "Throttling",
+      "Partitioning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-038",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer is troubleshooting a slow-running query on an Amazon RDS for SQL Server instance. The administrator enables the 'Enhanced Monitoring' feature. Which metric provided by Enhanced Monitoring would be most useful to determine if the database is bottlenecked by OS-level disk I/O wait?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The 'FreeableMemory' CloudWatch metric.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The 'CPUUtilization' CloudWatch metric.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The 'Disk I/O' process-level metrics showing 'iowait' percentage.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The 'WriteThroughput' metric in the standard RDS monitoring dashboard.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Enhanced Monitoring provides OS-level metrics. The 'iowait' metric specifically indicates the percentage of time the CPU was idle while waiting for an outstanding disk I/O request to complete, which is the primary indicator of disk bottlenecks.",
+      "why_not_A": "FreeableMemory indicates memory availability, not disk I/O performance.",
+      "why_not_B": "CPUUtilization shows overall usage but does not distinguish between active processing and waiting for I/O.",
+      "why_not_D": "WriteThroughput shows the volume of data written but does not indicate if the system is stalling or waiting for the disk to respond."
+    },
+    "tags": [
+      "RDS",
+      "Enhanced Monitoring",
+      "SQL Server"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-039",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company uses Amazon ElastiCache for Redis. The application team reports that some requests are timing out. Upon checking the CloudWatch metrics, the administrator sees that 'CPUUtilization' is low, but 'EngineCPUUtilization' is hitting 100% on the primary node. What is the most likely cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The instance is running out of system memory.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The cluster is experiencing high network latency between nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The application is executing complex O(N) commands like 'KEYS *' or 'HGETALL'.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The Redis cluster has too many replicas, causing synchronization overhead.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Redis is single-threaded for command execution. 'EngineCPUUtilization' measures the CPU usage of the Redis engine itself. A high EngineCPUUtilization while overall CPUUtilization is low typically indicates a single-threaded bottleneck caused by expensive, long-running commands.",
+      "why_not_A": "Memory exhaustion would be reflected in 'FreeableMemory' or 'SwapUsage' metrics, not specifically Engine CPU.",
+      "why_not_B": "Network latency would typically manifest as increased response times but would not spike the internal Redis engine CPU usage to 100%.",
+      "why_not_D": "Replication overhead generally affects overall system CPU and network throughput, but the primary bottleneck for the engine is the execution of the command queue."
+    },
+    "tags": [
+      "ElastiCache",
+      "Redis",
+      "CloudWatch"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-040",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is running a production Amazon Aurora MySQL cluster. During a peak traffic event, the application team reports a significant increase in query latency. A database administrator observes that the 'CPUUtilization' metric is at 90%, but the 'AuroraReplicaLag' is minimal. Upon checking the Performance Insights dashboard, the top wait event is 'io/table/sql/handler'. Which action should the administrator take to resolve the performance bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the instance size to a larger class to provide more CPU and RAM.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Modify the application to use a Read Replica for read-heavy queries.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Analyze the queries causing the wait event and optimize them by adding missing indexes or rewriting the SQL.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable Aurora Auto Scaling to add more read replicas to the cluster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The wait event 'io/table/sql/handler' typically indicates that the database is performing full table scans or inefficient index lookups, leading to high I/O and CPU overhead. Optimizing the queries or adding indexes reduces the amount of data the handler must process, directly addressing the root cause.",
+      "why_not_A": "While CPU is high, the wait event points to an I/O handler issue. Scaling the instance may provide temporary relief but does not solve the inefficient query execution causing the high CPU.",
+      "why_not_B": "The scenario states that AuroraReplicaLag is minimal, suggesting that read replicas are already functioning well or that the bottleneck is occurring on the writer/specific queries that cannot be offloaded.",
+      "why_not_D": "Auto Scaling adds replicas to handle read volume, but if the underlying queries are inefficient (causing the handler wait), adding more replicas will not fix the inefficient execution plan and may just spread the inefficiency across more nodes."
+    },
+    "tags": [
+      "Aurora",
+      "Performance Insights",
+      "Wait Events"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-041",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is troubleshooting a performance issue with an Amazon DynamoDB table. They notice that while the overall throughput is well within the provisioned capacity, some requests are intermittently failing with 'ProvisionedThroughputExceededException'. The table uses a composite primary key (Partition Key and Sort Key). What is the most likely cause of this behavior?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The table has reached its maximum storage limit.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The application is experiencing a 'hot partition' due to uneven data access patterns.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The DynamoDB table is undergoing a background maintenance window.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The Sort Key is not being used in the queries, causing full table scans.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A 'hot partition' occurs when a disproportionate amount of requests target a specific partition key. Since throughput limits are applied per partition, a single partition can be throttled even if the total table-level provisioned throughput is not exceeded.",
+      "why_not_A": "Storage limits in DynamoDB are virtually unlimited and would not result in a ProvisionedThroughputExceededException.",
+      "why_not_C": "AWS manages maintenance windows transparently; they do not manifest as throughput exceptions for the user.",
+      "why_not_D": "While not using a Sort Key can lead to inefficient scans, the specific error 'ProvisionedThroughputExceededException' in the context of under-utilized total capacity is a classic symptom of partition-level throttling."
+    },
+    "tags": [
+      "DynamoDB",
+      "Throttling",
+      "Hot Partitions"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-042",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is using Amazon RDS for SQL Server. The DBA notices that the 'DiskQueueDepth' metric has been consistently high for several hours, and application performance is degrading. The 'ReadIOPS' and 'WriteIOPS' are below the EBS volume limits. Which of the following is the most likely cause and the best troubleshooting step?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The EBS volume has run out of burst credits; increase the volume size to increase baseline IOPS.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The database is experiencing CPU saturation; upgrade the instance class.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "There is an I/O bottleneck at the OS/Application level; check for blocking locks or long-running transactions in SQL Server.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The network bandwidth is saturated; migrate the instance to a different Availability Zone.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "DiskQueueDepth measures the number of outstanding I/O requests. If IOPS are below the volume limit but the queue depth is high, it often indicates that the database engine is unable to process the I/O requests fast enough due to internal contention, such as locking, blocking, or inefficient transaction management, rather than a hardware limit.",
+      "why_not_A": "If the volume had run out of burst credits, you would typically see the IOPS plateau at the baseline limit, but the stem states IOPS are already below the limits.",
+      "why_not_B": "CPU saturation usually manifests in 'CPUUtilization' metrics. While CPU can affect I/O processing, high DiskQueueDepth with low IOPS specifically points to a queuing issue within the engine or storage path.",
+      "why_not_D": "Network saturation would affect latency and throughput between the app and DB, but would not typically cause a high DiskQueueDepth inside the RDS instance."
+    },
+    "tags": [
+      "RDS",
+      "SQL Server",
+      "CloudWatch Metrics"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-043",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company uses an Amazon Redshift cluster. The administrator notices that several queries are taking much longer than usual. After checking the STL_QUERY table, they find that many queries are in a 'waiting' state. The 'query_cpu_utilization' is low, but the 'svv_disk_usage' shows the cluster is nearly full. What is the most effective way to resolve this performance issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a VACUUM FULL on all tables to reclaim space and re-sort data.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Resize the cluster to add more nodes to increase total storage and compute capacity.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Change the distribution style of the largest tables to 'DISTSTYLE ALL'.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the WLM (Workload Management) concurrency scaling limit.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In Redshift, when disk space becomes critically low, the cluster can struggle with temporary space needed for complex queries (spilling to disk), leading to query queuing and slow performance. Resizing the cluster (Elastic Resize or adding nodes) provides more storage and compute, resolving the space constraint.",
+      "why_not_A": "While VACUUM reclaims space, it is a resource-intensive operation that requires available disk space to run effectively. If the cluster is nearly full, VACUUM may fail or further degrade performance.",
+      "why_not_C": "Changing distribution styles optimizes data movement during joins, but it does not solve a fundamental lack of disk space.",
+      "why_not_D": "WLM concurrency scaling helps with CPU/Memory contention for many concurrent queries, but it does not provide additional disk storage to resolve the 'nearly full' condition."
+    },
+    "tags": [
+      "Redshift",
+      "Storage",
+      "Cluster Resizing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-044",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team is using Amazon ElastiCache for Redis. They observe an increase in 'CacheMisses' and a spike in 'EngineCPUUtilization'. The 'BytesUsedForCache' is very close to the 'maxmemory' limit. The team wants to prevent the cache from crashing due to out-of-memory (OOM) errors while maintaining the highest possible hit rate. Which configuration change is recommended?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change the 'maxmemory-policy' to 'noeviction'.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a client-side caching layer to reduce the number of requests to Redis.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Change the 'maxmemory-policy' to 'allkeys-lru'.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable Cluster Mode to distribute the data across multiple shards.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The 'allkeys-lru' policy evicts the least recently used keys regardless of whether they have an expiration time. This prevents OOM errors by ensuring that the most valuable (frequently accessed) data remains in the cache, maintaining a reasonable hit rate while staying within memory limits.",
+      "why_not_A": "'noeviction' will cause Redis to return errors when the memory limit is reached and a write is attempted, which leads to application failures (OOM-like behavior for the app).",
+      "why_not_B": "While client-side caching reduces load, it doesn't address the current memory pressure on the Redis server itself and is a larger architectural change than a configuration fix.",
+      "why_not_D": "Cluster Mode distributes data, but if the overall data volume exceeds the aggregate memory of the new shards, the same OOM issue will occur. The policy change is the direct way to handle memory overflow."
+    },
+    "tags": [
+      "ElastiCache",
+      "Redis",
+      "Eviction Policies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-045",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company uses an Amazon Aurora PostgreSQL-Compatible cluster for a critical transaction processing system. During peak hours, the application experiences intermittent timeouts. The CloudWatch metrics show that CPU utilization is moderate (40-50%), but the 'Aurora VolumeWriteIOPs' and 'WriteLatency' are spiking. The database logs indicate several 'lock wait timeout' errors. The DBA identifies that a high volume of small, frequent updates to a heavily indexed table is causing the contention. Which of the following is the most effective troubleshooting step to identify the specific queries causing the lock contention and the resources they are blocking?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Enhanced Monitoring with 1-second granularity to identify the specific OS-level process ID (PID) consuming the most I/O wait.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Performance Insights and analyze the 'Top SQL' table, filtering by the 'Wait' metric specifically for 'Lock' events to identify the blocking sessions.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enable the PostgreSQL 'log_min_duration_statement' parameter to capture all queries exceeding 100ms and analyze them using CloudWatch Logs Insights.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the 'lock_timeout' parameter in the DB Parameter Group to allow transactions more time to acquire locks, preventing the timeouts.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Amazon RDS Performance Insights is specifically designed to visualize database load. By analyzing the 'Top SQL' and filtering for 'Lock' waits (such as LWLock or Heavyweight locks in PostgreSQL), administrators can pinpoint exactly which SQL statement is causing the bottleneck and which sessions are being blocked, providing a direct map between the query and the contention.",
+      "why_not_A": "Enhanced Monitoring provides OS-level metrics (CPU, Memory, I/O). While it can show that the system is experiencing I/O wait, it cannot map that wait back to a specific SQL statement or identify which database transaction is blocking another.",
+      "why_not_C": "Slow query logs ('log_min_duration_statement') identify queries that take a long time to execute, but they do not explicitly show the relationship between a blocker and a blocked session. A query might be slow because it is waiting for a lock, but the log won't tell you which other query holds that lock.",
+      "why_not_D": "Increasing the 'lock_timeout' is a mitigation strategy, not a troubleshooting step. It does not identify the cause of the contention and may actually worsen the problem by allowing blocked sessions to queue up for longer, consuming more connection slots and resources."
+    },
+    "tags": [
+      "Aurora",
+      "Performance Insights",
+      "Lock Contention",
+      "PostgreSQL"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-aws-dbs-mock1-046",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "database-security",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services company uses an Amazon RDS for PostgreSQL database to store sensitive customer data. To meet regulatory compliance, the company must ensure that data is encrypted at rest. The database was created without encryption enabled. Which approach should the company take to encrypt the existing data?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Run an ALTER TABLE command on all tables to enable AES-256 encryption for the columns containing sensitive data.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Modify the existing RDS instance and enable the 'Encryption' checkbox in the configuration settings.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a snapshot of the existing DB instance, copy the snapshot while enabling encryption, and restore the instance from the encrypted snapshot.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable AWS KMS and associate the key with the existing RDS instance via the AWS CLI.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Amazon RDS does not allow you to enable encryption on an existing unencrypted instance. The standard workflow is to take a snapshot, copy that snapshot to a new encrypted snapshot using a KMS key, and then restore a new instance from that encrypted snapshot.",
+      "why_not_A": "RDS encryption at rest is handled at the storage layer by AWS, not via SQL commands like ALTER TABLE, which would only provide application-level encryption.",
+      "why_not_B": "The encryption setting for an RDS instance cannot be changed from 'disabled' to 'enabled' after the instance has been created.",
+      "why_not_D": "Simply creating a KMS key does not automatically encrypt existing data on an unencrypted RDS volume."
+    },
+    "tags": [
+      "RDS",
+      "Encryption at Rest",
+      "KMS"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-047",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "database-security",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A healthcare provider uses Amazon DynamoDB to store patient records. They need to ensure that only specific IAM roles can access specific items based on the partition key (PatientID) to maintain strict data isolation. Which feature should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable DynamoDB Encryption at Rest using a Customer Managed Key (CMK).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Fine-Grained Access Control (FGAC) by defining IAM policies with Condition keys using the leading key.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create separate DynamoDB tables for every patient and assign unique IAM roles to each table.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a Lambda function as a proxy that filters the data before returning it to the user.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DynamoDB Fine-Grained Access Control (FGAC) allows you to define IAM policies that restrict access to specific items or attributes based on the partition key (dynamodb:LeadingKey), ensuring users can only access their own data.",
+      "why_not_A": "Encryption at rest protects the data from physical theft of the disk, but it does not control which users can access which specific items within the table.",
+      "why_not_C": "Creating a table per patient is not scalable and would exceed the AWS service quota for the number of tables per account.",
+      "why_not_D": "While a proxy works, it is an architectural workaround rather than a native security feature. FGAC is the AWS-recommended native security implementation for item-level access."
+    },
+    "tags": [
+      "DynamoDB",
+      "IAM",
+      "FGAC"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-048",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "database-security",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is migrating a legacy application to Amazon Aurora. The application requires the database to be accessible only from a specific set of application servers. Which combination of security measures provides the most restrictive and secure access control?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Place the Aurora cluster in a public subnet and use Security Group rules to allow only the application server IP addresses.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Place the Aurora cluster in a private subnet and use a Security Group that allows inbound traffic on port 3306 only from the application servers' Security Group.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use an IAM Role for the database and grant the application servers the 'rds-db:connect' permission.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable public access and use a Network ACL to block all traffic except for the application server's private IP addresses.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The best practice for database security is to place the database in a private subnet (no internet route) and use Security Groups to reference other Security Groups (the app servers), creating a logical firewall that scales regardless of individual IP changes.",
+      "why_not_A": "Placing a database in a public subnet is a security risk, even with Security Groups, as it exposes the endpoint to the public internet.",
+      "why_not_C": "IAM Database Authentication controls *who* can authenticate, but it does not control *network* access. Network-level restriction is still required via Security Groups.",
+      "why_not_D": "Network ACLs are stateless and cumbersome to manage for dynamic application scaling. Security Groups are stateful and the preferred method for instance-to-instance communication."
+    },
+    "tags": [
+      "Aurora",
+      "VPC",
+      "Security Groups"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-049",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "database-security",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to implement a solution for an Amazon RDS for SQL Server instance that allows database administrators to access the database without managing long-lived database passwords. Which solution should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use AWS Secrets Manager with automatic rotation enabled for the RDS credentials.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Enable IAM Database Authentication for the SQL Server instance.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Store the password in an encrypted S3 bucket and share it with the administrators.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a shared administrative account with a complex password changed every 90 days.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "AWS Secrets Manager is designed specifically for this use case. It can store credentials and automatically rotate them using a Lambda function, removing the need for administrators to handle static passwords.",
+      "why_not_B": "IAM Database Authentication is supported for MySQL and PostgreSQL, but it is NOT supported for SQL Server.",
+      "why_not_C": "Storing passwords in S3 (even encrypted) is a poor security practice compared to using a dedicated secret management service with rotation capabilities.",
+      "why_not_D": "Shared accounts and manual rotation are prone to human error and do not meet the requirement of avoiding long-lived password management."
+    },
+    "tags": [
+      "RDS",
+      "Secrets Manager",
+      "SQL Server"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-050",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "database-security",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using Amazon Redshift and wants to ensure that users can only see the columns they are authorized to see within a specific table. They want to avoid creating multiple views for every possible combination of user permissions. What is the most efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Column-Level Security (CLS) to grant permissions to specific columns for specific users or groups.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Encrypt the sensitive columns using AWS KMS and provide the key only to authorized users.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Row-Level Security (RLS) to hide the columns based on the user's identity.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a separate Redshift cluster for each user group and sync the data using UNLOAD/COPY.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Amazon Redshift Column-Level Security (CLS) allows administrators to grant permissions to specific columns within a table, ensuring users only see the data they are authorized to access without needing to manage numerous views.",
+      "why_not_B": "KMS encryption at the column level is not a native Redshift feature for access control; if a user has access to the table and the key, they see the data; if not, the query fails or returns ciphertext, which is not a granular permission model.",
+      "why_not_C": "Row-Level Security (RLS) controls which *rows* (records) a user can see, not which *columns* (attributes) are visible.",
+      "why_not_D": "Creating multiple clusters is extremely expensive, operationally complex, and inefficient for the purpose of simple access control."
+    },
+    "tags": [
+      "Redshift",
+      "Column-Level Security",
+      "Access Control"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-aws-dbs-mock1-051",
+    "exam_id": "aws-dbs-c01",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
     "review_status": "approved"
   }
 ]
