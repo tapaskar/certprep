@@ -238,18 +238,52 @@ async def create_session(
             Question.difficulty <= 3,
         )
 
-    # Fetch candidate questions, preferring those for selected concepts and not recently answered
-    questions_result = await db.execute(
-        select(Question)
-        .where(question_filter)
-        .order_by(
-            # Prioritize questions for selected concepts
-            Question.id.notin_(recently_answered_ids).desc() if recently_answered_ids else Question.id,
-            func.random(),  # randomize within priority tiers
+    # Fetch candidate questions that match selected concepts
+    # First try: questions explicitly mapped to selected concepts
+    from sqlalchemy.dialects.postgresql import array
+    from sqlalchemy import cast, String as SAString, any_
+
+    concept_matched_questions = []
+    if selected_concept_ids:
+        for concept_id in selected_concept_ids[:10]:  # Top 10 concepts
+            cq_result = await db.execute(
+                select(Question)
+                .where(
+                    and_(
+                        question_filter,
+                        Question.concept_ids.contains([concept_id]),
+                    )
+                )
+                .order_by(func.random())
+                .limit(max_questions)
+            )
+            concept_matched_questions.extend(cq_result.scalars().all())
+
+    # Deduplicate
+    seen_ids = set()
+    unique_concept_questions = []
+    for q in concept_matched_questions:
+        if q.id not in seen_ids:
+            seen_ids.add(q.id)
+            unique_concept_questions.append(q)
+
+    # If we have enough concept-matched questions, use those; otherwise backfill
+    if len(unique_concept_questions) >= max_questions:
+        candidate_questions = unique_concept_questions
+    else:
+        # Backfill with other questions from the exam
+        backfill_result = await db.execute(
+            select(Question)
+            .where(
+                and_(
+                    question_filter,
+                    Question.id.notin_(seen_ids) if seen_ids else True,
+                )
+            )
+            .order_by(func.random())
+            .limit(max_questions * 2)
         )
-        .limit(max_questions * 3)  # fetch extra, then filter
-    )
-    candidate_questions = questions_result.scalars().all()
+        candidate_questions = unique_concept_questions + list(backfill_result.scalars().all())
 
     # Sort: prefer questions for high-scoring concepts that haven't been recently answered
     concept_rank = {cid: i for i, (cid, _, _) in enumerate(concept_scores)}
