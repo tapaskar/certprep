@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Award, Users, Star, ArrowRight } from "lucide-react";
 import PricingCards from "@/components/pricing/pricing-cards";
 import FAQSection from "@/components/pricing/faq-section";
+import { MobileNav } from "@/components/landing/mobile-nav";
 
 export const metadata = {
   title: "Pricing",
@@ -96,10 +97,17 @@ export default function PricingPage() {
             <img src="/logo.svg" alt="SparkUpCloud" className="h-10 w-auto" />
             SparkUp<span className="text-amber-500">Cloud</span>
           </Link>
-          <div className="flex items-center gap-4">
+          {/* Desktop Nav */}
+          <div className="hidden sm:flex items-center gap-4">
+            <Link
+              href="/blog"
+              className="text-sm font-medium text-stone-500 hover:text-stone-700"
+            >
+              Blog
+            </Link>
             <Link
               href="/contact"
-              className="hidden sm:inline text-sm font-medium text-stone-500 hover:text-stone-700"
+              className="text-sm font-medium text-stone-500 hover:text-stone-700"
             >
               Contact
             </Link>
@@ -111,11 +119,14 @@ export default function PricingPage() {
             </Link>
             <Link
               href="/register"
-              className="hidden sm:inline-flex h-9 items-center rounded-lg bg-stone-900 px-4 text-sm font-medium text-white hover:bg-stone-800 transition-colors"
+              className="inline-flex h-9 items-center rounded-lg bg-stone-900 px-4 text-sm font-medium text-white hover:bg-stone-800 transition-colors"
             >
               Get Started
             </Link>
           </div>
+
+          {/* Mobile Nav */}
+          <MobileNav />
         </nav>
 
         {/* Hero */}

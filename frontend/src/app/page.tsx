@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive, LogIn, BookOpen, Zap, Target, Star, Layers, Monitor, Wifi, HardHat, Lightbulb, Palette } from "lucide-react";
 import { CertTabs } from "@/components/landing/cert-tabs";
 import { HomepageFAQ } from "@/components/landing/homepage-faq";
+import { MobileNav } from "@/components/landing/mobile-nav";
 
 const features = [
   {
@@ -270,21 +271,27 @@ export default function LandingPage() {
             </span>
           </Link>
 
-          {/* Nav Links + Auth Actions */}
-          <div className="flex items-center gap-1">
+          {/* Desktop Nav Links + Auth */}
+          <div className="hidden sm:flex items-center gap-1">
             <Link
               href="/blog"
-              className="hidden sm:inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
             >
               Blog
             </Link>
             <Link
               href="/pricing"
-              className="hidden sm:inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
             >
               Pricing
             </Link>
-            <div className="hidden sm:block h-5 w-px bg-stone-200 mx-2" />
+            <Link
+              href="/contact"
+              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+            >
+              Contact
+            </Link>
+            <div className="h-5 w-px bg-stone-200 mx-2" />
             <Link
               href="/login"
               className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
@@ -298,6 +305,9 @@ export default function LandingPage() {
               Get Started Free
             </Link>
           </div>
+
+          {/* Mobile Nav */}
+          <MobileNav />
         </div>
       </nav>
 

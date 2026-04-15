@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LogIn } from "lucide-react";
 import { BlogFilters } from "@/components/blog/blog-filters";
+import { MobileNav } from "@/components/landing/mobile-nav";
 
 export const metadata = {
   title: "Blog — Study Guides, Exam Tips & Certification Articles",
@@ -23,7 +24,8 @@ export default function BlogPage() {
               Spark<span className="text-amber-500">Up</span>Cloud
             </span>
           </Link>
-          <div className="flex items-center gap-3">
+          {/* Desktop Nav */}
+          <div className="hidden sm:flex items-center gap-3">
             <Link
               href="/blog"
               className="text-sm font-medium text-amber-600"
@@ -32,9 +34,15 @@ export default function BlogPage() {
             </Link>
             <Link
               href="/pricing"
-              className="hidden sm:inline text-sm font-medium text-stone-500 hover:text-stone-700"
+              className="text-sm font-medium text-stone-500 hover:text-stone-700"
             >
               Pricing
+            </Link>
+            <Link
+              href="/contact"
+              className="text-sm font-medium text-stone-500 hover:text-stone-700"
+            >
+              Contact
             </Link>
             <Link
               href="/login"
@@ -50,6 +58,9 @@ export default function BlogPage() {
               Get Started Free
             </Link>
           </div>
+
+          {/* Mobile Nav */}
+          <MobileNav />
         </div>
       </nav>
 
