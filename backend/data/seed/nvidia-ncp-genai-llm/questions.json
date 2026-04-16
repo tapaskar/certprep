@@ -3036,5 +3036,2060 @@
     "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.1,
     "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer is designing a transformer-based model to process extremely long sequences of legal documents. To reduce the quadratic memory growth of the standard self-attention mechanism while maintaining a global context, which architectural modification is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Replacing the Softmax function with a Sigmoid function in the attention head.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing FlashAttention to optimize memory access and reduce IO overhead.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increasing the number of attention heads to distribute the sequence length.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Removing the Feed-Forward Network (FFN) layers to save parameter space.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "FlashAttention optimizes the attention mechanism by using tiling to reduce the number of memory reads/writes between GPU HBM and SRAM, effectively reducing the memory bottleneck and allowing for longer sequences without changing the mathematical output of attention.",
+      "why_not_A": "Changing the activation function from Softmax to Sigmoid does not address the quadratic complexity of the attention matrix calculation.",
+      "why_not_C": "Increasing the number of heads increases the total number of parameters and computation; it does not solve the quadratic scaling of the sequence length relative to memory.",
+      "why_not_D": "The FFN layers are critical for the model's capacity to store knowledge; removing them would degrade the model's intelligence and does not solve the attention memory bottleneck."
+    },
+    "tags": [
+      "Attention Mechanisms",
+      "Memory Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-063",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An ML engineer observes that an LLM is suffering from 'catastrophic forgetting' during fine-tuning on a specialized medical dataset. They decide to implement Parameter-Efficient Fine-Tuning (PEFT). Which architecture change allows the model to learn new tasks while keeping the original weights frozen?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Full-parameter fine-tuning with a higher learning rate.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Replacing the LayerNorm layers with BatchNorm layers.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Inserting low-rank decomposition matrices into the transformer layers (LoRA).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increasing the depth of the model by adding more transformer blocks.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "LoRA (Low-Rank Adaptation) freezes the pre-trained model weights and injects trainable rank-decomposition matrices into each layer, significantly reducing the number of trainable parameters and preventing the erasure of original knowledge.",
+      "why_not_A": "Full-parameter fine-tuning is exactly what causes catastrophic forgetting as it modifies all weights in the network.",
+      "why_not_B": "Changing normalization layers does not address parameter efficiency or the preservation of pre-trained weights.",
+      "why_not_D": "Adding more blocks increases the model size and complexity, making the forgetting problem potentially worse and increasing computational cost."
+    },
+    "tags": [
+      "PEFT",
+      "LoRA"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-064",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A team is building a Mixture-of-Experts (MoE) LLM to increase model capacity without proportionally increasing the inference cost per token. Which component is responsible for deciding which expert network processes a given token?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The Gating Network (Router).",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "The Positional Encoding module.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The KV Cache.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The Softmax layer of the final output head.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "In an MoE architecture, the Gating Network (or Router) learns to assign tokens to the most relevant 'expert' (a smaller feed-forward network), ensuring that only a fraction of the total parameters are active per token.",
+      "why_not_B": "Positional Encoding provides the model with information about the order of tokens; it has no role in expert selection.",
+      "why_not_C": "The KV Cache stores previous keys and values to speed up inference; it is not involved in the routing logic of MoE.",
+      "why_not_D": "The final Softmax layer converts logits into probabilities for token prediction, which happens after the MoE processing is complete."
+    },
+    "tags": [
+      "MoE",
+      "Gating"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-065",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During the deployment of a large-scale LLM, the team notices that the model's memory usage is too high for the available GPUs. They decide to implement Grouped-Query Attention (GQA). How does GQA differ from Multi-Head Attention (MHA)?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GQA eliminates the Query head entirely to save space.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "GQA shares a single Key and Value head across all Query heads.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "GQA groups multiple Query heads to share a single pair of Key and Value heads.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "GQA replaces the attention mechanism with a linear recurrence.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "GQA is a compromise between MHA (each query head has its own KV head) and MQA (all query heads share one KV head). It groups query heads, significantly reducing the size of the KV cache while maintaining better performance than MQA.",
+      "why_not_A": "Query heads are essential for the attention mechanism to function; they cannot be eliminated.",
+      "why_not_B": "Sharing a single KV head across ALL query heads is called Multi-Query Attention (MQA), not Grouped-Query Attention (GQA).",
+      "why_not_D": "Linear recurrence is a characteristic of models like RWKV or Mamba, not a modification of the attention mechanism in GQA."
+    },
+    "tags": [
+      "GQA",
+      "KV Cache"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-066",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A researcher is comparing RoPE (Rotary Positional Embeddings) with absolute positional embeddings for a new LLM architecture. What is the primary architectural advantage of RoPE in handling long-context windows?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It removes the need for the attention mechanism entirely.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It allows the model to extrapolate to sequence lengths longer than those seen during training by encoding relative positions.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "It reduces the number of parameters in the embedding layer to zero.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "It forces the model to ignore the order of tokens to improve speed.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoPE encodes positional information by rotating the Query and Key representations in a complex space. This naturally captures relative distance between tokens, allowing for better generalization to longer sequences than those encountered during training.",
+      "why_not_A": "RoPE is a method for providing positional information TO the attention mechanism, not a replacement for it.",
+      "why_not_C": "RoPE changes how positions are represented; it does not eliminate the embedding layer or reduce its parameters to zero.",
+      "why_not_D": "The purpose of positional embeddings is to ensure the model DOES NOT ignore the order of tokens, as transformers are otherwise permutation-invariant."
+    },
+    "tags": [
+      "Positional Embeddings",
+      "RoPE"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-067",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A machine learning engineer is designing a transformer-based model for processing extremely long documents (100k+ tokens). To reduce the quadratic memory growth of the standard attention mechanism without sacrificing too much global context, which architectural modification is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Replace the Multi-Head Attention (MHA) with Multi-Query Attention (MQA).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement FlashAttention-2 to optimize the GPU memory hierarchy.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a Sliding Window Attention mechanism combined with dilated attention.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the number of attention heads while decreasing the dimension per head.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Sliding Window Attention reduces the complexity from O(n\u00b2) to O(n*w), where w is the window size. When combined with dilated attention (skipping tokens), the model can maintain a larger receptive field and capture global dependencies across long sequences without the memory explosion of full attention.",
+      "why_not_A": "MQA reduces the memory footprint of the KV cache during inference, but it does not change the quadratic complexity of the attention matrix relative to the sequence length during the forward pass.",
+      "why_not_B": "FlashAttention-2 optimizes the speed and memory usage of the attention computation via tiling and recomputation, but it still computes the full attention matrix; it does not fundamentally change the O(n\u00b2) complexity for extremely long sequences.",
+      "why_not_D": "Changing the ratio of heads to dimensions does not address the quadratic growth of the attention matrix relative to the input sequence length."
+    },
+    "tags": [
+      "Attention-Mechanisms",
+      "Long-Context",
+      "Complexity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-068",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An architect is optimizing a model for high-throughput inference on NVIDIA H100 GPUs. They notice that the KV cache is consuming a disproportionate amount of GPU memory, limiting the batch size. Which architectural change would most effectively reduce the KV cache size while maintaining similar representational power?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from Grouped-Query Attention (GQA) to Multi-Head Attention (MHA).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Grouped-Query Attention (GQA).",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the hidden dimension size of the transformer blocks.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a larger vocabulary size to reduce sequence length.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GQA allows multiple query heads to share a single key/value head. This significantly reduces the size of the KV cache compared to MHA, while providing better performance and quality than Multi-Query Attention (MQA).",
+      "why_not_A": "MHA requires a separate KV pair for every single query head, which maximizes KV cache usage and worsens the memory bottleneck.",
+      "why_not_C": "Increasing the hidden dimension would increase the size of the vectors stored in the KV cache, further exacerbating the memory problem.",
+      "why_not_D": "While a larger vocabulary might slightly reduce the number of tokens per document, it does not address the architectural inefficiency of the KV cache storage."
+    },
+    "tags": [
+      "GQA",
+      "KV-Cache",
+      "Inference-Optimization"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-ncp-genai-llm-mock1-069",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During the pre-training of a large language model, the team observes significant training instability and gradient explosions. They decide to replace the standard Post-Layer Normalization (Post-LN) with Pre-Layer Normalization (Pre-LN). What is the primary architectural reason for this change?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Pre-LN allows the model to converge faster by increasing the learning rate.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Pre-LN ensures that the residual connection carries the identity mapping more effectively, stabilizing gradients.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Pre-LN eliminates the need for a final normalization layer before the output head.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Pre-LN reduces the total number of parameters in the transformer block.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In Pre-LN, the normalization occurs before the attention and MLP blocks. This keeps the gradients in the residual path more stable (closer to an identity mapping), which prevents the 'vanishing/exploding gradient' problem common in very deep Post-LN networks.",
+      "why_not_A": "While Pre-LN might allow for a more stable learning rate, the primary architectural reason is gradient stability, not simply 'faster convergence' via higher rates.",
+      "why_not_C": "Pre-LN actually requires an additional final LayerNorm before the output linear layer to ensure the accumulated residual outputs are normalized.",
+      "why_not_D": "Pre-LN and Post-LN use the same number of normalization layers; it is only the placement that changes."
+    },
+    "tags": [
+      "Normalization",
+      "Stability",
+      "Gradient-Flow"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-070",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is implementing a Mixture-of-Experts (MoE) architecture to scale model capacity without increasing the computational cost per token. They are struggling with 'expert collapse,' where only a few experts are being trained. Which mechanism should they implement to solve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of experts per layer.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Replace the Softmax router with a Hard-Max router.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Introduce an auxiliary load-balancing loss.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Remove the gating network and use random expert assignment.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Auxiliary load-balancing loss penalizes the model if certain experts are chosen significantly more often than others, forcing the router to distribute tokens across all available experts and preventing collapse.",
+      "why_not_A": "Increasing the number of experts without a balancing mechanism often worsens expert collapse, as the router will still likely gravitate toward a small subset of 'winning' experts.",
+      "why_not_B": "Hard-Max routing can make the training process more unstable and does not inherently solve the distribution imbalance across experts.",
+      "why_not_D": "Random assignment would eliminate the 'specialization' benefit of MoE, effectively turning the model into a random ensemble rather than a learned conditional computation network."
+    },
+    "tags": [
+      "MoE",
+      "Routing",
+      "Load-Balancing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-071",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "advanced-llm-arch",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An LLM is being designed to use Rotary Positional Embeddings (RoPE) instead of absolute positional embeddings. What is the primary architectural advantage of RoPE when the model is deployed for sequences longer than those seen during training?",
+    "options": [
+      {
+        "id": "A",
+        "text": "RoPE eliminates the need for attention masks during inference.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "RoPE allows the model to generalize to longer sequences due to its relative nature and rotation-based decay.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "RoPE reduces the dimensionality of the embedding layer, saving memory.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "RoPE allows for the removal of the Feed-Forward Network (FFN) in each transformer block.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoPE encodes positions by rotating the query and key vectors in a complex space. This naturally captures relative distances between tokens, allowing the model to extrapolate or generalize better to sequence lengths it hasn't explicitly seen during training compared to absolute embeddings.",
+      "why_not_A": "Attention masks are required for causality (in decoder models) regardless of how positions are encoded.",
+      "why_not_C": "RoPE is a transformation applied to existing embeddings; it does not reduce the dimensionality of the embedding layer.",
+      "why_not_D": "Positional embeddings and the FFN serve entirely different purposes (spatial awareness vs. point-wise processing); one cannot replace the other."
+    },
+    "tags": [
+      "RoPE",
+      "Positional-Embeddings",
+      "Extrapolation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-072",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A machine learning engineer is fine-tuning a large language model for a specialized medical domain. Despite using a high-quality dataset, the model exhibits 'catastrophic forgetting,' where it loses the ability to perform general reasoning tasks it previously mastered. Which strategy should the engineer implement to mitigate this while maintaining domain specificity?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the learning rate significantly to push the model quickly into the new local minima of the medical domain.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Parameter-Efficient Fine-Tuning (PEFT) using Low-Rank Adaptation (LoRA) to freeze the backbone weights.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable weight decay and dropout to ensure the model fully absorbs the medical terminology.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the batch size to 1024 and use a linear learning rate warmup for the entire training duration.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "LoRA freezes the original pre-trained weights and only trains a small set of adapter weights. This prevents the original knowledge (general reasoning) from being overwritten, effectively eliminating catastrophic forgetting.",
+      "why_not_A": "Increasing the learning rate typically accelerates catastrophic forgetting by causing drastic shifts in the pre-trained weight distributions.",
+      "why_not_C": "Disabling regularization like weight decay and dropout usually leads to overfitting on the small specialized dataset, worsening the model's generalization capabilities.",
+      "why_not_D": "While batch size and warmup affect convergence stability, they do not fundamentally prevent the overwriting of pre-trained weights in full-parameter fine-tuning."
+    },
+    "tags": [
+      "PEFT",
+      "LoRA",
+      "Catastrophic Forgetting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-073",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is performing Supervised Fine-Tuning (SFT) on a model to follow complex multi-step instructions. They notice that the model's loss is decreasing, but the model frequently repeats phrases or produces 'hallucinations' when the prompts exceed 2048 tokens. The training was conducted with a maximum sequence length of 512. What is the primary cause of this behavior?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The model requires a higher dropout rate during the SFT phase to prevent memorization.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The learning rate is too low, preventing the model from escaping a local minimum.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "A mismatch between the training sequence length and the inference sequence length is causing positional embedding extrapolation failure.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The model is experiencing gradient explosion due to the complexity of the multi-step instructions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "If a model is trained on 512 tokens but asked to generate or process 2048 tokens, the positional embeddings (especially absolute ones) cannot generalize to the longer sequences, leading to degraded coherence and repetitions.",
+      "why_not_A": "Dropout prevents overfitting, but the issue here is related to sequence length and structural failure, not simple memorization.",
+      "why_not_B": "A low learning rate would result in slow convergence, but it wouldn't specifically cause failures only at longer sequence lengths.",
+      "why_not_D": "Gradient explosion typically causes the loss to become NaN or the model to diverge during training, not specific behavior at inference-time sequence lengths."
+    },
+    "tags": [
+      "SFT",
+      "Positional Embeddings",
+      "Context Window"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-074",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team is implementing RLHF (Reinforcement Learning from Human Feedback) to align a model for safety. They have successfully trained a Reward Model (RM). During the PPO (Proximal Policy Optimization) phase, they observe that the model's output is becoming highly repetitive and nonsensical, although the reward score is increasing. What is the most likely cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The Reward Model is underfitting the human preference data.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The KL-divergence penalty between the current policy and the reference model is too high.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The model is 'reward hacking,' finding a loophole in the RM to maximize score without maintaining linguistic quality.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The PPO clip range is too narrow, preventing the policy from updating effectively.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Reward hacking occurs when the policy finds a pattern (like repeating a specific word) that the Reward Model associates with a high score, even if the text is nonsensical to humans.",
+      "why_not_A": "If the RM were underfitting, the reward scores would likely be erratic or low, not consistently high for nonsensical text.",
+      "why_not_B": "A high KL penalty would keep the model too close to the original model, preventing it from changing its behavior at all, rather than causing it to diverge into nonsense.",
+      "why_not_D": "A narrow clip range would slow down learning or make it more stable, but it wouldn't cause the model to generate nonsensical high-reward text."
+    },
+    "tags": [
+      "RLHF",
+      "PPO",
+      "Reward Hacking"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-075",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are training a model using a distributed strategy across 8 NVIDIA H100 GPUs. You encounter an 'Out of Memory' (OOM) error during the backward pass, even though the model fits in memory during the forward pass. Which of the following techniques would most effectively resolve this without reducing the batch size?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from FP32 to FP16 precision for all weights and activations.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable gradient checkpointing (activation checkpointing).",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement a larger learning rate warmup period.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the number of GPUs to 16 to distribute the model weights further.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Gradient checkpointing trades compute for memory by not storing all intermediate activations during the forward pass, recalculating them during the backward pass, which significantly reduces memory overhead.",
+      "why_not_A": "While FP16 reduces memory, the scenario implies the model fits in forward pass; the OOM happens during backward pass where gradients and stored activations peak. Mixed precision is standard, but checkpointing specifically targets the activation memory spike.",
+      "why_not_C": "Warmup affects training stability and convergence, not the physical memory footprint of the tensors.",
+      "why_not_D": "Adding more GPUs for data parallelism does not reduce the memory required for a single batch on a single GPU. Model parallelism would help, but checkpointing is the more direct solution for activation-based OOM."
+    },
+    "tags": [
+      "Memory Optimization",
+      "Gradient Checkpointing",
+      "Distributed Training"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-076",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is comparing two fine-tuning approaches for a sentiment analysis task: Full Parameter Fine-Tuning and LoRA. They observe that Full Parameter Fine-Tuning achieves 2% higher accuracy but requires 10x more VRAM and results in a model file that is 100GB. The LoRA adapter is only 200MB. Which statement best describes the trade-off in this scenario?",
+    "options": [
+      {
+        "id": "A",
+        "text": "LoRA is fundamentally incapable of learning complex patterns that full fine-tuning can capture.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Full fine-tuning is always preferred if the hardware allows, as LoRA is only intended for prototyping.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The 2% accuracy gain in full fine-tuning may not justify the increased risk of catastrophic forgetting and the massive increase in deployment overhead.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "LoRA's performance gap is caused by the lack of a learning rate scheduler, which full fine-tuning utilizes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In production, the marginal gain (2%) is often outweighed by the operational costs of hosting a full-parameter model versus a lightweight adapter, as well as the stability benefits of PEFT.",
+      "why_not_A": "LoRA is capable of learning complex patterns; the gap is often minimal and depends on the rank (r) chosen for the decomposition matrices.",
+      "why_not_B": "LoRA is used in production extensively due to its ability to swap adapters for different tasks on the fly without reloading the entire base model.",
+      "why_not_D": "LoRA uses the same learning rate schedulers as full fine-tuning; the difference in performance is due to the restricted parameter space, not the scheduler."
+    },
+    "tags": [
+      "PEFT",
+      "LoRA",
+      "Model Deployment"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-077",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An enterprise is fine-tuning a 70B parameter model on a cluster of 16 H100 GPUs. During the first few iterations, they observe that the model's loss is diverging rapidly, and they encounter frequent 'Out of Memory' (OOM) errors despite using a small batch size. They are currently using standard AdamW optimization and full-parameter fine-tuning. Which combination of techniques would most effectively stabilize training and resolve the memory bottleneck while maintaining model performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch to SGD with a higher learning rate and implement gradient accumulation.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement LoRA with a low rank (r=8), use BF16 mixed precision, and enable gradient checkpointing.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the batch size and use FP32 precision to prevent numerical instability.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use 4-bit quantization for the weights and disable the optimizer state updates.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "LoRA significantly reduces the number of trainable parameters, lowering memory overhead. BF16 provides the dynamic range necessary to prevent divergence (overflow/underflow) common in FP16, and gradient checkpointing trades compute for memory by re-calculating activations during the backward pass, directly addressing OOM errors.",
+      "why_not_A": "SGD is generally less efficient than AdamW for LLMs, and increasing the learning rate when the model is already diverging would exacerbate the instability.",
+      "why_not_C": "Increasing batch size increases memory consumption, worsening the OOM issue. FP32 doubles the memory requirement compared to BF16/FP16, making it impractical for a 70B model on 16 GPUs.",
+      "why_not_D": "While quantization reduces memory, disabling optimizer state updates means the model will not actually learn/fine-tune, defeating the purpose of the training process."
+    },
+    "tags": [
+      "PEFT",
+      "Memory Optimization",
+      "Numerical Stability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-078",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A team is performing Supervised Fine-Tuning (SFT) on a domain-specific dataset. After training, they notice that the model has become highly proficient at the specific task but has lost its ability to perform general reasoning and follows instructions poorly on non-domain tasks. This phenomenon is suspected to be 'catastrophic forgetting'. Which strategy should be implemented to mitigate this while still achieving domain specialization?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the learning rate to force the model to converge faster on the new domain.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a larger number of epochs to ensure the domain knowledge is deeply embedded.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a mixed training set containing a percentage of the original general-purpose pre-training data.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Apply a stronger weight decay to the model's embedding layer only.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Interleaving a portion of the original pre-training data (or a high-quality general instruction set) during fine-tuning acts as a regularization mechanism that reminds the model of its general capabilities, effectively preventing catastrophic forgetting.",
+      "why_not_A": "Increasing the learning rate typically accelerates the overwriting of previous weights, which would likely increase catastrophic forgetting.",
+      "why_not_B": "More epochs on the domain-specific data would lead to further overfitting on the target task and further degradation of general capabilities.",
+      "why_not_D": "Weight decay on the embedding layer does not address the loss of high-level reasoning capabilities stored in the transformer blocks."
+    },
+    "tags": [
+      "Catastrophic Forgetting",
+      "SFT",
+      "Data Mixing"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-ncp-genai-llm-mock1-079",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "During the RLHF (Reinforcement Learning from Human Feedback) process, a developer observes that the Reward Model (RM) is being 'gamed' by the Policy model. The Policy model is generating responses that contain specific keywords that the RM associates with high scores, but the actual content is nonsensical or repetitive. What is the most appropriate technical intervention to solve this 'Reward Hacking' issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the KL-divergence penalty coefficient between the current policy and the initial SFT model.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Replace the Reward Model with a larger LLM using zero-shot prompting.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Increase the learning rate of the PPO (Proximal Policy Optimization) optimizer.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable the value function in the PPO actor-critic architecture.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The KL-divergence penalty constrains the RL policy from drifting too far from the original SFT model. By increasing this penalty, the model is discouraged from finding 'shortcuts' or 'hacks' in the reward model that deviate significantly from natural language patterns.",
+      "why_not_B": "Using a larger LLM as a reward model doesn't solve the fundamental problem of reward hacking; the policy model will still seek the highest numerical reward regardless of the RM's size.",
+      "why_not_C": "Increasing the learning rate would likely allow the policy model to converge on the 'hacked' solution even faster.",
+      "why_not_D": "The value function is critical for reducing variance in PPO; disabling it would make training unstable and would not stop reward hacking."
+    },
+    "tags": [
+      "RLHF",
+      "PPO",
+      "Reward Hacking"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-nvidia-ncp-genai-llm-mock1-080",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A team is implementing DeepSpeed ZeRO-3 to train a massive model across multiple nodes. They notice that while memory usage is optimized, the training throughput (tokens/sec) has dropped significantly compared to ZeRO-1. Which of the following is the most likely cause and the best way to mitigate it?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The overhead of partitioning gradients; switch to ZeRO-2 to keep gradients local.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Excessive inter-node communication for parameter gathering; implement gradient accumulation and increase the micro-batch size.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "CPU offloading bottlenecks; disable offloading and increase GPU VRAM.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The use of BF16; switch to FP16 to reduce the communication payload.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ZeRO-3 partitions parameters, gradients, and optimizer states. This requires frequent 'all-gather' operations to reconstruct parameters for the forward and backward passes. Increasing the micro-batch size and using gradient accumulation improves the compute-to-communication ratio, amortizing the cost of the communication overhead.",
+      "why_not_A": "ZeRO-1 and ZeRO-2 also partition gradients. The primary difference in ZeRO-3 is the partitioning of the model parameters themselves.",
+      "why_not_C": "While CPU offloading can be a bottleneck, the question specifies a drop in throughput specifically associated with the transition to ZeRO-3's parameter partitioning logic, which is a communication issue, not necessarily an offloading issue.",
+      "why_not_D": "BF16 and FP16 have the same bit-width (16 bits) and therefore the same communication payload size."
+    },
+    "tags": [
+      "DeepSpeed",
+      "ZeRO",
+      "Distributed Training"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-081",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "When applying QLoRA for fine-tuning a model on a single A100 GPU, the engineer decides to use a 4-bit NormalFloat (NF4) quantization type. What is the primary theoretical advantage of NF4 over standard 4-bit Integer (Int4) quantization in the context of fine-tuning?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NF4 allows for faster matrix multiplication by utilizing INT4 Tensor Cores.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NF4 eliminates the need for the adapter weights (LoRA) to be in FP32.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NF4 is designed to optimally represent normally distributed weights, reducing quantization error.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "NF4 enables the model to be trained without the need for a learning rate scheduler.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NF4 (NormalFloat 4) is an information-theoretically optimal data type for normally distributed weights. Since LLM weights typically follow a Gaussian distribution, NF4 provides a much closer approximation of the original weights than linear Int4 quantization, preserving model quality.",
+      "why_not_A": "NF4 actually requires dequantization to a higher precision (like BF16) before computation, so it doesn't provide a speedup via Int4 Tensor Cores in the way native Int4 inference does.",
+      "why_not_B": "The LoRA adapters must still be kept in a higher precision (FP32 or BF16) to accumulate the small gradient updates; NF4 only applies to the frozen base model weights.",
+      "why_not_D": "Quantization of the base model has no impact on the mathematical necessity of a learning rate scheduler for the trainable adapter parameters."
+    },
+    "tags": [
+      "QLoRA",
+      "Quantization",
+      "NF4"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-nvidia-ncp-genai-llm-mock1-082",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A machine learning engineer is fine-tuning a large language model for a domain-specific medical task. During training, they observe that the training loss is decreasing steadily, but the validation loss begins to increase after a few epochs, and the model starts generating repetitive, verbatim snippets from the training set. Which strategy is most appropriate to mitigate this behavior while maintaining the model's specialized knowledge?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the learning rate and remove all weight decay to allow the model to escape local minima.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement early stopping based on validation loss and introduce a higher weight decay coefficient.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from Full Parameter Fine-Tuning to a larger LoRA rank (r=256) to increase model capacity.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the batch size and disable gradient checkpointing to speed up convergence.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The scenario describes classic overfitting, where the model memorizes training data instead of generalizing. Early stopping prevents the model from continuing to train once validation performance degrades, and weight decay (L2 regularization) penalizes large weights, reducing the model's tendency to overfit to noise in the training set.",
+      "why_not_A": "Increasing the learning rate and removing weight decay would likely exacerbate overfitting and potentially lead to training instability or divergence.",
+      "why_not_C": "Increasing the LoRA rank increases the number of trainable parameters, which typically increases the risk of overfitting rather than mitigating it.",
+      "why_not_D": "Batch size and gradient checkpointing affect computational efficiency and gradient stability, but they do not directly address the fundamental problem of overfitting to the training set."
+    },
+    "tags": [
+      "overfitting",
+      "regularization",
+      "validation-loss"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-083",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization wants to adapt a 70B parameter model to a proprietary dataset using limited GPU memory. They have decided to use Parameter-Efficient Fine-Tuning (PEFT). Which combination of techniques would provide the best balance between memory efficiency and the ability to capture complex new task patterns without catastrophic forgetting?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Full fine-tuning with FP16 precision and gradient accumulation.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "QLoRA using 4-bit NormalFloat (NF4) quantization and low-rank adapters.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Prompt Tuning by optimizing a small set of continuous embeddings added to the input.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Freezing all layers except the final softmax layer and training only the classifier head.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "QLoRA significantly reduces memory overhead by quantizing the base model to 4-bit while maintaining performance via the NF4 data type. The low-rank adapters (LoRA) allow the model to learn new patterns by updating a small set of weights, which prevents catastrophic forgetting of the original pre-trained knowledge.",
+      "why_not_A": "Full fine-tuning of a 70B model requires massive VRAM (thousands of GBs for optimizer states), which contradicts the 'limited GPU memory' constraint.",
+      "why_not_C": "Prompt tuning is more memory-efficient than LoRA but generally struggles to capture complex new task patterns or deep domain knowledge compared to adapter-based methods.",
+      "why_not_D": "Training only the head (linear probing) is insufficient for complex adaptation tasks and does not leverage the power of the transformer's internal representations."
+    },
+    "tags": [
+      "PEFT",
+      "QLoRA",
+      "memory-optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-084",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During the Supervised Fine-Tuning (SFT) phase of an LLM, a developer notices that the model is producing high-quality responses but frequently ignores the specific formatting constraints (e.g., JSON output) requested in the system prompt. The dataset contains 10,000 examples of correct formatting. What is the most effective way to resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of training epochs until the training loss reaches zero.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch the optimizer from AdamW to SGD to ensure slower, more stable convergence.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Apply RLHF (Reinforcement Learning from Human Feedback) or DPO (Direct Preference Optimization) using pairs of formatted vs. unformatted responses.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the temperature during the SFT training phase to encourage more diverse outputs.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "SFT provides the model with examples of 'what to do,' but RLHF or DPO explicitly teaches the model 'what to prefer' by contrasting a correct (formatted) response against an incorrect (unformatted) one. This is significantly more effective for steering a model toward strict formatting constraints.",
+      "why_not_A": "Training until loss is zero typically leads to catastrophic overfitting and does not guarantee the model will follow constraints during inference.",
+      "why_not_B": "Changing the optimizer may affect convergence speed but will not fundamentally change the model's ability to adhere to structural constraints if the SFT signal is insufficient.",
+      "why_not_D": "Temperature is an inference-time parameter, not a training parameter. Increasing randomness during training (if applicable via noise) would likely make the formatting worse, not better."
+    },
+    "tags": [
+      "SFT",
+      "RLHF",
+      "DPO",
+      "alignment"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-085",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "training-finetuning",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team is training a model across 64 NVIDIA H100 GPUs. They encounter a bottleneck where the GPU utilization is low, and the GPUs are spending a significant amount of time waiting for data. Which of the following architectural changes to the training pipeline will most effectively address this specific bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement ZeRO-3 (Zero Redundancy Optimizer) to shard optimizer states across GPUs.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch from FP32 to BF16 precision to reduce the memory footprint of the weights.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Introduce a multi-threaded data loader with prefetching and increase the number of worker processes.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable gradient checkpointing to reduce the memory required for activations.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Low GPU utilization combined with GPUs 'waiting for data' indicates an I/O bottleneck. Using multi-threaded data loading and prefetching ensures that the next batch of data is ready in CPU memory/GPU buffer before the GPU finishes the current computation step.",
+      "why_not_A": "ZeRO-3 addresses memory constraints by sharding states; it does not solve data loading/input pipeline bottlenecks.",
+      "why_not_B": "BF16 reduces memory usage and can increase compute speed, but if the GPU is idling while waiting for data, the precision of the weights is irrelevant.",
+      "why_not_D": "Gradient checkpointing trades compute for memory (recalculating activations). It actually slows down the training process slightly and does nothing to resolve data loading bottlenecks."
+    },
+    "tags": [
+      "distributed-training",
+      "data-pipeline",
+      "performance-tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-086",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "inference-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer is deploying a large language model for a real-time chatbot where the primary bottleneck is the time it takes to generate the first token (Time to First Token - TTFT). Which optimization technique should be prioritized to specifically reduce this latency without changing the model weights?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implementing KV (Key-Value) Cache",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Applying 4-bit Weight Quantization",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Increasing the Batch Size",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Using a larger context window",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "KV Caching stores the keys and values of previous tokens in the sequence, preventing the model from recomputing the entire prompt prefix for every new token generated, which significantly reduces TTFT and per-token latency.",
+      "why_not_A": "N/A",
+      "why_not_B": "Quantization reduces memory footprint and can increase throughput, but it doesn't address the fundamental algorithmic redundancy of recomputing prompt prefixes that KV caching solves.",
+      "why_not_C": "Increasing batch size improves overall throughput (tokens per second across all users) but typically increases the latency for individual requests, including TTFT.",
+      "why_not_D": "A larger context window increases the computational load for the attention mechanism, which would likely increase TTFT rather than decrease it."
+    },
+    "tags": [
+      "KV-Cache",
+      "Latency",
+      "TTFT"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-087",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "inference-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI engineer is deploying a model on an NVIDIA A100 GPU and observes that the GPU memory is nearly full, causing Out-of-Memory (OOM) errors during inference with long sequences. The engineer wants to maintain high precision for the model weights but needs to reduce the memory footprint of the activations. Which technique is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Weight Pruning",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "FP8 Activation Quantization",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increasing the number of GPU nodes",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switching to a Greedy Search decoding strategy",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "FP8 quantization of activations reduces the memory required to store intermediate tensors during the forward pass, allowing for larger batch sizes or longer sequences without needing to quantize the static weights.",
+      "why_not_A": "Pruning removes weights from the model, which contradicts the requirement to maintain high precision for model weights.",
+      "why_not_C": "While adding nodes (model parallelism) solves OOM, the question asks for an optimization technique to reduce the footprint, and scaling hardware is a resource change, not an optimization technique.",
+      "why_not_D": "Greedy search affects how tokens are selected during generation but does not reduce the memory footprint of the model activations during the forward pass."
+    },
+    "tags": [
+      "Quantization",
+      "Memory-Management",
+      "FP8"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-088",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "inference-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is serving an LLM to thousands of concurrent users. They notice that while the GPU utilization is high, the actual throughput (tokens/sec) is low because the GPU is frequently waiting for memory transfers. Which optimization would best address this memory-bandwidth bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switching from Beam Search to Greedy Search",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing Continuous Batching",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increasing the CPU clock speed",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Using a smaller vocabulary size",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Continuous batching (as seen in vLLM or TensorRT-LLM) allows new requests to be inserted into a batch as soon as others finish, eliminating the 'bubble' where the GPU waits for the longest sequence in a static batch to complete, thus maximizing memory bandwidth utilization.",
+      "why_not_A": "Greedy search reduces computation per token, but it doesn't solve the scheduling inefficiency of static batching.",
+      "why_not_C": "The bottleneck is GPU memory bandwidth, not CPU processing speed.",
+      "why_not_D": "Reducing vocabulary size slightly reduces the size of the final linear layer, but it does not address the systemic inefficiency of how requests are batched during inference."
+    },
+    "tags": [
+      "Throughput",
+      "Continuous-Batching",
+      "Scheduling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-089",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "inference-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A team is using TensorRT-LLM to optimize a model. They want to implement a technique that allows the model to handle varying sequence lengths more efficiently by managing the KV cache as a series of non-contiguous blocks rather than a single contiguous tensor. What is this technique called?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Speculative Decoding",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "PagedAttention",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "FlashAttention",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Weight Tiling",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PagedAttention manages the KV cache by dividing it into blocks, similar to virtual memory in operating systems. This eliminates internal fragmentation and allows for much higher effective batch sizes.",
+      "why_not_A": "Speculative decoding uses a small draft model to predict tokens and a large model to verify them; it does not manage the memory layout of the KV cache.",
+      "why_not_C": "FlashAttention optimizes the attention computation by reducing memory IO reads/writes via tiling, but it does not manage the long-term storage/allocation of the KV cache across requests.",
+      "why_not_D": "Weight tiling is a general matrix multiplication optimization and not a specific mechanism for managing KV cache for variable sequence lengths."
+    },
+    "tags": [
+      "PagedAttention",
+      "Memory-Fragmentation",
+      "TensorRT-LLM"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-090",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "inference-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An application requires extremely low latency for token generation. The team decides to use Speculative Decoding. Which of the following is a requirement for this approach to be effective?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The draft model must be larger than the target model.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The draft model must have the exact same architecture as the target model.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The draft model must be able to predict tokens that the target model is likely to accept.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The target model must be quantized to INT8.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Speculative decoding relies on a small 'draft' model to guess multiple future tokens. If the draft model's predictions are frequently accepted by the large target model, the number of forward passes of the target model is reduced, increasing speed.",
+      "why_not_A": "The draft model must be significantly smaller and faster than the target model to provide a speedup; otherwise, the overhead of running the draft model outweighs the benefit.",
+      "why_not_B": "The draft model does not need the same architecture; it only needs to produce tokens in the same vocabulary space that are likely to be approved by the target model.",
+      "why_not_D": "Speculative decoding is an algorithmic optimization independent of the quantization level of the target model."
+    },
+    "tags": [
+      "Speculative-Decoding",
+      "Latency",
+      "Draft-Model"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-091",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is deploying a Llama-3 70B model for real-time fraud detection. They are experiencing high latency during peak hours despite having sufficient VRAM. The team observes that the GPU utilization is high, but the throughput is limited by the memory bandwidth of the A100 GPUs. Which optimization strategy should be prioritized to increase throughput without compromising model accuracy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from FP16 to INT8 quantization using a post-training quantization (PTQ) approach.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Continuous Batching and PagedAttention via a framework like vLLM or NVIDIA Triton.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the number of GPU nodes and implement simple data parallelism.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable KV caching to free up memory for larger batch sizes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Continuous batching and PagedAttention optimize the management of the KV cache, reducing memory fragmentation and allowing more requests to be processed concurrently, which directly addresses memory bandwidth bottlenecks and increases throughput.",
+      "why_not_A": "While quantization reduces memory footprint, PTQ can lead to a drop in accuracy, which the scenario explicitly states must not be compromised.",
+      "why_not_C": "Simple data parallelism increases capacity but does not solve the underlying memory bandwidth inefficiency per request; it is a scaling solution, not an optimization strategy.",
+      "why_not_D": "Disabling KV caching would drastically increase latency and computational cost, as the model would have to recompute all previous tokens for every new token generated."
+    },
+    "tags": [
+      "throughput",
+      "vLLM",
+      "PagedAttention"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-092",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An engineering team is deploying a large-scale LLM across a cluster of H100 GPUs. They need to ensure that the model can handle a sudden surge in traffic while maintaining a strict SLA for 'Time to First Token' (TTFT). Which deployment architecture is most appropriate to minimize TTFT while maximizing resource utilization?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy the model using a single large instance with maximum batch size to optimize GPU utilization.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Utilize a request queue with a First-In-First-Out (FIFO) policy and static batching.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a decoupled architecture using a load balancer and a fleet of inference servers using Tensor Parallelism (TP).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a CPU-based inference engine to handle the initial prompt processing before handing off to the GPU.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Tensor Parallelism splits the model across multiple GPUs, allowing the prompt (prefill phase) to be processed in parallel across more hardware, which significantly reduces TTFT. A load balancer ensures traffic is distributed to avoid overloading any single instance.",
+      "why_not_A": "Maximum batch sizes increase overall throughput but typically increase TTFT because the system must wait for the batch to fill or process a larger volume of data per step.",
+      "why_not_B": "Static batching leads to 'bubbles' where the GPU waits for the longest sequence in a batch to finish, increasing latency for shorter requests.",
+      "why_not_D": "CPU inference is orders of magnitude slower than GPU inference for LLMs; this would drastically increase TTFT."
+    },
+    "tags": [
+      "TTFT",
+      "TensorParallelism",
+      "SLA"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-093",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A healthcare provider is deploying a generative AI model for medical summarization. Due to strict privacy regulations (HIPAA), the model must be deployed in an environment where data never leaves the local network. The team is choosing between a cloud-managed API and an on-premises deployment using NVIDIA Triton Inference Server. Which factor is the primary technical justification for choosing Triton in this specific scenario?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Triton supports a wider variety of model architectures than cloud APIs.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Triton allows for full control over the data plane and execution environment, ensuring zero external data egress.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "On-premises deployment is always faster than cloud-managed APIs regardless of hardware.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Triton automatically encrypts all weights at rest without requiring external configuration.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The core requirement is HIPAA compliance and data privacy (no data leaving the network). On-premises deployment via Triton provides the necessary control over the infrastructure to guarantee that data stays within the local secure perimeter.",
+      "why_not_A": "While Triton is flexible, the primary driver here is privacy and regulatory compliance, not the variety of supported architectures.",
+      "why_not_C": "Cloud APIs often use the latest, most powerful hardware (e.g., H100 clusters) which can be faster than a smaller on-premises setup.",
+      "why_not_D": "Triton is an inference server; encryption at rest is typically handled by the underlying storage layer or OS, not by the Triton server itself."
+    },
+    "tags": [
+      "Triton",
+      "Privacy",
+      "On-Premises"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-ncp-genai-llm-mock1-094",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is deploying an LLM that requires frequent updates to its knowledge base (e.g., daily product price changes). They are deciding between fine-tuning the model daily and implementing a Retrieval-Augmented Generation (RAG) pipeline. From a production deployment and maintenance perspective, why is RAG the superior choice for this specific use case?",
+    "options": [
+      {
+        "id": "A",
+        "text": "RAG eliminates the need for a vector database, reducing infrastructure complexity.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "RAG allows for real-time knowledge updates without the computational cost and risk of catastrophic forgetting associated with frequent fine-tuning.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Fine-tuning is generally slower at inference time than RAG.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "RAG ensures that the model will never hallucinate, whereas fine-tuning always does.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Daily fine-tuning is computationally expensive and risks 'catastrophic forgetting' where the model loses general capabilities. RAG allows the system to retrieve the latest data from an external index, making updates as simple as updating a document in the vector store.",
+      "why_not_A": "RAG actually requires a vector database, which increases infrastructure complexity compared to a standalone model.",
+      "why_not_C": "RAG is typically slower at inference time because it adds a retrieval step before the generation step.",
+      "why_not_D": "RAG significantly reduces hallucinations by providing grounded context, but it does not completely eliminate them."
+    },
+    "tags": [
+      "RAG",
+      "Fine-Tuning",
+      "KnowledgeUpdate"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-095",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During a canary deployment of a new LLM version, the team notices that while the average latency is stable, the 99th percentile (p99) latency has spiked significantly. The model is deployed using a multi-GPU setup with Pipeline Parallelism. What is the most likely cause of this p99 spike?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The model weights are too large for the GPU VRAM, causing constant swapping to system RAM.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The load balancer is distributing requests using a Round Robin strategy instead of Least Connections.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Pipeline bubbles are occurring due to highly variable sequence lengths in the input prompts.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The GPU clock speed is throttling due to thermal limits across the cluster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In Pipeline Parallelism, the model is split into stages. If input sequences vary greatly in length, some stages may finish much faster than others, creating 'bubbles' (idle time). Long sequences cause the pipeline to stall, leading to significant spikes in p99 latency.",
+      "why_not_A": "If VRAM was insufficient for the weights, the model would likely crash (OOM) or show a consistent, massive slowdown across all percentiles, not just p99.",
+      "why_not_B": "While load balancing affects distribution, it doesn't explain the specific interaction with Pipeline Parallelism and sequence length variability.",
+      "why_not_D": "Thermal throttling would generally cause a gradual increase in average latency across all requests, rather than a specific p99 spike linked to specific request characteristics."
+    },
+    "tags": [
+      "PipelineParallelism",
+      "p99Latency",
+      "CanaryDeployment"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-ncp-genai-llm-mock1-096",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services firm is deploying a large-scale LLM for real-time fraud detection. They are experiencing high latency during peak hours and have observed that the GPU memory utilization is consistently at 95%, despite the average batch size being small. The team wants to improve throughput without upgrading the hardware. Which strategy should be prioritized to optimize the deployment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of replicas in the Kubernetes cluster to distribute the load across more nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement continuous batching and PagedAttention to optimize KV cache management.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from FP16 precision to FP32 precision to improve the accuracy of the fraud detection.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable the KV cache entirely to free up GPU memory for larger batch processing.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Continuous batching allows the engine to process requests as they arrive rather than waiting for a full static batch, and PagedAttention solves memory fragmentation of the KV cache, allowing for significantly higher throughput and better memory utilization without requiring more hardware.",
+      "why_not_A": "Increasing replicas increases cost and infrastructure overhead but does not solve the underlying inefficiency of memory utilization and latency caused by static batching and KV cache fragmentation.",
+      "why_not_C": "Switching to FP32 would double the memory requirements per parameter, likely leading to Out-of-Memory (OOM) errors and increasing latency, while offering negligible accuracy gains for this use case.",
+      "why_not_D": "Disabling the KV cache would force the model to recompute all previous tokens for every new token generated, leading to a catastrophic increase in latency (quadratic time complexity)."
+    },
+    "tags": [
+      "inference-optimization",
+      "vLLM",
+      "throughput"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-097",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-deployment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An enterprise is deploying a multi-tenant LLM application where different departments have different SLAs. The engineering team notices that a few 'power users' are sending extremely long prompts, causing 'head-of-line blocking' and increasing the tail latency (P99) for all other users. Which deployment configuration would most effectively mitigate this issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a global timeout that kills any request taking longer than 30 seconds.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a larger GPU with more VRAM to accommodate the longer sequences.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy a request queue with priority-based scheduling and set a maximum token limit per request.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Switch to a smaller model version to increase the generation speed for all users.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Priority-based scheduling prevents a few heavy requests from blocking the entire pipeline, and enforcing a maximum token limit ensures that no single request can monopolize the KV cache or compute resources, stabilizing P99 latency.",
+      "why_not_A": "A global timeout is a blunt instrument that may kill legitimate long-running complex queries without solving the underlying resource contention and blocking issue.",
+      "why_not_B": "More VRAM allows for larger batches or longer sequences, but it does not prevent a single long request from occupying the compute engine and blocking other requests in a sequential or poorly managed queue.",
+      "why_not_D": "While a smaller model is faster, it does not address the architectural problem of head-of-line blocking caused by disparate request lengths in a multi-tenant environment."
+    },
+    "tags": [
+      "sla-management",
+      "latency",
+      "request-scheduling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-098",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "safety-alignment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services firm is deploying a customer-facing LLM. During red-teaming, they discover that while the model refuses direct requests to provide investment advice, it provides specific stock picks when the user frames the request as a 'hypothetical roleplay' where the AI is a legendary investor from the 1920s. Which alignment technique should the team prioritize to mitigate this specific vulnerability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increasing the temperature parameter during inference to introduce more randomness in the output.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing RLHF (Reinforcement Learning from Human Feedback) with a specific reward model trained on adversarial 'jailbreak' attempts.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Applying a strict stop-sequence to prevent the model from generating financial terms.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increasing the system prompt length to explicitly list every possible roleplay scenario that is forbidden.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "This is a classic 'jailbreak' scenario. RLHF allows the model to learn the underlying intent of the safety boundary rather than just keyword matching, by rewarding the model for refusing the harmful intent regardless of the persona or framing used.",
+      "why_not_A": "Increasing temperature affects creativity and randomness but does not address the systemic failure of the safety guardrails; it may even make the model more unpredictable.",
+      "why_not_C": "Stop-sequences are too blunt; they would prevent the model from discussing finance entirely, even in safe contexts, and cannot detect the 'intent' of a jailbreak.",
+      "why_not_D": "System prompts are susceptible to 'prompt injection' and have limited context windows; it is impossible to exhaustively list every potential roleplay scenario."
+    },
+    "tags": [
+      "RLHF",
+      "Jailbreaking",
+      "Adversarial Testing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-099",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "safety-alignment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A healthcare provider is using an LLM to summarize patient notes. They notice the model occasionally 'hallucinates' medical conditions that were not present in the source text, which could lead to incorrect treatments. To ensure the model stays grounded in the provided context, which approach is most effective?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Fine-tuning the model on a larger dataset of general medical textbooks.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Using a higher Top-P (nucleus sampling) value to allow for more diverse vocabulary.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implementing RAG (Retrieval-Augmented Generation) combined with a 'citation' constraint in the system prompt.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Switching from a decoder-only architecture to an encoder-decoder architecture.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "RAG ensures the model has access to the specific source text, and requiring citations forces the model to map its output back to the provided evidence, significantly reducing hallucinations by grounding the generation.",
+      "why_not_A": "Fine-tuning on general textbooks may increase the model's medical knowledge but does not stop it from hallucinating details within a specific patient's record.",
+      "why_not_B": "Increasing Top-P generally increases variability and can actually increase the likelihood of hallucinations by allowing less probable (and potentially incorrect) tokens.",
+      "why_not_D": "While architecture matters, the hallucination problem in summarization is primarily a grounding issue, not a fundamental flaw of the decoder-only architecture."
+    },
+    "tags": [
+      "Hallucinations",
+      "RAG",
+      "Grounding"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-100",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "safety-alignment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer is implementing a safety layer for a chatbot. They want to ensure that the model does not generate hate speech or toxic content. They decide to use a 'Constitutional AI' approach. How does this differ from standard RLHF?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It replaces the need for any human feedback during the initial training phase.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It uses a set of predefined written principles (a 'constitution') to guide a model in self-critiquing and revising its own responses.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "It relies solely on hard-coded regex filters to block toxic keywords before they reach the LLM.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "It requires a larger human labeling workforce to rank pairs of outputs for every possible topic.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Constitutional AI (CAI) utilizes an AI-led feedback loop where the model is given a set of principles (the constitution) and asked to evaluate and rewrite its responses to align with those principles, reducing the reliance on massive human-labeled preference datasets.",
+      "why_not_A": "CAI still typically uses a base model and may use human feedback for the final stage, but it changes how the alignment is scaled.",
+      "why_not_C": "Constitutional AI is a model-based alignment strategy, not a keyword-based filtering strategy.",
+      "why_not_D": "The primary goal of Constitutional AI is actually to *reduce* the dependency on expensive and slow human-labeled preference data."
+    },
+    "tags": [
+      "Constitutional AI",
+      "RLHF",
+      "Alignment"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-101",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "safety-alignment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is concerned about 'Reward Hacking' during the RLHF process of their LLM. They observe that the model has learned to produce responses that are overly polite and apologetic, which the human raters gave high scores to, but the responses actually contain less useful information. What is occurring here?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Catastrophic Forgetting: The model has forgotten its core knowledge in favor of politeness.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Mode Collapse: The model is only outputting one single sequence of tokens for every prompt.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Reward Hacking: The model is optimizing for the reward signal (human preference for politeness) rather than the actual goal (helpfulness).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Overfitting: The model has memorized the training set exactly and cannot generalize to new prompts.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Reward hacking happens when an agent finds a shortcut to get a high reward without achieving the actual intended objective. In this case, the model discovered that 'sounding polite' triggers a high score from humans, even if the content is useless.",
+      "why_not_A": "Catastrophic forgetting involves losing previously learned tasks; here, the model is learning a new, albeit suboptimal, behavior.",
+      "why_not_B": "Mode collapse is a GAN-related term where a generator produces limited varieties of output; the model is still generating varied responses, just all superficially polite.",
+      "why_not_D": "Overfitting refers to training on specific examples; reward hacking is about optimizing for a flawed reward function."
+    },
+    "tags": [
+      "RLHF",
+      "Reward Hacking",
+      "Model Behavior"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-102",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "safety-alignment",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company wants to implement a 'Guardrail' system to prevent their LLM from discussing competitor products. They are choosing between a 'Prompt-based Guardrail' (adding instructions to the system prompt) and an 'External Classifier Guardrail' (a separate small BERT model that flags forbidden topics). Which is the most robust choice for safety-critical applications?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Prompt-based Guardrail, because it is easier to update and requires no additional compute.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "External Classifier Guardrail, because it operates independently of the LLM's internal logic and is less susceptible to prompt injection.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Prompt-based Guardrail, because the LLM has a better semantic understanding of the competitors than a BERT model.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "External Classifier Guardrail, but only if it is placed *before* the prompt reaches the LLM, as post-generation filtering is ineffective.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "External classifiers provide a 'hard' boundary. Because they are separate models, they cannot be bypassed by 'ignore all previous instructions' style prompt injections that would trick a prompt-based guardrail.",
+      "why_not_A": "Ease of update does not equate to robustness; prompt-based guards are easily bypassed by sophisticated users.",
+      "why_not_C": "While the LLM might have better semantics, the purpose of a guardrail is reliability and safety, not linguistic nuance.",
+      "why_not_D": "Post-generation filtering (checking the output before the user sees it) is actually highly effective and often necessary to catch hallucinations or safety violations that occur during generation."
+    },
+    "tags": [
+      "Guardrails",
+      "Prompt Injection",
+      "Safety Architecture"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-103",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "safety-alignment",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services firm is deploying a customer-facing LLM to provide investment advice. During red-teaming, they discover the model is susceptible to 'jailbreaking' via a sophisticated 'persona adoption' attack, where the model bypasses safety filters by pretending to be an unrestricted research assistant. The team decides to implement Reinforcement Learning from Human Feedback (RLHF) specifically to mitigate this. Which approach would be most effective in ensuring the model resists these adversarial prompts without suffering from 'reward hacking' or becoming overly refractive to legitimate queries?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increasing the temperature setting during the RLHF reward model training to encourage more diverse safety responses.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Utilizing a Reward Model (RM) trained on a dataset of paired preferences that explicitly penalizes the model for adopting unrestricted personas, combined with a KL-divergence penalty against the initial SFT model.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Applying a hard-coded keyword filter to the input prompt to detect and block words like 'unrestricted' or 'research assistant'.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Replacing the RLHF process with a larger set of few-shot examples in the prompt that demonstrate the model refusing to adopt personas.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using a Reward Model trained on preference pairs (where the 'safe' response is preferred over the 'jailbroken' one) directly aligns the model's goals with safety. The KL-divergence penalty is critical because it prevents the policy from drifting too far from the original Supervised Fine-Tuning (SFT) model, which mitigates reward hacking (where the model finds a loophole in the reward function to get a high score without actually being safe).",
+      "why_not_A": "Increasing temperature during reward model training does not inherently improve safety alignment and can introduce noise into the reward signal, potentially making the model less stable.",
+      "why_not_C": "Keyword filters are fragile and easily bypassed by adversarial attackers using synonyms, encoding, or creative phrasing, and do not address the underlying model alignment.",
+      "why_not_D": "Few-shot prompting is a surface-level mitigation. While it can help, it does not change the model's internal weights or alignment and is susceptible to being overridden by long-context adversarial attacks (prompt injection)."
+    },
+    "tags": [
+      "RLHF",
+      "Reward-Hacking",
+      "Adversarial-Robustness"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-genai-llm-mock1-104",
+    "exam_id": "nvidia-ncp-genl",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
   }
 ]

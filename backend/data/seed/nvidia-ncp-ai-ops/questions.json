@@ -2888,5 +2888,3199 @@
     "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.1,
     "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI engineer is deploying a large-scale LLM training job across a cluster of NVIDIA DGX nodes. The engineer notices that while the nodes are healthy, the training job fails with a 'Connection Timeout' during the collective communication phase. Upon inspection, the engineer finds that the InfiniBand subnet manager is running on a single node that has recently experienced high CPU load. What is the most appropriate action to ensure cluster stability and communication reliability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the timeout value in the PyTorch distributed launcher settings."
+      },
+      {
+        "id": "B",
+        "text": "Disable the InfiniBand subnet manager and rely on Ethernet TCP/IP for collective communication."
+      },
+      {
+        "id": "C",
+        "text": "Configure a redundant Subnet Manager (SM) setup with a standby SM on a separate node."
+      },
+      {
+        "id": "D",
+        "text": "Restart the training job on a smaller subset of nodes to reduce the load on the SM."
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In a production NVIDIA AI cluster, the Subnet Manager (SM) is critical for InfiniBand fabric management. A single point of failure or a resource-constrained SM can lead to fabric instability. Implementing a standby SM ensures high availability and prevents communication timeouts caused by SM unavailability.",
+      "why_not_A": "Increasing timeouts masks the underlying infrastructure instability and does not solve the root cause of the SM being overloaded or failing.",
+      "why_not_B": "Falling back to Ethernet TCP/IP would cause a massive performance degradation, defeating the purpose of using DGX nodes and InfiniBand for LLM training.",
+      "why_not_D": "Reducing the node count is a workaround that limits scaling and does not address the architectural flaw of having a single, unstable SM instance."
+    },
+    "tags": [
+      "infini-band",
+      "subnet-manager",
+      "high-availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-060",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A cluster administrator is monitoring a multi-node GPU cluster and observes that several nodes are reporting 'Xid 61' errors in the kernel logs, and the GPUs are falling off the bus. The administrator suspects a thermal issue or a power fluctuation. Which tool should be used first to correlate GPU health with system-level power and thermal metrics across the cluster?",
+    "options": [
+      {
+        "id": "A",
+        "text": "nvidia-smi on each individual node via SSH."
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA DCGM (Data Center GPU Manager) integrated with Prometheus and Grafana."
+      },
+      {
+        "id": "C",
+        "text": "The Linux 'top' command to check for CPU spikes."
+      },
+      {
+        "id": "D",
+        "text": "Checking the BIOS settings of the host servers."
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA DCGM is specifically designed for cluster-level monitoring. When integrated with Prometheus and Grafana, it allows administrators to visualize trends, correlate Xid errors with temperature/power spikes across multiple nodes, and identify patterns that individual node checks would miss.",
+      "why_not_A": "While nvidia-smi provides real-time data, it is a local tool. Manually checking each node is inefficient and does not provide the historical correlation needed to diagnose intermittent power/thermal issues.",
+      "why_not_C": "CPU spikes are generally unrelated to GPU Xid 61 errors, which typically indicate hardware or driver-level communication failures on the PCIe bus.",
+      "why_not_D": "BIOS settings are static configurations; they do not provide the real-time telemetry needed to diagnose a dynamic hardware failure event."
+    },
+    "tags": [
+      "dcgm",
+      "monitoring",
+      "gpu-health"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-061",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A DevOps team is configuring a Kubernetes cluster for AI workloads using the NVIDIA GPU Operator. They need to ensure that pods are scheduled only on nodes that have specific GPU architectures (e.g., H100) to take advantage of Transformer Engine features. What is the recommended method to achieve this scheduling requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Manually assign pods to nodes using the 'nodeName' field in the Pod spec."
+      },
+      {
+        "id": "B",
+        "text": "Use Kubernetes Taints and Tolerations to keep all other pods off the H100 nodes."
+      },
+      {
+        "id": "C",
+        "text": "Use Node Selectors or Node Affinity based on the labels automatically applied by the NVIDIA GPU Operator."
+      },
+      {
+        "id": "D",
+        "text": "Modify the Kubernetes scheduler source code to prioritize H100 GPUs."
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The NVIDIA GPU Operator automatically labels nodes with GPU properties (e.g., nvidia.com/gpu.product). Using Node Selectors or Node Affinity is the standard Kubernetes way to ensure pods are scheduled on nodes meeting specific hardware criteria without hard-coding node names.",
+      "why_not_A": "Using 'nodeName' creates a tight coupling between the pod and a specific physical node, breaking the flexibility and scalability of Kubernetes.",
+      "why_not_B": "Taints and Tolerations prevent pods from being scheduled on a node; they do not 'attract' pods to a specific architecture. You would still need Affinity to ensure the pod lands on an H100.",
+      "why_not_D": "Modifying the scheduler source code is an extreme and unsupported measure for a standard hardware selection requirement."
+    },
+    "tags": [
+      "gpu-operator",
+      "kubernetes",
+      "scheduling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-062",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During the setup of a GPU cluster, an administrator notices that the GPUDirect RDMA (Remote Direct Memory Access) is not functioning, causing high CPU overhead during data transfers between GPUs on different nodes. The administrator has confirmed that the NVIDIA PeerMemory drivers are installed. What is the most likely missing configuration step?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPUs must be put into Persistence Mode."
+      },
+      {
+        "id": "B",
+        "text": "The InfiniBand HCA and the GPU must be on the same PCIe root complex/switch."
+      },
+      {
+        "id": "C",
+        "text": "The system must be rebooted to enable the NVIDIA Fabric Manager."
+      },
+      {
+        "id": "D",
+        "text": "The MTU size of the Ethernet bridge must be increased to 9000."
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GPUDirect RDMA requires a direct PCIe path between the Network Interface Card (NIC) and the GPU. If they are on different PCIe root complexes without a supporting switch, the data must traverse the CPU, negating the benefits of RDMA and causing the observed CPU overhead.",
+      "why_not_A": "Persistence mode keeps the GPU initialized but does not enable or disable the RDMA path between the NIC and GPU.",
+      "why_not_B": "Fabric Manager is required for NVSwitch communication within a node, but the specific issue of RDMA overhead across nodes is typically a PCIe topology issue.",
+      "why_not_D": "MTU size affects packet fragmentation and throughput on Ethernet, but GPUDirect RDMA is an InfiniBand/RoCE feature that operates at a lower level than standard Ethernet bridge MTU settings."
+    },
+    "tags": [
+      "gpudirect-rdma",
+      "pcie-topology",
+      "performance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-063",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is deploying a cluster using NVIDIA Base Command Manager (BCM). They want to implement a policy where GPU nodes are automatically drained and marked as 'unschedulable' if the GPU temperature exceeds a critical threshold to prevent hardware damage. Which BCM feature should be leveraged to automate this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The BCM Manual Node Drain utility."
+      },
+      {
+        "id": "B",
+        "text": "BCM Health Checks integrated with the cluster scheduler."
+      },
+      {
+        "id": "C",
+        "text": "The NVIDIA GPU Driver's internal thermal throttling."
+      },
+      {
+        "id": "D",
+        "text": "Standard Linux cron jobs running a shell script to call 'kubectl drain'."
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA Base Command Manager (BCM) provides integrated health monitoring that can trigger automated actions. By configuring health checks for temperature, BCM can automatically communicate with the scheduler (like Slurm or Kubernetes) to drain the node when a failure condition is met.",
+      "why_not_A": "Manual draining is a reactive process and does not satisfy the requirement for automation.",
+      "why_not_C": "Thermal throttling slows down the GPU to reduce heat, but it does not remove the node from the scheduler, meaning the node remains 'healthy' to the scheduler while performing poorly.",
+      "why_not_D": "While possible, using cron jobs is a fragile, non-standard approach that lacks the integration and reliability of the BCM health framework."
+    },
+    "tags": [
+      "bcm",
+      "health-checks",
+      "automation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-064",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI infrastructure engineer observes that several GPU nodes in a Kubernetes cluster are intermittently entering a 'NotReady' state. Upon investigation, the engineer finds that the NVIDIA Device Plugin is crashing due to an 'Out of Memory' (OOM) event on the control plane. Which of the following is the most effective long-term architectural fix to ensure cluster stability and GPU availability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the memory limit of the NVIDIA Device Plugin pod in the DaemonSet specification.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Migrate the NVIDIA Device Plugin to a separate dedicated node pool to isolate it from workloads.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Resource Quotas and LimitRanges at the namespace level for all GPU-consuming pods.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure the NVIDIA GPU Operator to use a separate namespace and apply priorityClassName to the plugin pods.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Using a dedicated namespace for the GPU Operator prevents namespace-level resource contention, and applying a high priorityClassName ensures that the Kubernetes scheduler does not evict the device plugin in favor of lower-priority user workloads during memory pressure, maintaining node stability.",
+      "why_not_A": "Increasing limits is a temporary fix (band-aid) and does not prevent the scheduler from evicting the pod if the node overall is under pressure.",
+      "why_not_B": "The NVIDIA Device Plugin must run as a DaemonSet on every node that has GPUs to discover and advertise resources; it cannot be centralized on a separate node pool.",
+      "why_not_C": "Resource Quotas limit user consumption but do not protect system-critical pods (like the device plugin) from being evicted by the kubelet during node-level OOM events."
+    },
+    "tags": [
+      "GPU-Operator",
+      "Pod-Priority",
+      "Resource-Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-065",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A multi-tenant cluster is experiencing 'GPU fragmentation,' where multiple small jobs are leaving single GPUs partially utilized, preventing a large 8-GPU training job from starting despite sufficient total aggregate GPU memory across the cluster. Which NVIDIA-supported technology should be implemented to maximize utilization while allowing the large job to proceed?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable NVIDIA Multi-Instance GPU (MIG) on all A100 GPUs to partition them into smaller instances.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy the NVIDIA GPU Direct Storage (GDS) to reduce I/O bottlenecks and speed up job completion.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Time-Slicing via the NVIDIA Device Plugin to allow oversubscription of GPU resources.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Kubernetes Taints and Tolerations to isolate the 8-GPU job on its own dedicated nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Time-Slicing allows multiple pods to share a single GPU by interleaving execution. This allows small jobs to coexist on GPUs without locking the entire hardware resource, freeing up full GPUs for the large 8-GPU job to be scheduled.",
+      "why_not_A": "MIG creates hard hardware partitions. While it helps with small jobs, it would further fragment the GPUs, making it even harder to find 8 contiguous full GPUs for a large job unless the MIG profiles were reset.",
+      "why_not_B": "GDS optimizes data movement between storage and GPU memory; it does not address GPU scheduling or fragmentation.",
+      "why_not_D": "Taints and Tolerations manage where pods land, but they do not solve the underlying issue of fragmented resource utilization on the nodes."
+    },
+    "tags": [
+      "GPU-Fragmentation",
+      "Time-Slicing",
+      "Resource-Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-066",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During a large-scale LLM training run across 32 nodes, a single GPU on one node reports a 'Double Bit Error' (DBE) and the node is marked as 'Unhealthy' by the cluster manager. The training job crashes. To minimize downtime for future occurrences, which strategy should the operator implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the GPU memory clock speed to bypass the faulty memory sector.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the NVIDIA GPU Operator with a Node Problem Detector (NPD) and an automated remediation webhook.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable ECC (Error Correction Code) on all GPUs to prevent the system from crashing on DBEs.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch the cluster to a different GPU architecture that does not support DBE reporting.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NPD can detect hardware failures (like XID errors or DBEs) and report them as Kubernetes events. A remediation webhook (like a Drain/Cordon script) can automatically remove the faulty node from the cluster, allowing the scheduler to restart the job on healthy nodes without manual intervention.",
+      "why_not_A": "Increasing clock speed will not fix a hardware memory error and may actually increase instability.",
+      "why_not_C": "Disabling ECC is dangerous; DBEs would then lead to silent data corruption, resulting in an incorrect model without the operator knowing why.",
+      "why_not_D": "This is an impractical solution and does not address the operational need for cluster resilience."
+    },
+    "tags": [
+      "Health-Monitoring",
+      "Node-Problem-Detector",
+      "Fault-Tolerance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-067",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An operator needs to deploy a distributed training workload that requires extremely low latency between GPUs across different nodes. The operator decides to use GPUDirect RDMA. Which cluster configuration is mandatory for this to function correctly?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPUs must be connected via PCIe Gen 3 or lower to ensure compatibility.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The Kubernetes cluster must use a standard Overlay Network (e.g., Flannel) for all pod communication.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The nodes must have a compatible NIC (e.g., ConnectX) and the NVIDIA Peer Memory driver must be loaded.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "All GPUs must be running in MIG mode to allow RDMA to address specific partitions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "GPUDirect RDMA requires hardware support (Mellanox/ConnectX NICs) and a software bridge (the NVIDIA Peer Memory driver) that allows the NIC to access GPU memory directly without involving the CPU's system memory.",
+      "why_not_A": "Higher PCIe versions (Gen 4/5) are preferred for higher bandwidth; Gen 3 is not a requirement for functionality.",
+      "why_not_B": "Overlay networks introduce latency and overhead. GPUDirect RDMA typically bypasses the standard K8s networking stack via SR-IOV or secondary interfaces.",
+      "why_not_D": "MIG is for partitioning a single GPU; it is not a requirement for RDMA, which is about inter-node communication."
+    },
+    "tags": [
+      "GPUDirect-RDMA",
+      "Networking",
+      "Hardware-Acceleration"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-068",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "cluster-management",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A cluster administrator is deploying the NVIDIA GPU Operator. They want to ensure that the GPU drivers are updated automatically whenever the operator image is updated, without manually SSHing into every node to run 'apt-get upgrade'. Which mechanism achieves this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Setting the 'driver.repository' field in the ClusterPolicy CRD to a remote mirror.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configuring the Kubernetes HPA (Horizontal Pod Autoscaler) to trigger driver updates.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Using the 'driver.installMethod: container' option in the ClusterPolicy.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Applying a RollingUpdate strategy to the NVIDIA Device Plugin DaemonSet.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The 'container' install method packages the driver inside a container. When the ClusterPolicy is updated to a new version, the operator replaces the driver container, effectively updating the driver on the host via the container's lifecycle, avoiding manual package management.",
+      "why_not_A": "The repository field tells the operator where to find the drivers, but the 'installMethod' determines how they are deployed.",
+      "why_not_B": "HPA is for scaling the number of pods based on metrics, not for managing software versions or driver installation.",
+      "why_not_D": "The Device Plugin depends on the driver. Updating the plugin does not update the underlying kernel driver on the host."
+    },
+    "tags": [
+      "GPU-Operator",
+      "ClusterPolicy",
+      "Driver-Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-069",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI researcher is submitting a large-scale distributed training job that requires 8 NVIDIA H100 GPUs across multiple nodes. The job remains in 'Pending' state despite there being 12 GPUs available in the cluster. Which scheduling configuration is most likely causing this behavior?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The scheduler is configured for 'Gang Scheduling' and cannot find a single contiguous block of 8 GPUs on one node.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The cluster has 'Bin Packing' enabled, and the remaining GPUs are fragmented across different nodes, failing to meet the job's specific topology constraint.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The job is waiting for a 'Preemption' event to trigger from a higher-priority queue.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPU memory limit is set too low in the job specification, preventing the scheduler from allocating resources.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In distributed training, jobs often require specific topology (e.g., NVLink connectivity) or a minimum number of GPUs per node. If the available GPUs are fragmented (e.g., 2 GPUs on 6 different nodes), a job requiring a specific allocation per node or a tightly coupled group will remain pending.",
+      "why_not_A": "Gang scheduling ensures all tasks start at once, but it doesn't inherently prevent distribution across multiple nodes unless combined with a strict node-affinity constraint.",
+      "why_not_C": "Preemption is the act of kicking a job off; the job is already pending, so it is waiting for resources, not for a preemption event to occur to it.",
+      "why_not_D": "Memory limits generally cause a job to crash (OOM) after starting, not to stay in a 'Pending' state during the scheduling phase."
+    },
+    "tags": [
+      "resource-allocation",
+      "topology-awareness"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-070",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data science team is experiencing 'starvation' where small interactive notebooks are never scheduled because large training jobs constantly occupy the GPU cluster. Which scheduling strategy should the AI Ops engineer implement to resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a First-In-First-Out (FIFO) queue to ensure chronological order.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable 'Strict Priority' scheduling for all training jobs.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure 'Fair-share' scheduling with quota limits per user or group.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the total number of GPU nodes in the cluster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Fair-share scheduling ensures that resources are distributed equitably among users or groups, preventing a single large job or user from monopolizing the cluster and allowing smaller jobs to be interleaved.",
+      "why_not_A": "FIFO would actually exacerbate the problem if a massive job is submitted first, blocking all subsequent smaller jobs.",
+      "why_not_B": "Strict priority would likely favor the large training jobs if they are marked as high priority, continuing the starvation of interactive notebooks.",
+      "why_not_D": "Adding hardware is a scaling solution, not a scheduling solution; without a fair-share policy, the larger jobs could simply scale to consume the new nodes."
+    },
+    "tags": [
+      "fair-share",
+      "starvation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-071",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization wants to maximize GPU utilization by allowing low-priority 'batch' jobs to run only when the cluster is idle, but they must be terminated immediately when a high-priority 'production' job is submitted. Which feature is required?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Taints and Tolerations",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Resource Quotas",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Priority-based Preemption",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Dynamic Time Slicing",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Priority-based preemption allows the scheduler to terminate lower-priority pods/jobs to make room for higher-priority ones, ensuring production workloads have immediate access to resources.",
+      "why_not_A": "Taints and tolerations control which pods can be scheduled on specific nodes, not the order of priority or the ability to evict existing jobs.",
+      "why_not_B": "Resource quotas limit the total amount of resources a namespace can use, but they do not manage the eviction of running jobs.",
+      "why_not_D": "Time slicing allows multiple processes to share a GPU via temporal multiplexing, but it doesn't handle the logic of terminating a job to free up the entire resource for another."
+    },
+    "tags": [
+      "preemption",
+      "priority-queues"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-072",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using a Kubernetes-based GPU cluster. They notice that some GPU nodes are heavily overloaded while others are underutilized, despite the scheduler attempting to distribute pods. Which scheduling algorithm should be adjusted to ensure a more balanced distribution of pods across nodes?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change from 'LeastRequestedPriority' to 'MostRequestedPriority'.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch from 'Bin Packing' to 'Spread' (LeastAllocated) strategy.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable the scheduler's 'Node Affinity' rules.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement 'Gang Scheduling' for all individual pods.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Bin packing attempts to fill one node completely before moving to the next to save energy or leave room for large jobs. A 'Spread' or 'LeastAllocated' strategy explicitly distributes pods across all available nodes to balance the load.",
+      "why_not_A": "MostRequestedPriority would actually push pods toward the already overloaded nodes, worsening the imbalance.",
+      "why_not_C": "Node affinity is used for specific hardware requirements; disabling it doesn't change the fundamental balancing algorithm of the scheduler.",
+      "why_not_D": "Gang scheduling is for co-scheduling a group of pods together, not for balancing individual pods across a cluster."
+    },
+    "tags": [
+      "bin-packing",
+      "load-balancing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-073",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI Ops engineer needs to ensure that a specific critical model-serving job is always scheduled on a node with an NVIDIA A100 80GB GPU, regardless of other resource availability. Which mechanism is the most appropriate for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Setting a high PriorityClass for the job.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Using Node Selectors or Node Affinity based on GPU labels.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increasing the GPU memory limit in the container spec.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implementing a FIFO queue for the serving job.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Node Selectors and Node Affinity allow the scheduler to match a pod's requirements to specific labels on a node (e.g., gpu-type=a100-80gb), ensuring the job lands on the correct hardware.",
+      "why_not_A": "PriorityClass determines the order of scheduling and preemption, but it does not guarantee that a job will land on a specific type of hardware.",
+      "why_not_C": "Memory limits tell the system how much memory the pod can use, but they don't dictate which physical node the pod is placed on.",
+      "why_not_D": "FIFO only controls the sequence of job submission, not the hardware placement."
+    },
+    "tags": [
+      "node-affinity",
+      "node-selectors"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-074",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A research team is deploying a large-scale LLM training job across multiple GPU nodes using Slurm. They observe that while the job is 'Running', several GPUs are underutilized, and the job is failing to scale linearly. The team suspects a 'gang scheduling' issue where some tasks are starting before the full set of required resources is available. Which configuration strategy should be implemented to ensure all required resources are allocated simultaneously before any task begins execution?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable the 'OverSubscribe' flag to allow tasks to share CPU cores.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the job with a strict 'exclusive' node allocation and use a synchronization barrier in the application code.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Utilize a scheduler plugin that supports 'Gang Scheduling' (e.g., via an external orchestrator or specific Slurm plugins) to ensure all-or-nothing allocation.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the 'MaxJobDuration' to allow the scheduler more time to find fragmented resources.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Gang scheduling ensures that a set of related tasks are scheduled to run simultaneously on different processors. In distributed AI training, if some processes start while others are still queued, the training often hangs or underutilizes resources due to synchronization barriers (like AllReduce).",
+      "why_not_A": "OverSubscribe manages CPU overcommitment but does not solve the synchronization of distributed GPU task startup.",
+      "why_not_B": "Exclusive allocation prevents other jobs from using the node, but it doesn't guarantee that all tasks within the job start at the exact same time across the cluster.",
+      "why_not_D": "Increasing duration does not address the logic of how resources are allocated or when tasks are triggered to start."
+    },
+    "tags": [
+      "Slurm",
+      "Gang-Scheduling",
+      "Distributed-Training"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-075",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI operations engineer is managing a shared cluster where high-priority production inference jobs and low-priority experimental training jobs coexist. To prevent production jobs from being blocked by long-running training jobs, the engineer wants to implement a mechanism that allows high-priority jobs to displace lower-priority ones. Which Slurm mechanism is most appropriate for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Setting the 'PriorityTier' to the same value for all jobs.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configuring 'Preemption' mode to 'Preempt' or 'Requeue' based on priority levels.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Using 'QOS' (Quality of Service) to limit the maximum number of GPUs per user.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implementing a First-In-First-Out (FIFO) scheduling policy.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Preemption allows the scheduler to terminate or suspend a lower-priority job to free up resources for a higher-priority job. This is the standard way to ensure production SLAs are met in a shared environment.",
+      "why_not_A": "Setting PriorityTier to the same value removes the distinction between job importance, making preemption impossible.",
+      "why_not_C": "QOS limits can restrict resource usage, but they do not provide a mechanism to kick off an existing job to make room for another.",
+      "why_not_D": "FIFO ignores priority entirely, which would lead to 'head-of-line blocking' where a large training job blocks a small production job."
+    },
+    "tags": [
+      "Priority",
+      "Preemption",
+      "Resource-Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-076",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data science team is experiencing 'GPU starvation' where jobs are queued for hours despite some nodes having free GPUs. Upon investigation, the engineer finds that the jobs require 8 GPUs each, but the available GPUs are fragmented (e.g., 2 GPUs free on 4 different nodes). Which scheduling strategy should be implemented to resolve this fragmentation and improve throughput?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch to a 'Backfilling' scheduler to allow smaller jobs to run in the gaps.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement 'Topology-Aware Scheduling' to ensure jobs are placed on the same PCIe switch or NVLink domain.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable 'Dynamic Resource Partitioning' to split GPUs into smaller MIG (Multi-Instance GPU) instances.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement 'Bin Packing' or 'Best-Fit' allocation to concentrate jobs on fewer nodes and leave larger contiguous blocks of GPUs free.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Bin packing attempts to fill up nodes completely before moving to the next node. This prevents fragmentation by keeping as many nodes as possible entirely empty, making it easier to fit large multi-GPU jobs.",
+      "why_not_A": "Backfilling helps smaller jobs run, but it doesn't solve the fragmentation that prevents the large 8-GPU jobs from starting.",
+      "why_not_B": "Topology awareness optimizes performance (latency/bandwidth) once a job is placed, but it doesn't solve the problem of resource fragmentation.",
+      "why_not_C": "MIG splits a single GPU into smaller units; while this helps small jobs, it doesn't help a job that needs 8 full physical GPUs."
+    },
+    "tags": [
+      "Fragmentation",
+      "Bin-Packing",
+      "Resource-Allocation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-077",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is running a massive hyperparameter tuning sweep consisting of 1,000 short-lived jobs. The Slurm controller is becoming unresponsive due to the high volume of job submissions and state updates. Which approach is most effective for reducing the load on the scheduler while maintaining the sweep's progress?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the 'Slurmctld' memory limit and restart the service.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use 'Job Arrays' to submit a single job entity that spawns multiple tasks.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from a centralized scheduler to a fully decentralized peer-to-peer scheduling model.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the 'ReturnToService' interval for the compute nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Job Arrays allow the user to submit thousands of similar jobs as a single record in the Slurm database. This drastically reduces the overhead on the controller (slurmctld) compared to submitting 1,000 individual job scripts.",
+      "why_not_A": "Increasing memory is a temporary fix and doesn't address the root cause of the high request volume (O(n) complexity of job management).",
+      "why_not_C": "Slurm is fundamentally a centralized architecture; switching to a P2P model would require replacing the entire cluster management software.",
+      "why_not_D": "The ReturnToService interval relates to node health checks and has no impact on the submission load of the controller."
+    },
+    "tags": [
+      "Job-Arrays",
+      "Scalability",
+      "Slurm-Controller"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-078",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is using NVIDIA MIG (Multi-Instance GPU) to provide smaller GPU slices to multiple users. A user submits a job requesting a specific MIG profile (e.g., 1g.5gb). However, the job remains in 'Pending' state even though the physical GPU has available memory. What is the most likely cause of this scheduling failure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPU is currently in 'Compute' mode instead of 'MIG' mode.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The scheduler does not support MIG and is trying to allocate a full physical GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The physical GPU has not been partitioned into the specific MIG profiles requested by the job.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The job is requesting more CPU cores than are available on the node hosting the GPU.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "MIG requires the physical GPU to be explicitly partitioned into instances (profiles) before they can be assigned to jobs. If the GPU is in MIG mode but no 1g.5gb instances have been created, the scheduler cannot assign that specific resource to the job.",
+      "why_not_A": "If the GPU were in Compute mode, MIG would be disabled entirely, but the question specifies the user is requesting a MIG profile, implying the environment is configured for MIG.",
+      "why_not_B": "Modern AI schedulers (like Slurm with GRES) support MIG; the issue here is resource availability, not software support.",
+      "why_not_D": "While CPU starvation is possible, the scenario specifically points toward the MIG profile request and the availability of GPU memory, making the partitioning the primary suspect."
+    },
+    "tags": [
+      "MIG",
+      "Resource-Partitioning",
+      "GPU-Virtualization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-079",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI research team is deploying a large-scale LLM training job across a cluster of NVIDIA H100 GPUs. The team observes that several jobs are stuck in 'Pending' state despite available GPU capacity, while some nodes are underutilized. They suspect 'fragmentation' is preventing the scheduler from placing the jobs. Which scheduling strategy should be implemented to maximize throughput and ensure large jobs are not blocked by smaller, fragmented workloads?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a First-In-First-Out (FIFO) queue to ensure strict ordering of job submission.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Gang Scheduling to ensure all required resources for a job are allocated simultaneously before execution begins.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure Bin Packing with a 'Most Allocated' strategy to consolidate workloads onto fewer nodes.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Apply a Round-Robin scheduling policy to distribute jobs evenly across all available nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Bin Packing (specifically 'Most Allocated') attempts to fill up nodes completely before moving to the next. This prevents 'fragmentation' where small gaps of resources are left on every node, which would otherwise prevent a large multi-GPU job from finding a single node or contiguous block of resources to run.",
+      "why_not_A": "FIFO only manages the order of submission; it does not address how resources are physically allocated on the hardware to prevent fragmentation.",
+      "why_not_B": "Gang Scheduling prevents 'deadlocks' where some resources are held while waiting for others, but it does not solve the fragmentation of available capacity across the cluster.",
+      "why_not_D": "Round-Robin (Spread strategy) intentionally creates fragmentation by distributing loads evenly, which is the opposite of what is needed to accommodate large, resource-heavy AI jobs."
+    },
+    "tags": [
+      "resource-allocation",
+      "bin-packing",
+      "fragmentation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-080",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A production environment runs critical real-time inference services alongside experimental training jobs. During peak hours, the training jobs are consuming all GPU memory, causing the inference services to experience high latency and OOM (Out of Memory) errors. Which mechanism should the operator implement to guarantee resources for the inference services without idling the GPUs during low-traffic periods?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Hard-partition the GPUs using MIG (Multi-Instance GPU) to isolate the inference and training workloads permanently.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Priority-based Preemption where inference jobs have higher priority and can displace training jobs.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the GPU memory limit for the training jobs to prevent them from crashing.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set the training jobs to 'BestEffort' QoS class and the inference jobs to 'Burstable' QoS class.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Priority-based Preemption allows the scheduler to evict lower-priority (training) jobs to make room for higher-priority (inference) jobs immediately. This ensures critical services have resources when needed while allowing training to utilize the GPUs when the cluster is quiet.",
+      "why_not_A": "MIG provides hard isolation, but the prompt specifically asks to avoid idling GPUs during low-traffic periods. MIG partitions are static and cannot be dynamically resized without restarting the instance.",
+      "why_not_C": "Increasing memory limits for training jobs would exacerbate the resource contention and likely cause the inference services to crash faster.",
+      "why_not_D": "In Kubernetes-style QoS, 'Guaranteed' (not Burstable) is required for critical services to ensure they aren't evicted. 'Burstable' still allows for potential eviction."
+    },
+    "tags": [
+      "priority",
+      "preemption",
+      "qos"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-081",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is using a distributed training framework that requires low-latency communication between GPUs. The scheduler is currently placing pods on any available node in the cluster, resulting in high inter-node traffic across different racks and slowing down training performance. Which scheduling constraint should be applied to optimize the communication overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Node Affinity with 'requiredDuringSchedulingIgnoredDuringExecution' based on GPU memory size.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Pod Anti-Affinity to ensure that no two training pods are placed on the same physical node.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Taints and Tolerations to keep non-training pods off the GPU nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Pod Affinity to ensure training pods are co-located within the same rack or network domain.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Pod Affinity allows the scheduler to place pods that need to communicate frequently (like distributed training workers) close to each other (e.g., same rack or zone), minimizing network hops and reducing latency.",
+      "why_not_A": "Node Affinity based on memory size ensures the pod has enough RAM, but it does not address the network topology or the relative distance between multiple pods in a distributed job.",
+      "why_not_B": "Anti-Affinity would spread the pods across as many different nodes as possible, which would likely increase network latency and worsen the problem described.",
+      "why_not_C": "Taints and Tolerations control which pods can land on which nodes, but they do not control the relative placement of pods to one another to optimize network performance."
+    },
+    "tags": [
+      "pod-affinity",
+      "network-topology",
+      "distributed-training"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-082",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data scientist is running a series of hyperparameters tuning jobs. Each single trial is short-lived, but there are thousands of trials. The overhead of the scheduler creating and destroying pods for each trial is becoming a bottleneck. Which approach would most effectively reduce this scheduling overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from a dynamic scheduler to a static scheduler with pre-allocated slots.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Job Batching/Grouping to run multiple trials within a single long-lived pod.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the CPU resources of the API server to speed up pod creation.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable the scheduler's health checks to reduce the number of API calls.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "By grouping multiple small trials into a single pod (or a small set of pods), you reduce the frequency of pod lifecycle events (Create/Delete), significantly lowering the pressure on the cluster scheduler and API server.",
+      "why_not_A": "Static scheduling is generally impractical for modern AI workloads and does not solve the overhead of the job lifecycle management.",
+      "why_not_C": "While increasing API server resources might provide a marginal improvement, it does not address the root cause: the inefficient pattern of creating thousands of short-lived pods.",
+      "why_not_D": "Disabling health checks is a dangerous practice that could lead to zombies or failed jobs remaining in the queue, and it doesn't solve the pod creation bottleneck."
+    },
+    "tags": [
+      "overhead",
+      "batching",
+      "lifecycle-management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-083",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "job-scheduling",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An operator is configuring a scheduler for a multi-tenant GPU cluster. They need to ensure that no single user can monopolize all the GPUs, but they also want to allow users to use more than their 'guaranteed' share if the cluster is otherwise idle. Which scheduling mechanism is best suited for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Strict Resource Quotas with no overcommit allowed.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Fixed time-slicing for GPU access.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Fair Share Scheduling with weighted shares and preemption.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Static Partitioning of GPUs per user group.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Fair Share scheduling allows users to exceed their allocated share when resources are available (maximizing utilization), but ensures that as the cluster becomes crowded, resources are redistributed according to the defined weights, potentially preempting those who are over their share.",
+      "why_not_A": "Strict quotas prevent monopolization but do not allow users to use idle resources, leading to lower overall cluster utilization.",
+      "why_not_B": "Time-slicing manages how a single GPU is shared over time, but it does not manage the distribution of multiple GPUs across different users in a cluster.",
+      "why_not_D": "Static partitioning prevents monopolization but creates 'silos' where GPUs sit idle if one user group has no work, while another group is starved for resources."
+    },
+    "tags": [
+      "fair-share",
+      "multi-tenancy",
+      "quotas"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-084",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI infrastructure team observes that a multi-node GPU cluster is experiencing intermittent 'NCCL Timeout' errors during the training of a large language model. While GPU utilization remains high, the throughput has dropped significantly. Upon checking the NVIDIA DCGM metrics, the team notices high 'Xid 63' errors on a subset of GPUs. What is the most likely cause and the first step for troubleshooting?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GPU overheating causing thermal throttling; check the fan speeds and chassis airflow.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NVLink or NVSwitch hardware failure/instability; run the nvidia-smi topo -m command to verify fabric connectivity.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Insufficient PCIe bandwidth causing bottlenecks; upgrade the host motherboard to PCIe Gen5.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Out-of-memory (OOM) errors in the application layer; increase the batch size to saturate the GPU memory.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Xid 63 is specifically associated with NVLink errors or communication failures between GPUs. NCCL timeouts are a classic symptom of a broken communication fabric in a multi-GPU setup.",
+      "why_not_A": "Thermal throttling usually triggers Xid 43 or specific thermal flags in DCGM, not Xid 63, and would typically result in lower clock speeds rather than immediate NCCL timeouts.",
+      "why_not_C": "PCIe bandwidth issues cause performance degradation but not typically Xid 63 errors, which are specific to the high-speed GPU-to-GPU interconnects.",
+      "why_not_D": "OOM errors result in application crashes (RuntimeError), not Xid hardware errors, and increasing batch size would exacerbate OOM issues, not solve them."
+    },
+    "tags": [
+      "DCGM",
+      "Xid",
+      "NCCL",
+      "Hardware-Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-085",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps engineer is deploying a Prometheus-based monitoring stack to track GPU health across a Kubernetes cluster using the NVIDIA GPU Operator. They notice that while the 'dcgm-exporter' is running, the 'gpu_temp' metric is reporting inconsistent values across different GPU architectures (Ampere vs. Hopper). How should the engineer resolve this to ensure consistent monitoring?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Manually override the DCGM temperature mapping in the Prometheus config file using a regex transformation.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Update the NVIDIA GPU Operator to the latest version and ensure the DCGM version is compatible with the installed driver.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable the dcgm-exporter and use the standard Kubelet cAdvisor metrics for GPU temperature.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set the GPU clock speeds to a fixed value to prevent temperature fluctuations from affecting the metrics.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DCGM metrics are highly dependent on the driver version and the DCGM library version. New GPU architectures (like Hopper) require updated DCGM versions to correctly interpret the hardware registers for temperature and power.",
+      "why_not_A": "Regex transformations in Prometheus change the label name, not the underlying value reported by the hardware exporter.",
+      "why_not_C": "cAdvisor does not provide granular GPU-specific metrics like core temperature; it primarily monitors CPU, memory, and container-level resource usage.",
+      "why_not_D": "Fixing clock speeds might stabilize temperature, but it does not fix the reporting inconsistency caused by version mismatch."
+    },
+    "tags": [
+      "Prometheus",
+      "DCGM-Exporter",
+      "GPU-Operator",
+      "Observability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-086",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During a large-scale distributed training job, the system administrator notices that some nodes are reporting 'GPU Memory Leak' symptoms, where memory usage increases steadily without a corresponding increase in workload. The administrator wants to distinguish between a leak in the application code and a leak in the NVIDIA driver/kernel. Which tool/method is most appropriate for this diagnosis?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use 'nvidia-smi' to check the current memory usage every 5 seconds.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Compare the 'Used GPU Memory' from nvidia-smi with the memory allocation reported by the deep learning framework's internal memory profiler (e.g., PyTorch Profiler).",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Restart the NVIDIA persistence daemon to clear the memory cache.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Check the dmesg logs for 'Out of Memory' (OOM) killer events in the system RAM.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "If the framework's profiler shows stable memory but nvidia-smi shows increasing usage, the leak is likely in the driver or a low-level library. If both increase, the leak is in the application-level tensors/buffers.",
+      "why_not_A": "nvidia-smi only shows the total consumption; it cannot tell you who (the driver or the app) is responsible for the allocation.",
+      "why_not_C": "The persistence daemon manages the driver state to avoid reload delays; it does not manage or clear GPU VRAM allocations.",
+      "why_not_D": "dmesg OOM killer events refer to System RAM (CPU memory), not the VRAM on the GPU device."
+    },
+    "tags": [
+      "Memory-Management",
+      "Profiling",
+      "nvidia-smi",
+      "Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-087",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A user reports that their GPU-accelerated container is running significantly slower than expected. You observe that the GPU is underutilized (20%) and the 'SM Clock' is locked at a very low frequency. You check the system logs and find no Xid errors. What is the most likely cause of this behavior in a production environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPU is in a 'P0' power state, causing it to throttle performance to save energy.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The container is experiencing CPU bottlenecks or I/O wait, preventing the GPU from being fed data quickly enough.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The NVIDIA driver is outdated, preventing the GPU from reaching maximum boost clocks.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPU is experiencing 'ECC Memory' errors, which automatically lowers the clock speed to ensure data integrity.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Low GPU utilization combined with low SM clocks usually indicates a 'starvation' scenario where the GPU is idling while waiting for the CPU to preprocess data or for the disk to load batches.",
+      "why_not_A": "P0 is the maximum performance state. Throttling occurs in higher P-states (like P8), but the cause is usually thermal or power limits, not 'saving energy' in a production run.",
+      "why_not_C": "While drivers matter, an outdated driver usually results in a crash or lack of feature support, not a consistent low-clock/low-utilization state without errors.",
+      "why_not_D": "ECC errors typically trigger Xid events or can be seen in the 'ECC errors' column of nvidia-smi; they do not silently lock the SM clock to a low frequency."
+    },
+    "tags": [
+      "Performance-Tuning",
+      "Utilization",
+      "Bottlenecks",
+      "Monitoring"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-088",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are troubleshooting a 'GPU not found' error in a Kubernetes pod. The node is healthy, and 'nvidia-smi' works on the host OS. However, the pod fails to start with a 'Container cannot mount GPU' error. Which of the following is the most likely misconfiguration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NVIDIA Container Runtime is not configured as the default runtime in the containerd config.toml.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "The GPU is currently in a 'Compute' mode that prohibits shared access.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The pod does not have the 'privileged: true' flag set in its security context.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The NVIDIA driver version on the host is newer than the version required by the container image.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "For Kubernetes to pass GPU devices into a container, the container runtime (containerd/Docker) must be configured to use the nvidia-container-runtime to handle the mounting of the driver libraries and device nodes.",
+      "why_not_B": "Compute mode (Exclusive Process) would allow the pod to start but would cause errors when trying to run the application, not a failure to mount the GPU.",
+      "why_not_C": "The NVIDIA GPU Operator and runtime allow GPU access without requiring full privileged mode, using device plugins and specific runtime hooks instead.",
+      "why_not_D": "NVIDIA drivers are generally backward compatible. A newer host driver will almost always support an older container image's CUDA requirements."
+    },
+    "tags": [
+      "Kubernetes",
+      "Container-Runtime",
+      "GPU-Operator",
+      "Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-089",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An enterprise AI cluster running a large-scale LLM training job experiences a sudden drop in throughput. Monitoring via NVIDIA DCGM shows that while GPU utilization remains high, the 'sm_clock' is significantly lower than the rated boost clock, and 'clocks_throttle_reasons' indicates 'HW Thermal Slowdown' on multiple GPUs across three different nodes. What is the most likely root cause and the first step for remediation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GPU memory fragmentation causing excessive paging; increase the batch size to saturate the memory controllers.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Insufficient chassis airflow or cooling failure; verify fan speeds and heat sink seating via DCGM and IPMI.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVLink fabric congestion leading to synchronization delays; implement a different collective communication algorithm (e.g., NCCL rings).",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Power capping enforced by the OS; increase the power limit using nvidia-smi -pl.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'HW Thermal Slowdown' flag in DCGM explicitly indicates that the hardware is throttling the clock speed to prevent permanent damage due to overheating. This is a physical layer issue requiring verification of cooling infrastructure.",
+      "why_not_A": "Memory fragmentation affects performance but does not trigger hardware thermal throttling flags in DCGM.",
+      "why_not_C": "NVLink congestion would show as high latency or low bus utilization, but would not cause the hardware to report a thermal slowdown.",
+      "why_not_D": "Power capping triggers a different throttle reason ('SW Power Cap') rather than 'HW Thermal Slowdown'."
+    },
+    "tags": [
+      "DCGM",
+      "Hardware-Monitoring",
+      "Thermal-Throttling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-090",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "During a distributed training run using PyTorch and NCCL, a job hangs indefinitely. The logs show no explicit error, but the NVIDIA DCGM dashboard indicates that one GPU is at 100% utilization while all other GPUs are at 0% utilization. Which troubleshooting step is most critical to identify the cause of this 'zombie' state?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Restart the Kubernetes pod to clear the GPU memory cache.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the NCCL_TIMEOUT environment variable to allow slower nodes to catch up.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable NCCL_DEBUG=INFO and check for 'unreachable' or 'timeout' messages in the collective communication logs.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Check for CPU memory swapping on the host node to ensure the dataset is fully cached.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A common failure mode in distributed AI is a NCCL collective hang where one GPU is stuck in a loop or waiting for a packet that never arrives. NCCL_DEBUG=INFO provides the necessary visibility into the communication ring to identify the failing link.",
+      "why_not_A": "Restarting the pod is a recovery action, not a troubleshooting step to identify the root cause.",
+      "why_not_B": "Increasing the timeout only masks the problem; if a GPU is truly hung or a link is dead, the job will still fail, just later.",
+      "why_not_D": "CPU swapping would generally slow down all GPUs (data starvation) rather than causing one GPU to be at 100% while others are idle."
+    },
+    "tags": [
+      "NCCL",
+      "Distributed-Training",
+      "Collective-Communication"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-091",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An AI Operations engineer notices a recurring 'XID 61' error in the kernel logs of several A100 GPUs. The system is running a Multi-Instance GPU (MIG) configuration. What does this specific error typically indicate in a MIG environment, and how should it be addressed?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It indicates a memory ECC single-bit error; the GPU should be rebooted to clear the error counter.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It indicates a MIG memory violation or invalid access across instance boundaries; verify the MIG profile and application memory bounds.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "It indicates a PCIe link training failure; replace the riser or the motherboard.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "It indicates an NVLink CRC error; disable NVLink and fallback to PCIe.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "XID 61 is specifically associated with MIG memory faults, where a process attempts to access memory outside of its allocated MIG instance partition.",
+      "why_not_A": "ECC errors are typically reported as XID 48 or through specific ECC counters, not XID 61.",
+      "why_not_C": "PCIe link failures generally trigger XID 79 or other bus-related errors.",
+      "why_not_D": "NVLink errors are usually associated with XID 119 or specific NVLink status registers."
+    },
+    "tags": [
+      "MIG",
+      "XID-Errors",
+      "GPU-Diagnostics"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-092",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A production inference pipeline is experiencing intermittent latency spikes. Prometheus monitoring shows that 'GPU Engine' utilization is low, but 'GPU Memory Copy' (MEMCOPY) utilization is consistently high. The model is being served via NVIDIA Triton Inference Server. What is the most likely architectural bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPU compute cores are under-utilized due to a lack of CUDA kernels.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The model weights are too large for the GPU VRAM, causing constant swapping to system RAM.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Excessive data movement between Host-to-Device (H2D) or Device-to-Host (D2H), likely due to inefficient preprocessing or lack of pinned memory.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The Triton Inference Server is configured with too many model instances, causing context-switching overhead.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "High MEMCOPY utilization combined with low GPU Engine (compute) utilization is a classic sign of an I/O bottleneck where the GPU is waiting for data to be transferred over the PCIe bus.",
+      "why_not_A": "Low compute utilization is a symptom, not the cause; the cause is the data transfer bottleneck.",
+      "why_not_B": "If weights were swapping to system RAM, the system would likely crash with Out-Of-Memory (OOM) or show extreme latency, but the primary metric would be system memory pressure, not just GPU MEMCOPY.",
+      "why_not_D": "Too many instances would typically increase GPU Engine utilization (due to overhead) or lead to VRAM exhaustion, not specifically high MEMCOPY."
+    },
+    "tags": [
+      "Triton",
+      "Performance-Profiling",
+      "PCIe-Bottleneck"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-093",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An operator is using the NVIDIA GPU Operator on Kubernetes. A new node is added to the cluster, but the GPUs are not being discovered by the pods, despite the 'nvidia-device-plugin' pod being in a 'Running' state. Upon inspection, the 'gpu-feature-discovery' pod is failing to label the node. What is the most probable cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NVIDIA driver is not installed on the host OS, and the operator is failing to load the driver container.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "The Kubernetes CNI is not compatible with GPU networking.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The pods are requesting 'nvidia.com/gpu' but the node only supports 'nvidia.com/mig-gpu'.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPU Operator is missing the 'node-feature-discovery' (NFD) dependency.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The GPU Operator follows a specific dependency chain: Driver -> Device Plugin -> Feature Discovery. If the driver fails to load (e.g., due to kernel version mismatch), the device plugin may start but cannot communicate with the hardware, and GFD will fail to identify the GPU capabilities to label the node.",
+      "why_not_B": "CNI handles networking; it does not affect the discovery of hardware devices by the GPU Operator.",
+      "why_not_C": "This would cause a scheduling error (Pending pod), but it would not cause the 'gpu-feature-discovery' pod to fail to label the node.",
+      "why_not_D": "While NFD is often used, the GPU Operator's internal GFD component is what specifically handles NVIDIA-specific labeling based on the driver's output."
+    },
+    "tags": [
+      "GPU-Operator",
+      "Kubernetes",
+      "Deployment-Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-094",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI operations engineer notices that a multi-node training job is experiencing significant performance degradation. The NVIDIA DCGM (Data Center GPU Manager) dashboard shows high 'XID 61' errors on several GPUs across different nodes. What is the most likely root cause and the first step for troubleshooting?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GPU thermal throttling; check the cooling system and fan speeds.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "GPU memory ECC errors; check the hardware logs for corrected/uncorrected memory errors.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "GPU memory page fault/illegal memory access; examine the application code and CUDA kernel memory boundaries.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "NVLink failure; run nvidia-smi nvlink -s to verify link status.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "XID 61 typically indicates a GPU memory page fault or an illegal memory access, which is often a software/kernel issue where the application attempts to access an invalid memory address.",
+      "why_not_A": "Thermal throttling is usually indicated by different XID codes or specific DCGM temperature metrics, not XID 61.",
+      "why_not_B": "ECC errors are generally reported as XID 48 or through specific ECC counters in DCGM, rather than XID 61.",
+      "why_not_D": "NVLink errors typically trigger XID 75 or specific link-down events, not page faults."
+    },
+    "tags": [
+      "DCGM",
+      "XID_Errors",
+      "GPU_Diagnostics"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-095",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A production LLM inference service is experiencing intermittent latency spikes. Prometheus metrics show that GPU utilization is consistently at 40%, but the 'GPU Memory Copy' utilization is spiking to 90% during these periods. Which of the following is the most likely bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Compute-bound kernels; the model needs more FP8 quantization to reduce TFLOPS requirements.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "PCIe bandwidth saturation; the system is frequently moving large tensors between Host and Device memory.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "GPU Memory capacity; the model is swapping weights to system RAM (paging).",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "CPU bottleneck; the preprocessing pipeline is unable to feed the GPU fast enough.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "High 'GPU Memory Copy' utilization relative to low compute (GPU utilization) indicates that the system is spending most of its time transferring data over the PCIe bus rather than performing computations.",
+      "why_not_A": "If the system were compute-bound, the GPU utilization would be near 100% while memory copy remained low.",
+      "why_not_C": "GPU memory capacity issues usually lead to 'Out of Memory' (OOM) crashes rather than high memory copy utilization spikes.",
+      "why_not_D": "A CPU bottleneck would typically manifest as very low GPU utilization and low memory copy utilization, as the GPU would be idling waiting for data."
+    },
+    "tags": [
+      "Prometheus",
+      "Performance_Bottlenecks",
+      "Data_Transfer"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-096",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During a distributed training run using NCCL, the job hangs indefinitely. When checking the logs, there are no explicit crash messages, but 'NCCL_DEBUG=INFO' reveals that the process is stuck during the 'all_reduce' phase. Which tool should be used first to determine if the issue is a network partition or a failed GPU link?",
+    "options": [
+      {
+        "id": "A",
+        "text": "nvidia-smi",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "CUDA-GDB",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NCCL Tests (all_reduce_perf)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "top/htop",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NCCL Tests are the industry standard for isolating communication failures. Running a standalone all_reduce_perf test allows the engineer to verify if the interconnect (InfiniBand/RoCE/NVLink) is functioning independently of the complex training application.",
+      "why_not_A": "nvidia-smi provides static state and utilization, but cannot diagnose transient network hangs or NCCL collective timeouts.",
+      "why_not_B": "CUDA-GDB is for debugging kernel logic and memory corruption, not for diagnosing distributed network synchronization hangs.",
+      "why_not_D": "htop monitors CPU/RAM, which is irrelevant to an NCCL collective communication hang on the GPU fabric."
+    },
+    "tags": [
+      "NCCL",
+      "Distributed_Training",
+      "Network_Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-097",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A Kubernetes cluster running NVIDIA GPU Operator is reporting 'GPU Not Found' for several pods, despite the physical GPUs being healthy. The 'nvidia-device-plugin' pods are in a CrashLoopBackOff state. What is the most probable cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPU driver version on the host is incompatible with the containerized device plugin version.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "The pods have requested more GPU memory than is physically available on the hardware.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The NVIDIA Container Toolkit is not installed on the worker nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The Kubernetes scheduler is unable to find nodes with available resources.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The NVIDIA Device Plugin relies on a specific API compatibility between the host driver and the plugin. A version mismatch often causes the plugin to crash during initialization, preventing GPUs from being advertised to the K8s scheduler.",
+      "why_not_B": "Resource requests are handled by the scheduler; they would cause pods to remain 'Pending', not cause the device-plugin itself to enter CrashLoopBackOff.",
+      "why_not_C": "If the toolkit were missing, the plugin might start but fail to mount the drivers; however, the Operator usually manages the toolkit installation as a prerequisite.",
+      "why_not_D": "Scheduler issues result in 'Pending' pods, not the failure of the system-level device-plugin daemonset."
+    },
+    "tags": [
+      "GPU_Operator",
+      "Kubernetes",
+      "Device_Plugin"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-098",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "monitoring-troubleshooting",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An engineer is monitoring a GPU cluster and observes that 'GPU Power Usage' is significantly lower than the 'TDP' (Thermal Design Power) even though the GPU utilization is 100%. What does this most likely indicate about the workload?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPU is overheating and the system has triggered an emergency power down.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The workload is compute-intensive (ALU bound) but not memory-intensive, leading to low power draw.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The workload is memory-bound or latency-bound, meaning the compute cores are idling between memory fetches despite high reported utilization.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The power supply unit (PSU) is failing and cannot provide enough wattage to the GPU.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "GPU utilization measures the percentage of time one or more kernels are active on the GPU. If a workload is memory-bound, the GPU is 'busy' waiting for data from VRAM, which consumes significantly less power than active tensor core computations.",
+      "why_not_A": "Emergency power down would result in 0% utilization and a system crash or XID error.",
+      "why_not_B": "Compute-intensive workloads (like dense matrix multiplication) typically drive power consumption toward the TDP limit.",
+      "why_not_D": "A PSU failure would typically cause a hard system reboot or a critical XID error, not a consistent state of low power draw during 100% utilization."
+    },
+    "tags": [
+      "Power_Management",
+      "Utilization_Metrics",
+      "Hardware_Monitoring"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-099",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI team is deploying a large language model (LLM) using Kubernetes. They notice that the pods are being scheduled on nodes with insufficient GPU memory, leading to 'Out of Memory' (OOM) errors during model loading. Which Kubernetes mechanism should be implemented to ensure pods are only placed on nodes with specific GPU capacities?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a Horizontal Pod Autoscaler (HPA) based on GPU utilization.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Node Affinity or Node Selectors to target nodes with specific GPU labels.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the memory limits in the pod specification for the system RAM.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Readiness Probe to check for GPU availability.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Node Affinity and Node Selectors allow the scheduler to constrain pods to nodes that possess specific labels (e.g., gpu-type=a100), ensuring the hardware meets the model's memory requirements.",
+      "why_not_A": "HPA scales the number of pods based on metrics but does not control which specific node a pod is placed on.",
+      "why_not_C": "Increasing system RAM limits does not solve the issue of insufficient VRAM (GPU memory) on the physical hardware.",
+      "why_not_D": "Readiness probes determine if a container is ready to accept traffic; they do not influence the initial scheduling decision of the pod onto a node."
+    },
+    "tags": [
+      "scheduling",
+      "node-affinity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-100",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data scientist is running a training job that requires exclusive access to a physical GPU to avoid performance degradation from resource contention. Which Kubernetes resource configuration is most appropriate to ensure no other pods share the same GPU?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the GPU resource limit to 0.5 using NVIDIA GPU Time-Slicing.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Pod Anti-Affinity rule to prevent pods from running on the same node.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Specify 'nvidia.com/gpu: 1' in the pod's resource requests and limits.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure the pod to use a Shared Memory (/dev/shm) volume.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In Kubernetes, GPUs are treated as integer resources. Requesting 'nvidia.com/gpu: 1' ensures the NVIDIA device plugin allocates one entire physical GPU to that container, providing exclusive access.",
+      "why_not_A": "Time-slicing allows multiple pods to share one GPU, which is the opposite of the requirement for exclusive access.",
+      "why_not_B": "Pod Anti-Affinity prevents pods from sharing a node, but it doesn't manage the specific allocation of GPU resources within that node.",
+      "why_not_D": "Shared memory volumes are used for inter-process communication (IPC) and do not affect GPU hardware allocation."
+    },
+    "tags": [
+      "resource-management",
+      "gpu-allocation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-101",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An operations engineer is deploying a multi-node GPU cluster. They need to ensure that the NVIDIA Device Plugin is active so that the Kubernetes scheduler is aware of the available GPUs. Where is the NVIDIA Device Plugin typically deployed in a Kubernetes cluster?",
+    "options": [
+      {
+        "id": "A",
+        "text": "As a single Deployment in the default namespace.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "As a DaemonSet across all GPU-enabled nodes.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "As a Static Pod on the control plane node only.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "As a StatefulSet to maintain GPU state across restarts.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A DaemonSet ensures that a copy of the NVIDIA Device Plugin runs on every node in the cluster (or every node matching a selector), which is necessary because the plugin must discover and report the local hardware of each specific node.",
+      "why_not_A": "A Deployment would place the plugin on a random node, leaving other GPU nodes undetected by the scheduler.",
+      "why_not_C": "The control plane typically doesn't have GPUs; the plugin must run on the worker nodes where the hardware actually resides.",
+      "why_not_D": "StatefulSets are for applications requiring stable identifiers and persistent storage; the device plugin is a stateless utility for hardware reporting."
+    },
+    "tags": [
+      "nvidia-device-plugin",
+      "daemonset"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-102",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A production AI inference service is experiencing intermittent downtime during rolling updates. The engineer discovers that new pods are being marked as 'Ready' and receiving traffic before the GPU-accelerated model has finished loading into VRAM. What is the best way to resolve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the 'initialDelaySeconds' of the Liveness Probe.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch from a RollingUpdate strategy to a Recreate strategy.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a custom Readiness Probe that checks if the model is loaded in VRAM.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the CPU requests for the pod to speed up model loading.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A Readiness Probe tells Kubernetes when a pod is actually ready to serve traffic. By checking if the model is loaded in VRAM, Kubernetes will withhold traffic from the pod until the GPU initialization is complete.",
+      "why_not_A": "Liveness probes restart the container if it fails; they do not control whether the pod receives traffic from the Service load balancer.",
+      "why_not_B": "Recreate causes total downtime by killing all old pods before starting new ones, which is worse than intermittent downtime.",
+      "why_not_D": "While more CPU might speed up loading, it doesn't solve the synchronization problem of knowing *when* the loading is finished."
+    },
+    "tags": [
+      "health-checks",
+      "readiness-probes"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-103",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI team is using Multi-Instance GPU (MIG) on A100 GPUs to provide smaller GPU slices to multiple users. They find that pods are failing to start because the requested MIG profile does not match the available hardware partition. Which configuration is required to successfully schedule a pod on a specific MIG partition?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The pod must request 'nvidia.com/gpu' without specifying a profile.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The pod must use a HostPath volume to access the MIG configuration file.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The pod must request the specific MIG resource name (e.g., 'nvidia.com/mig-1g.10gb').",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "MIG must be disabled in the BIOS to allow Kubernetes to manage partitions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "When MIG is enabled, the NVIDIA Device Plugin exposes specific MIG profiles as distinct resources. To use a specific slice, the pod must request that exact resource name (e.g., mig-1g.10gb) in its resource limits.",
+      "why_not_A": "Requesting the generic 'nvidia.com/gpu' usually refers to a full GPU and may fail or behave unexpectedly when MIG is active.",
+      "why_not_B": "MIG partitions are managed via the device plugin and scheduler, not via mounting configuration files through HostPath.",
+      "why_not_D": "MIG is a hardware/driver feature; disabling it in BIOS would remove the ability to use GPU slicing entirely."
+    },
+    "tags": [
+      "MIG",
+      "resource-allocation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-104",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI engineering team is deploying a large-scale LLM inference service on Kubernetes. They observe that pods are frequently being evicted due to 'Out of Memory' (OOM) errors, even though the total cluster memory is sufficient. The pods are configured with high memory limits but no memory requests. Which action should the operator take to ensure stable scheduling and prevent eviction?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the memory limit to match the total node capacity.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set the memory requests equal to the memory limits to create a Guaranteed Quality of Service (QoS) class.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable the kubelet eviction signals in the node configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a Vertical Pod Autoscaler (VPA) in 'Auto' mode to dynamically adjust limits.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "When requests equal limits, the pod is assigned the 'Guaranteed' QoS class. Kubernetes prioritizes pods with Guaranteed QoS over 'Burstable' or 'BestEffort' pods during resource contention, significantly reducing the likelihood of eviction.",
+      "why_not_A": "Increasing limits without requests keeps the pod in the 'Burstable' class, meaning the scheduler doesn't reserve memory, leading to overcommitment and continued evictions.",
+      "why_not_C": "Disabling eviction signals is dangerous and can lead to node instability or kernel panics (OOM Killer) rather than controlled pod eviction.",
+      "why_not_D": "VPA in Auto mode restarts pods to apply new resource settings, which can cause downtime and does not solve the immediate QoS priority issue during peak loads."
+    },
+    "tags": [
+      "resource-management",
+      "qos-classes",
+      "eviction"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-105",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data science team is deploying a distributed training job using PyTorch. They need to ensure that pods are scheduled on nodes that have specific NVIDIA A100 GPUs available and that the pods are not split across different physical nodes to minimize latency. Which combination of Kubernetes features is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NodeSelector for GPU type and PodAntiAffinity to separate pods.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Taints and Tolerations for GPU nodes and Horizontal Pod Autoscaler.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Node Affinity for GPU type and PodAffinity to co-locate pods.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Taints and Tolerations for GPU nodes and NodeSelector for co-location.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Node Affinity allows the scheduler to target nodes with specific labels (e.g., GPU type), and PodAffinity ensures that pods are scheduled on the same node or zone as other pods in the training group to reduce interconnect latency.",
+      "why_not_A": "PodAntiAffinity would intentionally spread pods across different nodes, which contradicts the requirement to minimize latency by keeping them together.",
+      "why_not_B": "Taints/Tolerations prevent pods from being scheduled on nodes unless they tolerate the taint; they do not actively attract pods to specific hardware or ensure co-location.",
+      "why_not_D": "NodeSelector can target specific nodes, but it cannot enforce that multiple pods be co-located on the same node relative to each other."
+    },
+    "tags": [
+      "scheduling",
+      "node-affinity",
+      "pod-affinity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-106",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An operator is configuring a GPU-accelerated workload. They notice that the pods are stuck in 'Pending' state. The event log shows '0/10 nodes are available: 10 Insufficient nvidia.com/gpu'. However, the operator knows that 4 nodes have available GPUs. What is the most likely cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NVIDIA Device Plugin is not installed on the worker nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The pods are requesting more GPUs than any single node possesses.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The GPU nodes have been tainted with 'NoSchedule' and the pods lack tolerations.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The Kubernetes scheduler is not configured for GPU-aware scheduling.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Kubernetes schedules pods based on the capacity of a single node. If a pod requests 8 GPUs but each node only has 4, the pod will remain Pending even if the cluster has 40 GPUs in total, because no single node can satisfy the request.",
+      "why_not_A": "If the Device Plugin were missing, the nodes would not report 'nvidia.com/gpu' capacity at all, and the error would likely be different or the capacity would be 0.",
+      "why_not_C": "If taints were the issue, the event log would explicitly mention 'taints' or 'tolerations' rather than 'Insufficient nvidia.com/gpu'.",
+      "why_not_D": "The standard Kubernetes scheduler is inherently 'GPU-aware' as long as the Device Plugin reports the resources as extended resources."
+    },
+    "tags": [
+      "resource-allocation",
+      "gpu-scheduling",
+      "troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-107",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A production AI pipeline uses a Shared File System (NFS) for model weights. Several pods need to read these weights simultaneously. Which Kubernetes volume type should be used to ensure that all pods can access the same data concurrently across different nodes?",
+    "options": [
+      {
+        "id": "A",
+        "text": "hostPath",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "emptyDir",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "PersistentVolumeClaim with ReadWriteOnce (RWO) access mode.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "PersistentVolumeClaim with ReadWriteMany (RWX) access mode.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "ReadWriteMany (RWX) allows a volume to be mounted as read-write by many nodes simultaneously, which is essential for shared model weights in a distributed AI workload.",
+      "why_not_A": "hostPath mounts a directory from the host node's filesystem; it does not share data across different nodes in a cluster.",
+      "why_not_B": "emptyDir is a temporary volume that exists only for the lifetime of the pod and is local to the node, not shared across pods on different nodes.",
+      "why_not_C": "ReadWriteOnce (RWO) allows the volume to be mounted as read-write by a single node only. This would prevent pods on other nodes from accessing the weights."
+    },
+    "tags": [
+      "storage",
+      "pvc",
+      "access-modes"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-108",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "To optimize costs, an AI company uses Spot Instances for their GPU worker nodes. They need to implement a mechanism that ensures that if a Spot Instance is reclaimed, the critical model-serving pods are immediately rescheduled on available on-demand nodes. Which strategy is most effective?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the pods' priorityClassName to a high value and use a PriorityClass object.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Increase the replica count of the deployment to 10x the required amount.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Cluster Autoscaler with 'expander' set to 'priority'.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure the pods with a high 'terminationGracePeriodSeconds'.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "PriorityClasses allow the scheduler to preempt lower-priority pods to make room for high-priority ones. By assigning a high priority to critical pods, Kubernetes ensures they are scheduled first on remaining on-demand nodes if spot nodes disappear.",
+      "why_not_B": "Increasing replicas increases costs and does not guarantee that the pods will be placed on on-demand nodes specifically; they might still land on remaining spot nodes.",
+      "why_not_C": "The 'expander' setting controls how the Cluster Autoscaler decides which node group to scale up, but it does not manage the priority of pod rescheduling during a node failure.",
+      "why_not_D": "Grace period only controls how long a pod has to shut down; it does not influence the scheduling or priority of the pod on a new node."
+    },
+    "tags": [
+      "pod-priority",
+      "spot-instances",
+      "availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-109",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI infrastructure engineer is deploying a large-scale LLM training workload across a Kubernetes cluster. The workload requires strict GPU affinity to ensure that pods are scheduled on nodes with specific NVIDIA A100 80GB GPUs, but the scheduler is currently placing pods on nodes with A100 40GB GPUs, leading to Out-Of-Memory (OOM) errors. Which configuration change is the most effective way to ensure the pods are only scheduled on the correct hardware?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a 'preferredDuringSchedulingIgnoredDuringExecution' node affinity rule based on the GPU memory label.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a 'requiredDuringSchedulingIgnoredDuringExecution' node affinity rule targeting the specific GPU memory label.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the GPU resource request in the pod spec to exceed 40GB to trigger an automatic scheduler filter.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Apply a Taint to the 40GB nodes with 'NoSchedule' and add a corresponding Toleration to the pod spec.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'requiredDuringSchedulingIgnoredDuringExecution' rule acts as a hard constraint, ensuring the scheduler only considers nodes that strictly match the specified label (e.g., nvidia.com/gpu-memory=80GB), preventing OOM errors.",
+      "why_not_A": "Preferred affinity is a 'soft' constraint; the scheduler will try to find the 80GB node but will still place the pod on a 40GB node if the preferred node is unavailable or if other priorities override it.",
+      "why_not_C": "Kubernetes resource requests for GPUs are typically integer-based (e.g., nvidia.com/gpu: 1). The scheduler does not natively differentiate between GPU VRAM capacities via the resource request field alone.",
+      "why_not_D": "Taints prevent pods from being scheduled on a node unless they have a toleration. While this would stop pods from hitting 40GB nodes, it doesn't actively ensure they land on 80GB nodes if other incompatible node types exist."
+    },
+    "tags": [
+      "node-affinity",
+      "gpu-scheduling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-110",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team is deploying a multi-tenant AI platform where different research groups share a single GPU cluster. To prevent a single user from consuming all available GPUs and starving other groups, the administrator needs to implement a mechanism that guarantees a minimum number of GPUs for each group while allowing them to burst if resources are available. Which Kubernetes feature is best suited for this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Resource Quotas with PriorityClasses.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "LimitRanges applied at the namespace level.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Resource Quotas combined with a Priority-based preemption strategy.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Pod Disruption Budgets (PDBs) for each research group.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Resource Quotas limit the total amount of GPU resources a namespace can consume. By combining this with PriorityClasses, high-priority 'guaranteed' pods can preempt lower-priority 'burst' pods, effectively managing minimum guarantees and maximum limits.",
+      "why_not_A": "PriorityClasses alone manage the order of scheduling but do not enforce hard limits on total resource consumption across a namespace.",
+      "why_not_B": "LimitRanges constrain the resource requests/limits of individual pods, not the aggregate total for a group or namespace.",
+      "why_not_D": "PDBs ensure a minimum number of pods remain available during voluntary disruptions (like upgrades) and have no impact on resource allocation or scheduling constraints."
+    },
+    "tags": [
+      "resource-quotas",
+      "multi-tenancy"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-111",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is using the NVIDIA GPU Operator to manage their cluster. They observe that some pods are failing to start with a 'Pending' state, and the events log shows 'Insufficient nvidia.com/gpu'. However, the cloud provider's dashboard shows that GPU nodes are active. Upon investigation, it is found that the NVIDIA Device Plugin is not reporting GPUs on several nodes. What is the most likely cause in a container-orchestrated environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPU Operator's DaemonSet is missing a nodeSelector for the specific GPU architecture.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The NVIDIA Driver is missing or mismatched on the worker nodes, preventing the Device Plugin from initializing.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The Kubernetes API server is unable to communicate with the kubelet via port 10250.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The pods are requesting 'nvidia.com/gpu' but the nodes are labeled with 'gpu-enabled'.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The NVIDIA Device Plugin depends on the underlying NVIDIA driver being correctly installed and functioning. If the driver is missing or fails to load, the Device Plugin cannot discover the GPUs and will not advertise the 'nvidia.com/gpu' resource to the kubelet.",
+      "why_not_A": "If the DaemonSet had a missing nodeSelector, the Device Plugin pods wouldn't run at all; however, the scenario implies the plugin is present but not reporting resources.",
+      "why_not_C": "If the API server couldn't talk to the kubelet, the node would likely be marked as 'NotReady', and no pods (regardless of GPU needs) would be scheduled there.",
+      "why_not_D": "Labels are used for scheduling (affinity), but resource reporting ('Insufficient nvidia.com/gpu') is handled by the Device Plugin and the kubelet, not by node labels."
+    },
+    "tags": [
+      "gpu-operator",
+      "device-plugin"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-112",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data scientist needs to run a distributed training job using PyTorch that requires low-latency communication between pods. The current deployment uses standard Kubernetes Services for discovery, but the pods are scattered across different availability zones, resulting in high network latency. Which orchestration strategy should be implemented to minimize latency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a ClusterIP service with session affinity (clientIP).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Pod Topology Spread Constraints with 'topologyKey: topology.kubernetes.io/zone'.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Pod Affinity rules to ensure pods are scheduled in the same zone and on the same physical rack if possible.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Switch from a Deployment to a StatefulSet to ensure stable network identifiers.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Pod Affinity allows the scheduler to place pods that need to communicate frequently on the same node or within the same zone, significantly reducing the network hops and latency for distributed training.",
+      "why_not_A": "Session affinity controls which pod a client request goes to; it does not influence where the pods themselves are physically placed in the cluster.",
+      "why_not_B": "Topology Spread Constraints are designed to *distribute* pods evenly across zones to ensure high availability, which is the opposite of what is needed for low-latency communication.",
+      "why_not_D": "StatefulSets provide stable network IDs (pod-0, pod-1), but they do not control the physical placement of pods across zones or nodes."
+    },
+    "tags": [
+      "pod-affinity",
+      "distributed-training"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-113",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "container-orchestration",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI team is deploying a model serving application using a Horizontal Pod Autoscaler (HPA). They notice that during sudden traffic spikes, the HPA takes too long to trigger new pods, and the existing pods crash due to GPU memory exhaustion before the new ones are ready. Which approach would best mitigate this 'cold start' and scaling lag?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the HPA 'cool-down' period to prevent flapping.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Change the HPA metric from CPU utilization to a custom GPU memory utilization metric via Prometheus Adapter.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Decrease the 'readinessProbe' initial delay to bring pods online faster.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set the HPA 'minReplicas' to equal the 'maxReplicas'.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Standard HPA often relies on CPU/Memory. For AI workloads, GPU memory is the primary bottleneck. By using a custom metric (like GPU duty cycle or memory usage) via the Prometheus Adapter, the HPA can react to the actual resource being exhausted, triggering scaling actions sooner and more accurately.",
+      "why_not_A": "Increasing the cool-down period actually slows down the scaling process, which would worsen the problem during a traffic spike.",
+      "why_not_C": "Reducing the readinessProbe delay doesn't help if the pods aren't being created fast enough; it only affects when a created pod starts receiving traffic.",
+      "why_not_D": "Setting min=max removes the autoscaling functionality entirely, which is an inefficient use of expensive GPU resources and not a scaling 'strategy'."
+    },
+    "tags": [
+      "hpa",
+      "custom-metrics"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-114",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI operations team is deploying a large-scale LLM across a cluster of NVIDIA H100 GPUs. They notice that while GPU utilization is high, the actual throughput is lower than expected, and the GPU memory is nearly full, causing frequent OOM (Out of Memory) errors during peak inference loads. Which optimization technique should be prioritized to increase throughput without adding more hardware?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increasing the batch size to maximize GPU core utilization.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing KV (Key-Value) cache quantization or PagedAttention.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switching from FP16 to FP32 precision for higher accuracy.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disabling Multi-Instance GPU (MIG) to allow a single process to access all memory.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PagedAttention (used in vLLM) and KV cache quantization reduce memory fragmentation and the memory footprint of the cache, allowing for larger batch sizes and higher throughput by optimizing how memory is allocated for tokens.",
+      "why_not_A": "Increasing batch size when memory is already nearly full will exacerbate OOM errors rather than solving them.",
+      "why_not_C": "Switching to FP32 doubles the memory requirement per parameter, which would lead to immediate OOM errors in this scenario.",
+      "why_not_D": "MIG is for partitioning; if the model is already using the whole GPU, MIG is likely already off. Disabling it doesn't solve the memory efficiency problem of the KV cache."
+    },
+    "tags": [
+      "inference-optimization",
+      "memory-management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-115",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data science team is training a model that exceeds the memory capacity of a single A100 80GB GPU. They want to distribute the model across 4 GPUs. They require the model to be split across GPUs such that each GPU holds a portion of the model layers, but the full batch is processed sequentially through the layers. Which parallelism strategy are they implementing?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Data Parallelism (DP)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Tensor Parallelism (TP)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Pipeline Parallelism (PP)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Distributed Data Parallelism (DDP)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Pipeline Parallelism splits the model vertically by layers. Each GPU handles a set of layers and passes the intermediate activations to the next GPU in the pipeline.",
+      "why_not_A": "Data Parallelism replicates the entire model on every GPU and splits the data batch, which would not solve the problem of the model being too large for one GPU.",
+      "why_not_B": "Tensor Parallelism splits individual layers (tensors) across GPUs, which is different from splitting the model by layers (stages).",
+      "why_not_D": "DDP is a more efficient version of Data Parallelism and still requires the full model to fit on a single GPU."
+    },
+    "tags": [
+      "distributed-training",
+      "parallelism-strategies"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-ncp-ai-ops-mock1-116",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is running multiple small AI workloads on a single NVIDIA A100 GPU. They observe that some workloads are idling while others are starving for resources, and they want to ensure strict hardware-level isolation to prevent one workload from crashing others due to memory exhaustion. Which NVIDIA feature should they enable?",
+    "options": [
+      {
+        "id": "A",
+        "text": "CUDA Streams",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "MPS (Multi-Process Service)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "MIG (Multi-Instance GPU)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "GPUDirect Storage",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "MIG provides hardware-level isolation by partitioning the GPU into several smaller instances, each with its own dedicated memory and compute resources (SMs), preventing interference between workloads.",
+      "why_not_A": "CUDA Streams allow for concurrent execution of kernels within a single process but do not provide hardware isolation or memory partitioning.",
+      "why_not_B": "MPS allows multiple processes to share GPU resources more efficiently, but it provides software-level scheduling and does not offer the strict hardware memory isolation that MIG provides.",
+      "why_not_D": "GPUDirect Storage optimizes data transfer between storage and GPU memory; it does not manage resource partitioning."
+    },
+    "tags": [
+      "gpu-partitioning",
+      "MIG"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-nvidia-ncp-ai-ops-mock1-117",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is optimizing a PyTorch training pipeline. They notice that the GPU utilization fluctuates wildly, often dropping to 0% while the CPU is at 100% usage. Profiling shows that the GPU is waiting for the CPU to preprocess images and load them from disk. Which of the following is the most effective way to optimize this resource bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the GPU clock speed via nvidia-smi.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement pinned memory (page-locked memory) and increase DataLoader num_workers.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from FP16 to BF16 precision.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Reduce the batch size to decrease the load on the CPU.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The scenario describes a CPU bottleneck (data starvation). Increasing num_workers allows multi-process data loading, and pinned memory speeds up the transfer of data from CPU to GPU.",
+      "why_not_A": "Increasing GPU clock speed will not help if the GPU is idling while waiting for data from the CPU.",
+      "why_not_C": "Changing precision affects the GPU's compute and memory usage, but it does not resolve the data loading bottleneck on the CPU side.",
+      "why_not_D": "Reducing batch size may actually increase the overhead of data loading per sample and will not solve the underlying CPU processing bottleneck."
+    },
+    "tags": [
+      "data-pipeline",
+      "cpu-gpu-bottlenecks"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-ncp-ai-ops-mock1-118",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A team is deploying a model using TensorRT to optimize inference latency. They have a specific target hardware (T4 GPU) and a specific input tensor shape. They want to maximize the performance of the engine by allowing TensorRT to select the fastest kernels for that specific hardware and input size. Which process should they use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Dynamic Shape profiling with a wide range of possible shapes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Static engine building with a fixed optimization profile.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Using FP32 precision to avoid quantization errors during engine build.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disabling the TensorRT optimizer and using the raw ONNX runtime.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "When the input shape and hardware are known and fixed, building a static engine allows TensorRT to perform exhaustive kernel selection and fusion specifically for that configuration, resulting in the lowest possible latency.",
+      "why_not_A": "Dynamic shapes are used when the input size varies. While flexible, they can lead to slightly lower performance than a perfectly tuned static engine for a single known shape.",
+      "why_not_C": "FP32 is slower than FP16 or INT8. For optimization on T4 GPUs, using lower precision (like FP16) is generally preferred for performance.",
+      "why_not_D": "The ONNX runtime is generally slower than a TensorRT-optimized engine on NVIDIA hardware because it lacks the hardware-specific kernel tuning TensorRT provides."
+    },
+    "tags": [
+      "TensorRT",
+      "inference-latency"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-119",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An ML engineer is deploying a large language model (LLM) across a cluster of NVIDIA A100 GPUs. They observe that while GPU utilization is high, the overall throughput is lower than expected, and there are significant spikes in memory usage leading to occasional Out-of-Memory (OOM) errors during peak inference loads. Which strategy would most effectively optimize memory throughput and stability without sacrificing model accuracy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the batch size to maximize GPU utilization and saturate the memory bandwidth.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement KV (Key-Value) cache quantization and PagedAttention to manage memory fragmentation.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from FP16 precision to FP32 precision to ensure numerical stability during high-load spikes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable Multi-Instance GPU (MIG) to allow the model to access the entire GPU memory pool as a single unit.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PagedAttention (as used in vLLM) solves memory fragmentation by allocating KV cache in non-contiguous blocks, drastically reducing waste and allowing for higher throughput and larger batch sizes without OOMs.",
+      "why_not_A": "Increasing batch size without addressing memory fragmentation will likely accelerate OOM errors and increase latency.",
+      "why_not_C": "FP32 doubles the memory footprint compared to FP16, which would exacerbate OOM errors and decrease throughput.",
+      "why_not_D": "While MIG partitioning affects how resources are split, the core issue is memory fragmentation within the allocated space, not the total amount of memory available."
+    },
+    "tags": [
+      "inference-optimization",
+      "memory-management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-120",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data science team is training a massive transformer model using Distributed Data Parallel (DDP). They notice that the GPUs are idling for several seconds at the end of every epoch. After investigation, they find that the CPU is struggling to preprocess the next batch of data and move it to the GPU. Which optimization would resolve this bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement NVIDIA GPUDirect Storage (GDS) to bypass the CPU for data loading.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Increase the number of GPU nodes to distribute the compute load further.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Switch from DDP to Model Parallelism to reduce the amount of data transferred per GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Reduce the learning rate to allow the CPU more time to sync with the GPU.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "GPUDirect Storage allows a direct DMA path between storage and GPU memory, bypassing the CPU's bounce buffers and reducing CPU overhead, which solves the data-loading bottleneck.",
+      "why_not_B": "Adding more nodes increases the total compute power but does not solve the I/O bottleneck at the CPU level; it may actually increase the synchronization overhead.",
+      "why_not_C": "Model Parallelism addresses model size relative to GPU memory, not the data ingestion pipeline from disk to GPU.",
+      "why_not_D": "Learning rate is a hyperparameter for convergence and has no impact on the hardware data-loading pipeline."
+    },
+    "tags": [
+      "data-pipeline",
+      "GPUDirect"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-121",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is running multiple small AI inference services on a single NVIDIA A100 80GB GPU. Some services are latency-sensitive, while others are throughput-oriented. To ensure that the latency-sensitive services are not impacted by the resource-heavy throughput services, which NVIDIA feature should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "CUDA Streams to allow asynchronous kernel execution.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Multi-Instance GPU (MIG) to create hardware-isolated GPU instances.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA Triton Model Analyzer to find the optimal batch size.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "MPS (Multi-Process Service) to allow concurrent kernel execution on the same SMs.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "MIG provides hardware-level isolation of memory and compute (SMs), ensuring that a workload in one instance cannot starve or interfere with another, which is critical for guaranteed latency.",
+      "why_not_A": "CUDA Streams allow concurrency within a single application but do not provide hardware isolation between different services.",
+      "why_not_C": "Model Analyzer helps in tuning parameters but does not provide runtime resource isolation.",
+      "why_not_D": "MPS allows multiple processes to share the GPU more efficiently, but it does not provide strict hardware isolation; a heavy process can still impact the latency of another."
+    },
+    "tags": [
+      "MIG",
+      "resource-isolation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-122",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During the training of a large-scale model, an operator notices that the GPU-to-GPU communication is the primary bottleneck, as indicated by high 'NCCL' wait times in the profiling logs. The cluster is connected via InfiniBand. Which configuration change would most likely reduce this communication overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable NVLink and ensure NCCL is configured to use the NVLink fabric for intra-node communication.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Increase the number of CPU cores assigned to the training process to handle NCCL calls.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Switch from Distributed Data Parallel (DDP) to ZeRO-3 to eliminate the need for all-reduce operations.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable the InfiniBand HCA and force communication over standard Ethernet.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "NVLink provides significantly higher bandwidth than PCIe for GPU-to-GPU communication. Ensuring NCCL utilizes NVLink for intra-node traffic reduces the bottleneck significantly.",
+      "why_not_B": "NCCL is designed to minimize CPU involvement; increasing CPU cores will not resolve a bandwidth limitation in the GPU interconnect.",
+      "why_not_C": "ZeRO-3 reduces memory footprint by partitioning states, but it actually increases the volume of communication (more collective operations) compared to simple DDP.",
+      "why_not_D": "Ethernet has significantly lower bandwidth and higher latency than InfiniBand, which would worsen the communication bottleneck."
+    },
+    "tags": [
+      "interconnects",
+      "NCCL"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-123",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI team is deploying a model using TensorRT. They find that the model's precision is slightly degraded when using FP16, but they cannot afford the latency of FP32. They want to use INT8 quantization to maximize throughput. What is the most critical requirement to ensure that INT8 quantization does not significantly degrade model accuracy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a larger batch size during the quantization process.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Ensure the GPU has Tensor Cores enabled.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Provide a representative calibration dataset to determine the dynamic range of activations.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the number of layers in the model to compensate for precision loss.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "INT8 quantization requires a calibration step where a representative dataset is passed through the model to calculate the scale factors for mapping FP32 ranges to INT8 ranges without losing critical information.",
+      "why_not_A": "Batch size affects throughput and memory, but it does not determine the accuracy of the quantization scale factors.",
+      "why_not_B": "Tensor Cores are required to actually *execute* INT8 operations efficiently, but they do not prevent the accuracy degradation caused by poor quantization.",
+      "why_not_D": "Adding layers changes the model architecture and does not address the precision loss inherent in quantization."
+    },
+    "tags": [
+      "TensorRT",
+      "quantization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-124",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "resource-optimization",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A large-scale LLM training cluster using NVIDIA A100 GPUs is experiencing inconsistent training throughput. Monitoring reveals that while GPU utilization is high (95%+), the 'GPU Memory Copy' and 'GPU Memory Read' metrics show significant spikes, and the 'GPU SM Utilization' fluctuates wildly. The team determines that the bottleneck is caused by frequent CPU-GPU synchronization and inefficient data loading. Which resource optimization strategy would most effectively resolve this bottleneck while maximizing throughput?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the batch size to saturate the GPU memory, forcing the SMs to remain active for longer periods.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement NVIDIA GPUDirect Storage (GDS) and utilize pinned memory for asynchronous data transfers via CUDA streams.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from FP32 to FP16 precision to reduce the total memory footprint and increase the effective bandwidth of the PCIe bus.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable GPU Multi-Instance GPU (MIG) to partition the A100s into smaller instances, reducing the contention for the memory controller.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The symptoms (high memory copy/read spikes and fluctuating SM utilization) indicate an I/O bottleneck where the GPU is idling while waiting for data from the CPU/Storage. GPUDirect Storage (GDS) enables a direct DMA path between storage and GPU memory, bypassing the CPU bounce buffers. Combining this with pinned memory (page-locked) and asynchronous CUDA streams allows the data transfer to overlap with kernel execution, eliminating the synchronization bottlenecks.",
+      "why_not_A": "Increasing the batch size may increase GPU utilization, but if the data loading pipeline is the bottleneck, it will only lead to longer wait times between batches or Out-of-Memory (OOM) errors without fixing the underlying I/O inefficiency.",
+      "why_not_C": "While mixed precision (FP16) reduces memory usage and increases compute throughput, the problem described is a data movement/synchronization issue (I/O bottleneck), not a compute-bound or memory-capacity issue.",
+      "why_not_D": "MIG is used for spatial partitioning to run multiple smaller workloads on one GPU. In a large-scale LLM training scenario, partitioning a single GPU into smaller instances would actually decrease the available resources for the model and would not address the data loading bottleneck from the host to the device."
+    },
+    "tags": [
+      "GPUDirect",
+      "DataPipeline",
+      "CUDA_Streams"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-ai-ops-mock1-125",
+    "exam_id": "nvidia-ncp-aio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
   }
 ]

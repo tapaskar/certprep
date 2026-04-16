@@ -2585,5 +2585,3882 @@
     "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.1,
     "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-arch-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A machine learning engineer is optimizing a model and notices that the GPU utilization is high, but the actual throughput is lower than expected due to frequent stalls. Upon analyzing the kernel, it is discovered that different threads within the same warp are attempting to execute different paths of a conditional branch. Which GPU architecture concept is causing this performance degradation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Memory Coalescing",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Warp Divergence",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Tensor Core Underutilization",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "PCIe Bus Saturation",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Warp divergence occurs when threads within a single warp (32 threads) follow different execution paths due to conditional statements (if/else), forcing the GPU to serialize the execution of these paths, which reduces efficiency.",
+      "why_not_A": "Memory coalescing refers to combining multiple memory accesses into a single transaction; it relates to memory bandwidth, not conditional branching logic.",
+      "why_not_C": "Tensor Core underutilization refers to not using the specialized hardware for matrix multiplication, but the scenario specifically describes branching behavior.",
+      "why_not_D": "PCIe saturation is a data transfer bottleneck between the CPU and GPU, whereas the scenario describes a kernel-level execution issue inside the GPU."
+    },
+    "tags": [
+      "SIMT",
+      "Warp-Execution"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-054",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-arch-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An infrastructure architect is comparing NVIDIA GPU architectures for a project requiring massive matrix multiplications for a Large Language Model (LLM). They need to identify the specific hardware component designed to accelerate deep learning operations by performing a D = A * B + C operation in a single clock cycle. Which component should they prioritize?",
+    "options": [
+      {
+        "id": "A",
+        "text": "CUDA Cores",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Streaming Multiprocessors (SM)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Tensor Cores",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "RT Cores",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Tensor Cores are specialized hardware accelerators designed specifically for mixed-precision matrix multiplication and accumulation (FMA), which is the foundation of deep learning workloads.",
+      "why_not_A": "CUDA cores are general-purpose floating-point units (FP32) that handle single-element operations rather than whole-matrix operations in one cycle.",
+      "why_not_B": "The SM is the overarching unit that contains CUDA cores, Tensor cores, and registers; it is the container, not the specific functional unit for matrix math.",
+      "why_not_D": "RT (Ray Tracing) Cores are specialized for bounding volume hierarchy (BVH) traversal and triangle intersection tests, not matrix multiplication."
+    },
+    "tags": [
+      "Hardware-Accelerators",
+      "Tensor-Cores"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-055",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-arch-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer is writing a custom CUDA kernel and observes that the application is spending a significant amount of time waiting for data to move from the global VRAM to the processing cores. They decide to implement a strategy to move frequently accessed data into a small, high-speed memory space located on the SM itself. Which memory hierarchy level are they utilizing?",
+    "options": [
+      {
+        "id": "A",
+        "text": "L2 Cache",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Shared Memory",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Global Memory",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Constant Memory",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Shared memory is a programmable L1-level cache located on the SM, allowing threads within the same block to share data with extremely low latency compared to global VRAM.",
+      "why_not_A": "L2 cache is shared across all SMs on the GPU and is managed by the hardware, not manually programmed by the developer for specific data movement.",
+      "why_not_C": "Global memory is the large VRAM (HBM or GDDR) which is exactly what the developer is trying to avoid frequent access to due to high latency.",
+      "why_not_D": "Constant memory is a read-only region; while fast, it is not used as a general-purpose high-speed workspace for frequently updated data within a kernel."
+    },
+    "tags": [
+      "Memory-Hierarchy",
+      "Shared-Memory"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-056",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-arch-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A systems administrator is configuring a multi-GPU node. They notice that when the GPUs communicate via the PCIe bus, the bandwidth is significantly lower than when using NVLink. What is the primary architectural reason why NVLink provides superior performance for GPU-to-GPU communication?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVLink uses a shared memory pool across all GPUs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NVLink bypasses the CPU and provides a direct, high-bandwidth point-to-point interconnect",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVLink increases the clock speed of the GPU cores",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVLink replaces the need for VRAM on individual GPUs",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVLink is a specialized high-speed interconnect that allows GPUs to communicate directly with each other without having to route traffic through the CPU or the restrictive PCIe bus, drastically increasing bandwidth.",
+      "why_not_A": "NVLink is a transport mechanism, not a shared memory pool; though it enables Unified Memory, the hardware itself is an interconnect.",
+      "why_not_C": "NVLink affects data movement between GPUs; it has no impact on the internal clock speed of the GPU's compute cores.",
+      "why_not_D": "NVLink facilitates communication between GPUs, but each GPU still requires its own local VRAM to store data for processing."
+    },
+    "tags": [
+      "Interconnects",
+      "NVLink"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-nca-ai-infra-mock1-057",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-arch-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During a performance audit, an AI engineer finds that a kernel is 'memory-bound' rather than 'compute-bound.' This means the GPU's compute cores are idling while waiting for data. To improve performance, the engineer decides to use FP16 (Half Precision) instead of FP32 (Single Precision). Why does this typically improve performance in a memory-bound scenario?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It increases the number of CUDA cores available",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It reduces the amount of data that needs to be transferred from memory per operation",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "It eliminates the need for L2 cache",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "It allows the GPU to run at a higher voltage",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "FP16 uses 16 bits per value compared to 32 bits for FP32. This halves the memory bandwidth required to move the same number of elements, effectively reducing the bottleneck in memory-bound applications.",
+      "why_not_A": "Precision changes do not change the physical number of CUDA cores on the chip.",
+      "why_not_C": "L2 cache is still used regardless of precision; in fact, lower precision allows more data to fit within the existing cache.",
+      "why_not_D": "Precision is a data type property and does not dictate the electrical voltage of the GPU hardware."
+    },
+    "tags": [
+      "Precision",
+      "Memory-Bandwidth"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-058",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI infrastructure engineer is designing a cooling strategy for a new cluster of NVIDIA DGX H100 systems. To maximize energy efficiency and avoid 'hot spots' in the server racks, which airflow management strategy should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implementing a mixed-airflow pattern where some racks exhaust frontward and others backward.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Utilizing a Hot Aisle/Cold Aisle containment architecture.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increasing the ambient room temperature to match the GPU exhaust temperature.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Removing all rack blanking panels to increase overall airflow volume.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Hot Aisle/Cold Aisle containment prevents the mixing of cold supply air and hot exhaust air, ensuring that GPUs receive the coolest air possible and reducing the load on CRAC units.",
+      "why_not_A": "Mixed airflow leads to thermal recirculation, where hot exhaust air is sucked back into the intake, causing overheating.",
+      "why_not_C": "Increasing ambient temperature to match exhaust would eliminate the thermal gradient required for heat exchange, leading to immediate hardware throttling or shutdown.",
+      "why_not_D": "Blanking panels are critical; without them, hot air from the back of the server leaks to the front (bypass airflow), reducing cooling efficiency."
+    },
+    "tags": [
+      "thermal-management",
+      "airflow-optimization"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-059",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data center manager is calculating the power requirements for a high-density AI pod. If the IT equipment load is 50kW and the facility has a PUE (Power Usage Effectiveness) of 1.6, what is the total power draw from the utility grid?",
+    "options": [
+      {
+        "id": "A",
+        "text": "31.25 kW",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "50.00 kW",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "80.00 kW",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "110.00 kW",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "PUE is calculated as Total Facility Power / IT Equipment Power. Therefore, Total Power = IT Power * PUE (50kW * 1.6 = 80kW).",
+      "why_not_A": "This is the result of dividing IT power by PUE, which is mathematically incorrect for finding total draw.",
+      "why_not_B": "This only accounts for the IT load and ignores the overhead for cooling, lighting, and power distribution.",
+      "why_not_D": "This value exceeds the calculation based on the provided PUE ratio."
+    },
+    "tags": [
+      "power-metrics",
+      "PUE"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-060",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During a routine audit of an AI cluster's power distribution, an engineer notices that the UPS (Uninterruptible Power Supply) is configured for N+1 redundancy. What does this configuration specifically ensure for the data center?",
+    "options": [
+      {
+        "id": "A",
+        "text": "That the UPS can provide power for exactly one hour of full-load operation.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "That there is one extra UPS module beyond the minimum required to support the load.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "That the power is delivered via two completely independent utility grids.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "That the UPS can handle double the peak power load of the AI cluster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "N+1 redundancy means that the system has the minimum number of components required to function (N), plus one additional component (+1) to ensure continuity if one fails.",
+      "why_not_A": "Runtime is determined by battery capacity, not the redundancy level of the modules.",
+      "why_not_C": "Dual utility grids refer to 'Dual Feed' or '2N' site redundancy, not N+1 module redundancy.",
+      "why_not_D": "This describes 2N redundancy (or 200% capacity), whereas N+1 only provides a single extra module of capacity."
+    },
+    "tags": [
+      "power-redundancy",
+      "availability"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-061",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is deploying NVIDIA GPUs in a facility that utilizes a 'Raised Floor' design. What is the primary operational advantage of this design for AI workloads compared to a slab floor?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It provides better seismic stability for heavy GPU servers.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It allows for the creation of a pressurized plenum for efficient cold air distribution.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "It eliminates the need for UPS systems by storing energy in the floor structure.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "It prevents the need for network cabling as data is transmitted through the floor tiles.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Raised floors create a plenum (space) beneath the tiles where cold air can be pushed and then delivered precisely to server intakes via perforated tiles.",
+      "why_not_A": "Raised floors can actually be less stable for extremely heavy AI racks than a concrete slab unless specifically reinforced.",
+      "why_not_C": "The floor is a structural/cooling element and has no capacity to store electrical energy.",
+      "why_not_D": "Cables are run under the raised floor for organization, but the floor itself does not transmit data."
+    },
+    "tags": [
+      "physical-infrastructure",
+      "cooling-delivery"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-062",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A technician is installing high-speed InfiniBand cables for an AI cluster. To prevent signal degradation and physical damage to the fibers, which industry-standard practice must be strictly followed?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Bending cables at 90-degree angles to maximize rack space.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Maintaining the minimum bend radius specified by the manufacturer.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Tying cables tightly with plastic zip-ties to ensure they do not move.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Routing all fiber cables directly across the floor without using cable trays.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Exceeding the minimum bend radius of fiber optic cables causes macro-bending loss, which leads to signal attenuation and potential physical fracture of the glass core.",
+      "why_not_A": "90-degree bends almost always exceed the minimum bend radius and will cause significant packet loss or cable failure.",
+      "why_not_C": "Tight zip-ties can pinch the fiber, causing micro-fractures and signal loss; Velcro straps are the standard for fiber.",
+      "why_not_D": "Cables on the floor are subject to crushing and tripping hazards, and lack the organized routing required for maintainability."
+    },
+    "tags": [
+      "cabling",
+      "physical-layer"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-063",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI infrastructure engineer is designing a high-density GPU cluster. To prevent thermal throttling of the H100 GPUs, the engineer must decide on the optimal airflow management strategy for the server racks. Which configuration best ensures maximum cooling efficiency for these high-TDP components?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implementing a mixed-airflow design where some servers exhaust to the front and others to the rear to balance heat distribution.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Utilizing a Hot Aisle/Cold Aisle containment system with perforated floor tiles aligned specifically with the cold aisle.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increasing the ambient room temperature to reduce the delta between the GPU core and the external environment.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Removing all rack blanking panels to allow air to circulate freely between the chassis and the rack rails.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Hot/Cold aisle containment prevents the mixing of hot exhaust air with cold intake air, ensuring that high-TDP GPUs receive the coldest possible air, which is critical for preventing thermal throttling.",
+      "why_not_A": "Mixed-airflow designs cause thermal recirculation, where hot air from one server is sucked into the intake of another, leading to inefficient cooling and potential overheating.",
+      "why_not_C": "Increasing ambient temperature reduces the cooling gradient, making it harder for heat sinks to dissipate heat, which would trigger thermal throttling sooner.",
+      "why_not_D": "Blanking panels are essential to prevent 'bypass airflow,' where cold air escapes through gaps instead of passing through the servers; removing them decreases cooling efficiency."
+    },
+    "tags": [
+      "thermal-management",
+      "airflow-containment"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-064",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center is experiencing intermittent power instability. The operations team needs to ensure that the NVIDIA DGX systems can perform a graceful shutdown or migrate workloads before a total power loss occurs. Which power infrastructure component is specifically designed to provide this critical bridge between utility power and backup generators?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Power Distribution Units (PDUs)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Automatic Transfer Switches (ATS)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Uninterruptible Power Supply (UPS)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Step-down Transformers",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A UPS provides near-instantaneous battery backup power to bridge the gap between a utility power failure and the time it takes for diesel generators to start and stabilize.",
+      "why_not_A": "PDUs distribute power to the servers but do not store energy or provide backup power during a blackout.",
+      "why_not_B": "An ATS switches the power source from the utility to the generator, but there is a momentary gap in power during the switch that only a UPS can fill.",
+      "why_not_D": "Transformers change the voltage levels of electricity but provide no backup or stabilization capabilities during a power outage."
+    },
+    "tags": [
+      "power-infrastructure",
+      "availability"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-065",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is deploying a large-scale AI cluster and needs to calculate the total power draw to avoid tripping circuit breakers. If each GPU node consumes 10kW and the rack has a 30kW power limit, but the engineer must maintain a 20% safety headroom (de-rating) for the circuit, what is the maximum number of nodes that can be safely deployed per rack?",
+    "options": [
+      {
+        "id": "A",
+        "text": "3 nodes",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "2 nodes",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "4 nodes",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "1 node",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A 20% safety headroom on a 30kW rack means the usable power is 30kW * 0.8 = 24kW. Since each node consumes 10kW, 2 nodes (20kW) fit within the 24kW limit, whereas 3 nodes (30kW) would exceed the safety limit.",
+      "why_not_A": "3 nodes would consume 30kW, which utilizes 100% of the rack capacity and violates the 20% safety headroom requirement.",
+      "why_not_C": "4 nodes would consume 40kW, which exceeds the total physical capacity of the 30kW rack.",
+      "why_not_D": "While 1 node is safe, it is not the 'maximum' number of nodes that can be deployed within the given constraints."
+    },
+    "tags": [
+      "power-calculation",
+      "capacity-planning"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-nca-ai-infra-mock1-066",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A network architect is planning the cabling for an InfiniBand fabric connecting multiple GPU nodes. Due to the high signal attenuation and the distance between rows in the data center, the architect must choose between Active Optical Cables (AOC) and Direct Attach Copper (DAC) cables. In which scenario should the architect prioritize AOC over DAC?",
+    "options": [
+      {
+        "id": "A",
+        "text": "When connecting nodes within the same rack to minimize latency and cost.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "When the connection distance exceeds 5-7 meters and requires lower signal degradation.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "When the primary goal is to reduce the power consumption of the network interface cards.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "When the environment requires cables that are physically thicker for better durability.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "DAC cables are limited by physics to short distances (typically < 5-7m) before signal integrity degrades. AOCs use optical fibers and electronics to maintain signal quality over much longer distances.",
+      "why_not_A": "For intra-rack connections (short distances), DAC is preferred because it is cheaper and has lower power consumption than AOC.",
+      "why_not_C": "AOCs actually consume more power than DACs because they require optical-to-electrical conversion circuitry.",
+      "why_not_D": "AOCs are generally thinner and more flexible than heavy-gauge DAC cables, making them better for cable management, not because of 'thickness for durability'."
+    },
+    "tags": [
+      "physical-layer",
+      "interconnects"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-067",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center manager is auditing the facility's Tier classification. The facility has redundant power paths and cooling, but the utility feed is a single source without a secondary grid connection, and maintenance on the main switchgear requires a complete shutdown of the affected row. Which Uptime Institute Tier does this most likely represent?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Tier I",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Tier II",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Tier III",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Tier IV",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Tier II (Redundant Components) provides redundant power and cooling components, but lacks the 'concurrent maintainability' of Tier III. If maintenance requires a shutdown, it fits the Tier II profile.",
+      "why_not_A": "Tier I is a basic capacity system with no redundancy; the scenario mentions redundant power and cooling paths, which exceeds Tier I.",
+      "why_not_C": "Tier III (Concurrently Maintainable) requires that any component can be removed or replaced without shutting down the IT load; the scenario explicitly states a shutdown is required.",
+      "why_not_D": "Tier IV (Fault Tolerant) requires complete compartmentalization and multiple active power paths such that a failure of any single component does not impact the load."
+    },
+    "tags": [
+      "tier-classification",
+      "availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-068",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data center operator is deploying a high-density NVIDIA DGX H100 cluster. The facility uses a hot-aisle containment system. During peak training workloads, the operator notices that the top-most servers in the racks are reporting higher GPU temperatures than those at the bottom, despite uniform airflow from the CRAC units. Which fundamental thermodynamic principle is causing this issue, and what is the most effective mitigation strategy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Thermal stratification; increase the fan speed of the CRAC units to force cold air higher.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Thermal stratification; implement active chimney racks or vertical exhaust ducts to better manage hot air removal.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The Joule-Thomson effect; install blanking panels in the empty RU spaces of the lower racks.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Convective heat transfer failure; relocate the DGX nodes to the bottom of the rack to utilize colder air.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Thermal stratification occurs because hot air rises. In high-density AI clusters, the volume of heat generated can overwhelm standard containment, causing heat to accumulate at the top of the rack. Vertical exhaust ducts (chimneys) physically isolate the hot air and direct it efficiently back to the return plenum, preventing it from recirculating or pooling.",
+      "why_not_A": "Increasing CRAC fan speed may increase overall airflow but does not solve the stratification issue; it may actually increase turbulence and cause hot air to leak back into the cold aisle.",
+      "why_not_C": "The Joule-Thomson effect relates to gas temperature changes during expansion/compression and is irrelevant to rack-level airflow. Blanking panels prevent recirculation but do not solve the upward migration of heat in a contained aisle.",
+      "why_not_D": "Relocating nodes to the bottom is a workaround, not a mitigation strategy, and doesn't address the root cause of the thermal gradient within the facility's infrastructure."
+    },
+    "tags": [
+      "thermodynamics",
+      "airflow-management",
+      "high-density-cooling"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-nca-ai-infra-mock1-069",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An enterprise is upgrading its power distribution to support NVIDIA AI infrastructure. The engineering team is debating between a 120V and a 208V/240V 3-phase power delivery system for the rack PDUs. Given the extreme power draw of H100 nodes, why is 3-phase power specifically preferred over single-phase power for these deployments?",
+    "options": [
+      {
+        "id": "A",
+        "text": "3-phase power eliminates the need for Power Distribution Units (PDUs) by delivering DC power directly to the GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "3-phase power increases the voltage of each individual phase, allowing for higher wattage per cable without increasing amperage.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "3-phase power provides a more balanced load across the electrical infrastructure and allows for higher total power capacity per circuit with lower current per conductor.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "3-phase power is required to synchronize the clock speeds of the GPUs across different nodes in the cluster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "3-phase power allows for significantly higher power density. By distributing the load across three conductors, you can deliver more total wattage to the rack while keeping the current (amperage) on each wire manageable, reducing the risk of overheating cables and reducing the number of required electrical feeds.",
+      "why_not_A": "PDUs are still required to distribute the 3-phase power into the specific voltages/plugs required by the server power supplies.",
+      "why_not_B": "3-phase power doesn't necessarily increase the voltage of a single phase; it provides three separate alternating currents offset by 120 degrees, increasing total capacity.",
+      "why_not_D": "Electrical phase has no relationship with the internal clock synchronization or the logical timing of the GPUs."
+    },
+    "tags": [
+      "power-distribution",
+      "electrical-infrastructure",
+      "3-phase-power"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-070",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data center is transitioning from air-cooling to Direct-to-Chip (D2C) liquid cooling to support a large-scale AI training cluster. During the design phase, the architect must decide between a 'Closed-Loop' system and an 'Open-Loop' system with a Cooling Distribution Unit (CDU). Which statement best describes the operational necessity of the CDU in this scenario?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The CDU is only needed to convert AC power to DC power for the liquid pumps.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The CDU acts as a heat exchanger to isolate the primary facility water loop from the secondary technology cooling loop.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The CDU is used to chemically treat the water to prevent GPU corrosion in a closed-loop system.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The CDU replaces the need for any external chillers or cooling towers in the facility.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A CDU (Cooling Distribution Unit) is critical because it separates the facility water (which may be less pure or at different pressures) from the treated, high-purity water/coolant that touches the GPUs. It manages the heat exchange between these two loops and controls flow rates and temperatures.",
+      "why_not_A": "CDUs are thermal management devices, not power converters.",
+      "why_not_C": "While CDUs can monitor fluid quality, their primary operational necessity is the heat exchange and isolation of loops, not the chemical treatment process itself (which is often handled by a separate filtration system).",
+      "why_not_D": "The CDU moves heat from the server to the facility loop; the facility loop still needs a way to reject that heat to the outside environment via chillers or cooling towers."
+    },
+    "tags": [
+      "liquid-cooling",
+      "CDU",
+      "thermal-management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-071",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An AI infrastructure engineer is calculating the PUE (Power Usage Effectiveness) of a new facility. The total facility power is 15MW, and the total IT equipment power is 10MW. The engineer wants to improve the PUE from 1.5 to 1.2. Which of the following changes would most likely achieve this goal?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increasing the IT load to 12MW while keeping the total facility power at 15MW.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Replacing the existing CRAC units with high-efficiency In-Row cooling and optimizing airflow to reduce overhead power to 2MW.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Upgrading the GPUs to a more power-efficient model that reduces IT power to 8MW.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increasing the facility's UPS capacity to ensure 99.999% uptime.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PUE = Total Facility Power / IT Equipment Power. To reach 1.2 with 10MW of IT power, total facility power must be 12MW (meaning overhead is 2MW). Reducing the overhead power (cooling, lighting, etc.) from 5MW to 2MW via efficient In-Row cooling directly lowers the PUE.",
+      "why_not_A": "If IT load increases to 12MW and total power stays at 15MW, PUE becomes 15/12 = 1.25. This is an improvement, but not to 1.2.",
+      "why_not_C": "Reducing IT power to 8MW while keeping overhead at 5MW would result in a PUE of 13/8 = 1.625, which actually makes the PUE worse.",
+      "why_not_D": "Increasing UPS capacity may improve reliability, but it typically increases the overhead power (due to UPS inefficiency/losses), which would likely increase PUE."
+    },
+    "tags": [
+      "PUE",
+      "efficiency",
+      "power-metrics"
+    ],
+    "estimated_time_seconds": 180,
+    "id": "q-nvidia-nca-ai-infra-mock1-072",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "In a large-scale NVIDIA AI deployment, the network architecture utilizes a 'Leaf-Spine' topology. The administrator is experiencing intermittent packet loss during large All-Reduce operations. Upon investigation, it is found that several links are hitting 100% utilization while others are idle. Which data center networking concept is most likely missing or misconfigured to solve this specific problem?",
+    "options": [
+      {
+        "id": "A",
+        "text": "LACP (Link Aggregation Control Protocol) is not enabled on the server-to-leaf connections.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The MTU (Maximum Transmission Unit) is set to 1500 instead of 9000 (Jumbo Frames).",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "ECMP (Equal-Cost Multi-Path) hashing is causing polarization or uneven traffic distribution across the spine.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The Spine switches are not configured for VLAN tagging, preventing inter-rack communication.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In a Leaf-Spine architecture, ECMP is used to load balance traffic across all available paths to the spine. If the hashing algorithm is inefficient or 'polarization' occurs, traffic will be unevenly distributed, leading to some links being congested (causing packet loss) while others are underutilized, even if the total bandwidth is sufficient.",
+      "why_not_A": "LACP handles link redundancy and aggregation between two points, but it does not manage the multi-path distribution across the fabric of the spine switches.",
+      "why_not_B": "Incorrect MTU causes fragmentation or dropped packets due to size, but it does not cause uneven link utilization across the fabric.",
+      "why_not_D": "If VLAN tagging were missing, there would be a complete lack of connectivity between different VLANs, not intermittent packet loss caused by link saturation."
+    },
+    "tags": [
+      "leaf-spine",
+      "ECMP",
+      "network-topology"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-073",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI infrastructure engineer is deploying a cluster of NVIDIA DGX systems. To prevent 'hot spots' and ensure optimal thermal management, the engineer must implement a specific airflow strategy. Which configuration best ensures the thermal stability of high-density GPU nodes in a standard data center layout?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implementing a mixed-flow arrangement where some racks exhaust cold air into the intake of adjacent racks to balance temperature.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Utilizing a Hot Aisle/Cold Aisle containment system to physically isolate the intake air from the exhaust air.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increasing the ambient temperature of the cold aisle to reduce the delta between the GPU core and the surrounding air.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Reducing the fan speed on the DGX nodes to allow natural convection to dissipate heat more efficiently.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Hot Aisle/Cold Aisle containment is the industry standard for high-density AI workloads. It prevents the recirculation of hot exhaust air back into the intake, ensuring GPUs receive the coolest possible air, which prevents thermal throttling.",
+      "why_not_A": "Mixed-flow arrangements lead to thermal recirculation, where hot exhaust air is sucked into the intake of neighboring servers, causing rapid overheating.",
+      "why_not_C": "Increasing cold aisle temperature reduces the cooling efficiency and increases the risk of GPUs reaching their thermal limit, triggering performance throttling.",
+      "why_not_D": "AI workloads generate immense heat; reducing fan speed would lead to immediate overheating as natural convection is insufficient for high-TDP GPUs."
+    },
+    "tags": [
+      "Thermal Management",
+      "Airflow",
+      "Physical Infrastructure"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-074",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center is upgrading its power distribution to support a new AI pod. The engineer notices that the Power Usage Effectiveness (PUE) is increasing despite adding more efficient cooling. Which of the following scenarios most likely explains this increase in PUE?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The total IT equipment load has decreased relative to the total facility power draw.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "The cooling system has transitioned from CRAC units to liquid-to-chip cooling.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The IT load has increased significantly, outweighing the overhead of the cooling system.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The facility has implemented a higher voltage distribution (e.g., 415V) to the racks.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "PUE is calculated as Total Facility Power / IT Equipment Power. If the IT load decreases while the overhead (lighting, cooling, power loss) remains constant or increases, the ratio increases, indicating lower efficiency.",
+      "why_not_B": "Liquid-to-chip cooling is generally more efficient than CRAC units, which would typically lower the PUE by reducing the energy needed for air movement.",
+      "why_not_C": "If the IT load increases while overhead remains stable, the PUE ratio actually decreases (gets closer to 1.0), indicating better efficiency.",
+      "why_not_D": "Higher voltage distribution reduces transmission losses, which typically lowers the total facility power draw and improves PUE."
+    },
+    "tags": [
+      "PUE",
+      "Power Distribution",
+      "Efficiency"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-075",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is planning the physical placement of NVIDIA H100 nodes. Due to the extreme weight of the fully loaded racks, the engineer must verify the 'static load' and 'dynamic load' of the data center floor. What is the primary risk of ignoring the static load rating during the installation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The servers will experience higher vibration levels, leading to increased GPU memory errors.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The rack may tip over during the initial positioning process.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The raised floor tiles or the structural slab may collapse or deform under the weight of the rack.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Airflow beneath the raised floor will be completely blocked, causing an immediate thermal shutdown.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Static load refers to the weight of the equipment when it is stationary. High-density AI racks are significantly heavier than standard compute racks; exceeding the static load rating of the floor can lead to structural failure of tiles or the concrete slab.",
+      "why_not_A": "Vibration is typically associated with dynamic loads or cooling fans, not the static weight of the rack.",
+      "why_not_B": "Tipping is a matter of center of gravity and stability, not the floor's weight-bearing capacity (static load).",
+      "why_not_D": "While a heavy rack occupies space, the primary risk of exceeding the static load rating is structural failure, not the blockage of airflow."
+    },
+    "tags": [
+      "Physical Infrastructure",
+      "Floor Loading",
+      "Safety"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-076",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center manager is reviewing the power redundancy for a cluster of AI servers. The cluster is designed for N+1 redundancy at the UPS level. If one UPS unit fails, what is the operational impact on the AI cluster?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The cluster will immediately shut down to protect the remaining UPS units from overload.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The cluster continues to operate normally, but the system no longer has any remaining power redundancy.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The cluster will enter a 'low power mode,' reducing GPU clock speeds to match the remaining capacity.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The remaining UPS units will automatically double their output voltage to compensate for the lost unit.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "N+1 redundancy means there is exactly one more unit than is required to support the full load. If one fails, the remaining 'N' units can still support the load, but any further failure will lead to an outage.",
+      "why_not_A": "The purpose of N+1 is to prevent shutdown during a single component failure.",
+      "why_not_C": "UPS systems provide raw power; they do not communicate with the GPU's internal clocking mechanisms to throttle performance based on power redundancy status.",
+      "why_not_D": "UPS units cannot 'double' output voltage; doing so would destroy the server power supplies. They distribute the current load across the remaining units."
+    },
+    "tags": [
+      "Power Redundancy",
+      "UPS",
+      "Availability"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-nvidia-nca-ai-infra-mock1-077",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "datacenter-fundamentals",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During a site survey for an AI deployment, the engineer discovers that the facility uses a 'Cold Aisle Containment' (CAC) system. To maximize the efficiency of the H100 GPUs, where should the server intakes be oriented and how should the containment be managed?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Intakes should face the hot aisle, and the containment should seal the exhaust to prevent heat leakage.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Intakes should face the cold aisle, and the containment should seal the cold aisle to prevent cold air from bypassing the servers.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Intakes should be oriented randomly to create turbulent airflow, which improves heat transfer.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Intakes should face the cold aisle, but the containment should be removed to allow air to mix freely.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In Cold Aisle Containment (CAC), the servers' front (intake) faces the cold aisle. By sealing this aisle, the cold air is forced through the server chassis rather than escaping into the rest of the room, maximizing cooling efficiency for high-TDP GPUs.",
+      "why_not_A": "Server intakes must always face the cold air source; facing the hot aisle would cause immediate thermal shutdown.",
+      "why_not_C": "Turbulent airflow in a data center is generally undesirable; laminar, directed airflow is preferred for predictable cooling.",
+      "why_not_D": "Removing the containment leads to 'bypass air' (cold air missing the servers) and 'recirculation' (hot air returning to intakes), both of which decrease efficiency."
+    },
+    "tags": [
+      "Containment",
+      "Airflow",
+      "Cooling Strategy"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-nca-ai-infra-mock1-078",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI engineer is designing a cluster where multiple GPUs must communicate with minimal latency for large-scale model training. The engineer is deciding between using standard TCP/IP over Ethernet and NVIDIA GPUDirect RDMA. Which primary advantage does GPUDirect RDMA provide in this specific scenario?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It eliminates the need for a physical network switch between nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It allows GPUs to read/write directly to the memory of remote GPUs, bypassing the CPU and system memory.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "It increases the bandwidth of the PCIe bus beyond its hardware specifications.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "It converts InfiniBand traffic into Ethernet frames for compatibility with standard routers.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GPUDirect RDMA enables direct data transfer between GPU memories across a network, significantly reducing latency and CPU overhead by removing the need to stage data in system RAM.",
+      "why_not_A": "RDMA still requires a network fabric (like InfiniBand or RoCE) and typically utilizes switches for scalability.",
+      "why_not_C": "RDMA optimizes how data moves through the bus, but it cannot physically change the hardware clock speed or bandwidth limit of the PCIe slot.",
+      "why_not_D": "This describes a gateway or translation function; RDMA is a transport mechanism, not a protocol conversion tool for routers."
+    },
+    "tags": [
+      "RDMA",
+      "GPUDirect",
+      "Latency"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-079",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data center administrator is configuring a RoCE (RDMA over Converged Ethernet) environment. To prevent packet loss and ensure the 'lossless' nature required for RDMA, which networking feature must be properly configured on the switches?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Spanning Tree Protocol (STP)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Priority Flow Control (PFC)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Dynamic Host Configuration Protocol (DHCP)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "VLAN Trunking Protocol (VTP)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "PFC allows the network to pause traffic on a specific priority level to prevent buffer overflow and packet drops, which is critical for RoCE to function without massive performance degradation.",
+      "why_not_A": "STP prevents loops in Layer 2 networks but does not manage flow control or prevent packet loss due to congestion.",
+      "why_not_C": "DHCP is used for IP address assignment and has no impact on the lossless nature of the data plane.",
+      "why_not_D": "VTP is used to manage VLAN databases across switches and does not influence traffic flow control."
+    },
+    "tags": [
+      "RoCE",
+      "PFC",
+      "Lossless Ethernet"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-080",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is deploying an NVIDIA DGX cluster and needs to choose between InfiniBand and Ethernet for the compute fabric. The primary requirement is maximum throughput with the lowest possible jitter for synchronous All-Reduce operations. Which technology is the most appropriate choice?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Standard 10GbE Ethernet",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "InfiniBand",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "TCP/IP over Fiber Channel",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Wireless Mesh Networking",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "InfiniBand is purpose-built for HPC and AI, providing high bandwidth, extremely low latency, and hardware-level flow control, making it ideal for collective operations like All-Reduce.",
+      "why_not_A": "10GbE is far too slow for modern AI training workloads and lacks the low-latency characteristics of InfiniBand.",
+      "why_not_C": "Fiber Channel is primarily used for Storage Area Networks (SAN) and is not suitable for the high-speed inter-node communication required by AI training.",
+      "why_not_D": "Wireless networking cannot provide the bandwidth or stability required for GPU cluster communication."
+    },
+    "tags": [
+      "InfiniBand",
+      "Ethernet",
+      "All-Reduce"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-081",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During a performance audit of an AI cluster, an engineer notices that network congestion is causing 'incast' problems, where multiple nodes send data to a single node simultaneously, overflowing the switch buffers. Which InfiniBand feature helps mitigate this by managing traffic paths?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Subnet Manager (SM)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Adaptive Routing",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Static Routing",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "MAC Address Filtering",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Adaptive Routing allows the network to dynamically route packets around congested paths in real-time, reducing the impact of incast and improving overall fabric utilization.",
+      "why_not_A": "The Subnet Manager configures the network and assigns LIDs, but it does not perform real-time packet-by-packet routing adjustments to avoid congestion.",
+      "why_not_C": "Static routing follows a fixed path regardless of congestion, which would actually exacerbate the incast problem.",
+      "why_not_D": "MAC filtering is a security feature and has no role in traffic engineering or congestion management."
+    },
+    "tags": [
+      "InfiniBand",
+      "Adaptive Routing",
+      "Congestion"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-082",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A system administrator is configuring the management network for a set of NVIDIA GPUs. They need to ensure that management traffic (SSH, telemetry) is isolated from the high-speed data traffic (GPUDirect) to prevent interference. What is the most common networking method to achieve this isolation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Using a single cable and relying on TCP window scaling",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing a physical Out-of-Band (OOB) management network",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increasing the MTU size on the data network",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disabling the GPU's PCIe lanes during management tasks",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An Out-of-Band (OOB) network uses dedicated physical NICs and switches for management, ensuring that even if the data fabric is congested or down, the administrator can still access the system.",
+      "why_not_A": "TCP window scaling optimizes throughput but does not provide isolation between different types of traffic.",
+      "why_not_C": "Increasing MTU (Jumbo Frames) improves data efficiency but does not isolate management traffic from data traffic.",
+      "why_not_D": "Disabling PCIe lanes would crash the GPU's ability to function and is not a networking isolation strategy."
+    },
+    "tags": [
+      "OOB",
+      "Management Network",
+      "Isolation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-083",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI infrastructure engineer is designing a cluster where multiple GPUs across different nodes must share large datasets with minimal latency. The engineer decides to implement RDMA over Converged Ethernet (RoCE). Which network configuration is critical to ensure RoCE v2 functions correctly without packet loss in a lossy Ethernet environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configuring Jumbo Frames to 9000 bytes only",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing Priority Flow Control (PFC) and Explicit Congestion Notification (ECN)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Enabling Spanning Tree Protocol (STP) on all leaf switches",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Using a standard TCP/IP handshake for all GPU-to-GPU communication",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoCE v2 requires a 'lossless' fabric to perform optimally. PFC prevents packet loss by pausing traffic on a per-priority basis, and ECN allows switches to mark packets to signal congestion to the endpoints, preventing buffer overflow.",
+      "why_not_A": "While Jumbo Frames improve throughput by reducing overhead, they do not prevent packet loss or manage congestion, which is the primary requirement for RoCE stability.",
+      "why_not_C": "STP is used to prevent loops in Layer 2 networks but does not contribute to the lossless nature of the fabric required for RDMA; in fact, it can interfere with high-availability paths.",
+      "why_not_D": "RDMA is specifically designed to bypass the TCP/IP stack to reduce latency and CPU overhead; relying on standard TCP handshakes defeats the purpose of using RoCE."
+    },
+    "tags": [
+      "RoCE",
+      "Lossless Fabric",
+      "PFC/ECN"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-084",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data center is deploying a leaf-spine architecture for an NVIDIA DGX cluster. The administrator notices that traffic between two GPUs on the same leaf switch is fast, but traffic between GPUs on different leaf switches is experiencing unpredictable latency. Which networking concept should be investigated to optimize the distribution of traffic across the spine?",
+    "options": [
+      {
+        "id": "A",
+        "text": "VLAN Trunking Protocol (VTP)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Static Routing Table entries",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Equal-Cost Multi-Path (ECMP) routing",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Link Aggregation Control Protocol (LACP)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "ECMP allows the network to load balance traffic across multiple equal-cost paths between the leaf and spine switches, preventing any single spine link from becoming a bottleneck and reducing latency variance.",
+      "why_not_A": "VTP is used for managing VLAN databases across switches and has no impact on the routing or load balancing of data traffic across a spine.",
+      "why_not_B": "Static routing is rigid and does not provide the dynamic load balancing required to handle the massive, bursty traffic patterns typical of AI workloads.",
+      "why_not_D": "LACP aggregates multiple physical links into one logical link between two specific devices, but it does not handle the multi-path routing across a fabric of multiple spine switches."
+    },
+    "tags": [
+      "Leaf-Spine",
+      "ECMP",
+      "Fabric Topology"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-085",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During the setup of a multi-node GPU cluster, an engineer observes that the GPUDirect RDMA communication is failing between nodes, although standard SSH connectivity is working. The engineer suspects a mismatch in the MTU (Maximum Transmission Unit) settings. What is the most likely cause of this failure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The switch is configured for 1500 bytes while the NICs are configured for 9000 bytes",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "The NICs are using IPv6 while the switch only supports IPv4",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The SSH traffic is bypassing the RDMA NIC",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The MTU is set to 1500 bytes on both the switch and the NICs",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "If the NICs send jumbo frames (9000 bytes) but the switch is configured for a standard MTU (1500 bytes), the switch will drop the oversized packets. This results in connectivity for small packets (like SSH) but failure for large data transfers (like RDMA).",
+      "why_not_B": "IP version mismatches would typically prevent basic connectivity (SSH) as well, not just large data transfers.",
+      "why_not_C": "While true that SSH uses a different path, this is a symptom of the problem, not the cause of the RDMA failure.",
+      "why_not_D": "If both are set to 1500, the traffic will flow (though inefficiently). The failure occurs specifically when there is a mismatch where the sender exceeds the receiver's/switch's limit."
+    },
+    "tags": [
+      "MTU",
+      "Jumbo Frames",
+      "Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-086",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An administrator is configuring a network for an AI workload that requires extreme isolation and security between different training jobs. Which networking technology would allow the administrator to create multiple virtualized L3 networks over a single physical L2 infrastructure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "VLAN tagging (802.1Q)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "VXLAN (Virtual Extensible LAN)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Subnetting",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "BGP (Border Gateway Protocol)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VXLAN is a tunneling protocol that encapsulates L2 Ethernet frames within L3 UDP packets, allowing for the creation of massive numbers of virtualized networks (VNIs) across a physical L3 fabric, providing the required isolation.",
+      "why_not_A": "VLANs provide L2 isolation but are limited to 4096 IDs and cannot natively scale across L3 boundaries without complex configurations.",
+      "why_not_C": "Subnetting is a method of dividing a network into smaller pieces but does not provide the virtualization or encapsulation needed to tunnel L2 over L3.",
+      "why_not_D": "BGP is a routing protocol used to exchange routing information between autonomous systems, not a virtualization technology for network isolation."
+    },
+    "tags": [
+      "VXLAN",
+      "Network Virtualization",
+      "L2/L3"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-087",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "In a high-performance AI cluster, the engineer is choosing between using a traditional TCP stack and an InfiniBand fabric for inter-node communication. What is the primary technical reason why InfiniBand is preferred for large-scale distributed training of Large Language Models (LLMs)?",
+    "options": [
+      {
+        "id": "A",
+        "text": "InfiniBand uses a slower clock speed to reduce heat",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "InfiniBand supports only a small number of nodes, reducing complexity",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "InfiniBand provides kernel bypass and zero-copy capabilities",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "InfiniBand is compatible with all standard consumer-grade Ethernet switches",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "InfiniBand's primary advantage is its ability to perform 'kernel bypass,' allowing the application to communicate directly with the hardware. This, combined with zero-copy (transferring data without copying it into intermediate buffers), drastically reduces latency and CPU overhead.",
+      "why_not_A": "InfiniBand is designed for higher speeds and lower latency, not slower clock speeds.",
+      "why_not_B": "InfiniBand is specifically designed to scale to thousands of nodes, making it ideal for large-scale LLM training.",
+      "why_not_D": "InfiniBand is a distinct technology from Ethernet and requires specific InfiniBand switches and adapters; it is not compatible with standard Ethernet hardware."
+    },
+    "tags": [
+      "InfiniBand",
+      "Kernel Bypass",
+      "Low Latency"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-088",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An AI infrastructure architect is designing a multi-node GPU cluster for large-scale LLM training. To minimize latency and avoid TCP/IP overhead during collective operations like All-Reduce, the architect decides to implement RDMA over Converged Ethernet (RoCE v2). Which network configuration is absolutely critical to prevent packet loss and ensure the stability of RoCE v2 traffic in this environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configuring standard Ethernet flow control (IEEE 802.3x) on all switch ports."
+      },
+      {
+        "id": "B",
+        "text": "Implementing Priority Flow Control (PFC) and Explicit Congestion Notification (ECN) across the fabric."
+      },
+      {
+        "id": "C",
+        "text": "Enabling Jumbo Frames (MTU 9000) exclusively on the GPU nodes while keeping the switches at MTU 1500."
+      },
+      {
+        "id": "D",
+        "text": "Configuring a Spanning Tree Protocol (STP) root bridge to eliminate loops in the leaf-spine architecture."
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "RoCE v2 requires a lossless fabric to function efficiently. Priority Flow Control (PFC) prevents buffer overflow by pausing specific traffic classes, and ECN allows the network to signal congestion to endpoints to throttle throughput before packets are dropped.",
+      "why_not_A": "Standard Ethernet flow control (802.3x) is too coarse; it pauses all traffic on a link regardless of priority, which can lead to head-of-line blocking and severely degrade performance in AI workloads.",
+      "why_not_C": "MTU mismatch between nodes and switches will cause packet fragmentation or drops, leading to catastrophic performance degradation or complete connection failure.",
+      "why_not_D": "STP is used for loop prevention in Layer 2, but modern AI fabrics use Layer 3 routing (BGP/OSPF) or specialized leaf-spine architectures where STP is typically disabled to allow ECMP (Equal-Cost Multi-Path)."
+    },
+    "tags": [
+      "RoCEv2",
+      "LosslessFabric",
+      "PFC"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-089",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A cluster administrator observes that while individual GPU-to-GPU communication is fast, the overall training throughput is bottlenecked. Analysis shows a high rate of 'out-of-order' packets and significant retransmissions when using a multi-path leaf-spine topology. Which mechanism should be configured to ensure that packets belonging to the same flow follow the same path to maintain order and maximize throughput?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Static Routing with a single default gateway."
+      },
+      {
+        "id": "B",
+        "text": "LACP (Link Aggregation Control Protocol) with round-robin load balancing."
+      },
+      {
+        "id": "C",
+        "text": "ECMP (Equal-Cost Multi-Path) with flow-based hashing."
+      },
+      {
+        "id": "D",
+        "text": "VLAN Tagging (802.1Q) to isolate training traffic from management traffic."
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "ECMP allows traffic to be distributed across multiple equal-cost paths. By using flow-based hashing (based on source/destination IP and ports), all packets of a specific flow follow the same path, preventing out-of-order delivery while still utilizing all available bandwidth.",
+      "why_not_A": "Static routing with a single gateway creates a massive bottleneck and fails to utilize the redundant paths of a leaf-spine architecture.",
+      "why_not_B": "Round-robin load balancing at the packet level (rather than flow level) causes packets to arrive out of order, which forces the receiving end to buffer and reorder them, killing performance.",
+      "why_not_D": "VLANs provide logical isolation but do not solve the problem of path selection or packet ordering in a multi-path fabric."
+    },
+    "tags": [
+      "ECMP",
+      "LeafSpine",
+      "PacketOrdering"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-090",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "During the deployment of an NVIDIA HGX system, a technician is configuring the InfiniBand (IB) fabric. The system is currently unable to communicate across the subnet, and the 'ibdiagnet' tool indicates that the Subnet Manager (SM) is not active. What is the primary role of the Subnet Manager in an InfiniBand network that differentiates it from a standard Ethernet environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It acts as a DHCP server to assign IP addresses to the Host Channel Adapters (HCAs)."
+      },
+      {
+        "id": "B",
+        "text": "It manages the routing tables and assigns Local Identifiers (LIDs) to each port in the fabric."
+      },
+      {
+        "id": "C",
+        "text": "It performs the hardware-level handshake for NVLink synchronization between GPUs."
+      },
+      {
+        "id": "D",
+        "text": "It encrypts the data plane to ensure secure communication between nodes."
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Unlike Ethernet, which is decentralized, InfiniBand requires a centralized Subnet Manager (SM) to discover the topology, assign LIDs (Local Identifiers) to every port, and calculate the forwarding tables for the switches.",
+      "why_not_A": "LIDs are used for InfiniBand addressing; while IP-over-IB exists, the SM's core function is fabric management, not IP address assignment.",
+      "why_not_C": "NVLink is a proprietary GPU-to-GPU interconnect and operates independently of the InfiniBand Subnet Manager.",
+      "why_not_D": "The SM handles network topology and routing, not data plane encryption."
+    },
+    "tags": [
+      "InfiniBand",
+      "SubnetManager",
+      "LID"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-091",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data center is implementing a 'Rail-Optimized' networking design for a cluster of 8-GPU nodes. The goal is to ensure that GPU 0 on Node A communicates with GPU 0 on Node B via a dedicated network rail. If the cluster uses 8 NICs per node, what is the primary advantage of this rail-optimized approach over a traditional converged network?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It eliminates the need for an external switch by using direct-attach cables between all nodes."
+      },
+      {
+        "id": "B",
+        "text": "It reduces the number of hops between any two GPUs in the cluster to exactly one."
+      },
+      {
+        "id": "C",
+        "text": "It minimizes contention and congestion by isolating traffic for each GPU index to its own independent switching plane."
+      },
+      {
+        "id": "D",
+        "text": "It allows the system to use standard TCP instead of RDMA for collective operations."
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Rail-optimization maps each GPU in a node to a specific NIC. By building separate switching planes for each 'rail' (e.g., all GPU 0s on one switch, all GPU 1s on another), the design maximizes bandwidth and prevents congestion that occurs when multiple GPUs on the same node compete for a single shared uplink.",
+      "why_not_A": "Rail-optimized designs still use switches; they just organize the switches into planes.",
+      "why_not_B": "While it optimizes the path, the number of hops depends on the overall fabric topology (e.g., Fat-Tree), not just the rail-optimization.",
+      "why_not_D": "Rail-optimization is designed to support high-performance RDMA; switching to TCP would defeat the purpose of the high-performance hardware."
+    },
+    "tags": [
+      "RailOptimized",
+      "GPUCluster",
+      "NetworkTopology"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-092",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "networking-basics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A network engineer is troubleshooting a performance drop in a GPU cluster using GPUDirect RDMA. The engineer notices that while the network is healthy, the memory registration (pinning) process is failing on certain nodes, preventing the NIC from accessing GPU memory directly. Which of the following is the most likely cause of this failure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NIC is configured for 10GbE instead of 100GbE."
+      },
+      {
+        "id": "B",
+        "text": "The GPU memory is being swapped to disk by the OS kernel, violating the requirement for pinned memory."
+      },
+      {
+        "id": "C",
+        "text": "The switch is using a Store-and-Forward mechanism instead of Cut-Through switching."
+      },
+      {
+        "id": "D",
+        "text": "The MTU size on the NIC is set to 1500, but the GPU requires 9000."
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GPUDirect RDMA requires 'pinned' (non-pageable) memory. If the OS kernel moves GPU memory to virtual memory/disk (swapping), the NIC's DMA engine cannot find the physical address of the data, causing the registration to fail.",
+      "why_not_A": "Link speed affects throughput but does not cause memory registration failures.",
+      "why_not_C": "Switching mechanisms (Store-and-Forward vs Cut-Through) affect latency, not the ability of a NIC to register memory on a host.",
+      "why_not_D": "MTU mismatches cause packet drops or fragmentation, but they do not prevent the initial memory registration process between the GPU and the NIC."
+    },
+    "tags": [
+      "GPUDirectRDMA",
+      "MemoryPinning",
+      "DMA"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-093",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A machine learning engineer is deploying a PyTorch model on a cluster of NVIDIA GPUs. They notice that while the GPUs are present, the application fails to utilize the CUDA cores and falls back to CPU execution. Which component of the NVIDIA software stack is most likely misconfigured or missing?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA Container Toolkit",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "CUDA Toolkit",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVML (NVIDIA Management Library)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA Fabric Manager",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The CUDA Toolkit provides the necessary libraries, compilers, and APIs that allow software like PyTorch to communicate with the GPU hardware to perform parallel computations.",
+      "why_not_A": "The Container Toolkit allows containers to access the GPU, but if the application inside the container lacks the CUDA libraries or the host lacks the driver, it won't run on GPU; however, the core requirement for CUDA execution is the Toolkit/Driver interface.",
+      "why_not_C": "NVML is used for monitoring and managing GPU state (like temperature and utilization), not for executing compute kernels.",
+      "why_not_D": "Fabric Manager is required for NVSwitch-based systems (like DGX) to enable GPU-to-GPU communication, but it doesn't govern the basic ability of a single application to use CUDA cores."
+    },
+    "tags": [
+      "CUDA",
+      "Runtime"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-094",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An operations team is deploying a multi-node GPU cluster using Docker containers. They need to ensure that the containers can access the underlying NVIDIA GPU hardware without installing the full NVIDIA driver inside every single image. What is the recommended approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Install the NVIDIA Driver inside the Dockerfile for every image.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the NVIDIA Container Toolkit to map the host driver to the container.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Virtual Machine instead of containers to encapsulate the driver.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable the driver on the host and rely on the container's internal libraries.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The NVIDIA Container Toolkit (specifically nvidia-docker2/nvidia-container-runtime) allows the container to use the NVIDIA driver installed on the host machine, keeping images lightweight and portable.",
+      "why_not_A": "Installing drivers inside images is a bad practice because drivers are kernel-dependent and would make the images huge and non-portable across different host kernel versions.",
+      "why_not_C": "VMs introduce significant overhead and are not the recommended way to handle driver mapping for containerized GPU workloads.",
+      "why_not_D": "The NVIDIA driver must be installed on the host because it interacts directly with the hardware kernel; a container cannot provide the kernel-level driver."
+    },
+    "tags": [
+      "Containerization",
+      "NVIDIA Container Toolkit"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-095",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data scientist is experiencing significant performance bottlenecks during the data loading phase of their training pipeline. The GPU utilization is low, and the CPU is pegged at 100%. Which NVIDIA software tool or library should be investigated to optimize the data movement from storage to GPU memory?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA GPUDirect Storage (GDS)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA TensorRT",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA Triton Inference Server",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA CUDA Graphed",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "GPUDirect Storage (GDS) enables a direct DMA path between storage (NVMe) and GPU memory, bypassing the CPU and reducing CPU overhead and latency.",
+      "why_not_B": "TensorRT is used for optimizing model inference (quantization, pruning), not for data loading from storage.",
+      "why_not_C": "Triton is a server for deploying models for inference; it does not solve the low-level data movement bottleneck during training.",
+      "why_not_D": "CUDA Graphs are used to reduce CPU launch overhead for kernels, not to optimize the movement of data from disk to memory."
+    },
+    "tags": [
+      "Data Movement",
+      "GPUDirect"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-096",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is transitioning a model from a research environment (PyTorch) to a high-throughput production environment. They need to minimize latency and maximize throughput on NVIDIA T4 GPUs. Which software component is most appropriate for this optimization?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA NCCL",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA TensorRT",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA CUDA-X",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA MIG (Multi-Instance GPU)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TensorRT is an SDK for high-performance deep learning inference. It optimizes models by fusing layers, eliminating redundant operations, and using precision calibration (FP16/INT8).",
+      "why_not_A": "NCCL (NVIDIA Collective Communications Library) is used for multi-GPU communication during training, not for single-model inference optimization.",
+      "why_not_C": "CUDA-X is a broad suite of libraries (cuDNN, cuBLAS, etc.); while TensorRT uses them, TensorRT specifically is the tool for inference optimization.",
+      "why_not_D": "MIG is a hardware feature to partition a GPU into smaller instances; it doesn't optimize the model's internal execution speed."
+    },
+    "tags": [
+      "Inference",
+      "TensorRT"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-097",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An administrator is setting up a multi-node training cluster and notices that GPU communication between nodes is significantly slower than expected. They want to ensure the software stack is utilizing the most efficient collective communication primitives for NVIDIA GPUs. Which library should they verify is correctly configured?",
+    "options": [
+      {
+        "id": "A",
+        "text": "cuDNN",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "cuBLAS",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NCCL",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "NVLink-SW",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NCCL (NVIDIA Collective Communications Library) provides optimized routines for collective operations (All-Reduce, All-Gather, Broadcast) across multiple GPUs and nodes.",
+      "why_not_A": "cuDNN is a library for deep neural network primitives (convolutions, pooling), not for inter-node communication.",
+      "why_not_B": "cuBLAS is a library for basic linear algebra (matrix multiplication), which happens on a single GPU, not across a network.",
+      "why_not_D": "NVLink is the hardware interconnect; while there is software to manage it, NCCL is the actual library used by frameworks (PyTorch, TensorFlow) to perform the communication."
+    },
+    "tags": [
+      "Multi-Node",
+      "NCCL"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-098",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI engineer is deploying a large language model (LLM) across a cluster of NVIDIA DGX nodes. They observe that while GPU utilization is high, the training throughput is significantly lower than expected, and the GPU kernels are frequently waiting for data. Which component of the NVIDIA AI software stack should be prioritized for optimization to resolve this I/O bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA Triton Inference Server",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA Magnum IO GPUDirect Storage (GDS)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA CUDA Toolkit runtime libraries",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA TensorRT compiler",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GPUDirect Storage (GDS) enables a direct DMA path between local or remote storage and GPU memory, bypassing the CPU and system memory buffers, which eliminates the I/O bottleneck described in training scenarios involving massive datasets.",
+      "why_not_A": "Triton is used for model deployment and inference serving, not for optimizing the data loading pipeline during the training phase.",
+      "why_not_C": "While CUDA libraries are essential for execution, they do not specifically address the movement of data from storage to GPU memory to solve I/O starvation.",
+      "why_not_D": "TensorRT is used for optimizing inference performance through quantization and layer fusion, not for solving data ingestion bottlenecks during training."
+    },
+    "tags": [
+      "MagnumIO",
+      "DataPipeline",
+      "GPUDirect"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-099",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps team is implementing a multi-tenant AI environment using Kubernetes. They need to ensure that different research teams can share a pool of GPUs while preventing a single process from monopolizing all GPU memory on a physical card. Which NVIDIA software feature is most appropriate for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA MIG (Multi-Instance GPU)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA CUDA Streams",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA NVLink Fabric Manager",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA Container Toolkit",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "MIG allows a single NVIDIA GPU (e.g., A100 or H100) to be partitioned into multiple hardware-isolated instances, each with its own dedicated memory and compute resources, ensuring strict isolation and preventing memory monopolization.",
+      "why_not_B": "CUDA Streams allow for concurrent execution of kernels on a single GPU, but they do not provide hardware-level memory isolation or resource partitioning.",
+      "why_not_C": "Fabric Manager is responsible for managing the NVLink interconnects between GPUs in a node, not for partitioning resources within a single GPU.",
+      "why_not_D": "The Container Toolkit allows containers to access the GPU, but it does not provide the mechanism to partition the GPU hardware itself."
+    },
+    "tags": [
+      "MIG",
+      "Virtualization",
+      "Kubernetes"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-100",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data scientist is optimizing a deep learning model for production deployment on an edge device. The model currently uses FP32 precision, but the hardware supports INT8. Which sequence of software tools should be used to maximize throughput while maintaining acceptable accuracy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "CUDA Toolkit -> NVCC -> NVIDIA Driver",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "PyTorch -> NVIDIA Triton -> CUDA",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "PyTorch/TensorFlow -> TensorRT -> Triton Inference Server",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA Driver -> TensorRT -> CUDA Toolkit",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The standard workflow for optimization is training the model in a framework (PyTorch/TF), using TensorRT for precision calibration (FP32 to INT8) and graph optimization, and then deploying via Triton for scalable inference serving.",
+      "why_not_A": "NVCC is a compiler for CUDA C++ code and does not handle high-level model quantization or inference optimization.",
+      "why_not_B": "Triton is the serving layer; it does not perform the quantization process itself\u2014that is the role of TensorRT.",
+      "why_not_D": "The driver is a low-level component and does not participate in the model optimization or quantization logic."
+    },
+    "tags": [
+      "TensorRT",
+      "Triton",
+      "Quantization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-101",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During the setup of a multi-node GPU cluster for distributed training, an administrator notices that communication between GPUs on different nodes is significantly slower than communication between GPUs on the same node, despite having a high-speed InfiniBand network. Which software configuration is likely missing or misconfigured?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA CUDA Forward Compatibility",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NCCL (NVIDIA Collective Communications Library)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA GPU Operator",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA Container Runtime",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NCCL provides optimized primitives for collective communication (like All-Reduce) and is specifically designed to leverage InfiniBand and GPUDirect RDMA for high-performance inter-node GPU communication.",
+      "why_not_A": "Forward compatibility allows newer CUDA versions to run on older drivers; it does not optimize network communication between nodes.",
+      "why_not_C": "The GPU Operator automates the deployment of drivers and monitoring tools but does not manage the communication protocols between GPUs during training.",
+      "why_not_D": "The Container Runtime allows containers to access the GPU hardware but does not optimize the network traffic between nodes."
+    },
+    "tags": [
+      "NCCL",
+      "DistributedTraining",
+      "InfiniBand"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-102",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is migrating its AI workloads to a containerized environment. They want to ensure that the GPU drivers are managed automatically and that the correct NVIDIA runtime is applied to all pods without manually editing every YAML deployment file. Which component of the NVIDIA software stack facilitates this automation in Kubernetes?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA Device Plugin",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA GPU Operator",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA Triton Inference Server",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "CUDA Forward Compatibility Layer",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The NVIDIA GPU Operator manages the entire lifecycle of GPU software on Kubernetes, including driver installation, the device plugin, and configuring the container runtime via a unified operator pattern.",
+      "why_not_A": "The Device Plugin only handles the advertising of GPU resources to the K8s scheduler; it does not install drivers or manage the runtime configuration.",
+      "why_not_C": "Triton is an inference server and has no role in cluster-level driver or runtime orchestration.",
+      "why_not_D": "The Forward Compatibility Layer is a library mechanism to avoid driver updates, not a Kubernetes orchestration tool."
+    },
+    "tags": [
+      "GPUOperator",
+      "Kubernetes",
+      "Automation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-103",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An AI infrastructure engineer is deploying a large-scale LLM training workload across multiple DGX nodes. The engineer notices that while the GPUs are utilized, the training throughput is significantly lower than expected, and profiling reveals high CPU wait times and frequent synchronization bottlenecks during gradient aggregation. Which component of the NVIDIA software stack should be optimized first to resolve the communication overhead between GPU memories across the network?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Update the NVIDIA Driver to the latest Beta version to enable improved PCIe Gen5 support.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure NCCL (NVIDIA Collective Communications Library) with the correct network interface settings and enable GPUDirect RDMA.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the CPU core affinity for the training process to reduce context switching.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch from CUDA 11.x to CUDA 12.x to utilize the latest JIT compilation improvements.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NCCL is the primary library for multi-GPU and multi-node communication. GPUDirect RDMA allows GPUs to move data directly between their memories over the network without involving the CPU, which directly addresses the CPU wait times and synchronization bottlenecks described.",
+      "why_not_A": "While drivers are essential, a driver update alone does not optimize the collective communication patterns used in distributed LLM training.",
+      "why_not_C": "CPU affinity helps with local processing, but the bottleneck is explicitly identified as gradient aggregation across nodes, which is a network/communication issue.",
+      "why_not_D": "CUDA version updates may improve kernel performance, but they do not solve the architectural bottleneck of cross-node memory synchronization."
+    },
+    "tags": [
+      "NCCL",
+      "GPUDirect RDMA",
+      "Distributed Training"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-104",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data scientist is deploying a model using NVIDIA Triton Inference Server. The model experiences high latency for small batch sizes but high throughput for large batches. The engineer wants to maximize GPU utilization while maintaining a strict latency SLA for real-time requests. Which Triton feature should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Model Ensemble to chain multiple models together.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Dynamic Batching to group individual requests into larger batches.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Model Versioning to allow seamless updates without downtime.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Instance Groups to load the model into multiple GPU memories.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dynamic Batching allows Triton to collect individual inference requests and group them into a larger batch before sending them to the GPU. This optimizes throughput and GPU utilization without requiring the client to send large batches, provided the 'max_queue_delay_microseconds' is tuned to meet the latency SLA.",
+      "why_not_A": "Model Ensembles are used for pipelining different models (e.g., preprocessing -> inference), not for optimizing batch sizes.",
+      "why_not_C": "Model Versioning manages the lifecycle of the model and does not affect inference latency or throughput.",
+      "why_not_D": "Instance Groups increase concurrency by running multiple copies of a model, but they do not solve the efficiency problem of small batch sizes."
+    },
+    "tags": [
+      "Triton Inference Server",
+      "Dynamic Batching",
+      "Inference Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-105",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "During the deployment of a containerized AI workload on a Kubernetes cluster, the pods are failing to start with an error indicating that the container cannot access the NVIDIA GPUs, despite the GPUs being visible on the host via 'nvidia-smi'. Which software component is most likely misconfigured or missing?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NVIDIA Container Toolkit (nvidia-docker2).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The NVIDIA GPU Operator.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The CUDA Toolkit installed inside the container image.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The Kubernetes API server version.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a Kubernetes environment, the NVIDIA GPU Operator automates the installation of the driver, the container toolkit, and the device plugin. If the host has drivers but the pods cannot 'see' the GPUs, the device plugin (managed by the Operator) is usually missing or failed, preventing the K8s scheduler from assigning GPU resources.",
+      "why_not_A": "The Container Toolkit allows a local container to use GPUs, but in Kubernetes, the GPU Operator/Device Plugin is required for orchestration and scheduling.",
+      "why_not_C": "The CUDA Toolkit inside the image is for compiling/running code; it does not enable the container to 'see' the hardware\u2014that is the role of the driver and device plugin.",
+      "why_not_D": "The API server version is unrelated to the hardware abstraction layer of the GPU."
+    },
+    "tags": [
+      "Kubernetes",
+      "GPU Operator",
+      "Containerization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-106",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An operations team is optimizing a PyTorch-based workload. They observe that the GPU memory is fragmented, leading to 'Out of Memory' (OOM) errors even when the total free memory appears sufficient. Which NVIDIA-supported optimization technique should be applied to manage the memory allocator more efficiently?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement NVIDIA MIG (Multi-Instance GPU) to partition the GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable CUDA Graphs to reduce CPU launch overhead.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Utilize a memory-efficient allocator or adjust the PyTorch caching allocator settings.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the virtual memory paging file on the host OS.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "OOM errors despite available total memory are a classic sign of memory fragmentation. PyTorch uses a caching allocator to avoid frequent calls to cudaMalloc. Tuning the allocator or using specialized memory management techniques is the correct way to handle fragmentation.",
+      "why_not_A": "MIG partitions the GPU into hardware-isolated instances; it does not solve fragmentation within a single allocated instance.",
+      "why_not_B": "CUDA Graphs optimize the execution path by recording kernels to reduce CPU overhead, but they do not solve memory fragmentation.",
+      "why_not_D": "Increasing host swap/paging does not help GPU memory (VRAM), as GPUs cannot page to disk in the same way CPUs do."
+    },
+    "tags": [
+      "PyTorch",
+      "CUDA Memory Management",
+      "OOM"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-107",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is migrating an AI pipeline from a local workstation to a production DGX cluster. They need to ensure that the environment is reproducible and that the specific versions of CUDA, cuDNN, and TensorRT are locked across all nodes. Which approach is the most scalable and recommended within the NVIDIA software ecosystem?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Manual installation of specific .run files on every node in the cluster.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Using NVIDIA NGC (NVIDIA GPU Cloud) containers.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Installing the latest 'apt-get' packages for CUDA on all nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Using a shared NFS mount for the /usr/local/cuda directory across all nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NGC containers provide pre-configured, optimized, and version-locked environments containing the exact versions of CUDA, cuDNN, and other libraries. This ensures perfect reproducibility and scalability across any number of nodes.",
+      "why_not_A": "Manual installation is error-prone, not scalable, and difficult to maintain across a cluster.",
+      "why_not_C": "Standard package managers often provide the latest version, which may lead to version drift across nodes and is not 'locked' to a specific tested version.",
+      "why_not_D": "Sharing the CUDA directory via NFS is inefficient and can cause significant performance degradation and stability issues due to the way CUDA libraries interact with the kernel driver."
+    },
+    "tags": [
+      "NGC",
+      "Reproducibility",
+      "Containerization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-108",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A machine learning engineer is deploying a large-scale LLM using NVIDIA Triton Inference Server. They observe that while GPU utilization is high, the throughput is lower than expected, and there is significant latency during request processing. Upon reviewing the configuration, they see that the model is configured for dynamic batching but the 'max_queue_delay_microseconds' is set to 0. What is the most likely impact of this setting on the software stack performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Triton will ignore dynamic batching entirely and process requests in a strictly sequential manner.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Triton will execute the inference as soon as the first request arrives, failing to form larger batches and reducing overall throughput.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The server will enter a deadlock state because it cannot determine the optimal batch size without a delay timer.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPU memory will be fragmented because the scheduler cannot allocate contiguous blocks for zero-delay batches.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In NVIDIA Triton, 'max_queue_delay_microseconds' defines how long the scheduler waits to accumulate more requests to form a larger batch. Setting this to 0 means the scheduler does not wait; it triggers inference immediately upon the arrival of the first request, effectively neutralizing the throughput benefits of dynamic batching.",
+      "why_not_A": "Dynamic batching is still 'enabled' in the config, but the timing parameter makes it behave like single-request processing; it doesn't revert to a purely sequential legacy mode.",
+      "why_not_C": "A value of 0 is a valid configuration parameter and does not cause system deadlocks.",
+      "why_not_D": "Batching delays are related to the scheduler's timing and request queuing, not to the physical memory allocation mechanisms of the GPU."
+    },
+    "tags": [
+      "Triton Inference Server",
+      "Dynamic Batching"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-109",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An infrastructure architect is optimizing a multi-tenant GPU cluster using NVIDIA Container Toolkit. They need to ensure that a specific container has access to the GPU but cannot modify the GPU's clock speeds or power limits to prevent one user from impacting the thermal envelope of the entire node. Which approach should be implemented?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use the '--gpus all' flag and set the container to privileged mode.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement NVIDIA Multi-Instance GPU (MIG) and assign a specific GPU instance to the container.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use the NVIDIA Device Plugin for Kubernetes with the 'gpu-feature-discovery' label.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Mount the /dev/nvidiactl device as read-only within the container volume.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "MIG provides hardware-level isolation. By partitioning the GPU into separate instances, each instance has its own dedicated memory and compute resources. Crucially, MIG prevents a user in one instance from altering global GPU settings (like clocks or power) that would affect other instances on the same physical GPU.",
+      "why_not_A": "Privileged mode grants the container root access to the host, allowing the user to change power limits and clock speeds, which is exactly what needs to be prevented.",
+      "why_not_C": "GPU Feature Discovery is used for labeling and scheduling pods based on GPU attributes, but it does not provide the runtime hardware isolation required to block power/clock modifications.",
+      "why_not_D": "Mounting devices as read-only is insufficient for controlling the NVIDIA driver's internal state management and would likely break the driver's ability to function within the container."
+    },
+    "tags": [
+      "NVIDIA Container Toolkit",
+      "MIG"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-110",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps team is deploying a distributed training job across 8 NVIDIA H100 GPUs. They are utilizing the NVIDIA Collective Communications Library (NCCL). During the training, they notice that communication overhead is significantly slowing down the synchronization of gradients. Which of the following software stack modifications would most effectively reduce this overhead in a multi-node environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from NCCL to standard MPI (Message Passing Interface) for all collective operations.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Disable the NVIDIA Fabric Manager to reduce the overhead of the GPU-to-GPU communication layer.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable GPUDirect RDMA to allow NCCL to bypass the CPU and system memory during node-to-node transfers.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the CUDA block size in the model's kernels to reduce the number of synchronization calls.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "GPUDirect RDMA allows GPUs on different nodes to read/write each other's memory directly over the network (InfiniBand/RoCE) without staging data through the CPU or host memory, significantly reducing latency and CPU overhead for NCCL collectives.",
+      "why_not_A": "NCCL is specifically optimized for NVIDIA GPUs and typically outperforms standard MPI for deep learning collective operations (like AllReduce).",
+      "why_not_B": "The NVIDIA Fabric Manager is required for NVSwitch and NVLink to function correctly in multi-GPU systems; disabling it would break the high-speed interconnects.",
+      "why_not_D": "CUDA block size affects the execution of a single kernel on a single GPU; it does not address the inter-node communication overhead handled by NCCL."
+    },
+    "tags": [
+      "NCCL",
+      "GPUDirect RDMA"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-111",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A system administrator is troubleshooting a 'CUDA Error: out of memory' issue on a workstation. The user is running a Python script using PyTorch. The administrator notices that while the GPU memory is full, the 'nvidia-smi' output shows that several processes are holding onto memory even after the training script has crashed. What is the most likely cause within the software stack?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The NVIDIA driver is failing to release the memory because the GPU is in 'Persistence Mode'.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The CUDA context was not explicitly destroyed, and zombie processes are maintaining the GPU memory handle.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The PyTorch caching allocator is unable to communicate with the NVIDIA driver due to a version mismatch.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPU's ECC (Error Correction Code) memory is triggering a hardware scrub, locking the memory pages.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GPU memory is tied to the CUDA context. If a process crashes or remains as a zombie without properly terminating the context, the driver continues to reserve the memory allocated to that process until the process is fully reaped by the OS.",
+      "why_not_A": "Persistence Mode keeps the driver loaded to avoid initialization latency; it does not prevent the driver from releasing memory when a process terminates.",
+      "why_not_C": "A version mismatch between PyTorch and the driver usually results in an immediate 'Driver/Library version mismatch' error at startup, not a memory leak after a crash.",
+      "why_not_D": "ECC scrubbing happens in the background and does not cause 'out of memory' errors or prevent memory from being released by processes."
+    },
+    "tags": [
+      "CUDA",
+      "Memory Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-112",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "software-stack",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI engineer is deploying a model using the NVIDIA Triton Inference Server with a TensorRT backend. They want to maximize the throughput for a high-volume stream of requests with varying input shapes. Which configuration strategy is the most appropriate for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a fixed-shape TensorRT engine and pad all incoming requests to the maximum supported size.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Disable the TensorRT backend and use the ONNX Runtime backend for better flexibility with dynamic shapes.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement TensorRT dynamic shapes and configure 'optimization profiles' in the Triton model configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Set the 'instance_group' count to the maximum number of GPUs available to force parallel execution of different shapes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "TensorRT supports dynamic shapes, which allow a single engine to handle different input dimensions. Optimization profiles allow TensorRT to optimize the engine for specific ranges (min, optimal, max) of input shapes, providing the best balance between flexibility and performance in Triton.",
+      "why_not_A": "Padding all requests to the maximum size leads to significant wasted computation and memory, drastically reducing throughput for smaller inputs.",
+      "why_not_B": "While ONNX Runtime is flexible, TensorRT is specifically designed for maximum performance on NVIDIA hardware; switching back would likely decrease throughput.",
+      "why_not_D": "Increasing the number of model instances increases concurrency but does not solve the problem of how the engine handles varying input shapes efficiently."
+    },
+    "tags": [
+      "TensorRT",
+      "Triton Inference Server"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-113",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An infrastructure administrator notices that several NVIDIA A100 GPUs in a cluster are reporting 'XID 61' errors in the system logs. The administrator needs to identify the root cause without rebooting the entire node. Which tool should be used to check the health and detailed error status of the GPU hardware?",
+    "options": [
+      {
+        "id": "A",
+        "text": "nvidia-smi",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "nvpmodel",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "nvidia-debugdump",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "dcgm-exporter",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "nvidia-smi (NVIDIA System Management Interface) is the primary command-line utility for monitoring GPU health, temperature, and reporting XID errors and hardware status in real-time.",
+      "why_not_A": "N/A",
+      "why_not_B": "nvpmodel is used for configuring power profiles and clock settings on Jetson platforms, not for diagnosing XID errors on data center GPUs.",
+      "why_not_C": "nvidia-debugdump is used for capturing low-level dumps for NVIDIA engineering analysis, not for general administrative health monitoring.",
+      "why_not_D": "dcgm-exporter is used to export metrics to Prometheus for long-term visualization; while it monitors health, the immediate diagnostic check for a specific XID error is performed via nvidia-smi."
+    },
+    "tags": [
+      "monitoring",
+      "nvidia-smi",
+      "hardware-diagnostics"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-114",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A DevOps engineer is setting up a monitoring pipeline for a multi-node GPU cluster. They want to collect GPU utilization, memory usage, and temperature metrics to be visualized in a Grafana dashboard. Which combination of tools provides the industry-standard NVIDIA telemetry stack for this purpose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA-SMI and SNMP",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "DCGM, Prometheus, and Grafana",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "NVML and ELK Stack",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA Cluster Management Tool and Zabbix",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Data Center GPU Manager (DCGM) collects the telemetry, Prometheus scrapes and stores the time-series data, and Grafana visualizes it. This is the recommended NVIDIA monitoring architecture.",
+      "why_not_A": "nvidia-smi is a point-in-time tool and not suitable for continuous time-series monitoring via SNMP in a modern AI stack.",
+      "why_not_C": "NVML is the library that DCGM uses, but the ELK stack is primarily for logs, whereas GPU utilization is a metric better suited for Prometheus.",
+      "why_not_D": "Zabbix is a general monitoring tool, but it does not provide the native, deep GPU-specific telemetry integration that DCGM offers."
+    },
+    "tags": [
+      "telemetry",
+      "DCGM",
+      "Prometheus"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-115",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "During a large-scale LLM training run, an operator observes that GPU utilization is high, but the training throughput is significantly lower than expected. The operator suspects a bottleneck in the data transfer between GPUs. Which metric should be prioritized to diagnose this issue?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GPU Core Clock Frequency",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "GPU Memory Utilization",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NVLink Throughput/Bandwidth",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "CPU Load Average",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NVLink is the high-speed interconnect between GPUs. If throughput is low despite high GPU utilization, it often indicates a communication bottleneck between GPUs during synchronization (All-Reduce operations).",
+      "why_not_A": "Clock frequency indicates performance speed of the cores, but not the efficiency of data movement between different GPUs.",
+      "why_not_B": "Memory utilization shows how much VRAM is used, but not how fast data is moving across the interconnects.",
+      "why_not_D": "While CPU bottlenecks can occur, the specific scenario of 'data transfer between GPUs' points directly to the GPU interconnect (NVLink) rather than the host CPU."
+    },
+    "tags": [
+      "performance-monitoring",
+      "NVLink",
+      "bottlenecks"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-116",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A system administrator needs to ensure that GPUs are not overheating during a peak workload. They want to configure a policy that automatically throttles the GPU clock speed if a specific temperature threshold is reached. Which component of the NVIDIA software stack handles this hardware-level management?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA Driver (via Thermal Management)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "CUDA Toolkit",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Kubernetes Device Plugin",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA Container Toolkit",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The NVIDIA driver contains the built-in thermal management logic that monitors sensors and applies hardware throttling (thermal slowing) to protect the silicon from damage.",
+      "why_not_A": "N/A",
+      "why_not_B": "The CUDA Toolkit is used for developing and compiling GPU applications, not for managing hardware thermal throttling policies.",
+      "why_not_C": "The Kubernetes Device Plugin manages the allocation of GPUs to containers, but it does not control hardware-level thermal throttling.",
+      "why_not_D": "The Container Toolkit allows containers to access the GPU driver, but it does not implement the thermal management logic itself."
+    },
+    "tags": [
+      "hardware-management",
+      "thermal-throttling",
+      "drivers"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-117",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An operator is using DCGM to monitor a cluster of H100 GPUs. They notice a 'Health' status of 'Critical' for one GPU. They want to run a diagnostic test to verify if the GPU memory is faulty. Which DCGM feature should be utilized?",
+    "options": [
+      {
+        "id": "A",
+        "text": "DCGM Metrics Collection",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "DCGM Diagnostics (dcgm-diag)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "DCGM Profiling",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "DCGM Event Logging",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "dcgm-diag (or the diagnostics module of DCGM) is specifically designed to run a suite of tests, including memory stress tests and PCIe connectivity checks, to validate hardware health.",
+      "why_not_A": "Metrics collection provides the 'what' (e.g., temperature is high), but not the 'why' (e.g., memory is faulty) which requires a diagnostic test.",
+      "why_not_C": "Profiling is used to analyze the performance of a specific kernel or application, not to check for hardware faults.",
+      "why_not_D": "Event logging records that an error occurred, but it does not actively test the hardware to verify a fault."
+    },
+    "tags": [
+      "DCGM",
+      "diagnostics",
+      "hardware-health"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-118",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A GPU cluster is experiencing intermittent performance degradation. The operator notices that while GPU utilization is high, the 'GPU Memory Copy' and 'PCIe throughput' metrics are spiking, and some kernels are stalling. Which tool should the operator use to identify if the bottleneck is due to inefficient data movement between the CPU and GPU?",
+    "options": [
+      {
+        "id": "A",
+        "text": "nvidia-smi",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA Nsight Systems",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "DCGM (Data Center GPU Manager)",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "nvpmodel",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NVIDIA Nsight Systems provides a system-wide visualization of CPU-GPU interactions, including CUDA API calls, memory transfers (HtoD, DtoH), and PCIe bandwidth usage, making it the ideal tool for identifying data movement bottlenecks.",
+      "why_not_A": "nvidia-smi provides a snapshot of current utilization and memory usage but does not provide the timeline-based tracing needed to correlate kernel stalls with memory copies.",
+      "why_not_C": "DCGM is used for cluster-level health monitoring and telemetry (e.g., temperature, XID errors) rather than detailed application-level profiling of data movement.",
+      "why_not_D": "nvpmodel is used for configuring power profiles and clock limits on Jetson platforms, not for profiling data movement in a GPU cluster."
+    },
+    "tags": [
+      "Profiling",
+      "Nsight-Systems",
+      "Performance-Bottlenecks"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-119",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI infrastructure engineer is monitoring a multi-node training job using DCGM. They observe a 'Critical' alert for an XID error 31 on one of the GPUs. What is the most likely cause of this error, and what is the recommended operational response?",
+    "options": [
+      {
+        "id": "A",
+        "text": "GPU Overheating; increase fan speed via nvidia-smi.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Memory ECC error; perform a soft reset of the GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "GPU Memory Page Fault; investigate the application code and check for out-of-bounds access.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "NVLink Failure; replace the physical NVLink bridge.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "XID 31 typically indicates a GPU memory page fault, which is often caused by the application attempting to access an invalid memory address. The operational response is to analyze the software/kernel rather than the hardware.",
+      "why_not_A": "Overheating triggers different XID errors (typically related to thermal throttling) and would be indicated by temperature metrics, not XID 31.",
+      "why_not_B": "ECC errors are usually reported as XID 43 or 44 and are handled by the hardware's error correction or reported as uncorrectable errors.",
+      "why_not_D": "NVLink failures are associated with different XID codes (e.g., XID 61) and usually result in a complete loss of communication between GPUs."
+    },
+    "tags": [
+      "DCGM",
+      "XID-Errors",
+      "Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-120",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is deploying a large-scale LLM training cluster. To ensure maximum stability, the operations team wants to implement a monitoring strategy that detects 'silent data corruption' (SDC) before it ruins a training checkpoint. Which combination of tools and metrics is most effective for this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Prometheus monitoring GPU Temperature and Power Draw.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "DCGM monitoring for Uncorrectable ECC errors and XID events.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Using nvidia-smi to check for GPU Clock throttling every 5 minutes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Monitoring CPU load to ensure the GPU is not starved for data.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Uncorrectable ECC (Error Correction Code) errors indicate that data in memory has been corrupted beyond the ability of the hardware to fix it. Monitoring these via DCGM is the primary way to detect potential SDC that could lead to NaN values in model weights.",
+      "why_not_A": "Temperature and Power Draw are health metrics but do not indicate data integrity or corruption.",
+      "why_not_C": "Clock throttling affects performance (speed) but does not cause or indicate data corruption.",
+      "why_not_D": "CPU load relates to data pipeline efficiency (bottlenecks), not the integrity of the data residing on the GPU."
+    },
+    "tags": [
+      "ECC",
+      "Data-Integrity",
+      "DCGM"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-121",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An operator is managing a Kubernetes cluster with NVIDIA GPU Operator. They notice that some pods are failing to schedule with the error 'Insufficient nvidia.com/gpu'. However, nvidia-smi shows that several GPUs are currently idle. What is the most likely operational cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPUs are in a 'Persistence Mode' that prevents Kubernetes from seeing them.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The NVIDIA Device Plugin has crashed or is not reporting current capacity to the Kubelet.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The GPUs are running in MIG (Multi-Instance GPU) mode and have no available profiles.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPU driver version is incompatible with the CUDA toolkit version used in the pod.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In Kubernetes, the NVIDIA Device Plugin is responsible for advertising the number of available GPUs to the Kubelet. If the plugin is malfunctioning, Kubernetes thinks there are no resources available even if the hardware is idle.",
+      "why_not_A": "Persistence mode keeps the driver loaded to reduce latency; it does not hide GPUs from the Kubernetes scheduler.",
+      "why_not_C": "If MIG were the issue, the error would typically relate to a specific MIG profile request rather than a general 'Insufficient gpu' count if the GPUs were truly idle.",
+      "why_not_D": "Driver/Toolkit incompatibility causes pods to fail at runtime (CrashLoopBackOff), not at the scheduling phase (Pending)."
+    },
+    "tags": [
+      "Kubernetes",
+      "GPU-Operator",
+      "Scheduling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-122",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team is using NVIDIA MIG (Multi-Instance GPU) on A100 GPUs to provide smaller slices of compute to multiple researchers. A researcher reports that their application is crashing with an 'Out of Memory' error, despite the MIG instance being defined as 20GB. The operator finds that the GPU is physically healthy. What is the first thing the operator should check regarding the MIG configuration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Whether the GPU is in 'Compute' mode instead of 'MIG' mode.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The total amount of system RAM available to the host.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "If the application is attempting to use a CUDA feature that requires a full GPU (non-MIG).",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Whether the MIG instance was created with a profile that matches the requested memory and if the application is correctly targeting that specific UUID.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "In MIG environments, users must target the specific UUID of the MIG instance. If the application defaults to the primary GPU or a different slice with a smaller profile, it will trigger an OOM error despite the intended 20GB slice being available.",
+      "why_not_A": "If the GPU were in 'Compute' mode, MIG instances wouldn't exist at all, and the user would see the full GPU memory, not a 20GB limit.",
+      "why_not_B": "System RAM (CPU RAM) is separate from GPU VRAM; an OOM in the GPU context refers to VRAM.",
+      "why_not_C": "While some features are limited in MIG, 'Out of Memory' is a capacity issue, not a feature-compatibility issue."
+    },
+    "tags": [
+      "MIG",
+      "Resource-Allocation",
+      "Memory-Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-123",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A cluster administrator notices that several GPU nodes are reporting 'XID 61' errors in the system logs, and some pods are stuck in a Pending state despite available CPU and memory. Upon inspection, the GPUs are not being detected by the NVIDIA Container Toolkit. Which operational step should be prioritized to diagnose the root cause of the GPU unavailability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Restart the Kubernetes API server to refresh the node status.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Check the output of 'nvidia-smi' on the host and verify the NVIDIA driver version matches the installed CUDA toolkit.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the memory limit for the kubelet to prevent OOM kills of the device plugin.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Reinstall the NVIDIA Container Toolkit on all healthy nodes in the cluster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "XID 61 is typically a GPU memory or hardware-related error. Verifying 'nvidia-smi' on the host confirms if the driver is communicating with the hardware. If the driver has crashed or is mismatched with the toolkit, the NVIDIA Container Runtime cannot expose GPUs to containers, leading to Pending pods.",
+      "why_not_A": "The API server manages cluster state but does not resolve hardware-level driver failures or XID errors on specific nodes.",
+      "why_not_C": "Pending pods due to missing GPUs are a resource scheduling issue, not a kubelet memory exhaustion issue.",
+      "why_not_D": "Reinstalling the toolkit on healthy nodes does not address the specific hardware/driver failure on the affected nodes."
+    },
+    "tags": [
+      "GPU-Health",
+      "XID-Errors",
+      "Driver-Verification"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-124",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An AI team is monitoring a large-scale LLM training job using NVIDIA DCGM (Data Center GPU Manager). They observe that while GPU utilization is at 98%, the 'SM Clock' is significantly lower than the maximum rated boost clock, and 'Thermal Throttling' is reporting as 'Active'. What is the most likely operational cause of this performance degradation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The training batch size is too small, causing under-utilization of the Tensor Cores.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The NVLink interconnects are experiencing high packet loss, causing a synchronization bottleneck.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The GPU is reducing its clock speed to prevent overheating due to inadequate cooling or airflow.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The CPU is bottlenecking the data pipeline, preventing the GPU from reaching max clock speeds.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Thermal Throttling occurs when the GPU reaches its temperature limit, forcing the hardware to lower the SM clock frequency to reduce heat output, which directly results in lower performance despite high utilization.",
+      "why_not_A": "Small batch sizes would lead to lower GPU utilization (%), not thermal throttling and clock speed reduction.",
+      "why_not_B": "NVLink issues typically manifest as communication timeouts or slow scaling across nodes, not as thermal throttling on individual GPUs.",
+      "why_not_D": "CPU bottlenecks lead to 'bubbles' in the pipeline where GPU utilization drops; they do not trigger thermal throttling."
+    },
+    "tags": [
+      "DCGM",
+      "Thermal-Management",
+      "Performance-Monitoring"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-nca-ai-infra-mock1-125",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A DevOps engineer is configuring Prometheus and Grafana to monitor a GPU cluster. They want to track 'GPU Memory Copy' and 'GPU Memory Used' metrics. Which NVIDIA component must be correctly deployed and configured as a Prometheus exporter to provide these specific metrics?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA GPU Operator",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA Device Plugin",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "DCGM Exporter",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA Container Runtime",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The DCGM Exporter is specifically designed to scrape metrics from the Data Center GPU Manager (DCGM) and expose them in a Prometheus-compatible format for monitoring memory usage and throughput.",
+      "why_not_A": "The GPU Operator is a management layer that installs the driver, plugin, and exporter, but the exporter itself is the component providing the metrics.",
+      "why_not_B": "The Device Plugin is responsible for advertising GPU resources to the Kubernetes scheduler, not for exporting telemetry metrics.",
+      "why_not_D": "The Container Runtime allows containers to access the GPU; it does not provide telemetry or monitoring metrics."
+    },
+    "tags": [
+      "Prometheus",
+      "DCGM-Exporter",
+      "Observability"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-nvidia-nca-ai-infra-mock1-126",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "During a production run, a monitoring alert indicates that a specific GPU is experiencing 'ECC Uncorrectable Errors'. The system has automatically disabled the GPU to prevent data corruption. What is the standard operational procedure for handling this event in an enterprise AI infrastructure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Run a software update on the NVIDIA driver to clear the ECC error flags.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Ignore the error as long as the GPU is still performing computations correctly.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Perform a hard reboot of the node to attempt to reset the GPU memory controller.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Drain the node and initiate a hardware replacement request for the GPU.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Uncorrectable ECC errors indicate physical hardware failure in the GPU memory. Unlike correctable errors, these cannot be fixed by software and typically require the hardware to be replaced to ensure system stability and data integrity.",
+      "why_not_A": "Drivers cannot fix physical memory defects (hard errors) in the GPU silicon.",
+      "why_not_B": "Uncorrectable errors can lead to kernel panics, system crashes, or silent data corruption in the AI model weights.",
+      "why_not_C": "While a reboot might temporarily clear a flag, a hardware-level uncorrectable error will recur and is not a permanent fix."
+    },
+    "tags": [
+      "ECC-Errors",
+      "Hardware-Failure",
+      "Node-Maintenance"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-nca-ai-infra-mock1-127",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A cluster admin is troubleshooting a performance drop in a multi-node distributed training job. They suspect an issue with the network fabric. Which tool or metric should they use to verify if the NVIDIA Collective Communications Library (NCCL) is experiencing timeouts or errors across the network?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Setting the NCCL_DEBUG=INFO environment variable and checking the logs.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Checking the Kubernetes ' describe pod' output for OOMKilled events.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Running 'nvidia-smi' to check for GPU memory fragmentation.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Using 'top' to monitor CPU wait times on the head node.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "NCCL_DEBUG=INFO is the standard way to enable verbose logging for NCCL. It allows administrators to see how the network topology is being detected, which interfaces are being used, and whether there are timeouts or failures during collective operations (like AllReduce).",
+      "why_not_B": "OOMKilled events relate to memory exhaustion, not network communication failures between GPUs.",
+      "why_not_C": "Memory fragmentation is a local GPU resource issue and does not provide insight into the inter-node communication fabric.",
+      "why_not_D": "CPU wait times on the head node do not reveal the specific network-level failures happening between the GPU worker nodes."
+    },
+    "tags": [
+      "NCCL",
+      "Distributed-Training",
+      "Network-Diagnostics"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-128",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "An enterprise is deploying a large-scale LLM training cluster using NVIDIA Base Command Manager. During a training run, the system reports a 'GPU Xid 61' error on multiple nodes, coinciding with a sudden drop in throughput. The operations team observes that while the GPUs are not overheating, the NVLink fabric is reporting high retry counts. Which action is the most appropriate first step to isolate the root cause of this specific failure pattern?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Perform a cold boot of all affected nodes to reset the GPU memory controllers.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Run the NVIDIA Health Check tool and specifically analyze the NVLink error counters and PCIe link status.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the GPU clock speed via nvidia-smi to overcome the throughput drop.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Update the NVIDIA driver to the latest production branch on all nodes simultaneously.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Xid 61 typically indicates a memory or communication error, and combined with NVLink retry counts, it points to a physical or protocol-level fabric issue. The NVIDIA Health Check tool is designed to validate the integrity of the NVLink fabric and PCIe lanes, allowing the admin to identify if the issue is a faulty cable, a seated GPU, or a fabric configuration error.",
+      "why_not_A": "A cold boot may temporarily clear the error, but it does not isolate the root cause and could lead to immediate recurrence if there is a hardware failure.",
+      "why_not_C": "Increasing clock speeds during a communication failure (Xid 61/NVLink retries) can exacerbate instability and potentially lead to hardware damage or more frequent crashes.",
+      "why_not_D": "Updating drivers across the whole cluster during an active failure is risky and does not address the potential hardware-level fabric issues indicated by the NVLink retries."
+    },
+    "tags": [
+      "Xid_Errors",
+      "NVLink",
+      "Health_Check"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-nca-ai-infra-mock1-129",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A data scientist reports that their training job is experiencing 'jitter'\u2014intermittent spikes in latency. You are monitoring the cluster using NVIDIA DCGM (Data Center GPU Manager). You notice that the 'GPU Utilization' is consistently 95%, but the 'SM Clock' is fluctuating wildly between 1100MHz and 1500MHz, despite the GPUs being well below their thermal throttle limit. What is the most likely cause of this behavior in a multi-tenant environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPUs are experiencing thermal throttling due to localized hotspots not captured by the global sensor.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The system is experiencing 'Power Capping' where the DCGM power limit is set lower than the peak demand of the workload.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The PCIe Gen4 bus is saturated, causing the GPU to downclock while waiting for data.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The CUDA kernels are improperly optimized, causing frequent context switches.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "When GPUs are below thermal limits but the SM clocks fluctuate (clock cycling) while utilization is high, it is a classic sign of power capping. The GPU attempts to boost clocks to meet demand, hits the power limit, and is immediately throttled down, creating the 'jitter' described.",
+      "why_not_A": "The scenario explicitly states the GPUs are well below their thermal throttle limit, making thermal hotspots unlikely as the primary driver of this specific clock behavior.",
+      "why_not_C": "PCIe saturation typically manifests as low GPU utilization (starvation), not as fluctuating SM clocks while utilization remains high at 95%.",
+      "why_not_D": "Context switching and kernel optimization issues affect total execution time and throughput but do not typically cause the hardware SM clock to oscillate rapidly in this manner."
+    },
+    "tags": [
+      "DCGM",
+      "Power_Management",
+      "Clock_Throttling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-nca-ai-infra-mock1-130",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "You are configuring Prometheus and Grafana to monitor a cluster of H100 GPUs. You need to implement an alerting rule that triggers when a GPU is underperforming relative to its peers in the same training job (detecting a 'straggler' node). Which DCGM metric combination provides the most reliable indicator of a performance-degraded GPU in this context?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Average GPU Temperature and Fan Speed.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "GPU Utilization and Memory Used.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Profiling metrics: SM Active and Tensor Active cycles compared across nodes.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Total Power Draw and PCIe Throughput.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "To detect a 'straggler' (a GPU performing slower than others despite receiving the same workload), you must look at actual compute throughput. SM Active and Tensor Active cycles indicate how much actual work the GPU is performing per clock. If one GPU has significantly lower active cycles than others in the same synchronized job, it is a straggler.",
+      "why_not_A": "Temperature and fan speed are health indicators, but a GPU can be healthy (cool) yet underperforming due to a clock-lock or configuration issue.",
+      "why_not_B": "Utilization is a coarse metric; a GPU can be 100% 'utilized' (busy) while actually stalled on memory or performing inefficiently, masking the straggler effect.",
+      "why_not_D": "Power draw is a proxy for activity but doesn't differentiate between productive compute and wasteful idling/stalling; PCIe throughput measures data movement, not compute performance."
+    },
+    "tags": [
+      "Prometheus",
+      "DCGM_Profiling",
+      "Straggler_Detection"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-nvidia-nca-ai-infra-mock1-131",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "During a production rollout of a multi-node NVIDIA HGX system, you observe that some GPUs are reporting 'ECC Uncorrectable' errors in the DCGM logs. The system has not crashed, but the training loss is diverging. What is the operational impact and the required remediation step?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The error is corrected by the hardware; no action is needed as long as the system remains stable.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The GPU has suffered a hard failure; the node must be drained and the GPU replaced.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The error is a transient software glitch; restart the CUDA runtime to clear the error counters.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPU is overheating; increase the fan speed to 100% to stop the ECC errors.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Unlike 'Correctable' ECC errors (which are handled by hardware), 'Uncorrectable' ECC errors indicate that data corruption has occurred that cannot be fixed. This leads to silent data corruption or crashes, explaining the diverging training loss. The only reliable fix for uncorrectable ECC errors is hardware replacement.",
+      "why_not_A": "Uncorrectable errors are by definition NOT corrected; ignoring them leads to corrupted model weights and invalid results.",
+      "why_not_C": "ECC errors are hardware-level memory events; restarting software does not fix the physical defect in the HBM memory.",
+      "why_not_D": "While heat can cause memory errors, an 'Uncorrectable' error usually signifies a permanent hardware fault in a memory cell rather than a transient thermal event."
+    },
+    "tags": [
+      "ECC_Errors",
+      "Hardware_Failure",
+      "Data_Integrity"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-nca-ai-infra-mock1-132",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ops-monitoring",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "You are tasked with optimizing the monitoring overhead on a 512-GPU cluster. You find that the DCGM exporter is consuming significant CPU resources on the head node and causing telemetry gaps. Which strategy would most effectively reduce the monitoring overhead without losing critical health visibility?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the sampling frequency of all DCGM metrics to average out the spikes.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Disable all GPU monitoring and rely solely on the OS-level dmesg logs for error detection.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a tiered monitoring strategy: high-frequency sampling for critical health metrics (Xid, Temp) and low-frequency sampling for profiling metrics (SM Active).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Switch from Prometheus to a push-based system and disable the DCGM exporter entirely.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Profiling metrics (like SM and Tensor activity) are computationally expensive to collect and generate large amounts of data. By reducing the frequency of these specific metrics while keeping critical health alerts (Xid, Temp) at high frequency, you maintain operational safety while significantly reducing CPU and network overhead.",
+      "why_not_A": "Increasing sampling frequency would increase the CPU load on the head node and worsen the telemetry gaps.",
+      "why_not_B": "dmesg only captures critical crashes; it provides no visibility into performance degradation, thermal trends, or power issues, which are essential for operational health.",
+      "why_not_D": "The DCGM exporter is the primary bridge between the NVIDIA driver/GPU and the monitoring stack; disabling it removes the ability to get GPU-specific telemetry."
+    },
+    "tags": [
+      "Monitoring_Optimization",
+      "DCGM_Exporter",
+      "Telemetry_Overhead"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-nvidia-nca-ai-infra-mock1-133",
+    "exam_id": "nvidia-nca-aiio",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
   }
 ]

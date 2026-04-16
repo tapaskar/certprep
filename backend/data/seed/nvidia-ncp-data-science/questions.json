@@ -2841,5 +2841,3501 @@
     "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.1,
     "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data scientist is processing a 500GB CSV dataset on a machine with 40GB of GPU VRAM. They are experiencing 'Out of Memory' (OOM) errors when attempting to load the data using cuDF. Which strategy is the most efficient way to handle this dataset while maintaining the performance benefits of GPU acceleration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the GPU's virtual memory paging file on the host OS to extend the VRAM capacity.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use dask_cudf to partition the dataframe across multiple GPUs or use the 'chunking' mechanism to process the data in smaller batches.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Convert the CSV to a Parquet file and load it using cuDF.read_parquet(), as Parquet always fits in VRAM regardless of file size.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Downcast all float64 columns to float16 immediately during the read_csv call using the 'dtype' parameter to reduce memory footprint by 75%.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "dask_cudf allows for distributed dataframes that can spill to host memory or be spread across multiple GPUs, enabling the processing of datasets larger than a single GPU's VRAM.",
+      "why_not_A": "GPU VRAM cannot be extended via host OS paging files in a way that provides performance for cuDF operations; this would lead to extreme latency or failure.",
+      "why_not_C": "While Parquet is more efficient for loading, it still loads the resulting dataframe into VRAM. A 500GB dataset will still exceed 40GB of VRAM.",
+      "why_not_D": "While downcasting reduces memory, a 75% reduction of 500GB is still ~125GB, which exceeds the 40GB available VRAM."
+    },
+    "tags": [
+      "cudf",
+      "memory-management",
+      "dask-cudf"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-059",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are implementing a Random Forest Classifier using cuML. You notice that the model training is significantly slower than expected, and the GPU utilization is fluctuating. You realize your dataset has a very high number of unique categorical features (high cardinality). Which action would most likely optimize the training performance and memory usage?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from cuML's RandomForestClassifier to a cuML LinearRegression model to handle categories as continuous variables.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Apply one-hot encoding to all high-cardinality features using cuDF before passing the data to cuML.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Convert the categorical features to integer types and ensure the data is stored in a contiguous GPU array (cupy or cudf.Series).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the 'n_estimators' parameter to force the GPU to parallelize the high-cardinality splits more effectively.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "cuML algorithms require numeric input. Converting categories to integers (label encoding) keeps the memory footprint low and allows the GPU to perform fast comparisons, which is essential for tree-based models.",
+      "why_not_A": "Changing the model type to Linear Regression solves a performance issue by changing the problem entirely, which is not a valid optimization for a classification task.",
+      "why_not_B": "One-hot encoding high-cardinality features creates a massive, sparse matrix that will likely lead to OOM errors and slow down tree splits significantly.",
+      "why_not_D": "Increasing n_estimators increases the total workload and memory usage, which would exacerbate the problem rather than solving the underlying data representation issue."
+    },
+    "tags": [
+      "cuml",
+      "random-forest",
+      "feature-engineering"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-060",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A developer is using cuML's K-Means clustering on a very large dataset. They observe that the algorithm is not converging quickly and the clusters are poor. They suspect that the different scales of the features are biasing the distance calculations. What is the most performant RAPIDS-native way to address this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use cuML's StandardScaler to normalize the data on the GPU before applying K-Means.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Convert the cuDF dataframe to a Pandas dataframe, use sklearn.preprocessing.StandardScaler, and move it back to GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Manually iterate through each column in cuDF and divide by the maximum value of that column using a Python loop.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Change the K-Means distance metric from 'euclidean' to 'manhattan' to ignore feature scaling.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "cuML provides a GPU-accelerated StandardScaler that maintains the data on the device, avoiding expensive CPU-GPU transfers and utilizing parallelization for normalization.",
+      "why_not_B": "Moving data from GPU to CPU (Pandas/Scikit-Learn) and back creates a massive bottleneck in the data pipeline and defeats the purpose of using RAPIDS.",
+      "why_not_C": "Python loops over cuDF columns are slow and inefficient compared to the vectorized operations provided by cuML's preprocessing modules.",
+      "why_not_D": "Manhattan distance is still sensitive to the scale of the features; it does not eliminate the need for normalization when features have different units."
+    },
+    "tags": [
+      "cuml",
+      "preprocessing",
+      "k-means"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-061",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are optimizing a data pipeline that involves frequent joins between a large cuDF dataframe and a small lookup table. You notice that the join operation is becoming a bottleneck. Which of the following techniques would most improve the performance of this specific operation in cuDF?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Sort both dataframes by the join key using sort_values() before performing the join.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Convert the small lookup table into a Python dictionary and use a lambda function with .apply() to map values.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Ensure the join keys are of the same integer type to avoid implicit type casting during the join process.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the GPU clock speed via nvidia-smi to accelerate the join kernel.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Implicit type casting (e.g., joining int32 with int64) forces cuDF to create temporary copies of the data to align types, which increases memory overhead and slows down the join operation.",
+      "why_not_A": "Unlike some CPU-based SQL engines, cuDF joins typically use hash-joins; sorting the data beforehand does not provide a significant performance boost for this operation.",
+      "why_not_B": "Using .apply() with a Python lambda function is extremely slow in cuDF as it forces the execution back to the Python interpreter for every row, bypassing GPU acceleration.",
+      "why_not_D": "Clock speed increases provide marginal gains and do not address the algorithmic or data-type bottlenecks occurring in the software layer."
+    },
+    "tags": [
+      "cudf",
+      "performance-tuning",
+      "joins"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-062",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A team is deploying a cuML model into a production environment. They need to minimize the latency of individual predictions (inference). Which approach is the most effective for reducing inference latency for a single-row input?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Batch the single-row input into a larger dataframe of 1000 dummy rows to maximize GPU utilization.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the .predict() method on the cuML model directly with a cuDF Series instead of a cuDF DataFrame.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Convert the cuML model to a TensorRT engine or use NVIDIA Triton Inference Server for optimized runtime execution.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Set the GPU to 'Persistence Mode' using nvidia-smi to keep the driver loaded.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "For low-latency production inference, converting models to TensorRT or using Triton allows for graph optimization, layer fusion, and more efficient memory management than the high-level cuML API.",
+      "why_not_A": "Adding dummy rows increases the computation time and does not reduce the latency for the actual prediction; it only increases throughput.",
+      "why_not_B": "cuML models generally expect a 2D input (DataFrame or array); using a Series may cause a type error or force internal conversion, increasing latency.",
+      "why_not_D": "Persistence mode prevents the driver from unloading when no applications are using the GPU, which reduces the *initial* startup time of the first request, but does not optimize the actual inference latency of the model."
+    },
+    "tags": [
+      "cuml",
+      "deployment",
+      "inference"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-063",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data scientist is processing a 100GB CSV dataset on a machine with 32GB of GPU VRAM. When attempting to load the data using cuDF, the process crashes with an 'Out of Memory' (OOM) error. Which strategy is the most efficient way to handle this dataset while maintaining GPU acceleration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the virtual memory swap space on the host OS to allow the GPU to overflow into system RAM.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use cuDF's dask-cudf integration to partition the dataframe across multiple GPUs or use chunking via the 'read_csv' parameters.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Convert the CSV to a Parquet file using Pandas first, then load the Parquet file into cuDF.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Call 'cudf.set_config' to enable automatic memory swapping between GPU and CPU memory.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "dask-cudf allows for distributed dataframes that can span multiple GPUs or be processed in chunks, effectively overcoming the single-GPU VRAM limit.",
+      "why_not_A": "GPU VRAM is physically distinct from system RAM; increasing OS swap space does not increase the available memory on the GPU device.",
+      "why_not_C": "While Parquet is more efficient, loading a 100GB dataset into a single cuDF dataframe will still trigger an OOM error if it exceeds the 32GB VRAM.",
+      "why_not_D": "cuDF does not have a global configuration setting that automatically swaps arbitrary dataframe memory to CPU RAM during standard operations."
+    },
+    "tags": [
+      "cudf",
+      "memory-management",
+      "dask-cudf"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-064",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are building a pipeline using cuML for a Random Forest Classifier. You notice that the training time is significantly slower than expected, despite using a high-end GPU. Upon inspection, you realize the input data is currently stored as a cuDF DataFrame with several categorical columns represented as strings. What is the best way to optimize the training performance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use cuDF's 'fillna' to remove all nulls and then cast the entire dataframe to float64.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Convert the categorical strings to integers using cuDF's 'cat.codes' or One-Hot Encoding before passing them to cuML.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch from cuML's Random Forest to a cuML K-Nearest Neighbors model to avoid categorical data issues.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Keep the data as strings; cuML automatically handles string-to-numeric conversion internally during the fit process.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "cuML algorithms require numeric input. Converting categories to integer codes or using one-hot encoding ensures the data is in a format the GPU kernels can process efficiently.",
+      "why_not_A": "Casting strings directly to float64 will result in NaNs or errors, as strings cannot be implicitly cast to floats.",
+      "why_not_C": "Changing the model type does not solve the underlying data format requirement; KNN also requires numeric input.",
+      "why_not_D": "cuML does not perform implicit string-to-numeric conversion; passing string columns to a fit method will result in a TypeError."
+    },
+    "tags": [
+      "cuml",
+      "preprocessing",
+      "feature-engineering"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-065",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A developer wants to implement a custom aggregation function in cuDF that cannot be achieved using the standard '.groupby().agg()' built-in functions. Which approach provides the best performance while maintaining GPU acceleration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the cuDF DataFrame to a Pandas DataFrame, apply the custom Python function, and convert it back to cuDF.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use '.apply()' with a standard Python lambda function directly on the cuDF Series.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use cuDF's 'apply_rows' or 'apply_along_axis' with Numba's '@cuda.jit' or 'jit' decorators.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Iterate through the dataframe using a 'for' loop and update the values using '.loc'.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Numba allows the creation of custom CUDA kernels that can be applied to cuDF data, keeping the computation on the GPU and avoiding the Python interpreter bottleneck.",
+      "why_not_A": "Moving data from GPU to CPU (Pandas) and back creates a massive PCIe bottleneck and loses all GPU acceleration.",
+      "why_not_B": "Standard Python lambdas in '.apply()' are executed on the CPU, causing the data to be moved back and forth, which is extremely slow.",
+      "why_not_D": "Row-by-row iteration using '.loc' in cuDF/Pandas is an anti-pattern and is computationally inefficient."
+    },
+    "tags": [
+      "cudf",
+      "numba",
+      "custom-kernels"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-ncp-data-science-mock1-066",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are using cuML to perform K-Means clustering on a very large dataset. You notice that the algorithm is converging slowly. Which parameter adjustment would most likely improve the convergence speed and potentially the quality of the clusters?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set 'init' to 'random' instead of 'k-means++'.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the 'max_iter' parameter to a significantly higher value.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Decrease the 'n_clusters' value to 1.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Ensure the data is scaled using cuML's StandardScaler before fitting the model.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "K-Means is distance-based. If features have different scales, the distance calculation will be dominated by the feature with the largest scale, leading to poor convergence and suboptimal clustering.",
+      "why_not_A": "'k-means++' is generally superior to 'random' initialization for faster and more stable convergence.",
+      "why_not_B": "Increasing 'max_iter' allows the model to run longer, but it doesn't improve the *speed* of convergence or the quality if the data is unscaled.",
+      "why_not_C": "Reducing clusters to 1 eliminates the purpose of clustering and does not address convergence efficiency."
+    },
+    "tags": [
+      "cuml",
+      "clustering",
+      "scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-067",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team is migrating a pipeline from Scikit-Learn to cuML. They are using a Pipeline that includes a PCA (Principal Component Analysis) step followed by a Logistic Regression step. What is the most critical architectural difference they must consider when moving to cuML?",
+    "options": [
+      {
+        "id": "A",
+        "text": "cuML does not support the concept of pipelines; each step must be called manually.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "cuML requires data to be in cuDF format, whereas Scikit-Learn requires NumPy arrays.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "cuML models expect data to be on the GPU, and moving data between different GPU devices or between CPU and GPU requires explicit handling (e.g., using cuDF or cupy).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "PCA in cuML is only compatible with CPU-based data, requiring a mid-pipeline transfer to Pandas.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The primary shift is the memory domain. cuML operates on GPU memory. The developer must ensure that the data remains on the GPU across pipeline steps to avoid costly transfers.",
+      "why_not_A": "cuML is designed to be API-compatible with Scikit-Learn, including support for pipeline-like workflows.",
+      "why_not_B": "cuML actually supports both cuDF DataFrames and CuPy arrays (the GPU equivalent of NumPy), making it flexible.",
+      "why_not_D": "cuML's PCA is fully GPU-accelerated and does not require a transfer to Pandas."
+    },
+    "tags": [
+      "cuml",
+      "pipeline",
+      "interoperability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-068",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A data engineer is processing a 500GB dataset using cuDF on a single A100 GPU (80GB VRAM). The pipeline involves several complex joins and group-by operations that consistently trigger 'OutOfMemory' (OOM) errors despite using `cudf.read_csv` with specific `dtype` optimizations. Which strategy provides the most robust way to handle this dataset while maintaining GPU acceleration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the cuDF DataFrame to a NumPy array to utilize system RAM via memory mapping.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a Dask-cuDF pipeline to partition the data across multiple GPUs or use spill-to-host memory.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the GPU's virtual memory allocation by modifying the CUDA_VISIBLE_DEVICES environment variable.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use cuDF's `copy()` method on intermediate DataFrames to force garbage collection of old memory blocks.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dask-cuDF allows for the distribution of dataframes across multiple GPUs (distributed memory) or the use of 'spilling' where data is moved to host RAM when GPU VRAM is exhausted, enabling the processing of datasets larger than a single GPU's memory.",
+      "why_not_A": "Converting to NumPy moves the data to the CPU, removing the GPU acceleration for the joins and group-by operations, defeating the purpose of using RAPIDS.",
+      "why_not_C": "CUDA_VISIBLE_DEVICES only controls which GPUs are visible to the process; it cannot increase the physical or virtual memory capacity of the hardware.",
+      "why_not_D": "The `copy()` method creates a new instance of the data, which would actually increase memory consumption and accelerate an OOM error rather than preventing it."
+    },
+    "tags": [
+      "cudf",
+      "dask-cudf",
+      "memory-management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-069",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A quantitative analyst is training a Random Forest Classifier using cuML. They notice that while the training is extremely fast, the model is overfitting significantly. They attempt to tune the `max_features` parameter. In the context of cuML's implementation, which of the following best describes the impact of reducing `max_features` on the GPU?",
+    "options": [
+      {
+        "id": "A",
+        "text": "It increases the memory bandwidth requirement because more random sampling is required per node.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "It increases the training time because the GPU must perform more iterations to find the optimal split.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "It reduces the correlation between individual trees, potentially reducing overfitting while decreasing the computational load per split.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "It eliminates the need for the GPU to use shared memory, moving all computations to global memory.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Reducing `max_features` (the number of features considered when looking for the best split) reduces the correlation between trees in the forest, which is a standard technique to combat overfitting. Computationally, it reduces the number of features the GPU needs to evaluate at each node.",
+      "why_not_A": "Reducing the number of features to evaluate generally reduces the amount of data transferred from global memory to registers/shared memory per split.",
+      "why_not_B": "Reducing `max_features` actually speeds up the training process because fewer candidate splits are evaluated at each node.",
+      "why_not_D": "Memory hierarchy usage (shared vs global) is determined by the CUDA kernel implementation of the algorithm, not by the hyperparameters of the model."
+    },
+    "tags": [
+      "cuml",
+      "random-forest",
+      "hyperparameter-tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-070",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "You are implementing a real-time anomaly detection system using cuML's DBSCAN. You observe that the algorithm is failing to identify clusters effectively due to varying densities in the feature space. You decide to switch to an algorithm that handles varying densities better. Which approach is most appropriate within the RAPIDS ecosystem?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch to cuML's K-Means and use a high number of clusters to simulate density variations.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use cuML's HDBSCAN implementation, which uses a hierarchical approach to find clusters of varying densities.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the `eps` parameter in DBSCAN and use a cuDF `groupby` to normalize the density.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch to cuML's PCA to reduce dimensionality, which automatically homogenizes data density.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "HDBSCAN (Hierarchical Density-Based Spatial Clustering of Applications with Noise) is specifically designed to find clusters of varying densities by converting DBSCAN into a hierarchical clustering algorithm and extracting the most stable clusters.",
+      "why_not_A": "K-Means assumes spherical clusters of similar size and does not handle density-based anomalies or varying densities effectively.",
+      "why_not_C": "Increasing `eps` in DBSCAN makes the algorithm less sensitive, potentially merging distinct clusters into one, but it does not solve the fundamental problem of varying density across the dataset.",
+      "why_not_D": "PCA is a dimensionality reduction technique; while it can simplify the data, it does not address the density-based clustering logic required to handle varying densities."
+    },
+    "tags": [
+      "cuml",
+      "dbscan",
+      "hdbscan",
+      "unsupervised-learning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-071",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A developer is optimizing a cuDF pipeline and notices that a specific operation involving `cudf.Series.apply()` with a custom Python function is creating a massive performance bottleneck. What is the most effective way to resolve this while remaining within the GPU-accelerated environment?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Wrap the Python function in a `@numba.jit` decorator and use `apply_pandas` via cuDF.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use `cudf.Series.apply` but increase the GPU clock speed via nvidia-smi.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Replace the `apply()` call with vectorized cuDF operations or a custom JIT-compiled function using `cudf.apply` with Numba.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the Series to a list, apply the Python function, and convert it back to a cuDF Series.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "`cudf.Series.apply()` with a standard Python function forces the data to be moved from the GPU to the CPU, processed by the Python interpreter (GIL), and moved back. Using vectorized cuDF operations or Numba's GPU JIT compilation allows the operation to execute directly on the GPU.",
+      "why_not_A": "`apply_pandas` is designed for Dask-cuDF to handle pandas-like operations on chunks, but it still involves moving data to the CPU for the pandas function.",
+      "why_not_B": "Increasing clock speed provides a negligible performance gain compared to the massive overhead of moving data between GPU and CPU during a Python `apply` loop.",
+      "why_not_D": "This is essentially what `apply()` does internally; it is the source of the bottleneck, not the solution."
+    },
+    "tags": [
+      "cudf",
+      "numba",
+      "performance-optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-072",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "When deploying a cuML model into a production environment with strict latency requirements, you find that the overhead of converting between cuDF DataFrames and NumPy arrays for each inference request is too high. Which technique should be implemented to minimize this latency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use `cupy` arrays as the primary data exchange format between the data pipeline and cuML.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Implement a multi-threaded Python wrapper around the cuML `predict` method.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use `cudf.to_pandas()` and then call the model's predict method.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Convert the cuML model to a scikit-learn model using `pickle` before deployment.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "cuML is built to work natively with CuPy arrays and cuDF DataFrames. Since CuPy arrays reside on the GPU, they avoid the costly host-to-device (H2D) and device-to-host (D2H) memory transfers associated with NumPy.",
+      "why_not_B": "Multi-threading in Python is limited by the GIL and does not address the underlying memory transfer latency between CPU and GPU.",
+      "why_not_C": "Converting to Pandas moves the data to the CPU, which is the exact bottleneck the scenario is trying to avoid.",
+      "why_not_D": "Converting a cuML model to a scikit-learn model would move the inference to the CPU, significantly increasing latency for large batches and losing GPU acceleration."
+    },
+    "tags": [
+      "cuml",
+      "cupy",
+      "inference-optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-073",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "rapids-cudf-cuml",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data scientist is working with a large tabular dataset that exceeds the available GPU memory (VRAM). They need to perform a series of data cleaning operations using cuDF and then train a Random Forest classifier using cuML. Which approach is the most effective way to handle the memory constraint while leveraging GPU acceleration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the GPU's virtual memory by enabling swap space on the host system disk.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use cuDF's integration with Dask (dask-cudf) to partition the data across multiple GPUs or spill to host memory.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Convert the cuDF DataFrame to a pandas DataFrame, perform cleaning, and then convert back to cuDF for model training.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use the .to_cpu() method on the cuDF DataFrame and perform all operations on the CPU using cuML's CPU-fallback mode.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "dask-cudf allows for distributed dataframes that partition data across multiple GPUs or manage memory more flexibly, enabling the processing of datasets larger than the memory of a single GPU.",
+      "why_not_A": "Swap space on a disk is significantly slower than VRAM or System RAM and does not solve the GPU memory addressing limit for CUDA kernels; it will lead to extreme performance degradation and likely crashes.",
+      "why_not_C": "Converting back and forth between pandas and cuDF introduces massive overhead in data transfer (PCIe bus) and defeats the purpose of GPU acceleration for the cleaning phase.",
+      "why_not_D": "cuML is designed specifically for GPU acceleration; while some libraries have CPU versions, the goal is to use RAPIDS for acceleration. Moving everything to CPU bypasses the GPU acceleration requested in the scenario."
+    },
+    "tags": [
+      "cudf",
+      "cuml",
+      "memory-management",
+      "dask-cudf"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-074",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data scientist is using RAPIDS cuDF to process a large CSV dataset that exceeds the available GPU memory. Which strategy should they implement to ensure the pipeline completes without an 'Out of Memory' (OOM) error?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the GPU clock speed to process chunks faster.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Utilize dask-cudf to partition the dataframe across multiple GPUs or spill to host memory.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Convert all float64 columns to float128 to increase precision.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable the GPU's Unified Memory feature to force strict allocation.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "dask-cudf allows for distributed dataframes, enabling the processing of datasets larger than a single GPU's memory by partitioning data across a cluster or using Dask's scheduling to manage memory spills.",
+      "why_not_A": "Clock speed affects computation time, not memory capacity; it will not prevent an OOM error.",
+      "why_not_C": "Increasing precision to float128 would increase the memory footprint per element, accelerating the OOM error.",
+      "why_not_D": "Disabling Unified Memory removes the ability for the system to automatically migrate data between CPU and GPU, making OOM errors more likely for large datasets."
+    },
+    "tags": [
+      "cuDF",
+      "Dask",
+      "Memory Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-075",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer is optimizing a preprocessing pipeline using cuDF and notices that the data transfer between the CPU and GPU is becoming the primary bottleneck. Which approach would most effectively reduce this overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use cuDF.read_csv() to load data directly from the disk into GPU memory.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Convert the data to a Python list before passing it to the GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Increase the number of CPU cores used for the initial data loading.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch from GPU-accelerated dataframes to standard Pandas dataframes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Using cuDF's native GPU-accelerated I/O functions (like read_csv) allows the data to be loaded directly into GPU memory, bypassing the slow CPU-to-GPU transfer bottleneck.",
+      "why_not_B": "Python lists are inefficient and would require more CPU processing and transfer time.",
+      "why_not_C": "Increasing CPU cores might speed up CPU-side processing, but it does not solve the PCIe transfer bottleneck between host and device.",
+      "why_not_D": "Switching to Pandas removes the GPU acceleration entirely, defeating the purpose of the accelerated pipeline."
+    },
+    "tags": [
+      "I/O",
+      "Bottlenecks",
+      "cuDF"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-076",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An engineer needs to perform a complex group-by aggregation on a dataset with high cardinality. They observe that the GPU is underutilized. Which action would most likely improve the performance of this GPU-accelerated operation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Sort the data using a CPU-based sorting algorithm first.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Reduce the number of GPU threads to minimize context switching.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Ensure the data is stored in a columnar format like Parquet before loading.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the grouping key to a string type.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Columnar formats like Parquet allow for more efficient memory access patterns and faster loading into GPU memory, which ensures the GPU is fed data quickly enough to maintain high utilization during aggregations.",
+      "why_not_A": "CPU sorting introduces a massive bottleneck and negates the speed of GPU processing.",
+      "why_not_B": "Reducing threads typically leads to lower GPU utilization, not higher.",
+      "why_not_D": "Strings are generally slower to process and more memory-intensive than integers or categories in GPU operations."
+    },
+    "tags": [
+      "Performance",
+      "Data Formats",
+      "Aggregation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-077",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A researcher is using cuML for a K-Means clustering task. They find that the training time is acceptable, but the memory usage is spiking during the distance matrix calculation. Which parameter adjustment would best mitigate this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of clusters (k).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch the distance metric from 'euclidean' to 'manhattan'.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a smaller batch size or sample the data for initial centroid placement.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disable GPU acceleration for the distance calculation.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Reducing the amount of data processed in a single pass or using sampling for initialization reduces the size of the intermediate distance matrices stored in GPU memory.",
+      "why_not_A": "Increasing k would increase the number of centroids and potentially the memory needed for distance calculations.",
+      "why_not_B": "The distance metric changes the calculation type but not the fundamental memory complexity of the distance matrix.",
+      "why_not_D": "Disabling GPU acceleration would make the process significantly slower without necessarily solving the memory constraint of the algorithm itself."
+    },
+    "tags": [
+      "cuML",
+      "K-Means",
+      "Memory Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-078",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A team is migrating a Pandas-based feature engineering pipeline to RAPIDS. They are using a custom function via '.apply()' to transform a column. They notice that the performance is significantly slower than expected. What is the most likely cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPU is overheating due to the custom function.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The '.apply()' method is executing the custom Python function on the CPU, causing frequent data movement.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The dataset is too small to benefit from GPU acceleration.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "cuDF does not support custom functions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In cuDF, using '.apply()' with a standard Python function forces the data to be moved from the GPU to the CPU, processed by the Python interpreter, and moved back, creating a massive performance penalty.",
+      "why_not_A": "Overheating would lead to thermal throttling (slower speeds), but not the specific performance drop associated with '.apply()'.",
+      "why_not_C": "While small datasets benefit less, the 'significant' slowdown described is characteristic of the CPU-GPU bounce caused by '.apply()'.",
+      "why_not_D": "cuDF does support custom functions, but they must be written as GPU kernels (e.g., using Numba) to be efficient."
+    },
+    "tags": [
+      "cuDF",
+      "Custom Functions",
+      "Numba"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-079",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data scientist is processing a 2TB dataset using RAPIDS cuDF on a single DGX node with 8x A100 80GB GPUs. The dataset exceeds the combined VRAM of the GPUs. Which strategy should be implemented to optimize throughput while avoiding 'Out of Memory' (OOM) errors and minimizing CPU-GPU data transfer overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use cuDF's 'dask-cudf' integration to partition the data into chunks that fit within a single GPU's memory and process them using a MapReduce pattern.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Enable Unified Memory (UM) with oversubscription and rely on the NVIDIA driver to swap pages between VRAM and system RAM automatically.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Convert the dataset to a CSV format and use cuDF.read_csv with the 'chunksize' parameter to iterate through the data sequentially on one GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the GPU clock speed and use cuDF's memory-mapped files to treat system RAM as a direct extension of VRAM.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "dask-cudf allows for distributed dataframes across multiple GPUs. By partitioning the 2TB dataset into chunks that fit in VRAM, the system can parallelize the workload across all 8 GPUs, maximizing throughput and preventing OOM errors through managed partitioning.",
+      "why_not_A": "This is the correct approach for large-scale GPU data processing.",
+      "why_not_B": "While Unified Memory allows for oversubscription, it triggers frequent page faults and heavy PCIe traffic (thrashing), which severely degrades performance compared to explicit partitioning in dask-cudf.",
+      "why_not_C": "Sequential processing on a single GPU ignores the available compute power of the other 7 GPUs and CSV is a highly inefficient format for large-scale GPU processing compared to Parquet.",
+      "why_not_D": "Clock speed does not affect memory capacity, and cuDF does not support a 'memory-mapped' mode that bypasses the need for VRAM allocation for active computations."
+    },
+    "tags": [
+      "cuDF",
+      "dask-cudf",
+      "memory-management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-080",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are optimizing a pipeline that involves frequent transfers of small tensors between the CPU and GPU. You observe that the GPU utilization is low, and the application is bottlenecked by the PCIe bus latency. Which NVIDIA technology or technique would most effectively reduce this overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement CUDA Streams to overlap compute and memory copy operations.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use GPUDirect Storage (GDS) to bypass the CPU and move data directly from NVMe storage to GPU memory.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Batch the small tensors into larger contiguous buffers before transferring them to the GPU.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Switch from standard Pageable memory to Pinned (Page-locked) memory for all CPU-side buffers.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The bottleneck is caused by the overhead of initiating many small transfers. Batching small tensors into a single large contiguous buffer reduces the number of API calls and maximizes the effective bandwidth of the PCIe bus by reducing per-transfer latency.",
+      "why_not_A": "CUDA Streams help with overlap (concurrency), but they do not reduce the inherent latency or overhead of many small, individual transfers.",
+      "why_not_B": "GDS optimizes storage-to-GPU paths, but the scenario describes CPU-to-GPU transfers of tensors, not direct storage reads.",
+      "why_not_D": "Pinned memory increases transfer speed (bandwidth), but it does not solve the latency issue associated with the frequency of small transfers."
+    },
+    "tags": [
+      "PCIe-bottleneck",
+      "memory-transfer",
+      "optimization"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-ncp-data-science-mock1-081",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data engineer is using cuDF to perform a complex join operation between two massive dataframes. The operation is failing due to an 'Out of Memory' error despite the dataframes individually fitting in VRAM. What is the most likely cause and the best resolution?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The join is creating a Cartesian product; use a filtered join or a more restrictive join key.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "cuDF requires a temporary copy of the entire dataset for joins; increase VRAM using a larger GPU instance.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The GPU is experiencing memory fragmentation; run 'gc.collect()' and restart the kernel.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The join is utilizing the CPU for sorting; move the dataframes to the CPU using pandas first.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "In GPU data processing, joins that result in a many-to-many relationship can cause the output size to explode (Cartesian product), quickly exhausting VRAM even if input tables are small. Filtering the data or refining the join key is the only architectural fix.",
+      "why_not_A": "This is the correct diagnosis for unexpected OOM during joins.",
+      "why_not_B": "While joins require some overhead, they do not simply 'double' the memory requirement in a way that a larger GPU would solve if the output is exponentially larger than the input.",
+      "why_not_C": "Memory fragmentation is rare in cuDF's RMM (RAPIDS Memory Manager) and wouldn't typically cause a failure only during a join operation.",
+      "why_not_D": "Moving the data to pandas defeats the purpose of GPU acceleration and does not solve the fundamental memory issue of the join's result size."
+    },
+    "tags": [
+      "cuDF",
+      "join-operations",
+      "OOM"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-nvidia-ncp-data-science-mock1-082",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are implementing a real-time feature engineering pipeline. You need to move data from a network socket to the GPU for processing. To achieve the lowest possible latency and avoid CPU bottlenecks, which architectural approach is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Network Socket -> CPU RAM -> GPU VRAM (via cudaMemcpy)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Network Socket -> GPUDirect RDMA -> GPU VRAM",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Network Socket -> NVMe Storage -> GPUDirect Storage -> GPU VRAM",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Network Socket -> CPU RAM (Pinned) -> GPU VRAM (via Async Copy)",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GPUDirect RDMA (Remote Direct Memory Access) allows network adapters (like Mellanox NICs) to transfer data directly into GPU memory without involving the CPU or staging buffers in system RAM, providing the lowest possible latency for real-time streams.",
+      "why_not_A": "This is the standard path and introduces significant CPU overhead and latency.",
+      "why_not_B": "This is the correct answer.",
+      "why_not_C": "Writing to NVMe first introduces massive disk I/O latency, which is unacceptable for a real-time pipeline.",
+      "why_not_D": "While pinned memory and async copies improve performance, they still require the data to pass through the CPU's memory controller."
+    },
+    "tags": [
+      "GPUDirect",
+      "RDMA",
+      "low-latency"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-ncp-data-science-mock1-083",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "gpu-data-processing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A developer is using the RAPIDS Memory Manager (RMM) to optimize a cuDF application. They notice that the application is spending a significant amount of time in 'cudaMalloc' and 'cudaFree' calls. Which RMM configuration should be used to eliminate this overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure RMM to use the 'managed_memory' pool.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the 'pool' allocator to pre-allocate a large block of VRAM and manage it internally.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable RMM and use the default CUDA allocator to allow for more aggressive garbage collection.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set the RMM pool size to 'dynamic' to allow the allocator to grow and shrink based on the dataframe size.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The RMM pool allocator pre-allocates a large chunk of GPU memory at startup. Subsequent allocations and deallocations are handled by the pool manager internally, avoiding the expensive system calls to the CUDA driver (cudaMalloc/cudaFree).",
+      "why_not_A": "Managed memory handles oversubscription and page migration, but it does not eliminate the overhead of allocation calls in the same way a pool does.",
+      "why_not_B": "This is the correct answer.",
+      "why_not_C": "The default CUDA allocator is exactly what is causing the overhead; disabling RMM would return the system to that state.",
+      "why_not_D": "A 'dynamic' pool that grows and shrinks would still trigger the very cudaMalloc/cudaFree calls that the developer is trying to avoid."
+    },
+    "tags": [
+      "RMM",
+      "memory-allocation",
+      "performance-tuning"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-084",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data scientist is implementing a fraud detection system using cuGraph to identify tightly knit communities of suspicious accounts in a massive financial transaction graph. The graph contains millions of nodes and billions of edges. Which algorithm and approach should be used to maximize throughput and accurately identify these dense clusters?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use PageRank to identify high-centrality nodes and treat them as the centers of communities.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement the Louvain method to maximize modularity through iterative community detection.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Single-Source Shortest Path (SSSP) to group nodes based on distance from a seed fraud account.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Apply K-Core decomposition to filter out all nodes with a degree less than 2.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Louvain method is specifically designed for community detection by optimizing modularity, making it the industry standard for finding dense clusters (communities) in large-scale graphs.",
+      "why_not_A": "PageRank measures importance or influence, not community membership. A high-centrality node may be a bridge between communities rather than a member of a tight cluster.",
+      "why_not_C": "SSSP calculates distance from a single point; while it can find 'nearby' nodes, it does not identify the structural density or boundaries of a community.",
+      "why_not_D": "K-Core decomposition prunes the graph to find the most connected core, but it does not partition the graph into distinct communities."
+    },
+    "tags": [
+      "cuGraph",
+      "Community Detection",
+      "Louvain"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-085",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are optimizing a cuGraph pipeline for a graph that is too large to fit into the memory of a single NVIDIA A100 GPU. Which strategy should be employed to ensure the graph analytics can still be executed without crashing the system?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the GPU clock speed via NVIDIA-SMI to process data faster.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Convert the graph to a dense adjacency matrix to reduce overhead.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Utilize cuGraph's Multi-GPU (MGPU) support using Dask to distribute the graph across multiple GPUs.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a CPU-based implementation of the algorithm and move the results to GPU only for visualization.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "cuGraph integrates with Dask to enable Multi-GPU (MGPU) processing, allowing large graphs to be partitioned across multiple GPUs to overcome memory limitations.",
+      "why_not_A": "Clock speed affects processing time, not the available VRAM capacity.",
+      "why_not_B": "Dense matrices require O(V^2) space, which would drastically increase memory usage compared to sparse representations for large graphs.",
+      "why_not_D": "This defeats the purpose of using cuGraph and would result in significantly slower performance for large-scale analytics."
+    },
+    "tags": [
+      "cuGraph",
+      "Multi-GPU",
+      "Dask",
+      "Scalability"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-nvidia-ncp-data-science-mock1-086",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A researcher wants to identify the most influential 'bridge' nodes in a communication network that connect different functional departments. Which metric is most appropriate for this specific requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "In-degree Centrality",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Betweenness Centrality",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Clustering Coefficient",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Eigenvector Centrality",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Betweenness Centrality measures the number of times a node acts as a bridge along the shortest path between two other nodes, making it ideal for identifying critical connectors.",
+      "why_not_A": "In-degree only measures how many edges point to a node, not whether that node connects disparate groups.",
+      "why_not_C": "Clustering Coefficient measures how interconnected a node's neighbors are (local density), which is the opposite of being a bridge between different groups.",
+      "why_not_D": "Eigenvector Centrality measures influence based on the quality of connections (being connected to other important nodes), not the ability to bridge gaps."
+    },
+    "tags": [
+      "Centrality",
+      "Betweenness",
+      "Graph Topology"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-ncp-data-science-mock1-087",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "When preparing a dataset for cuGraph, a developer notices that the input data is in a CSV format with millions of rows. To minimize the time spent moving data from host (CPU) to device (GPU), which approach is most efficient?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Iterate through the CSV in a Python loop and call cuGraph functions for each row.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Load the CSV into a pandas DataFrame and then pass it directly to cuGraph, allowing RAPIDS to handle the transfer.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use cuDF to load the CSV directly into a GPU DataFrame (cudf.DataFrame) and pass that to cuGraph.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Convert the CSV to a JSON format first to improve GPU parsing speed.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Using cuDF to load data directly into GPU memory bypasses the need to load it into CPU RAM first via pandas, significantly reducing data transfer overhead between host and device.",
+      "why_not_A": "Python loops are extremely slow and would create a massive bottleneck, regardless of the GPU's speed.",
+      "why_not_B": "Loading into pandas first requires the data to reside in CPU memory, necessitating a separate and slower transfer to the GPU.",
+      "why_not_D": "JSON is generally more verbose than CSV and slower to parse, providing no benefit for GPU data loading."
+    },
+    "tags": [
+      "cuDF",
+      "cuGraph",
+      "Data Pipeline",
+      "Memory Management"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-nvidia-ncp-data-science-mock1-088",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A logistics company is using cuGraph to find the most efficient route for a delivery vehicle visiting multiple warehouses. They need to find the shortest path from a single starting warehouse to all other warehouses in the network. Which algorithm is the most computationally efficient choice for this specific requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "All-Pairs Shortest Path (APSP)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Single-Source Shortest Path (SSSP)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Breadth-First Search (BFS) without weights",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "PageRank",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "SSSP (such as Dijkstra's algorithm implemented in cuGraph) is designed specifically to find the shortest path from one source node to all other nodes in a weighted graph.",
+      "why_not_A": "APSP calculates paths between all pairs of nodes, which is computationally redundant and significantly slower when only one source is needed.",
+      "why_not_C": "BFS only finds the shortest path in unweighted graphs (where every edge has a weight of 1). Logistics routes typically involve weights (distance/time).",
+      "why_not_D": "PageRank is used for importance/ranking, not for finding shortest paths or routing."
+    },
+    "tags": [
+      "cuGraph",
+      "SSSP",
+      "Pathfinding",
+      "Algorithm Selection"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-ncp-data-science-mock1-089",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial institution is implementing a real-time fraud detection system using cuGraph to identify money laundering rings. The dataset consists of millions of transactions with highly skewed degree distributions (power-law). The team observes that PageRank execution is bottlenecked by a few 'super-nodes' with millions of edges, causing severe GPU memory imbalance and warp divergence. Which strategy is most effective to optimize the convergence and performance of the PageRank algorithm in this specific scenario?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from the default PageRank implementation to a synchronous BFS-based traversal to eliminate edge-weighting overhead.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a degree-aware vertex partitioning strategy or use a distributed graph processing framework like cuGraph-dGPU to shard the super-nodes across multiple GPUs.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Convert the graph to a dense adjacency matrix representation to leverage Tensor Core acceleration for matrix-vector multiplications.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the damping factor to 1.0 to ensure that the random walk never terminates, thereby forcing uniform distribution across all nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In graphs with power-law distributions, 'super-nodes' create computational hotspots. Distributing the graph across multiple GPUs (cuGraph-dGPU) or using advanced partitioning allows the edges of a single high-degree node to be processed in parallel across different streaming multiprocessors (SMs), mitigating memory imbalance.",
+      "why_not_A": "BFS is for reachability and shortest paths, not for calculating centrality or importance scores like PageRank; it does not address the super-node bottleneck.",
+      "why_not_C": "Dense matrices for millions of nodes would require petabytes of memory (O(V^2)), which is computationally impossible for large-scale graphs.",
+      "why_not_D": "A damping factor of 1.0 can lead to non-convergence or 'sink' traps where the rank accumulates in a small cluster, failing to provide a global importance measure."
+    },
+    "tags": [
+      "cuGraph",
+      "PageRank",
+      "Power-law Distributions",
+      "Multi-GPU"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-ncp-data-science-mock1-090",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A bioinformatics researcher is using cuGraph to analyze a massive protein-protein interaction (PPI) network. They need to identify highly connected clusters (communities) where every node in the cluster is connected to every other node in that same cluster. The graph is too large for traditional clique-finding algorithms. Which approach provides the most scalable approximation for this requirement on NVIDIA GPUs?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use the Louvain Method to maximize modularity across the entire network.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Apply the Label Propagation Algorithm (LPA) to identify dense regions and then filter for cliques.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Utilize the Leiden algorithm to iteratively refine communities by optimizing the Constant Potts Model (CPM).",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use an implementation of the k-core decomposition to prune the graph and reduce the search space for maximal cliques.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "A clique of size k is always contained within a k-core. By performing k-core decomposition (which is highly efficient in cuGraph), the researcher can prune all nodes with a degree less than k, drastically reducing the graph size before running the computationally expensive maximal clique search.",
+      "why_not_A": "Louvain maximizes modularity, which identifies 'communities' (dense areas), but these are not necessarily cliques (where every node must connect to every other node).",
+      "why_not_B": "LPA is a heuristic for community detection and does not guarantee the structural properties of a clique.",
+      "why_not_C": "Leiden is an improvement over Louvain for community detection, but it still finds communities, not strictly cliques."
+    },
+    "tags": [
+      "cuGraph",
+      "k-core",
+      "Clique Detection",
+      "Community Detection"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-nvidia-ncp-data-science-mock1-091",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a recommendation engine using a Graph Neural Network (GNN) on NVIDIA GPUs. During the training phase, you notice that the GPU memory is exhausted during the aggregation step because the neighborhood of some nodes grows exponentially with the number of layers (the 'neighbor explosion' problem). Which technique should you implement to maintain model accuracy while reducing memory consumption?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Replace the GNN with a traditional Matrix Factorization approach using cuML.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement GraphSAGE with neighbor sampling to constrain the number of nodes aggregated at each layer.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the batch size and use gradient accumulation to simulate larger memory capacity.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Convert the graph to a directed graph to halve the number of edges in the adjacency list.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "GraphSAGE introduces neighbor sampling, which ensures that only a fixed-size subset of neighbors is sampled for each node, preventing the exponential growth of the computation graph (neighbor explosion) and keeping memory usage constant per layer.",
+      "why_not_A": "This changes the model architecture entirely and loses the structural benefits of GNNs, which is not a solution to the memory problem of GNNs themselves.",
+      "why_not_C": "Increasing batch size actually increases memory consumption, and gradient accumulation helps with batch size but does not solve the neighbor explosion within a single sample's computation graph.",
+      "why_not_D": "Converting to a directed graph does not solve the neighbor explosion problem; it only changes the nature of the edges."
+    },
+    "tags": [
+      "GNN",
+      "GraphSAGE",
+      "Memory Optimization",
+      "Neighbor Sampling"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-nvidia-ncp-data-science-mock1-092",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A logistics company is optimizing delivery routes using the Single Source Shortest Path (SSSP) algorithm in cuGraph. The graph contains edges with weights representing travel time. They find that the current execution is slow because the graph is extremely sparse but has a very large diameter. Which GPU-accelerated optimization would most significantly improve the performance of SSSP in this specific topology?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a dense matrix representation to utilize cuBLAS for fast matrix multiplication.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a bidirectional search starting from both the source and the destination simultaneously.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Utilize a frontier-based approach with an asynchronous execution model to reduce synchronization overhead between iterations.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Replace the SSSP algorithm with PageRank to identify the most central nodes in the route.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "For graphs with large diameters, the number of iterations in SSSP can be high. A frontier-based approach (processing only nodes whose distance was updated) combined with asynchronous updates reduces the need for global synchronization barriers, allowing the GPU to maintain higher utilization.",
+      "why_not_A": "Dense matrices are inefficient for sparse graphs and would lead to O(V^2) complexity, which is catastrophic for large logistics networks.",
+      "why_not_B": "While bidirectional search is a valid algorithmic optimization, the question asks for a GPU-accelerated optimization. In cuGraph, the frontier-based GPU implementation is the core architectural driver for performance.",
+      "why_not_D": "PageRank calculates importance/centrality, not the shortest path between two specific points; it is the wrong algorithm for the task."
+    },
+    "tags": [
+      "cuGraph",
+      "SSSP",
+      "Graph Topology",
+      "GPU Optimization"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-nvidia-ncp-data-science-mock1-093",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "graph-analytics",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are implementing a knowledge graph embedding pipeline. You need to project entities and relations into a low-dimensional vector space while preserving the local neighborhood structure. You have decided to use the Node2Vec approach. To ensure the embeddings capture both homophily (similar nodes connect) and structural equivalence (nodes with similar roles connect), how should you configure the random walk parameters p and q?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set p = 0 and q = 0 to perform a standard DeepWalk random walk.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set p > 1 and q < 1 to prioritize returning to the previous node frequently.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Set p < 1 and q > 1 to encourage the walk to move further away from the starting node (BFS-like behavior).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Set p = 1 and q = 1 to ensure a perfectly uniform random walk across all neighbors.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In Node2Vec, p controls the return probability and q controls the inward/outward movement. Setting q > 1 encourages the walk to explore further away from the source (BFS-like), which is essential for capturing structural equivalence (nodes that have similar roles in different parts of the graph).",
+      "why_not_A": "Setting p=0 and q=0 is not standard; DeepWalk is equivalent to Node2Vec with p=1 and q=1.",
+      "why_not_B": "p is the return parameter; setting p > 1 is generally not the primary way to balance homophily vs structure, and q < 1 would make the walk more DFS-like, focusing on local homophily rather than structural equivalence.",
+      "why_not_D": "p=1 and q=1 results in a standard random walk (DeepWalk), which primarily captures homophily and fails to explicitly distinguish between local and structural roles."
+    },
+    "tags": [
+      "Node2Vec",
+      "Graph Embeddings",
+      "Random Walks",
+      "Structural Equivalence"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-094",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data scientist is training a large language model across 8 NVIDIA A100 GPUs using PyTorch. They observe that the GPU utilization is fluctuating significantly, and the training speed is not scaling linearly with the number of GPUs. Upon inspecting the logs, they notice high latency in gradient synchronization. Which strategy should be implemented to optimize the communication overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from DistributedDataParallel (DDP) to DataParallel (DP) to simplify the communication layer.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Gradient Accumulation to reduce the frequency of synchronization steps.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the batch size on each individual GPU to saturate the compute cores.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable NVLink and use standard PCIe Gen4 for more stable data transfers.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Gradient accumulation allows the model to effectively increase the batch size by summing gradients over multiple steps before performing a single synchronization/update, reducing the total number of communication rounds and mitigating the synchronization bottleneck.",
+      "why_not_A": "DataParallel (DP) uses a single-process multi-thread approach that is significantly slower and less scalable than DDP due to GIL contention and inefficient broadcasting.",
+      "why_not_C": "Increasing the local batch size might increase compute utilization, but it does not address the communication latency causing the scaling bottleneck; in some cases, it may increase memory pressure.",
+      "why_not_D": "NVLink provides significantly higher bandwidth than PCIe; disabling it would drastically increase communication latency and worsen the performance."
+    },
+    "tags": [
+      "DDP",
+      "communication-overhead",
+      "scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-095",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is deploying a Dask-based pipeline to process 10TB of genomic data across a cluster of NVIDIA GPUs. The user notices that while the GPUs are powerful, the 'worker' processes are frequently crashing with 'OutOfMemory' errors, despite the GPUs having ample VRAM. What is the most likely cause and solution?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The GPU VRAM is fragmented; the solution is to use a smaller model.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The Dask scheduler is overloading the GPUs; the solution is to limit the number of workers per node.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The host RAM is exhausted during data shuffling; the solution is to increase system memory or optimize data chunking.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The CUDA driver is outdated; the solution is to update to the latest NVIDIA Data Center driver.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In Dask, 'OutOfMemory' errors often refer to the host (CPU) RAM. During shuffling or data movement between GPUs, Dask often buffers data in system memory. If the chunks are too large or system RAM is insufficient, the worker process will be killed by the OS.",
+      "why_not_A": "The scenario specifically states that the GPUs have ample VRAM, and 'OutOfMemory' in a Dask worker context usually refers to the Python process (host RAM).",
+      "why_not_B": "Limiting workers might help, but the root cause is the memory management of the data chunks relative to the available host RAM.",
+      "why_not_D": "Driver updates do not resolve systemic memory exhaustion caused by data pipeline architecture."
+    },
+    "tags": [
+      "Dask",
+      "memory-management",
+      "host-vs-device"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-096",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A team is utilizing Horovod for distributed deep learning across multiple nodes. They find that the training time is dominated by the 'Allreduce' operation. They want to minimize the time spent in communication without changing the network hardware. Which configuration change is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Switch from MPI to Gloo as the communication backend.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Tensor Fusion to group small tensors into a single communication buffer.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Reduce the number of GPUs per node to decrease the amount of data being reduced.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a synchronous SGD optimizer instead of an asynchronous one.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Tensor Fusion is a key Horovod feature that bundles multiple small tensors into a larger buffer before calling Allreduce, reducing the number of network calls and overhead, which is critical for performance.",
+      "why_not_A": "MPI (especially via NCCL) is generally more performant than Gloo for NVIDIA GPU clusters.",
+      "why_not_C": "Reducing GPUs would decrease the total compute power and increase the total training time, even if individual communication steps are slightly faster.",
+      "why_not_D": "Horovod's primary mechanism is based on synchronous Allreduce; switching to a different optimizer doesn't solve the communication overhead of the Allreduce operation itself."
+    },
+    "tags": [
+      "Horovod",
+      "Allreduce",
+      "tensor-fusion"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-097",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are designing a distributed training system for a massive dataset that cannot fit into the memory of a single GPU. You decide to implement Model Parallelism. Which approach should you use if you want to split the model by dividing the layers across different GPUs?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Data Parallelism",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Pipeline Parallelism",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Tensor Parallelism",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Sharded Data Parallelism",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Pipeline Parallelism splits the model by layers, where each GPU handles a specific set of layers. The output of one GPU (stage) becomes the input for the next GPU in the pipeline.",
+      "why_not_A": "Data Parallelism replicates the entire model on every GPU and splits the data; it does not solve the problem of a model being too large for one GPU.",
+      "why_not_C": "Tensor Parallelism splits individual layers (tensors) across GPUs (e.g., splitting a large matrix multiplication), rather than splitting the model by whole layers.",
+      "why_not_D": "Sharded Data Parallelism (like ZeRO) shards optimizer states, gradients, and parameters, but it is technically a form of data parallelism designed to mimic model parallelism efficiency."
+    },
+    "tags": [
+      "model-parallelism",
+      "pipeline-parallelism",
+      "scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-098",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A researcher is using NVIDIA RAPIDS cuDF for distributed data processing. They are encountering a 'CUDA Out of Memory' error during a join operation between two large dataframes across a GPU cluster. Which of the following is the most effective way to resolve this while maintaining distributed execution?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the dataframes to pandas and perform the join on the CPU.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the GPU clock speed to process the join faster.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use the 'dask-cudf' library to partition the data into smaller chunks across multiple GPUs.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Disable the GPU and use a single high-memory CPU node.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "dask-cudf allows cuDF dataframes to be partitioned across multiple GPUs. By breaking the data into smaller chunks (partitions), the memory requirement per GPU is reduced, allowing large joins to be performed in a distributed fashion.",
+      "why_not_A": "Converting to pandas removes the benefit of GPU acceleration and likely causes a CPU OOM error given the scale of the data.",
+      "why_not_B": "Clock speed affects computation time, not memory capacity.",
+      "why_not_D": "This defeats the purpose of using an accelerated data science stack and is not a distributed computing solution."
+    },
+    "tags": [
+      "RAPIDS",
+      "cuDF",
+      "dask-cudf"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-099",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data science team is scaling a PyTorch model across 8 NVIDIA A100 GPUs using DistributedDataParallel (DDP). During training, they observe that the GPU utilization is high, but the overall throughput is significantly lower than expected, and the network interface is saturated. Which of the following is the most likely cause and the best architectural remedy?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The model is suffering from gradient explosion; the remedy is to implement gradient clipping.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The communication overhead of all-reduce operations is bottlenecking the training; the remedy is to enable GPUDirect RDMA and use NCCL.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "The batch size per GPU is too small, causing under-utilization of CUDA cores; the remedy is to increase the local batch size.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The CPU is unable to preprocess data fast enough; the remedy is to increase the number of DataLoader workers.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Saturated network interfaces combined with high GPU utilization in a DDP setup typically indicate that the synchronization of gradients (all-reduce) is the bottleneck. GPUDirect RDMA allows GPUs to communicate directly across the network without CPU intervention, significantly reducing latency and overhead.",
+      "why_not_A": "Gradient explosion affects model convergence and numerical stability, not network saturation or throughput performance.",
+      "why_not_C": "The scenario states GPU utilization is already high, meaning the CUDA cores are active; increasing batch size would not solve a network saturation issue.",
+      "why_not_D": "If the CPU were the bottleneck, GPU utilization would be low (stalling), not high."
+    },
+    "tags": [
+      "PyTorch",
+      "NCCL",
+      "DDP",
+      "RDMA"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-100",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are deploying a Large Language Model (LLM) that exceeds the memory capacity of a single NVIDIA H100 GPU. You decide to implement Tensor Parallelism (TP) instead of Pipeline Parallelism (PP). What is the primary trade-off you are accepting by choosing TP over PP in this distributed setup?",
+    "options": [
+      {
+        "id": "A",
+        "text": "TP increases the memory footprint per GPU compared to PP.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "TP introduces 'bubbles' in the execution pipeline, leading to lower hardware utilization.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "TP requires significantly higher inter-GPU communication bandwidth due to frequent synchronization within each layer.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "TP cannot be used with mixed-precision training, whereas PP can.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Tensor Parallelism splits individual layers across GPUs, requiring synchronization (all-reduce) after every matrix multiplication within a layer. This demands extremely high bandwidth (like NVLink), whereas Pipeline Parallelism communicates only at layer boundaries, requiring less frequent synchronization.",
+      "why_not_A": "TP generally reduces the memory footprint per GPU by splitting the weights of the layers.",
+      "why_not_B": "Pipeline bubbles are a characteristic of Pipeline Parallelism (PP), not Tensor Parallelism (TP).",
+      "why_not_D": "Both TP and PP are compatible with mixed-precision training (FP16/BF16)."
+    },
+    "tags": [
+      "Model Parallelism",
+      "Tensor Parallelism",
+      "Pipeline Parallelism",
+      "NVLink"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-101",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A researcher is using DALI (Data Loading Library) to accelerate a distributed training pipeline. They notice that while the GPU is fast, the system is experiencing 'stuttering' in throughput, and the CPU usage is spiking inconsistently. Which DALI configuration change would most likely stabilize the throughput?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable the use of the GPU-based decoder and move all decoding to the CPU.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the prefetch queue size to buffer more samples between the CPU and GPU.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Decrease the number of parallel threads to reduce CPU context switching.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch from a shuffled dataset to a sequential dataset to avoid random I/O.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Stuttering in throughput often occurs when the GPU consumes data faster than the CPU can provide it in bursts. Increasing the prefetch queue allows DALI to hide the latency of data loading and preprocessing by maintaining a buffer of ready-to-use samples.",
+      "why_not_A": "Moving decoding to the CPU usually increases the bottleneck, as GPU-based decoding (nvJPEG) is significantly faster.",
+      "why_not_C": "Decreasing threads would likely lower the overall throughput and exacerbate the CPU bottleneck.",
+      "why_not_D": "While sequential I/O is faster, it is not a viable solution for training where shuffling is required for model convergence."
+    },
+    "tags": [
+      "NVIDIA DALI",
+      "Data Pipeline",
+      "Prefetching",
+      "Throughput"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-102",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "When configuring a multi-node cluster for distributed training using Horovod, you observe that the 'ring' communication pattern is causing a failure on one specific node, leading to a timeout for the entire job. You suspect a network partition or a faulty NIC. Which tool should you use to validate the NCCL environment and network topology across the nodes?",
+    "options": [
+      {
+        "id": "A",
+        "text": "nvidia-smi",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "NCCL Tests (e.g., all_reduce_perf)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "CUDA-MEMCHECK",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "PyTorch Profiler",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "NCCL Tests are specifically designed to benchmark and validate the communication performance and connectivity of the NVIDIA Collective Communications Library across multiple GPUs and nodes, making it the ideal tool for diagnosing ring communication failures.",
+      "why_not_A": "nvidia-smi provides local GPU status (temp, memory, utilization) but does not test inter-node network communication.",
+      "why_not_C": "CUDA-MEMCHECK is used for detecting memory leaks and out-of-bounds access within a single process, not network topology.",
+      "why_not_D": "PyTorch Profiler helps analyze the execution time of operators but is not a diagnostic tool for low-level network fabric failures."
+    },
+    "tags": [
+      "Horovod",
+      "NCCL",
+      "Cluster Diagnostics",
+      "All-Reduce"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-103",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team is using ZeRO (Zero Redundancy Optimizer) to train a massive model. They are currently using ZeRO-1 and find that they still run out of memory (OOM) on their GPUs. They want to move to ZeRO-3. What is the fundamental difference in memory management that ZeRO-3 provides over ZeRO-1?",
+    "options": [
+      {
+        "id": "A",
+        "text": "ZeRO-1 partitions the optimizer states, while ZeRO-3 partitions the optimizer states, gradients, and model parameters.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "ZeRO-1 uses FP16, while ZeRO-3 uses INT8 to reduce memory.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "ZeRO-1 distributes the data across nodes, while ZeRO-3 distributes the model layers.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "ZeRO-3 implements activation checkpointing, whereas ZeRO-1 does not.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "ZeRO-1 only partitions the optimizer states. ZeRO-2 adds partitioning of gradients. ZeRO-3 goes further by partitioning the actual model parameters across the GPUs, meaning each GPU only stores a fraction of the weights, drastically reducing the memory footprint per device.",
+      "why_not_B": "ZeRO is about state partitioning, not quantization of weights from FP16 to INT8.",
+      "why_not_C": "Both ZeRO-1 and ZeRO-3 are used in the context of data parallelism; they change how the redundant states of that parallelism are handled, not the high-level distribution strategy.",
+      "why_not_D": "Activation checkpointing is a separate memory-saving technique and is not the defining difference between ZeRO-1 and ZeRO-3."
+    },
+    "tags": [
+      "DeepSpeed",
+      "ZeRO",
+      "Memory Optimization",
+      "Distributed Training"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-104",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data science team is scaling a Large Language Model (LLM) training job across 32 NVIDIA H100 GPUs across 4 nodes. They are experiencing significant performance degradation and intermittent timeouts during the gradient synchronization phase. The network is InfiniBand HDR. Which of the following is the most likely cause and the optimal architectural resolution?",
+    "options": [
+      {
+        "id": "A",
+        "text": "TCP/IP overhead is causing latency; switch to an Ethernet-based RoCE v2 configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "GPU memory fragmentation is causing slow kernels; implement ZeRO-3 (Full Sharding) to distribute optimizer states, gradients, and parameters.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Collective communication bottlenecks due to inefficient topology mapping; implement Hierarchical All-Reduce using NCCL with NVLink for intra-node and InfiniBand for inter-node communication.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "CPU-GPU synchronization overhead; increase the number of CPU cores per GPU to handle the orchestration.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In large-scale distributed training, the communication pattern of All-Reduce can become a bottleneck. Using NCCL (NVIDIA Collective Communications Library) allows the system to leverage the fastest available interconnects (NVLink for high-speed intra-node transfer and InfiniBand for low-latency inter-node transfer), minimizing the synchronization time.",
+      "why_not_A": "InfiniBand is generally superior to RoCE v2 in terms of latency and throughput for HPC workloads; switching to Ethernet would likely worsen the performance.",
+      "why_not_B": "While ZeRO-3 reduces memory footprint, the scenario specifically mentions performance degradation and timeouts during the synchronization phase (communication), not Out-of-Memory (OOM) errors.",
+      "why_not_D": "The bottleneck described is in the gradient synchronization phase (GPU-to-GPU communication), not in the CPU-to-GPU orchestration or data loading pipeline."
+    },
+    "tags": [
+      "NCCL",
+      "Multi-Node-Training",
+      "Interconnects"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-ncp-data-science-mock1-105",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are implementing a distributed training pipeline using PyTorch DistributedDataParallel (DDP). You notice that while the GPUs are highly utilized, the overall training throughput is significantly lower than expected, and the 'time-per-step' is dominated by the synchronization of gradients. You have already optimized the batch size. Which strategy should you implement to overlap communication with computation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of workers in the DataLoader to saturate the GPU.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Gradient Accumulation to reduce the frequency of synchronization steps.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable FP16 or BF16 mixed precision training to reduce the size of the tensors being communicated.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Utilize Gradient Bucketing by adjusting the bucket size in DDP to trigger asynchronous All-Reduce calls as soon as a group of gradients is ready.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "DDP uses gradient bucketing to overlap the backward pass (computation) with the All-Reduce operation (communication). By grouping gradients into buckets, DDP can start synchronizing the gradients of the final layers while the earlier layers are still being computed.",
+      "why_not_A": "Increasing DataLoader workers optimizes data loading, but the bottleneck here is gradient synchronization, not data ingestion.",
+      "why_not_B": "Gradient accumulation reduces the frequency of updates, but it doesn't 'overlap' communication with computation; it simply delays it.",
+      "why_not_C": "Mixed precision reduces the payload size and can improve speed, but it is not a mechanism for overlapping communication with computation."
+    },
+    "tags": [
+      "PyTorch-DDP",
+      "Gradient-Bucketing",
+      "Throughput"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-106",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A team is deploying a massive recommendation model that exceeds the VRAM of a single A100 (80GB). They are choosing between Data Parallelism (DP), Tensor Parallelism (TP), and Pipeline Parallelism (PP). The model consists of very large embedding layers and deep MLP layers. Which combination is most effective for minimizing communication overhead while fitting the model?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Pure Data Parallelism (DP) across 8 GPUs.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Tensor Parallelism (TP) for the MLP layers and Pipeline Parallelism (PP) for the sequential stages of the network.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Pipeline Parallelism (PP) exclusively for the embedding layers.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Data Parallelism (DP) combined with a smaller batch size to fit the model.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Tensor Parallelism splits individual layers (like large MLPs) across GPUs, allowing the model to fit in memory. Pipeline Parallelism splits the model by layers across GPUs, reducing the need for massive all-to-all communication of the entire model state. This hybrid approach is standard for LLMs and massive recommendation models.",
+      "why_not_A": "DP replicates the entire model on every GPU; if the model exceeds the VRAM of one GPU, DP is impossible.",
+      "why_not_C": "PP is used for sequential layers; splitting just the embedding layer via PP is inefficient and doesn't solve the memory issue for the rest of the model.",
+      "why_not_D": "Reducing batch size helps with activation memory, but it does not reduce the memory required for the model weights themselves."
+    },
+    "tags": [
+      "Model-Parallelism",
+      "TP",
+      "PP"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-nvidia-ncp-data-science-mock1-107",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "When using NVIDIA DALI for distributed data preprocessing, you observe that the GPU is idling while waiting for the CPU to finish augmenting images, despite having a high-core-count CPU. You are using a multi-GPU setup. How should you configure DALI to resolve this bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Move all preprocessing to the GPU using DALI's GPU-based operators and use 'mixed' device placement.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Increase the 'prefetch' parameter in the DALI pipeline to 100.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Disable multi-threading in DALI to avoid CPU context switching.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Switch from a distributed setup to a single-GPU setup to eliminate inter-node data transfer.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "DALI allows moving preprocessing tasks (like resizing, cropping, and normalization) from the CPU to the GPU. By using GPU operators, you eliminate the CPU bottleneck and the overhead of transferring preprocessed data from host to device.",
+      "why_not_B": "While prefetching helps, if the CPU is fundamentally too slow to keep up with the GPU's consumption rate, a larger buffer will eventually empty.",
+      "why_not_C": "Disabling multi-threading would further reduce the CPU's ability to process data, worsening the bottleneck.",
+      "why_not_D": "This avoids the problem by removing the scale, which is not a viable solution for a distributed computing requirement."
+    },
+    "tags": [
+      "NVIDIA-DALI",
+      "Data-Pipeline",
+      "GPU-Preprocessing"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-nvidia-ncp-data-science-mock1-108",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "distributed-computing",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are configuring a multi-node cluster for distributed training using Horovod. You find that the training speed scales linearly up to 4 nodes, but drops significantly when scaling to 16 nodes, despite the network bandwidth remaining constant. Which of the following is the most likely culprit?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The learning rate is too low for the larger effective batch size.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The system is experiencing 'straggler' effects where one node's slower I/O is delaying the entire synchronous All-Reduce.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Horovod is unable to utilize NVLink across different nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "The GPUs are overheating due to the increased number of nodes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In synchronous distributed training (like Horovod's All-Reduce), the entire cluster must wait for the slowest node (the straggler) to finish its computation and communication before moving to the next step. As the number of nodes increases, the probability of encountering a node with a slower disk, CPU, or network glitch increases.",
+      "why_not_A": "A low learning rate affects model convergence (accuracy), not the training throughput (speed/scaling).",
+      "why_not_C": "NVLink is an intra-node technology; it is never intended to work across different nodes (which use InfiniBand/Ethernet).",
+      "why_not_D": "While overheating can cause throttling, it is unlikely to happen consistently across 16 nodes in a way that specifically affects scaling linearity without triggering system alerts."
+    },
+    "tags": [
+      "Horovod",
+      "Scaling-Efficiency",
+      "All-Reduce"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-nvidia-ncp-data-science-mock1-109",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A data science team is deploying a PyTorch model to a production environment using NVIDIA Triton Inference Server. They need to ensure that the server can handle varying request loads without crashing and maximize GPU utilization through request batching. Which configuration approach should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable dynamic batching and manually group requests in the client-side application logic.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure dynamic batching in the model configuration file (config.pbtxt) by specifying max_batch_size and dynamic_batching { }.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Set the model instance count to 1 and disable all batching to ensure sequential processing of requests.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use only static batching to ensure that every request is processed with the exact same tensor dimensions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dynamic batching in Triton allows the server to group individual inference requests into larger batches, significantly increasing throughput and GPU utilization without requiring changes to the client application.",
+      "why_not_A": "Client-side batching increases latency for the first request in a batch and adds unnecessary complexity to the application layer.",
+      "why_not_C": "Disabling batching and limiting instances would lead to poor GPU utilization and high latency under load.",
+      "why_not_D": "Static batching requires the client to send a full batch every time, which is impractical for real-time production workflows with varying request arrivals."
+    },
+    "tags": [
+      "Triton",
+      "Dynamic Batching"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-110",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is implementing a CI/CD pipeline for an AI model. They want to ensure that the model's performance on a validation set is automatically verified before the model is promoted from the 'Staging' environment to 'Production'. Which component of a production workflow is most appropriate for this automated verification step?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A Docker container runtime environment.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "An automated model evaluation gate/pipeline step.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "A GPU-accelerated data loading library like DALI.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A model registry for storing versioned weights.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An automated evaluation gate is a standard MLOps practice where a script or tool compares the new model's metrics against a baseline or threshold before allowing the deployment to proceed.",
+      "why_not_A": "The runtime environment executes the model but does not inherently provide the logic for performance verification or promotion gates.",
+      "why_not_C": "DALI is used for data preprocessing acceleration and does not manage the CI/CD lifecycle or model validation logic.",
+      "why_not_D": "A model registry stores the models, but the registry itself does not perform the active evaluation or the decision-making process for promotion."
+    },
+    "tags": [
+      "MLOps",
+      "CI/CD"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-111",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A team is deploying a large language model (LLM) using NVIDIA Triton. They notice that the GPU memory is exhausted when multiple models are loaded. They want to implement a strategy where models are loaded into GPU memory only when needed and evicted when idle. Which Triton feature should they use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Model Control Mode (Explicit)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Concurrent Model Execution",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Model Loading/Unloading via API (Model Management)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enabling TensorRT precision FP16",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Triton provides a Model Management API that allows users to load and unload models dynamically, enabling a system to manage GPU memory by swapping models based on demand.",
+      "why_not_A": "While Explicit control mode prevents Triton from loading models automatically on startup, it is the API calls themselves that manage the load/unload lifecycle.",
+      "why_not_B": "Concurrent execution allows multiple models to run at once but does not solve the problem of memory exhaustion if all models remain resident.",
+      "why_not_D": "FP16 reduces the memory footprint of a single model, but it doesn't provide a mechanism for loading/unloading models based on idle time."
+    },
+    "tags": [
+      "Triton",
+      "Model Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-112",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is migrating a model from a research environment to a production environment. To ensure consistency and reproducibility of the environment, including CUDA versions and library dependencies, which approach is recommended?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Providing a detailed text file with installation instructions for the production admin.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Installing the libraries directly on the production bare-metal server.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Using a container image (e.g., NVIDIA NGC container) to encapsulate the environment.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Updating the production server's OS to the latest version available.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Containers (specifically NGC containers) package the OS, CUDA toolkit, drivers, and libraries, ensuring that the environment in production is identical to the environment used during development.",
+      "why_not_A": "Manual installation is prone to human error and 'dependency hell,' leading to environment drift.",
+      "why_not_B": "Bare-metal installation makes it difficult to roll back versions or scale horizontally across multiple servers with identical setups.",
+      "why_not_D": "Updating the OS does not address the specific versioning of CUDA or AI frameworks needed for the model to run correctly."
+    },
+    "tags": [
+      "Containers",
+      "NGC"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-113",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An AI engineer is optimizing a production pipeline where the model is bottlenecked by data preprocessing on the CPU. They want to move the preprocessing steps to the GPU to reduce the latency between data loading and inference. Which NVIDIA tool is specifically designed for this purpose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA DALI (Data Loading Library)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA TensorRT",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "NVIDIA Triton Inference Server",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "NVIDIA CUDA Toolkit",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "NVIDIA DALI is designed to offload data augmentation and preprocessing (like resizing, cropping, and normalization) from the CPU to the GPU, eliminating the CPU bottleneck in the production pipeline.",
+      "why_not_B": "TensorRT optimizes the model's inference engine (weights, layers) but does not handle the data loading and preprocessing pipeline.",
+      "why_not_C": "Triton is the server that hosts the model; while it can execute DALI pipelines, DALI is the specific library that performs the preprocessing.",
+      "why_not_D": "The CUDA Toolkit provides the low-level API for GPU programming but is not a high-level library specifically for data preprocessing pipelines."
+    },
+    "tags": [
+      "DALI",
+      "Data Pipelines"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-114",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data science team is deploying a large-scale PyTorch model using NVIDIA Triton Inference Server. They observe that while GPU utilization is high, the throughput is lower than expected, and there is significant latency jitter. They have already enabled dynamic batching. Which configuration change would most effectively optimize the throughput by maximizing GPU utilization without increasing latency for individual requests?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the max_batch_size in the model configuration file to the maximum possible GPU memory capacity.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure multiple model instances (instance_group) across the available GPUs to allow concurrent model execution.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable dynamic batching and switch to a fixed batch size to eliminate the scheduling overhead.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the queue priority for all incoming requests to bypass the scheduler.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Triton allows running multiple instances of a model. Since a single model execution might not saturate the GPU's compute units (SMs) due to memory bandwidth or kernel limitations, multiple instances enable concurrent execution, filling the gaps in GPU utilization and increasing overall throughput.",
+      "why_not_A": "Increasing max_batch_size too high can lead to Out-Of-Memory (OOM) errors and significantly increase the latency for the first request in the batch, violating the requirement to not increase individual request latency.",
+      "why_not_C": "Fixed batching is less flexible than dynamic batching and typically results in lower throughput in real-world production scenarios where request arrival rates fluctuate.",
+      "why_not_D": "Queue priority affects the order of processing but does not address the underlying compute utilization or concurrency issues."
+    },
+    "tags": [
+      "Triton",
+      "Model-Serving",
+      "Throughput-Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-115",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is implementing a CI/CD pipeline for an NVIDIA RAPIDS-based ETL workflow. They need to ensure that the production environment exactly matches the development environment to avoid 'it works on my machine' issues, specifically regarding CUDA driver versions and library dependencies. Which approach provides the most robust isolation and reproducibility?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Install the RAPIDS libraries via conda-forge on a shared bare-metal server with a pre-installed CUDA driver.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Python virtual environment (venv) to isolate the RAPIDS libraries across different projects.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy the workflow using NVIDIA NGC containers, specifying the exact container tag in the deployment manifest.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a shell script to automate the installation of the latest RAPIDS packages during the CI pipeline run.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NGC containers provide a curated, versioned environment containing the OS, CUDA toolkit, and optimized RAPIDS libraries. By pinning the tag, the team ensures that the exact same binary environment is used across Dev, Test, and Prod.",
+      "why_not_A": "Bare-metal installations are prone to 'drift' where system-level updates or different driver versions on different machines cause runtime failures.",
+      "why_not_B": "Python venv only isolates Python packages; it does not isolate the CUDA driver or the underlying C++ libraries that RAPIDS depends on.",
+      "why_not_D": "Installing the 'latest' packages introduces non-determinism, as a new version release could break the pipeline unexpectedly."
+    },
+    "tags": [
+      "NGC",
+      "CI-CD",
+      "Reproducibility"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-116",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A production pipeline uses NVIDIA DALI to preprocess images for a deep learning model. The team notices that the GPU is idling while waiting for the CPU to finish image decoding and augmentation. Which DALI pipeline configuration change will most likely resolve this bottleneck?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Move all preprocessing operators from GPU to CPU to reduce PCIe bus traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Increase the batch size of the model to force the GPU to work longer on each single batch.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Change the pipeline's execution mode to 'synchronous' to ensure the CPU and GPU are aligned.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Shift computationally expensive operators (e.g., resize, crop) to the GPU and use mixed-precision preprocessing.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "DALI is designed to offload preprocessing to the GPU. By moving operations like resizing and cropping to the GPU, the CPU bottleneck is relieved, and the GPU is utilized more efficiently through parallel processing of images.",
+      "why_not_A": "Moving everything to the CPU would exacerbate the existing bottleneck, as the CPU is already the limiting factor.",
+      "why_not_B": "Increasing batch size doesn't solve the preprocessing bottleneck; the GPU will still be idling while waiting for the larger batch to be prepared by the CPU.",
+      "why_not_C": "Synchronous execution would remove the overlap between data loading and model execution, further decreasing throughput."
+    },
+    "tags": [
+      "DALI",
+      "Data-Preprocessing",
+      "Bottleneck-Analysis"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-117",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are optimizing a multi-GPU production workflow using NVIDIA Triton. You want to implement a strategy where requests are routed to the GPU with the least amount of current load to ensure balanced resource utilization. Which Triton feature should you leverage?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Model Ensembling",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Dynamic Batching",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Load Balancer / Model Control API",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Business Logic Scripting",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "While Triton manages internal scheduling, external load balancers or the use of the Model Control API in a distributed setup allow for routing requests to specific instances/GPUs based on health and load metrics.",
+      "why_not_A": "Model Ensembling is used to chain multiple models together into a single pipeline, not for distributing load across GPUs.",
+      "why_not_B": "Dynamic batching groups individual requests into larger batches for efficiency, but it does not handle the routing of requests between different GPU nodes.",
+      "why_not_D": "Business Logic Scripting (Python backend) allows for complex logic within a request's lifecycle but is not the primary mechanism for cluster-level load balancing."
+    },
+    "tags": [
+      "Triton",
+      "Load-Balancing",
+      "Scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-118",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is deploying a model that requires high precision but is constrained by GPU memory. They want to use TensorRT to optimize the model for production. Which process should they follow to maximize performance while maintaining the required precision?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the model directly to FP16 using a standard converter without any calibration data.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use INT8 quantization with a representative calibration dataset to determine the dynamic range of activations.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use FP32 precision and increase the GPU memory by adding more hardware to the cluster.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable all TensorRT optimizations and run the model in the original PyTorch eager mode.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "INT8 quantization significantly reduces memory footprint and increases throughput. By using a calibration dataset, TensorRT can find the optimal scale factors to minimize precision loss, allowing the model to maintain high accuracy while fitting in memory.",
+      "why_not_A": "FP16 is a good middle ground, but for extreme memory constraints, INT8 is superior. Furthermore, simply converting without considering the model's range can lead to instability.",
+      "why_not_C": "Adding hardware is a cost-inefficient solution and does not address the optimization of the workflow itself.",
+      "why_not_D": "Eager mode is the slowest way to run a model in production and provides no memory optimization."
+    },
+    "tags": [
+      "TensorRT",
+      "Quantization",
+      "Memory-Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-119",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A data science team is deploying a large-scale transformer model using NVIDIA Triton Inference Server. They observe that while GPU utilization is high, the overall throughput is lower than expected due to high variance in request arrival times and varying sequence lengths. They want to implement a strategy to maximize GPU throughput by grouping requests of similar lengths together. Which configuration is the most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable dynamic batching with a high max_queue_delay_microseconds and set model concurrency to 1.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a custom Python backend script to manually sort requests by length before passing them to the model.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure Ragged Batching using the Triton sequence batcher with a defined control token.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Utilize the Dynamic Batching feature in conjunction with the Model Analyzer to optimize the batch size and enable the 'sequence batcher' for stateful models.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Dynamic batching combined with a sequence batcher allows Triton to group requests efficiently. For transformer models with varying lengths, the sequence batcher manages state and allows for optimized batching of sequences, while Model Analyzer helps find the optimal batch size to saturate GPU memory without causing OOM.",
+      "why_not_A": "High queue delay increases latency without necessarily solving the problem of sequence length variance (padding overhead).",
+      "why_not_B": "Manual sorting in a Python backend introduces significant CPU overhead and latency, defeating the purpose of the high-performance C++ Triton core.",
+      "why_not_C": "'Ragged Batching' is a conceptual term; the actual implementation in Triton for sequence-based models is handled via the sequence batcher configuration.",
+      "why_not_D": "Incorrectly formatted as a distractor; Option D is the standard production path for optimizing throughput for variable-length sequences in Triton."
+    },
+    "tags": [
+      "triton-inference-server",
+      "dynamic-batching"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-ncp-data-science-mock1-120",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An organization is implementing a CI/CD pipeline for a computer vision model. The model must be deployed across a hybrid cloud environment. To ensure that the model performs identically across different NVIDIA GPU architectures (e.g., A100 and T4) without needing to re-train, which deployment format and optimization strategy should be prioritized?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Export the model to ONNX and use a generic CPU-based runtime for consistency.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Convert the model to TensorRT engines specifically for each target GPU architecture.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a PyTorch JIT trace and deploy using the TorchScript runtime across all nodes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy the model as a Docker container with the base CUDA image, relying on the driver's backward compatibility.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TensorRT optimizes models for specific hardware architectures. To achieve maximum performance and consistent behavior on different GPUs (A100 vs T4), separate engines must be built for each architecture because TensorRT's kernels are hardware-specific.",
+      "why_not_A": "Using a CPU runtime eliminates the performance benefits of the GPUs and is not a production-grade solution for CV models.",
+      "why_not_C": "TorchScript provides portability but does not offer the hardware-specific optimizations provided by TensorRT, leading to suboptimal performance.",
+      "why_not_D": "A Docker container provides environment consistency, but it does not optimize the model's execution graph for the specific GPU architecture.",
+      "why_not_E": "N/A"
+    },
+    "tags": [
+      "tensorrt",
+      "model-deployment",
+      "hybrid-cloud"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-121",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A production pipeline uses NVIDIA DALI to preprocess high-resolution imagery. The team notices that the GPU is idling while waiting for the CPU to finish decoding JPEGs, creating a bottleneck. Which architectural change would most effectively resolve this bottleneck while keeping the data pipeline on the GPU?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of CPU worker threads in the DALI pipeline.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Switch from JPEG to PNG format to reduce decoding complexity.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement NVIDIA DALI's NVJPEG hardware-accelerated decoding.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Move the preprocessing step to a separate GPU node and send the tensors via gRPC.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NVJPEG allows JPEG decoding to happen directly on the GPU (using the hardware decoder), removing the CPU bottleneck entirely and keeping the data flow within GPU memory.",
+      "why_not_A": "Increasing CPU threads may help slightly but eventually hits the CPU's physical limit and does not leverage the GPU's capabilities.",
+      "why_not_B": "PNG decoding is often slower than JPEG and does not address the fundamental bottleneck of CPU-based decoding.",
+      "why_not_D": "Adding another node introduces massive network latency for high-resolution imagery, which would likely become the new bottleneck.",
+      "why_not_E": "N/A"
+    },
+    "tags": [
+      "nvidia-dali",
+      "data-preprocessing",
+      "bottleneck-analysis"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-122",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A team is deploying a multi-model ensemble where Model A (a feature extractor) feeds into Model B (a classifier). Model A is computationally expensive. To minimize data transfer overhead between the two models in a production Triton environment, which feature should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a shared memory region (shm) between two separate Triton instances.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a Triton Ensemble model using the 'ensemble' model configuration.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Redis cache to store the intermediate tensors from Model A.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the PCIe bandwidth by upgrading to NVLink-enabled servers.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Triton Ensembles allow the server to manage the flow of tensors between models internally. The intermediate tensors are passed between models without leaving the server's memory space, minimizing overhead.",
+      "why_not_A": "Running two separate instances introduces inter-process communication overhead and complexity.",
+      "why_not_C": "Writing tensors to an external cache like Redis introduces significant latency and serialization overhead.",
+      "why_not_D": "Hardware upgrades do not address the software inefficiency of moving data back and forth between a client and the server.",
+      "why_not_E": "N/A"
+    },
+    "tags": [
+      "triton-inference-server",
+      "model-ensembles"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-123",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "During a production rollout of a LLM, the team observes that the 'First Token Latency' (TTFT) is too high, although the 'Inter-Token Latency' is acceptable. They are using a standard KV cache. Which optimization technique specifically targets the reduction of TTFT in a production workflow?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increasing the batch size to maximize throughput.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implementing Continuous Batching (Iteration-level scheduling).",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Converting the model to FP8 precision.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increasing the GPU clock speed via nvidia-smi.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Continuous batching allows the server to start processing new requests as soon as a token is generated for an existing request, rather than waiting for the entire batch to complete. This significantly reduces the time the first token spends waiting in the queue.",
+      "why_not_A": "Increasing batch size typically increases latency for individual requests, potentially worsening TTFT.",
+      "why_not_C": "FP8 reduces overall compute time and memory footprint, but it doesn't solve the scheduling inefficiency that causes high TTFT.",
+      "why_not_D": "Clock speed provides a marginal linear gain but does not address the architectural bottleneck of request scheduling.",
+      "why_not_E": "N/A"
+    },
+    "tags": [
+      "llm-production",
+      "continuous-batching",
+      "latency-optimization"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-nvidia-ncp-data-science-mock1-124",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A data science team is deploying a large-scale NLP model using NVIDIA Triton Inference Server. They observe that while the GPU utilization is high, the throughput is lower than expected. Upon analysis, they find that the model is processing requests one by one, despite multiple requests arriving simultaneously. Which configuration change will most effectively increase throughput without significantly increasing latency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the number of model instances to match the number of GPU cores.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable dynamic batching in the model configuration file.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Switch the model format from TensorRT to ONNX.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable the shared memory extension for client-server communication.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dynamic batching allows Triton to group multiple individual inference requests into a single batch, maximizing GPU utilization and throughput by leveraging the parallel processing capabilities of the hardware.",
+      "why_not_A": "Increasing model instances can help if the GPU is underutilized, but if the bottleneck is sequential request processing, more instances won't solve the batching inefficiency.",
+      "why_not_C": "TensorRT is generally more optimized for NVIDIA GPUs than ONNX; switching to ONNX would likely decrease performance, not increase it.",
+      "why_not_D": "Shared memory reduces data transfer overhead between client and server; disabling it would increase latency and potentially decrease throughput."
+    },
+    "tags": [
+      "Triton Inference Server",
+      "Dynamic Batching",
+      "Throughput Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-125",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A production pipeline uses NVIDIA Clara or a similar medical imaging workflow. The team needs to ensure that the model deployment is reproducible and that the environment remains consistent across development, staging, and production. Which approach best aligns with NVIDIA's recommended production workflow for containerized AI models?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Install dependencies manually on the host machine using a shell script.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a generic Ubuntu image and install CUDA drivers inside the container.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Utilize NVIDIA NGC containers as a base image and define application dependencies in a Dockerfile.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Avoid containers and use virtual machines to ensure hardware isolation.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "NGC (NVIDIA GPU Cloud) containers provide optimized, pre-configured environments with the correct versions of CUDA, cuDNN, and frameworks, ensuring consistency and reproducibility across different environments.",
+      "why_not_A": "Manual installation on host machines leads to 'dependency hell' and lacks reproducibility across different environments.",
+      "why_not_B": "CUDA drivers must be installed on the host machine, not inside the container; the container only requires the CUDA toolkit/libraries to interface with the driver via the NVIDIA Container Toolkit.",
+      "why_not_D": "Containers are the industry standard for AI production due to their lightweight nature and better portability compared to full VMs."
+    },
+    "tags": [
+      "NGC",
+      "Containerization",
+      "Reproducibility"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-126",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization is implementing a CI/CD pipeline for an accelerated data science project. They want to automate the conversion of PyTorch models to TensorRT for production deployment. What is the most efficient way to integrate this into the workflow to ensure maximum performance on the target hardware?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Convert the model to ONNX on a CPU-based build server and deploy the ONNX file directly.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the TensorRT Python API to build the engine on the target production GPU hardware during the deployment phase.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Pre-compile the TensorRT engine on a different GPU architecture and ship the binary engine file.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Skip TensorRT and use PyTorch's native JIT compiler for production.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "TensorRT engines are hardware-specific. To achieve maximum performance, the engine must be built/optimized on the exact GPU architecture (e.g., A100 vs T4) that will be used in production.",
+      "why_not_A": "ONNX is an intermediate representation. While useful, it doesn't provide the hardware-specific optimizations that a TensorRT engine provides.",
+      "why_not_C": "TensorRT engines are not portable across different GPU architectures or different versions of TensorRT; a binary built on one GPU will likely fail or perform poorly on another.",
+      "why_not_D": "While TorchScript/JIT provides some speedup, it cannot match the deep hardware-level optimizations (layer fusion, precision calibration) provided by TensorRT."
+    },
+    "tags": [
+      "TensorRT",
+      "CI/CD",
+      "Model Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-127",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A team is deploying a real-time fraud detection model. They are experiencing high tail latency (p99) despite having sufficient GPU compute. They suspect the bottleneck is in the data preprocessing step, which currently runs on the CPU. Which NVIDIA technology should they implement to move preprocessing to the GPU?",
+    "options": [
+      {
+        "id": "A",
+        "text": "NVIDIA DALI (Data Loading Library)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "NVIDIA NVLink",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "CUDA Streams",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "GPUDirect Storage",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "NVIDIA DALI is specifically designed to offload data preprocessing (augmentation, resizing, normalization) from the CPU to the GPU, eliminating the CPU bottleneck and reducing latency.",
+      "why_not_B": "NVLink is a high-speed interconnect for GPU-to-GPU communication, not a preprocessing library.",
+      "why_not_C": "CUDA Streams allow for concurrent execution of kernels but do not provide the high-level API for data preprocessing tasks.",
+      "why_not_D": "GPUDirect Storage optimizes the path from storage to GPU memory, but it doesn't perform the actual data transformation/preprocessing logic."
+    },
+    "tags": [
+      "DALI",
+      "Preprocessing",
+      "Latency"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-128",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "production-workflows",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is scaling its AI inference service across a cluster of multiple GPUs. They need to implement a strategy to handle sudden spikes in traffic without crashing the system or incurring unacceptable latency. Which architectural pattern is most appropriate for this production requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a synchronous blocking queue for all incoming requests.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a load balancer with a request queue and implement model ensembleing in Triton.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a priority-based request queue with an asynchronous inference pattern and auto-scaling based on GPU duty cycle.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the GPU memory allocation for each model to prevent Out-of-Memory (OOM) errors during spikes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Asynchronous patterns prevent the system from blocking during spikes, and auto-scaling based on GPU utilization (duty cycle) ensures that more resources are added dynamically as load increases, maintaining latency targets.",
+      "why_not_A": "Synchronous blocking queues would cause the entire system to hang or time out when the queue fills up during a traffic spike.",
+      "why_not_B": "Model ensembleing is used to chain multiple models together for a single request; it does not solve the problem of scaling for traffic spikes.",
+      "why_not_D": "Allocating more memory prevents OOM, but it does not address the throughput or latency issues caused by an increase in the number of requests."
+    },
+    "tags": [
+      "Scaling",
+      "Inference Architecture",
+      "Auto-scaling"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-nvidia-ncp-data-science-mock1-129",
+    "exam_id": "nvidia-ncp-ads",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
   }
 ]

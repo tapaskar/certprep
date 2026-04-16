@@ -2871,5 +2871,3336 @@
     "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.1,
     "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your company is migrating a legacy application to Google Compute Engine. The application requires access to a specific Cloud Storage bucket to read configuration files, but for security reasons, you must ensure the VM cannot access any other buckets in the project. Which approach follows the principle of least privilege?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a custom service account, grant it the 'Storage Object Viewer' role at the project level, and attach it to the VM.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the default Compute Engine service account and grant it 'Storage Admin' permissions on the specific bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a custom service account and grant it the 'Storage Object Viewer' role specifically on the target bucket using an IAM policy binding.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable the 'Allow full access to all Cloud APIs' scope when creating the VM and use a project-wide IAM role.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Creating a custom service account and applying the role at the resource level (the bucket) ensures the VM has access only to that specific resource, adhering to the principle of least privilege.",
+      "why_not_A": "Granting the role at the project level allows the VM to read objects from ALL buckets in the project, violating the requirement.",
+      "why_not_B": "Using the default service account is a security risk as it often has broad permissions, and 'Storage Admin' provides excessive write/delete permissions when only read access is needed.",
+      "why_not_D": "API scopes are a legacy mechanism and providing 'full access' combined with project-wide roles is the opposite of least privilege."
+    },
+    "tags": [
+      "IAM",
+      "Least-Privilege",
+      "Compute-Engine"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-059",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services firm needs to allow external auditors to view specific BigQuery datasets for 30 days. The firm wants to ensure that access is automatically revoked after this period without manual intervention. Which Google Cloud feature should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a Google Group, add the auditors, and set a TTL (Time-To-Live) on the group membership.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use IAM Conditions to grant the role with a timestamp-based condition.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Assign the 'BigQuery Data Viewer' role and schedule a Cloud Scheduler job to remove the IAM binding.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Service Account with a temporary key that expires in 30 days.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "IAM Conditions allow you to define a date/time range during which a policy binding is active. Once the expiry date is reached, the access is automatically revoked by the system.",
+      "why_not_A": "Google Groups do not natively support a TTL for membership that automatically removes users based on a specific date.",
+      "why_not_C": "While technically possible, this is a manual workaround that is prone to failure (e.g., job failure) and is not a native IAM feature.",
+      "why_not_D": "Service account keys are for programmatic access, not human auditors, and key expiration is not the standard way to manage temporary human access."
+    },
+    "tags": [
+      "IAM-Conditions",
+      "Temporary-Access",
+      "BigQuery"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-060",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are designing a multi-tenant environment where different teams manage their own resources. You need to ensure that team leads can grant permissions to their team members without having the ability to grant permissions to users outside their own project. Which IAM role should you assign to the team leads?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Project Owner",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Project Editor",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Project IAM Admin",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "A custom role containing the 'resourcemanager.projects.setIamPolicy' permission.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "The 'setIamPolicy' permission allows the user to modify the IAM policy of the resource. By creating a custom role or using a specific limited role at the project level, you control who can manage access.",
+      "why_not_A": "Project Owner has full control over the project, including the ability to delete the project and modify billing, which is too much power for a team lead.",
+      "why_not_B": "Project Editor can modify resources but cannot change IAM policies (permissions).",
+      "why_not_C": "Project IAM Admin can manage all IAM policies for the project, but the question asks for a specific capability. While Project IAM Admin works, in a strict security context, a custom role is often used to restrict the scope of 'who' can be added if combined with organization policies."
+    },
+    "tags": [
+      "IAM-Roles",
+      "Custom-Roles",
+      "Resource-Manager"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-061",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A developer needs to access a Cloud SQL instance from a local machine for debugging. To maintain a high security posture, you want to avoid opening the database port to the public internet or using a static IP allowlist. Which method is recommended?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a public IP for the Cloud SQL instance and use a strong password.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use the Cloud SQL Auth Proxy.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Set up a VPN between the local machine and the VPC, then use the private IP.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable the 'Allow all IP addresses' setting temporarily in the Cloud SQL console.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Cloud SQL Auth Proxy provides secure authorization via IAM and creates an encrypted tunnel to the instance without requiring the instance to have a public IP or manually managed firewall rules.",
+      "why_not_A": "Exposing a database to the public internet, even with a password, increases the attack surface and is against security best practices.",
+      "why_not_C": "While secure, setting up a full VPN for a single developer's debugging session is operationally expensive and overly complex compared to the proxy.",
+      "why_not_D": "Opening the instance to all IPs is a critical security vulnerability."
+    },
+    "tags": [
+      "Cloud-SQL",
+      "Auth-Proxy",
+      "Network-Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-062",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your organization uses a Shared VPC architecture. You have a 'Host Project' and several 'Service Projects'. A developer in a Service Project needs to create a VM instance using a subnet located in the Host Project. What must be configured to allow this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Grant the developer 'Compute Network Admin' role in the Service Project.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Grant the developer 'Compute Network User' role in the Host Project for that specific subnet.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Grant the developer 'Project Owner' role in the Host Project.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable VPC Peering between the Host Project and the Service Project.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a Shared VPC, the 'Compute Network User' role must be granted to the user or service account in the Host Project (at the project or subnet level) to allow them to utilize the network resources in their Service Project.",
+      "why_not_A": "The 'Compute Network Admin' role in the Service Project does not grant permission to use resources owned by a different (Host) project.",
+      "why_not_C": "Granting Project Owner in the Host Project is a massive violation of least privilege and gives the developer control over the entire network infrastructure.",
+      "why_not_D": "Shared VPC is a different architecture than VPC Peering; the project is already configured as a Shared VPC, so peering is not the mechanism for granting subnet access."
+    },
+    "tags": [
+      "Shared-VPC",
+      "Compute-Engine",
+      "IAM"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-063",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization is implementing a multi-project strategy where a central 'Security Project' must manage firewall rules across 50 different workload projects. You need to ensure that security administrators can modify firewall rules in all workload projects without granting them the 'Compute Network Administrator' role at the project level, which would provide too many permissions. What is the most secure and scalable way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a custom IAM role with 'compute.firewalls.create' and 'compute.firewalls.update' permissions and grant it to the administrators at the Organization level.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Hierarchical Firewall Policies at the Organization level and grant the 'compute.firewallPolicy.admin' role to the security team in the Security Project.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Shared VPC and grant the 'compute.networkAdmin' role to the security team only within the Host Project.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Create a Service Account in the Security Project and grant it the 'Compute Admin' role in every workload project via a script.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Hierarchical Firewall Policies allow security administrators to define and enforce firewall rules across all projects in an organization from a single point of control. This separates the network security management from the individual project's compute administration, adhering to the principle of least privilege while ensuring global consistency.",
+      "why_not_A": "Granting custom roles at the Organization level provides permissions across every single project, which may be too broad and does not leverage the centralized policy management features of Hierarchical Firewall Policies.",
+      "why_not_C": "Shared VPC controls network connectivity and subnetting, but 'compute.networkAdmin' in the host project does not inherently provide a scalable way to manage granular firewall rules for individual application needs across 50 disparate projects without affecting the host network's integrity.",
+      "why_not_D": "This approach is a management nightmare (not scalable) and grants 'Compute Admin', which is far too permissive (violates least privilege) as it allows VM deletion and modification."
+    },
+    "tags": [
+      "IAM",
+      "Hierarchical Firewall Policies",
+      "Least Privilege"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-064",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company requires that developers have access to Cloud Storage buckets only when they are connecting from a corporate VPN and using a company-managed device. You must implement this requirement using the most restrictive access control mechanism available in GCP.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use IAM Conditions to restrict access based on the request's IP address and the user's identity.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a VPC Service Control (VPC SC) perimeter and define an Access Level using Access Context Manager (ACM) that requires the corporate IP range and a device managed by Endpoint Verification.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a Cloud Storage bucket policy that restricts access to specific VPC network tags.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a custom proxy server that validates device certificates before forwarding requests to the Google Cloud Storage API.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Service Controls (VPC SC) combined with Access Context Manager (ACM) is the only way to enforce 'context-aware' access. ACM allows you to define attributes (IP, Device ID, Device State) that must be true for a request to enter the service perimeter, effectively blocking access even if the user has the correct IAM permissions.",
+      "why_not_A": "IAM Conditions support some attributes, but they cannot validate device management status (e.g., whether a device is company-managed) as deeply as ACM does.",
+      "why_not_C": "Cloud Storage bucket policies (IAM) do not support network tags; tags are used for firewall rules, not for API-level access control to GCS.",
+      "why_not_D": "While a proxy works, it is an 'anti-pattern' in GCP. It introduces a single point of failure and high operational overhead compared to the native VPC SC/ACM solution."
+    },
+    "tags": [
+      "VPC SC",
+      "ACM",
+      "Context-Aware Access"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-065",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a system where an external third-party auditing firm needs read-only access to a specific BigQuery dataset for 30 days. The auditing firm does not have Google accounts, but they have a corporate identity provider. You want to avoid creating individual Google accounts for every auditor.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a Service Account, generate a JSON key, and securely send the key to the auditing firm.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Workforce Identity Federation to map the auditor's corporate identity provider groups to a GCP IAM role for the duration of the audit.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a shared dataset and grant 'AllAuthenticatedUsers' the BigQuery Data Viewer role.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set up a Cloud Identity Free account and invite the auditors as guest users using their corporate email addresses.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Workforce Identity Federation allows users to authenticate using their own external identity provider (IdP) without needing a Google account. This is the most secure and scalable way to handle third-party access, as it eliminates the need to manage local identities and allows for group-based mapping.",
+      "why_not_A": "Sharing JSON keys is a critical security risk. Keys are long-lived and cannot be easily revoked without affecting all users of that service account; it also lacks individual auditability.",
+      "why_not_C": "Granting 'AllAuthenticatedUsers' is extremely dangerous, as any person with any Google account in the world could potentially access the data if they find the dataset ID.",
+      "why_not_D": "This requires manually managing guest accounts and inviting users, which is an administrative burden and does not leverage the corporate IdP for lifecycle management."
+    },
+    "tags": [
+      "Workforce Identity Federation",
+      "External Access",
+      "BigQuery"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-066",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company has a highly sensitive GKE cluster. To prevent accidental or malicious data exfiltration, you must ensure that pods can only communicate with a specific internal API and cannot make any requests to the public internet, even if the application code is compromised. Which combination of controls is most effective?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Apply a GKE Network Policy that denies all egress and allows only the internal API IP range.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Disable the default internet gateway in the VPC and use a Cloud NAT with a strict allow-list.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a combination of GKE Network Policies for pod-level control and a VPC firewall rule that denies all egress from the GKE node range to 0.0.0.0/0.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure the GKE cluster as a Private Cluster with 'Private Nodes' enabled.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Defense-in-depth is required here. GKE Network Policies provide L3/L4 control at the pod level (preventing pods from talking to each other or specific IPs). However, since Network Policies are implemented by the CNI and can sometimes be bypassed or misconfigured, a VPC-level firewall rule acting on the node's IP range provides a hard boundary that the traffic cannot escape, regardless of pod configuration.",
+      "why_not_A": "Network Policies are excellent but operate within the cluster. If the CNI is compromised or there's a configuration gap, the traffic still hits the VPC. It doesn't provide the 'hard' boundary of a VPC firewall.",
+      "why_not_B": "Cloud NAT is used to allow internal resources to reach the internet; it is not a primary tool for blocking egress. Disabling the gateway is not how VPCs work (they are software-defined).",
+      "why_not_D": "A Private Cluster prevents the nodes from having public IP addresses, but pods can still reach the internet via the default gateway/NAT unless egress rules are explicitly defined."
+    },
+    "tags": [
+      "GKE",
+      "Network Policy",
+      "VPC Firewall"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-067",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are auditing a project and find that a service account used by a Compute Engine instance has the 'Editor' role. You need to restrict this service account so it can only upload files to one specific Cloud Storage bucket and read secrets from Secret Manager, without changing the instance's service account to a custom one.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use IAM Conditions to grant the 'Editor' role only if the resource name matches the specific bucket and secret.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Remove the 'Editor' role from the service account and grant 'storage.objectCreator' on the specific bucket and 'secretmanager.secretAccessor' on the specific secrets.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Keep the 'Editor' role but use a VPC Service Control perimeter to block access to all other buckets and secrets.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Apply a bucket-level ACL to allow the service account and use a Secret Manager policy to allow the service account.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The 'Editor' role is a primitive role and is far too broad. The correct approach is to remove the primitive role and apply granular, predefined roles (Least Privilege) at the resource level (the specific bucket and specific secrets).",
+      "why_not_A": "IAM Conditions cannot be used to 'filter' the permissions within a primitive role like 'Editor'. You cannot say 'be an Editor but only for this bucket'.",
+      "why_not_C": "VPC SC is for perimeter security (blocking access from outside/inside the perimeter). It does not replace IAM permissions. The service account would still have 'Editor' permissions if it managed to get inside the perimeter.",
+      "why_not_D": "ACLs are a legacy feature of GCS and are less flexible/secure than IAM. Furthermore, this does not address the removal of the 'Editor' role, which still grants the account wide-ranging powers across the project."
+    },
+    "tags": [
+      "IAM",
+      "Least Privilege",
+      "Primitive Roles"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-068",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your organization is migrating a legacy application to Google Compute Engine. The application needs to upload logs to a specific Cloud Storage bucket but should not have permission to delete or overwrite existing logs. You want to follow the principle of least privilege. Which IAM approach should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign the Compute Engine default service account the role of roles/storage.admin.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a custom IAM role with storage.objects.create and storage.objects.get permissions and assign it to a dedicated service account.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Assign the roles/storage.objectAdmin role to the service account attached to the VM.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable the Cloud Storage API and grant the Project Editor role to the VM's service account.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "A custom role allowing only 'create' and 'get' ensures the application can upload and verify logs without the ability to delete or overwrite (which requires storage.objects.delete or storage.objects.update), adhering to the principle of least privilege.",
+      "why_not_A": "roles/storage.admin provides full control over buckets and objects, including the ability to delete buckets and change permissions, which is excessive.",
+      "why_not_C": "roles/storage.objectAdmin allows full control over objects, including the ability to delete and overwrite them, violating the requirement to prevent deletion.",
+      "why_not_D": "Project Editor is a primitive role that provides broad write access across almost all GCP services in the project, far exceeding the required permissions for a single bucket."
+    },
+    "tags": [
+      "iam",
+      "least-privilege",
+      "cloud-storage"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-069",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company requires that developers be able to manage GKE clusters in the 'development' project, but they must not be able to modify the project's networking configurations or IAM policies. Which configuration best meets this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Grant the developers the roles/owner role at the project level.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Grant the developers the roles/editor role at the project level.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Grant the developers the roles/container.clusterAdmin role at the project level.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Grant the developers the roles/viewer role and manually add networking permissions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "roles/container.clusterAdmin provides full management capabilities for GKE clusters without granting permissions to modify project-wide networking or IAM policies.",
+      "why_not_A": "roles/owner provides full access to all resources, including the ability to change IAM policies and networking, which is explicitly forbidden.",
+      "why_not_B": "roles/editor allows modification of most resources, including network configurations, which violates the requirement.",
+      "why_not_D": "roles/viewer is read-only; adding networking permissions would grant the ability to modify the network, which is forbidden."
+    },
+    "tags": [
+      "iam",
+      "gke",
+      "roles"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-070",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are tasked with granting a third-party auditing firm temporary access to view logs in Cloud Logging for a specific project. You want to ensure the access automatically expires after 30 days without manual intervention. Which Google Cloud feature should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a Service Account and share the JSON key with the firm.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use IAM Conditions to grant the roles/logging.viewer role with a timestamp expiration.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Grant the roles/logging.viewer role and set a calendar reminder to revoke it.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Shared VPC to restrict their access to the logging API.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "IAM Conditions allow you to define a date/time expression that automatically revokes the role once the specified timestamp is reached, removing the need for manual cleanup.",
+      "why_not_A": "Service account keys do not have a built-in expiration date for the permission itself; the key would remain valid until manually rotated or deleted.",
+      "why_not_C": "Manual revocation is prone to human error and does not meet the requirement for 'without manual intervention'.",
+      "why_not_D": "Shared VPC manages network connectivity between projects; it does not control IAM permissions or temporal access to APIs."
+    },
+    "tags": [
+      "iam-conditions",
+      "cloud-logging",
+      "temporary-access"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-071",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "configuring-access",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your organization uses a hub-and-spoke network architecture. You need to ensure that a specific application in a spoke project can access a private API in the hub project, but only via a specific internal IP address and port. Which mechanism is the most appropriate for controlling this access?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Apply a project-level IAM role to the application's service account.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Firewall Rule in the hub project to allow ingress from the spoke project's subnet on the specific port.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a VPC Peering connection and grant the roles/compute.networkUser role.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Armor to filter the traffic based on the source IP.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Firewall Rules are the primary mechanism for controlling L3/L4 traffic (IPs and ports) between networks in GCP. Allowing ingress from the specific subnet of the spoke project on the required port satisfies the requirement.",
+      "why_not_A": "IAM controls 'who' can do 'what' (API level), but it does not control network-level traffic (IP/Port level).",
+      "why_not_C": "VPC Peering enables connectivity, and roles/compute.networkUser allows a user to use a subnet, but neither provides the granular port-level filtering required.",
+      "why_not_D": "Cloud Armor is primarily for protecting external HTTP(S) load balancers from internet traffic, not for internal East-West traffic between VPCs."
+    },
+    "tags": [
+      "vpc-firewalls",
+      "networking",
+      "access-control"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-072",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services company requires that all data stored in Cloud Storage buckets be encrypted using keys that they manage and rotate themselves, rather than using Google-managed keys. Which solution meets this requirement with the least operational overhead for key rotation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Customer-Supplied Encryption Keys (CSEK) and manually rotate the keys by re-encrypting the data.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Customer-Managed Encryption Keys (CMEK) via Cloud KMS.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Google-managed encryption keys (Default encryption).",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement client-side encryption before uploading data to Cloud Storage.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud KMS (CMEK) allows users to manage their own keys, including rotation schedules, while Google handles the underlying cryptographic operations, providing a balance of control and low operational overhead.",
+      "why_not_A": "CSEK requires the customer to provide the key for every API call and manage the rotation manually by downloading and re-uploading data, which creates high operational overhead.",
+      "why_not_C": "Google-managed keys do not give the customer control over the key management or rotation process, failing the requirement.",
+      "why_not_D": "Client-side encryption puts the entire burden of key management and rotation on the application layer, significantly increasing operational complexity compared to CMEK."
+    },
+    "tags": [
+      "Cloud KMS",
+      "CMEK",
+      "Cloud Storage"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-073",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A healthcare provider needs to identify and mask Personally Identifiable Information (PII) in a large dataset stored in BigQuery before providing access to a data analytics team. Which Google Cloud service is specifically designed to automate the discovery and classification of this sensitive data?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud Data Loss Prevention (Cloud DLP)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Cloud Identity and Access Management (IAM)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "VPC Service Controls",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "BigQuery Column-level Access Control",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Cloud DLP is specifically designed to discover, classify, and redact/mask sensitive data (PII, PHI) across various Google Cloud services, including BigQuery.",
+      "why_not_B": "IAM manages who has access to resources, but it cannot inspect the content of the data to identify PII.",
+      "why_not_C": "VPC Service Controls creates a security perimeter to prevent data exfiltration but does not perform data classification or masking.",
+      "why_not_D": "Column-level access control restricts who can see a column, but it does not automate the discovery of PII or provide masking/de-identification capabilities."
+    },
+    "tags": [
+      "Cloud DLP",
+      "PII",
+      "BigQuery"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-074",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization wants to ensure that their Cloud Storage buckets are not accidentally made public. They want to enforce a policy across all projects in the organization that prevents the assignment of the 'allUsers' or 'allAuthenticatedUsers' roles to bucket permissions. Which feature should they use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "IAM Conditions",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Organization Policy Service (Public Access Prevention)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Bucket-level ACLs",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud Armor policies",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Organization Policy Service allows administrators to set constraints (such as 'storage.publicAccessPrevention') that apply across the entire organization, preventing buckets from being made public regardless of individual IAM settings.",
+      "why_not_A": "IAM Conditions allow for temporary or attribute-based access but cannot globally forbid the use of 'allUsers' across all projects.",
+      "why_not_C": "ACLs are used to grant access to specific users; they are the mechanism that *causes* the public access, not the mechanism to *prevent* it organization-wide.",
+      "why_not_D": "Cloud Armor is a WAF/DDOS protection service for HTTP(S) load balancers and does not manage Cloud Storage bucket permissions."
+    },
+    "tags": [
+      "Organization Policy",
+      "Cloud Storage",
+      "Public Access Prevention"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-075",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using Cloud SQL for MySQL and needs to ensure that data is encrypted at rest and that the encryption keys are managed by Google, but they must be able to audit when the keys are used. Which configuration provides this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable default encryption and check Cloud Audit Logs.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Implement client-side encryption using a third-party library.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Customer-Supplied Encryption Keys (CSEK).",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable encryption and use an encrypted disk via Compute Engine.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Cloud SQL encrypts data at rest by default using Google-managed keys. Access to these keys is logged in Cloud Audit Logs, providing the required audit trail.",
+      "why_not_B": "Client-side encryption is not a native Cloud SQL configuration and would add significant complexity to the application.",
+      "why_not_C": "Cloud SQL does not support CSEK; it supports Google-managed keys or CMEK via Cloud KMS.",
+      "why_not_D": "Cloud SQL is a managed service; you cannot manage the underlying disk encryption manually via Compute Engine settings."
+    },
+    "tags": [
+      "Cloud SQL",
+      "Encryption",
+      "Cloud Audit Logs"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-076",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A security architect needs to implement a strategy to protect sensitive data in a BigQuery dataset. The requirement is to allow some users to see the raw data while others see a masked version of the data (e.g., only the last four digits of a credit card) based on their role. Which combination of features is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "VPC Service Controls and IAM roles.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud DLP and BigQuery Authorized Views.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud KMS and BigQuery Table snapshots.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "IAM Roles and BigQuery Dataset permissions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud DLP can be used to define masking transformations, and Authorized Views allow the architect to present a filtered/masked version of the data to specific users without giving them access to the base table.",
+      "why_not_A": "VPC Service Controls prevent data exfiltration but cannot mask specific fields within a table based on user roles.",
+      "why_not_C": "Cloud KMS provides encryption, and snapshots provide point-in-time recovery; neither provides the ability to mask data for different user roles.",
+      "why_not_D": "Standard IAM roles on datasets are all-or-nothing regarding the table; they cannot dynamically mask specific columns based on the user's identity."
+    },
+    "tags": [
+      "BigQuery",
+      "Authorized Views",
+      "Cloud DLP"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-077",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company requires a solution to protect sensitive PII in a BigQuery dataset. The security policy mandates that only a small group of analysts can see the raw data, while others should see masked versions. The company wants to minimize the administrative overhead of managing individual column-level permissions and ensure that the masking logic is consistent across all queries. Which approach should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create multiple authorized views with different masking logic and grant access to the views instead of the base table.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Policy Tags using Taxonomy and assign Data Classes to columns, applying specific masking rules via the Data Catalog.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Cloud DLP to permanently redact the PII in the base table and store the original data in a separate, locked Cloud Storage bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a custom Cloud Function that intercepts queries and applies masking based on the user's IAM role before returning results.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "BigQuery column-level security using Policy Tags (via Data Catalog) allows for fine-grained access control. When combined with data masking, it ensures that users without the required permission see a masked value (e.g., hashing or nulling) without needing to create multiple views, providing a scalable and consistent enforcement mechanism.",
+      "why_not_A": "Authorized views provide row-level or column-level filtering, but managing multiple views for different masking levels creates significant administrative overhead as the number of users and datasets grows.",
+      "why_not_C": "Permanent redaction is destructive and prevents the authorized group of analysts from ever seeing the raw data within the BigQuery environment, violating the requirement that some users must see raw data.",
+      "why_not_D": "BigQuery does not support a 'query interceptor' via Cloud Functions in this manner; this would require a custom proxy layer, adding immense complexity and latency."
+    },
+    "tags": [
+      "BigQuery",
+      "Column-level Security",
+      "Data Catalog"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-078",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization is migrating a legacy application to GCE. The application requires the use of encryption keys that are generated and managed in an on-premises Hardware Security Module (HSM) for compliance reasons. The application must be able to encrypt and decrypt data using these keys within GCP. Which strategy should you use to meet these requirements with the least amount of latency?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Cloud KMS with a Customer-Managed Encryption Key (CMEK) and import the key material from the on-premises HSM.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud External Key Manager (EKM) to integrate Cloud KMS with the on-premises HSM via a VPC tunnel.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Develop a custom API on-premises that handles all encryption/decryption requests and call it from the GCE instance via HTTPS.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud HSM to generate new keys and migrate the on-premises data to be re-encrypted with these new keys.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud EKM allows Google Cloud to use keys that reside outside of GCP (in an external HSM). This satisfies the requirement that keys are managed on-premises while allowing GCP services to request cryptographic operations, maintaining the root of trust outside of Google.",
+      "why_not_A": "Importing key material (Imported Keys) means the key exists within Google's infrastructure. The requirement specifies the keys must be managed in the on-premises HSM, not just generated there.",
+      "why_not_C": "While functional, this creates a massive performance bottleneck and does not integrate with GCP's native encryption ecosystem (like CMEK for disks), increasing latency and complexity.",
+      "why_not_D": "This violates the compliance requirement to use the existing on-premises HSM for key management."
+    },
+    "tags": [
+      "Cloud KMS",
+      "EKM",
+      "HSM"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-079",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company needs to implement a data retention policy for a Cloud Storage bucket containing medical records. The policy requires that no object can be deleted or overwritten for 7 years to comply with legal regulations. Even a Project Owner or Organization Administrator must be unable to delete the data during this period. What is the most secure configuration?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Apply a Bucket Lock policy in 'Locked' mode with a retention period of 7 years.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Set the bucket to 'Object Versioning' enabled and remove the 'storage.objects.delete' permission from all users.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Cloud Storage lifecycle policy to move objects to Archive storage and set the deletion rule to 7 years.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a VPC Service Control (VPC-SC) perimeter around the bucket to prevent any delete requests from outside the perimeter.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Bucket Lock in 'Locked' mode creates a WORM (Write Once Read Many) environment. Once the bucket is locked, the retention policy cannot be shortened or removed, and objects cannot be deleted until the retention period expires, regardless of the user's IAM permissions (including Project Owner).",
+      "why_not_B": "IAM permissions can be modified by an Organization Admin or Project Owner. Versioning protects against accidental overwrites but does not prevent a privileged user from deleting all versions of an object.",
+      "why_not_C": "Lifecycle policies are for automation, not security. They can be modified or deleted by anyone with the appropriate IAM permissions, and they do not prevent manual deletion.",
+      "why_not_D": "VPC-SC prevents access from unauthorized networks/services, but it does not prevent a user inside the perimeter with Owner permissions from deleting the data."
+    },
+    "tags": [
+      "Cloud Storage",
+      "Bucket Lock",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-080",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a pipeline to process large volumes of unstructured logs containing potential credit card numbers. The logs must be stored in Cloud Storage, but the PII must be obfuscated before the logs are accessible to the analytics team. You need a solution that can identify PII across multiple languages and provide a confidence score for each discovery. Which tool should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Cloud KMS to encrypt the logs and provide the decryption key only to the analytics team.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud DLP's inspection and de-identification templates to scan and mask the data in a streaming pipeline.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement a custom regex-based Python script running on Dataflow to identify and replace credit card patterns.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Armor to filter out credit card patterns before the logs are written to the storage bucket.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud DLP (Data Loss Prevention) is specifically designed to inspect, identify, and de-identify PII. It supports built-in 'infoTypes' for credit cards, handles multiple languages, and provides likelihood/confidence scores, making it the ideal tool for this scenario.",
+      "why_not_A": "Encryption protects the data from unauthorized access but does not obfuscate the PII for the analytics team. The team would still see the raw PII once they decrypt the data.",
+      "why_not_C": "Custom regex is fragile, difficult to maintain across multiple languages, and does not provide the 'confidence score' or advanced detection capabilities (like checksum validation for credit cards) that Cloud DLP provides.",
+      "why_not_D": "Cloud Armor is a Web Application Firewall (WAF) for protecting HTTP(S) load balancers; it cannot scan and obfuscate data already destined for a storage bucket in a log pipeline."
+    },
+    "tags": [
+      "Cloud DLP",
+      "PII",
+      "Data Masking"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-081",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An organization has a strict requirement that all data at rest in Google Cloud must be encrypted with keys that are rotated every 90 days. The organization wants to avoid the operational overhead of manually rotating keys and wants to ensure that the rotation does not break the ability to decrypt older data. Which configuration meets these needs?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Google-managed encryption keys, as they are rotated automatically by Google.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Customer-Managed Encryption Keys (CMEK) in Cloud KMS and set the rotation period to 90 days.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Customer-Supplied Encryption Keys (CSEK) and manually upload new keys every 90 days via the API.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud HSM to generate keys and implement a Cloud Scheduler trigger to delete and recreate keys every 90 days.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "CMEK in Cloud KMS allows users to define an automatic rotation schedule. When a key is rotated, Cloud KMS creates a new key version. Data encrypted with the old version remains decryptable because KMS tracks which version of the key was used for which piece of data, satisfying both the rotation and the decryption requirements.",
+      "why_not_A": "While Google-managed keys are rotated, the organization's requirement for a specific 90-day window and control over the process usually necessitates CMEK to meet strict compliance audits.",
+      "why_not_C": "CSEK requires the user to provide the key with every request. There is no native 'automatic rotation' for CSEK; the user must manage the versions and mapping manually, which is high operational overhead.",
+      "why_not_D": "Deleting and recreating keys is catastrophic; if the old key is deleted, any data encrypted with that key is permanently lost. Rotation creates new versions without deleting old ones."
+    },
+    "tags": [
+      "Cloud KMS",
+      "Key Rotation",
+      "CMEK"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-082",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization needs to store highly sensitive PII in a Cloud Storage bucket. Compliance requirements mandate that the encryption keys must be stored in a hardware security module (HSM) and that the organization must have the ability to instantly revoke access to the data by disabling the key, without relying on Google's default rotation or deletion schedules. Which encryption strategy should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Google-managed encryption keys (Default encryption).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Customer-Managed Encryption Keys (CMEK) via Cloud KMS with a software-backed key ring.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Customer-Managed Encryption Keys (CMEK) via Cloud KMS with an HSM-backed key ring.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Customer-Supplied Encryption Keys (CSEK) provided in the API request for every object operation.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "CMEK with an HSM-backed key ring satisfies both the requirement for keys to be stored in a hardware security module and the requirement for the customer to control the key's lifecycle (including immediate disabling/destruction) to revoke data access.",
+      "why_not_A": "Google-managed keys are software-backed and the customer has no control over the key lifecycle or the ability to instantly revoke access by disabling the key.",
+      "why_not_B": "Software-backed keys do not meet the specific compliance mandate that keys must be stored in a hardware security module (HSM).",
+      "why_not_D": "While CSEK provides the highest level of control, it is not integrated with a managed HSM service provided by GCP and introduces significant operational overhead for managing key persistence and rotation manually."
+    },
+    "tags": [
+      "Cloud KMS",
+      "Cloud Storage",
+      "Encryption"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-083",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-data-protection",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is migrating a legacy application to Compute Engine. The application processes sensitive credit card data and requires a secure way to retrieve database credentials at runtime without hardcoding them in the source code or storing them in environment variables. The solution must support automatic secret rotation without requiring a restart of the application. Which approach is most secure and scalable?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Store the credentials in a Cloud Storage bucket with restricted IAM permissions and read the file at startup.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Store the credentials in Secret Manager and have the application fetch the latest version of the secret via the API at runtime.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Metadata Server custom metadata to store the credentials and retrieve them via a curl command in a startup script.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a custom database in a private subnet to store the credentials and query it using a service account.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Secret Manager is specifically designed for this use case. It provides versioning, IAM-based access control, and the ability for applications to fetch the current 'latest' version of a secret via API, allowing for rotation without application restarts.",
+      "why_not_A": "Cloud Storage is not a secret management tool. Reading at startup prevents rotation without a restart and lacks the granular versioning and auditability of Secret Manager.",
+      "why_not_C": "Custom metadata is stored in plain text and is visible to anyone with access to the instance metadata, making it insecure for sensitive credentials. Startup scripts also only run once at boot.",
+      "why_not_D": "Creating a separate database to store secrets introduces a 'circular dependency' problem (how do you secure the credentials used to access the secret database?) and adds unnecessary architectural complexity."
+    },
+    "tags": [
+      "Secret Manager",
+      "Compute Engine",
+      "Identity and Access Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-084",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services company needs to connect their on-premises data center to a Google Cloud VPC. The requirement is to ensure a consistent, high-bandwidth connection with a guaranteed SLA, while ensuring that the traffic does not traverse the public internet. Which connectivity option should they choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud VPN with High Availability (HA) VPN",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Interconnect (Dedicated)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Carrier Peering",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Shared VPC with External IP addresses",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dedicated Cloud Interconnect provides a physical direct connection between the on-premises network and Google's network, ensuring high bandwidth, a guaranteed SLA, and that traffic stays off the public internet.",
+      "why_not_A": "Cloud VPN tunnels are encrypted but they traverse the public internet, which does not meet the requirement to avoid the public internet entirely.",
+      "why_not_C": "Carrier Peering allows access to Google Workspace and public Google APIs, but it does not provide a private connection to a VPC (RFC 1918 addresses).",
+      "why_not_D": "Shared VPC is a networking architecture for organizing projects, not a physical connectivity method between on-premises and cloud."
+    },
+    "tags": [
+      "hybrid-connectivity",
+      "cloud-interconnect"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-085",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your organization is deploying a multi-tier application. You want to ensure that only the Load Balancer can send traffic to the backend instance group on port 80, and all other external traffic is blocked. Which configuration is the most secure and efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a firewall rule allowing port 80 from 0.0.0.0/0",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a firewall rule allowing port 80 from the source ranges 35.191.0.0/16 and 130.211.0.0/22",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable the default deny-all ingress rule and allow port 80 for all internal IPs",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Cloud Armor policy to block all traffic except for the Load Balancer's internal IP",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Google Cloud HTTP(S) Load Balancers use specific IP ranges (35.191.0.0/16 and 130.211.0.0/22) to perform health checks and forward traffic to backends. Restricting ingress to these ranges ensures only the LB can reach the instances.",
+      "why_not_A": "Allowing 0.0.0.0/0 opens the instances to the entire public internet, bypassing the Load Balancer's security controls.",
+      "why_not_C": "Disabling the default deny rule is a critical security failure and would expose the network to unauthorized traffic.",
+      "why_not_D": "Cloud Armor is applied at the Load Balancer level to filter incoming requests, but it does not control the network-level firewall rules between the LB and the backend instances."
+    },
+    "tags": [
+      "firewall-rules",
+      "load-balancing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-086",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A security architect needs to implement a 'Zero Trust' approach for internal employees accessing a private application hosted on Compute Engine instances. The application should not be exposed to the public internet, and users should be authenticated and authorized based on identity and device context. Which service should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Identity-Aware Proxy (IAP)",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Cloud VPN with Client-to-Site configuration",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "VPC Network Peering with a bastion host",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "External HTTP(S) Load Balancer with SSL termination",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Identity-Aware Proxy (IAP) allows you to control access to your application based on the user's identity (via IAM) and context (e.g., device state), without requiring a traditional VPN, fitting the Zero Trust model.",
+      "why_not_B": "VPNs provide network-level access (perimeter-based security) rather than application-level identity-based access, which is contrary to Zero Trust principles.",
+      "why_not_C": "A bastion host provides a secure entry point for SSH/RDP, but it does not provide identity-based application layer access for general users.",
+      "why_not_D": "An external LB with SSL only encrypts the traffic; it does not provide identity-based access control or device context verification by itself."
+    },
+    "tags": [
+      "iap",
+      "zero-trust"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-087",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You have two VPCs in the same project: 'Prod-VPC' and 'Dev-VPC'. You need to allow internal communication between them for a specific set of services, but you must ensure that the networks remain separate and that there is no overlapping IP range. Which feature is the most appropriate for this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "VPC Network Peering",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Shared VPC",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Router with BGP",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "VPC Network Mirroring",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "VPC Network Peering allows two separate VPCs to communicate using internal IP addresses. It maintains the independence of the networks while allowing specific traffic flow, provided there are no overlapping CIDR ranges.",
+      "why_not_B": "Shared VPC allows multiple projects to share a single VPC. In this scenario, the VPCs already exist as separate entities, making peering the correct choice for connecting two existing networks.",
+      "why_not_C": "Cloud Router is used for dynamic routing in hybrid connectivity (VPN/Interconnect), not for connecting two VPCs within the same organization/project.",
+      "why_not_D": "Packet Mirroring is used for inspecting traffic (sending a copy of traffic to a security appliance), not for enabling communication between networks."
+    },
+    "tags": [
+      "vpc-peering",
+      "network-isolation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-088",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company wants to prevent their Google Compute Engine instances from communicating with other instances in the same network, effectively isolating them from each other while still allowing them to communicate with the internet. What is the best way to implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Remove the default 'allow-internal' firewall rule and create a deny-all ingress rule for the VPC",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Assign each instance to a different subnet and disable routing between subnets",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a firewall rule with a priority of 1000 that denies all ingress traffic from the VPC's own IP range",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a Shared VPC to isolate the instances into different host projects",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "By creating a high-priority firewall rule that denies ingress traffic where the source is the VPC's own IP range, you prevent instance-to-instance communication (East-West traffic) while allowing external traffic (North-South) if other rules permit it.",
+      "why_not_A": "Removing the default rule and adding a deny-all ingress rule would block ALL traffic, including the internet and management traffic, which is too restrictive.",
+      "why_not_B": "VPCs in Google Cloud are global; subnets do not provide isolation from each other by default, and you cannot 'disable' routing between subnets in the same VPC.",
+      "why_not_D": "Shared VPC is for administrative organization and resource sharing, not for implementing micro-segmentation or instance-level isolation."
+    },
+    "tags": [
+      "firewall-rules",
+      "micro-segmentation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-089",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization is deploying a multi-tier application across two different VPCs in the same project. Tier 1 (Web) is in VPC-A and Tier 2 (App) is in VPC-B. You need to ensure that only traffic from the Web tier's specific subnet can reach the App tier's specific subnet using the most secure and scalable method. Which architecture should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Establish a VPC Network Peering connection between VPC-A and VPC-B and use firewall rules with the target tags of the App tier instances.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Shared VPC, designating VPC-A as the host project and VPC-B as the service project, using IAM roles to control subnet access.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Establish a VPC Network Peering connection and create a firewall rule in VPC-B that specifies the CIDR range of the Web tier subnet in VPC-A as the source filter.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Cloud VPN tunnel between the two VPCs and use a centralized Cloud Firewall to inspect all traffic between the tiers.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "VPC Network Peering allows internal IP connectivity between VPCs. Because target tags do not work across peered VPCs, the only way to restrict traffic to a specific subnet from a peered network is by using the source IP range (CIDR) of the originating subnet in the destination VPC's firewall rules.",
+      "why_not_A": "Network tags are local to the VPC where the instance resides. They cannot be used as source filters for traffic originating from a peered VPC.",
+      "why_not_B": "Shared VPC is for managing network resources centrally across multiple projects, not for connecting two pre-existing distinct VPCs in a single project. Furthermore, it doesn't inherently solve the subnet-to-subnet traffic restriction requirement without firewall rules.",
+      "why_not_D": "Cloud VPN is unnecessary for connectivity within the same project/region and introduces latency and cost. It is an over-engineered solution for simple internal communication."
+    },
+    "tags": [
+      "vpc-peering",
+      "firewall-rules"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-090",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services firm requires a dedicated, private connection from their on-premises data center to Google Cloud. They must ensure that the traffic does not traverse the public internet and that the connection provides high availability with a guaranteed bandwidth of 10 Gbps. Which configuration meets these requirements with the least administrative overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a Dedicated Interconnect with a single 10 Gbps circuit and a Cloud VPN backup.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy a Partner Interconnect with two 10 Gbps circuits in a single metropolitan area.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Dedicated Interconnect with two 10 Gbps circuits in two different edge availability domains.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Carrier Service Interconnect with a single 10 Gbps circuit and enable Cloud Router for dynamic routing.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Dedicated Interconnect provides a physical connection to Google's network. For high availability (HA) and guaranteed bandwidth, Google recommends deploying circuits in two different edge availability domains (metro areas) to protect against a regional outage.",
+      "why_not_A": "A single circuit is a single point of failure. While Cloud VPN provides a backup, it does not guarantee the 10 Gbps bandwidth requirement during a failover.",
+      "why_not_B": "Placing both circuits in a single metropolitan area does not provide the necessary redundancy against a site-level failure, failing the high availability requirement.",
+      "why_not_D": "A single circuit does not provide high availability. Carrier Service Interconnect is typically used when the customer cannot reach a Google edge location directly."
+    },
+    "tags": [
+      "interconnect",
+      "hybrid-connectivity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-091",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a security perimeter for a highly sensitive application. You must ensure that the application's GKE pods can only communicate with a specific external third-party API over HTTPS, and all other egress traffic to the internet must be blocked. Which combination of tools provides the most granular control?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a VPC firewall rule to allow egress to the API's IP range and deny all other egress.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a Cloud NAT gateway with a restricted IP allowlist.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Cloud Next-Generation Firewall (NGFW) with FQDN filtering for the API endpoint.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use GKE Network Policies to restrict egress traffic to the API's CIDR block.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Standard VPC firewalls and GKE Network Policies only operate at Layer 3/4 (IP and Port). Since third-party APIs often use dynamic IPs or CDNs, FQDN (Fully Qualified Domain Name) filtering provided by Cloud NGFW is the only way to ensure traffic only goes to the specific API domain regardless of the IP change.",
+      "why_not_A": "VPC firewall rules cannot filter by domain name. If the API provider changes their IP addresses, the rules will break or allow unauthorized IPs.",
+      "why_not_B": "Cloud NAT allows pods to reach the internet, but it does not provide granular egress filtering based on destination domains.",
+      "why_not_D": "GKE Network Policies (like Calico or Cilium) primarily filter by IP/CIDR. While some advanced plugins support DNS, the standard implementation does not provide the robust FQDN filtering required for strict perimeter security compared to NGFW."
+    },
+    "tags": [
+      "cloud-ngfw",
+      "egress-control"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcse-mock1-092",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is using a Shared VPC architecture. The host project administrator wants to ensure that service project A cannot communicate with service project B, even though both are using the same Shared VPC. How should this be implemented to maintain the principle of least privilege?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create separate VPC networks for each service project instead of using a Shared VPC.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use VPC Service Controls (VPC SC) to create separate service perimeters for each service project.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create firewall rules in the host project that deny traffic between the specific subnet ranges assigned to service project A and service project B.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Apply IAM roles to the service projects to restrict their ability to send packets to other subnets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In a Shared VPC, the host project controls the network. Firewall rules are defined in the host project and apply to all instances in the shared VPC. By creating a rule that denies traffic from Subnet A to Subnet B, the administrator effectively isolates the service projects.",
+      "why_not_A": "This removes the benefits of Shared VPC (centralized management) and contradicts the requirement to use the existing Shared VPC architecture.",
+      "why_not_B": "VPC Service Controls are designed to protect Google APIs (like Cloud Storage or BigQuery) from data exfiltration. They do not control internal VM-to-VM traffic within a VPC.",
+      "why_not_D": "IAM roles control the management plane (who can change the network), not the data plane (how packets flow between VMs)."
+    },
+    "tags": [
+      "shared-vpc",
+      "firewall-rules"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-093",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are tasked with securing a public-facing Load Balancer. You need to protect the backend services from DDoS attacks and ensure that only valid HTTP requests reaching the backend are those that have passed a Web Application Firewall (WAF) inspection. Which configuration is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy Cloud Armor policies on the Global External HTTP(S) Load Balancer and use IAP to authenticate all users.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy Cloud Armor policies on the Global External HTTP(S) Load Balancer and configure backend firewall rules to allow traffic only from Google Cloud Load Balancer IP ranges.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Regional External HTTP(S) Load Balancer with a Cloud Armor policy and disable the default network firewall.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a third-party WAF appliance in a separate VPC and route all traffic through it using VPC Peering before reaching the Load Balancer.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Armor provides the WAF and DDoS protection at the edge. However, to prevent attackers from bypassing the Load Balancer and hitting the backend instances directly (via their external IPs), you must configure the backend firewall to only allow traffic from the Google Load Balancer proxy ranges (35.191.0.0/16 and 130.211.0.0/22).",
+      "why_not_A": "IAP (Identity-Aware Proxy) provides authentication, but it does not replace the need to secure the network layer against direct attacks on the backend instances.",
+      "why_not_C": "Disabling the default network firewall would leave the backend instances completely exposed to the public internet, bypassing the WAF entirely.",
+      "why_not_D": "This is overly complex and introduces a significant bottleneck. Cloud Armor is integrated directly into the Google Load Balancer, providing better performance and scalability."
+    },
+    "tags": [
+      "cloud-armor",
+      "load-balancing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-094",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is migrating a legacy application to Google Cloud. The application requires a dedicated, private connection between their on-premises data center and a VPC. The company must ensure that the traffic is encrypted at the network layer and requires a consistent bandwidth of 10 Gbps. Which connectivity solution should the security engineer recommend?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud VPN with High Availability (HA) VPN",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Dedicated Interconnect with Cloud VPN (HA VPN over Interconnect)",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Partner Interconnect without VPN",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Carrier Peering",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dedicated Interconnect provides the required 10 Gbps consistent bandwidth, but Interconnect alone does not encrypt traffic. By layering HA VPN over the Interconnect, the company achieves both high-throughput private connectivity and network-layer encryption (IPsec).",
+      "why_not_A": "Cloud VPN is limited by the bandwidth of a single tunnel (typically 1.5 to 3 Gbps), making it unable to reliably support a consistent 10 Gbps requirement for a single stream.",
+      "why_not_C": "Partner Interconnect provides private connectivity but does not encrypt traffic by default at the network layer; it relies on the physical security of the provider.",
+      "why_not_D": "Carrier Peering is used to access Google Workspace and public Google APIs, not for private VPC access, and it does not provide network-layer encryption."
+    },
+    "tags": [
+      "Hybrid Connectivity",
+      "Cloud VPN",
+      "Cloud Interconnect"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-095",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a security boundary for a multi-tier application in a single VPC. The application consists of a public-facing load balancer, a web tier, and a database tier. You need to ensure that the database tier only accepts traffic from the web tier and that no direct internet access is allowed to the database. Which approach follows the principle of least privilege?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a firewall rule allowing all traffic from the VPC's internal IP range to the database tier.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Apply a network tag 'web-tier' to the web instances and a firewall rule allowing ingress to the database tier only from sources with the 'web-tier' tag.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a shared VPC and create a firewall rule allowing all traffic from the host project to the service project.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Cloud NAT gateway for the database tier to prevent direct inbound internet connections.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using network tags (or service accounts) allows for granular, identity-based firewall rules. By restricting ingress to the database tier specifically to sources tagged as 'web-tier', you ensure only the authorized application layer can communicate with the data layer.",
+      "why_not_A": "Allowing the entire internal IP range is too permissive and violates the principle of least privilege, as any compromised instance in the VPC could reach the database.",
+      "why_not_C": "Shared VPC defines the network topology but does not inherently provide the granular traffic filtering needed between tiers within that network.",
+      "why_not_D": "Cloud NAT is for outbound connectivity (egress) from private instances to the internet; it does not control inbound traffic (ingress) between internal tiers."
+    },
+    "tags": [
+      "VPC Firewall",
+      "Least Privilege",
+      "Network Tags"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-096",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization wants to implement a centralized inspection point for all egress traffic leaving their GCP environment to the internet to prevent data exfiltration. They want to use a third-party virtual appliance for deep packet inspection (DPI). What is the most scalable way to implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure a route with the next hop set to the IP address of the third-party appliance instance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use VPC Network Peering to connect all VPCs to a central security VPC containing the appliance.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a Hub-and-Spoke topology using VPC Network Peering and a centralized firewall appliance with a custom route (0.0.0.0/0) pointing to the appliance.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Cloud Armor policy to inspect all egress traffic.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A Hub-and-Spoke architecture allows all 'Spoke' VPCs to route their internet-bound traffic (0.0.0.0/0) through a 'Hub' VPC where the security appliance resides, enabling centralized inspection and control.",
+      "why_not_A": "While a custom route works for a single VPC, it is not scalable for an organization with multiple VPCs and does not describe the architectural pattern required for centralized management.",
+      "why_not_B": "VPC Peering alone only connects networks; it does not force traffic to pass through an appliance unless combined with specific routing configurations (which is what Option C describes).",
+      "why_not_D": "Cloud Armor is an edge security service used for ingress protection (WAF/DDoS) for Load Balancers; it cannot inspect egress traffic leaving the VPC."
+    },
+    "tags": [
+      "Egress Filtering",
+      "Hub-and-Spoke",
+      "Network Appliances"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcse-mock1-097",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is using a Shared VPC architecture. The network administrator in the Host Project has created the network and subnets. A security engineer in a Service Project needs to ensure that only specific instances in their project can communicate with a database in another Service Project. What is the most effective way to enforce this boundary?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create firewall rules in the Service Project using the internal IP addresses of the target database.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Request the Host Project administrator to create firewall rules using the Service Accounts of the instances in the Service Project.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use VPC Network Peering between the two Service Projects to isolate the traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Cloud Router in each Service Project to manage the traffic flow.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a Shared VPC, firewall rules must be defined in the Host Project. Using Service Accounts as the source/target in these rules allows the Host Project to control traffic based on the identity of the instances in the Service Projects, providing a scalable and secure boundary.",
+      "why_not_A": "Firewall rules in a Shared VPC must be created in the Host Project; rules created in a Service Project have no effect on the Shared VPC network traffic.",
+      "why_not_C": "Service Projects in a Shared VPC are already on the same network; peering is used to connect separate VPCs, not to manage traffic within a Shared VPC.",
+      "why_not_D": "Cloud Router is used for dynamic routing (BGP) between VPCs and on-premises networks; it is not a security mechanism for enforcing traffic boundaries between instances."
+    },
+    "tags": [
+      "Shared VPC",
+      "Firewall Rules",
+      "Service Accounts"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-098",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are tasked with securing the communication between a frontend application and a backend microservice. To prevent man-in-the-middle attacks and ensure that only authenticated services can communicate, you decide to implement Mutual TLS (mTLS). Which Google Cloud solution provides the most integrated way to achieve this without managing certificates manually on every instance?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a Global External HTTP(S) Load Balancer with SSL certificates.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud DNS with DNSSEC to verify the identity of the services.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Anthos Service Mesh (ASM) or Istio to manage mTLS automatically.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure VPC Service Controls (VPC SC) to create a service perimeter.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Anthos Service Mesh (ASM) / Istio provides a sidecar proxy (Envoy) for every service. It handles the issuance, rotation, and verification of certificates automatically, enabling mTLS for service-to-service communication without modifying application code.",
+      "why_not_A": "A Load Balancer handles TLS termination at the edge (client-to-LB), but it does not provide mTLS between internal microservices within the VPC.",
+      "why_not_B": "DNSSEC ensures that DNS responses are authentic, but it does not encrypt the traffic or provide mutual authentication between the application services themselves.",
+      "why_not_D": "VPC SC prevents data exfiltration by restricting which Google APIs can be accessed from within a perimeter; it does not provide mTLS encryption or authentication between internal microservices."
+    },
+    "tags": [
+      "mTLS",
+      "Anthos Service Mesh",
+      "Service-to-Service Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-099",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A financial services firm is migrating a legacy multi-tier application to GCP. The architecture requires a strict hub-and-spoke network topology where a central hub VPC manages all ingress and egress traffic via a Shared VPC. To meet regulatory compliance, the firm must ensure that all traffic between spoke VPCs is inspected by a third-party Next-Generation Firewall (NGFW) appliance cluster, and that no spoke VPC can bypass this inspection by communicating directly with another spoke. Which architecture best implements this requirement while ensuring high availability and scalability?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement VPC Network Peering between all spoke VPCs and the hub VPC, and use a custom route in each spoke with a next-hop IP pointing to the NGFW instance in the hub.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Shared VPC where the hub is the host project and spokes are service projects. Deploy the NGFW appliances in the hub VPC and use Hierarchical Firewall Policies to enforce traffic redirection to the appliances.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure a Hub-and-Spoke topology using VPC Network Peering. In the hub VPC, deploy the NGFW appliances and configure custom static routes in the spoke VPCs pointing to the hub VPC. Use a Packet Mirroring policy to send traffic to the NGFW.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use VPC Network Peering to connect spokes to the hub. Deploy the NGFW appliances in the hub VPC. Configure custom routes in the spoke VPCs with the NGFW appliance internal load balancer (ILB) as the next hop, and use firewall rules to deny all direct spoke-to-spoke traffic.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "To force traffic through a central appliance (chokepoint) in a hub-and-spoke model, custom routes in the spokes must point to the appliance's IP or an ILB in the hub. Since VPC Peering is non-transitive, spokes cannot communicate directly unless peered; by peering only to the hub and routing through the NGFW, the security boundary is maintained. Using an ILB ensures high availability of the appliance cluster.",
+      "why_not_A": "VPC Peering is non-transitive. While it connects spokes to the hub, a simple next-hop IP to a single instance creates a single point of failure and does not scale.",
+      "why_not_B": "Hierarchical Firewall Policies control whether traffic is allowed or denied, but they cannot 'redirect' or 'route' traffic to a specific appliance instance for inspection in the way a routing table does.",
+      "why_not_C": "Packet Mirroring is a passive monitoring tool; it sends a copy of the traffic to the appliance. It cannot block or intercept traffic in-line, which is required for a firewall to 'inspect and protect' the boundary.",
+      "why_not_D": ""
+    },
+    "tags": [
+      "hub-and-spoke",
+      "NGFW",
+      "VPC-Peering"
+    ],
+    "estimated_time_seconds": 180,
+    "id": "q-gcp-pcse-mock1-100",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "Your organization is implementing a Zero Trust architecture using BeyondCorp Enterprise. You have a critical internal application hosted on a GKE cluster. You need to ensure that users can only access the application if they are using a corporate-managed device with a specific OS version and are connecting from a permitted geographic region. You want to minimize the attack surface by avoiding any public IP addresses for the GKE nodes. Which combination of tools and configurations should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy an Internal HTTP(S) Load Balancer, configure IAP (Identity-Aware Proxy) for GKE, and define Access Context Manager (ACM) levels based on device and location.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Deploy an External HTTP(S) Load Balancer with a Cloud Armor policy for geo-blocking and use IAP for identity verification.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Private Service Connect (PSC) endpoint to expose the GKE service and implement a Cloud VPN tunnel for all users to access the internal IP.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Global External Load Balancer with IAP enabled and use VPC Service Controls to restrict access to the GKE cluster.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "IAP for GKE allows you to control access to the application without needing a public IP on the nodes. By integrating IAP with Access Context Manager (ACM), you can define granular attributes (device state, OS version, IP/Geo) that must be met before the request is proxied to the backend. An Internal Load Balancer keeps the traffic within the VPC boundary.",
+      "why_not_A": "",
+      "why_not_B": "An External Load Balancer increases the attack surface. While Cloud Armor handles geo-blocking, it does not natively verify corporate-managed device OS versions as deeply as ACM does.",
+      "why_not_C": "PSC and VPN provide connectivity, but they do not provide the Zero Trust 'identity + device context' verification required by the scenario.",
+      "why_not_D": "VPC Service Controls (VPC-SC) are designed to prevent data exfiltration from Google APIs/Services, not to control end-user access to a specific application based on device OS version.",
+      "why_not_E": ""
+    },
+    "tags": [
+      "BeyondCorp",
+      "IAP",
+      "ACM",
+      "GKE"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcse-mock1-101",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "securing-communications",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A company is using a Shared VPC where the host project manages the network and service projects host the workloads. A security requirement mandates that workloads in 'Service Project A' must be able to communicate with 'Service Project B' only over a specific port (TCP 443), and all other traffic must be dropped. However, the network administrators in the host project want to maintain a single, centralized firewall policy to avoid managing rules in every service project. How should this be implemented to follow the principle of least privilege?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a single firewall rule in the host project that allows all traffic between the subnet ranges of Service Project A and Service Project B.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Network Tags in the host project to identify instances from both projects and create a firewall rule allowing TCP 443 between those tags.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Service Accounts as the source and target filters in a firewall rule created within the host project's VPC.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Create separate VPCs for each service project and use VPC Network Peering with firewall rules defined in each respective project.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In a Shared VPC, firewall rules are managed in the host project. Using Service Accounts as the source/target filter is the most secure and scalable method because it allows the security policy to follow the identity of the workload regardless of its IP address, and it works across different service projects within the same Shared VPC.",
+      "why_not_A": "Allowing all traffic violates the principle of least privilege and the specific requirement to restrict traffic to TCP 443.",
+      "why_not_B": "Network Tags cannot be applied to instances across different projects in a Shared VPC from the host project's perspective in a way that provides a clean, manageable security boundary; Service Accounts are the recommended identity-based mechanism for this.",
+      "why_not_C": "",
+      "why_not_D": "This moves away from the Shared VPC architecture and increases management overhead, contradicting the requirement for a centralized firewall policy.",
+      "why_not_E": ""
+    },
+    "tags": [
+      "Shared-VPC",
+      "Firewall-Rules",
+      "Service-Accounts"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-102",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your organization is scaling its Google Kubernetes Engine (GKE) clusters and needs to ensure that security patches for the underlying node OS are applied automatically without manual intervention, while minimizing the risk of downtime for the production applications. Which approach should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Disable auto-upgrades and create a monthly maintenance window to manually trigger node image updates.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Node Auto-Upgrades and configure a Maintenance Window to restrict when the updates occur.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a custom OS image and implement a CI/CD pipeline to redeploy the entire cluster weekly.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        ":text": "Enable Auto-healing for the node pool to replace unhealthy nodes with patched versions automatically.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Node Auto-Upgrades automate the process of keeping nodes up to date with the latest GKE version and OS patches. Combining this with Maintenance Windows allows the organization to control when these disruptive events happen, ensuring they occur during low-traffic periods.",
+      "why_not_A": "Manual updates increase operational overhead and the risk of human error, contradicting the requirement for automatic patching.",
+      "why_not_C": "Redeploying the entire cluster weekly is overkill and causes unnecessary downtime compared to rolling updates provided by GKE.",
+      "why_not_D": "Auto-healing replaces nodes that fail health checks; it does not proactively apply security patches to healthy nodes."
+    },
+    "tags": [
+      "GKE",
+      "Patch Management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-103",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A security auditor requires a comprehensive report of all administrative changes made to your GCP project resources over the last 90 days. You need to provide a verifiable log that shows who did what, where, and when. Which tool should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud Monitoring dashboards to track API call frequency.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Asset Inventory to see the current state of resources.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Audit Logs (Admin Activity logs).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Compute Engine serial console logs for each VM.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Audit Logs (specifically Admin Activity logs) record API calls or other administrative actions that modify the configuration or metadata of resources. They provide the 'who, what, and when' required for compliance audits.",
+      "why_not_A": "Cloud Monitoring tracks performance metrics and health, not the identity and intent of administrative changes.",
+      "why_not_B": "Cloud Asset Inventory provides a snapshot of current resources and history of state, but is not the primary tool for auditing the specific API calls that caused the changes.",
+      "why_not_D": "Serial console logs capture OS-level boot and kernel events, not GCP project-level administrative API calls."
+    },
+    "tags": [
+      "Cloud Audit Logs",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-gcp-pcse-mock1-104",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are tasked with implementing a strategy to detect and alert on anomalous login patterns (e.g., logins from unexpected geographic locations) for your GCP project. Which Google Cloud service is specifically designed to provide this security intelligence?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud Logging with custom sinks.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Security Command Center (SCC) Event Threat Detection.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Identity-Aware Proxy (IAP) access levels.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud Armor adaptive protection.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Security Command Center's Event Threat Detection scans logs for threats, including anomalous login patterns and compromised credentials, providing built-in security intelligence.",
+      "why_not_A": "While you can route logs to a sink, Cloud Logging itself does not 'detect' anomalies; you would need to build a custom external analysis tool.",
+      "why_not_C": "IAP controls access based on identity and context, but it is a preventative control, not a detection/alerting tool for anomalous patterns.",
+      "why_not_D": "Cloud Armor is used to protect against DDoS and WAF attacks at the edge, not for monitoring user login anomalies."
+    },
+    "tags": [
+      "SCC",
+      "Threat Detection"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-105",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your company has a policy that no single administrator should have the power to delete critical production backups. You want to enforce this by requiring a second administrator to approve the deletion request. Which feature should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Custom IAM roles with limited permissions.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Organization Policy Service with a 'deny' constraint.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Storage Bucket Lock with a retention policy.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "IAM Conditions based on resource tags.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "While the scenario describes a 'two-person' rule, in GCP's operational environment for backups, a Bucket Lock (Retention Policy) prevents any user, including administrators, from deleting objects until the retention period expires, effectively neutralizing the risk of a single rogue admin.",
+      "why_not_A": "Custom roles limit what a user can do, but if an admin has the 'Delete' permission, they can still act alone.",
+      "why_not_B": "Org policies can prevent certain actions across the org, but they cannot implement a 'request-and-approve' workflow for specific resource deletions.",
+      "why_not_D": "IAM Conditions allow for temporary or attribute-based access but do not provide a mechanism for multi-party approval."
+    },
+    "tags": [
+      "Cloud Storage",
+      "Data Protection"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcse-mock1-106",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You need to ensure that all Compute Engine instances created in your project are automatically configured to use a specific secure image and are prohibited from having external IP addresses. What is the most efficient way to enforce this across the entire project?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a script that runs every hour to delete non-compliant instances.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Organization Policy constraints (e.g., 'vm.disableExternalIp').",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Apply an IAM role that removes the 'compute.instances.create' permission from all users.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a VPC firewall rule to block all egress traffic from the instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Organization Policy constraints allow administrators to restrict specific configurations across the project or organization. 'vm.disableExternalIp' prevents instances from being created with external IPs, providing a preventative guardrail.",
+      "why_not_A": "Reactive scripts are inefficient and create a 'window of vulnerability' between the creation of the resource and its deletion.",
+      "why_not_C": "Removing the create permission prevents all instances from being created, which stops business operations entirely.",
+      "why_not_D": "Firewall rules control traffic, but they do not prevent the assignment of an external IP address to the VM interface."
+    },
+    "tags": [
+      "Organization Policy",
+      "Compute Engine"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-107",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company requires a centralized auditing mechanism to ensure that all administrative actions across 50 different Google Cloud projects are logged and immutable. They need to be able to alert security teams in real-time when a high-risk IAM policy change occurs. Which architecture best meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Cloud Audit Logs in each project and configure a separate Pub/Sub topic for each project to trigger a Cloud Function for alerting.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure an aggregated sink at the Organization level to route all audit logs to a central security project's Cloud Storage bucket and a single Pub/Sub topic for real-time alerting.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a project-level sink in every project to export logs to a BigQuery dataset located in the security project, using scheduled queries for alerting.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable the Cloud Logging API and use the Log Explorer to create saved queries and alerts for each project individually.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An aggregated sink at the Organization level captures logs from all projects and folders, ensuring no project is missed. Routing to a central security project provides a single point of control and immutability (via bucket locks), while Pub/Sub enables the required real-time alerting.",
+      "why_not_A": "Managing 50 separate Pub/Sub topics is operationally inefficient and does not provide the centralized management required by the scenario.",
+      "why_not_C": "BigQuery is excellent for analysis but not designed for real-time alerting; scheduled queries introduce latency that violates the 'real-time' requirement.",
+      "why_not_D": "Log Explorer alerts are project-specific and would require manual configuration across 50 projects, which is not a scalable or centralized operational strategy."
+    },
+    "tags": [
+      "Cloud Logging",
+      "Aggregated Sinks",
+      "Organization Policy"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-108",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is implementing a 'Least Privilege' operational model for a team of SREs who need to perform emergency troubleshooting on production GKE clusters. You want to ensure they have full administrative access only during an active incident and that all access is automatically revoked after a set period. What is the recommended approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a custom IAM role with the necessary permissions and manually grant it to SREs when an incident is reported, then manually revoke it.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use IAM Conditions to grant the 'Kubernetes Engine Admin' role, specifying a timestamp expiration for the condition.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a service account with cluster-admin privileges and share the JSON key with SREs during the incident.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Assign the SREs to a Google Group that has the required permissions and remove them from the group once the incident is resolved.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "IAM Conditions allow you to define a time-bound window for a role grant. By specifying an expiration timestamp, the access is automatically revoked by GCP without manual intervention, reducing the risk of 'privilege creep'.",
+      "why_not_A": "Manual granting and revocation is prone to human error, where an administrator might forget to revoke access, violating the security requirement.",
+      "why_not_C": "Sharing JSON keys is a critical security risk (credential leakage) and provides no mechanism for automatic revocation or auditing of individual user actions.",
+      "why_not_D": "While using groups is a best practice for general access, it still requires a manual operational step to remove the user, which does not meet the 'automatically revoked' requirement."
+    },
+    "tags": [
+      "IAM",
+      "Least Privilege",
+      "IAM Conditions"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcse-mock1-109",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a legacy application to Compute Engine. The security policy mandates that no VM instance should have a public IP address, and all outbound traffic must be inspected by a third-party firewall appliance. How should you configure the network operations to enforce this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a VPC Firewall rule to block all egress traffic and create a route with the next hop set to the firewall appliance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set the VM network interface to 'External IP: None' and use Cloud NAT to manage all outbound connectivity.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Apply an Organization Policy constraint 'compute.vmExternalIpAccess' to disable external IPs and configure a custom route with the firewall appliance as the next hop.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a Shared VPC and configure the host project to disable all public IPs via IAM roles for the service project users.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The 'compute.vmExternalIpAccess' Organization Policy is the only way to programmatically enforce the prohibition of external IPs across the environment. A custom route ensures all egress traffic is directed to the firewall appliance (Next Hop).",
+      "why_not_A": "Firewall rules control whether traffic is allowed/denied, but they do not prevent the assignment of a public IP address to a VM.",
+      "why_not_B": "Cloud NAT allows outbound connectivity, but it does not provide the 'inspection by a third-party firewall appliance' required by the policy.",
+      "why_not_D": "IAM roles control who can create resources, but they cannot prevent a user with 'Compute Admin' from assigning a public IP. Organization Policy is the correct tool for this constraint."
+    },
+    "tags": [
+      "VPC",
+      "Organization Policy",
+      "Network Security"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcse-mock1-110",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are tasked with managing secrets (API keys, database passwords) for a fleet of GKE workloads. The security team requires that secrets be rotated every 30 days and that the application should not require a restart to pick up the new secret. Which solution is most operationally sound?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Store secrets in Kubernetes Secrets and use a CronJob to update the secret values via kubectl.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Secret Manager with the Secret Manager CSI driver to mount secrets as volumes in the pods.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Store secrets in a Cloud Storage bucket with restricted IAM permissions and have the app poll the bucket every hour.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Hardcode the secrets in the application's environment variables and trigger a rolling update of the deployment every 30 days.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Secret Manager provides native rotation capabilities. The CSI driver mounts secrets as volumes; when a secret is rotated in Secret Manager, the mounted file is updated automatically, allowing the application to read the new value without a pod restart.",
+      "why_not_A": "Kubernetes Secrets are only base64 encoded (not encrypted at rest by default without KMS) and updating them doesn't automatically update the application's memory without a restart or a custom watcher.",
+      "why_not_C": "Using GCS for secrets is a poor pattern; it lacks the versioning, rotation, and granular access control specifically designed for secrets in Secret Manager.",
+      "why_not_D": "Hardcoding secrets in environment variables is a major security vulnerability. Furthermore, triggering a rolling update for every rotation is operationally disruptive and inefficient."
+    },
+    "tags": [
+      "Secret Manager",
+      "GKE",
+      "CSI Driver"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-111",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An organization uses a Shared VPC architecture. The network team (Host Project) and the application team (Service Project) are separate. The application team reports that their VMs cannot reach a database in another service project. You need to troubleshoot this without granting the application team access to the Host Project. What is the most efficient operational approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Grant the application team the 'Compute Network Viewer' role in the Host Project to allow them to see the firewall rules.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Connectivity Tests in the Network Intelligence Center from the Service Project to diagnose the path.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Ask the application team to install a packet sniffer on their VM and send the logs to the network team.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Temporarily disable all firewall rules in the Host Project to see if connectivity is restored.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Connectivity Tests (Network Intelligence Center) allows users to analyze connectivity between two endpoints. It can be run by users in the service project to identify if a firewall rule or route in the host project is blocking traffic, providing the 'why' without needing direct access to the host project's configuration.",
+      "why_not_A": "Granting 'Compute Network Viewer' in the Host Project violates the requirement of not granting the application team access to the Host Project.",
+      "why_not_C": "Packet sniffing is a manual, time-consuming process and does not provide visibility into the GCP fabric (firewalls/routes), only what reaches the OS.",
+      "why_not_D": "Disabling all firewall rules in a production Host Project is a catastrophic security risk and is never an acceptable troubleshooting step."
+    },
+    "tags": [
+      "Shared VPC",
+      "Network Intelligence Center",
+      "Troubleshooting"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcse-mock1-112",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization uses a Shared VPC architecture with multiple service projects. A security audit reveals that several developers in a service project have been creating external IP addresses on VM instances, bypassing the centralized networking security policy. You need to enforce a policy that prevents any VM in any service project from having an external IP address, while allowing the host project administrators to maintain control. Which approach is the most efficient and scalable?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a custom IAM role that removes the compute.instances.setExternalIp permission from all developer accounts across all service projects.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement an Organization Policy constraint 'compute.vmExternalIp' at the organization level and set it to 'Deny All'.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure a VPC Firewall rule in the host project to block all egress traffic to the internet (0.0.0.0/0) for all service project networks.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Cloud Custodian policy to scan for external IPs every 15 minutes and automatically delete any instance found with a public IP.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Organization Policy Service allows administrators to centrally manage constraints across the entire resource hierarchy. The 'compute.vmExternalIp' constraint specifically prevents the creation of external IP addresses, providing a preventative guardrail that is more scalable and reliable than reactive scripts or granular IAM roles.",
+      "why_not_A": "IAM roles are managed per user/group. Managing this across multiple service projects for all developers is administratively burdensome and does not prevent users with higher-level roles (like Project Editor) from granting the permission back to themselves.",
+      "why_not_C": "Firewall rules control traffic flow, not the assignment of IP addresses. A VM can still have an external IP address assigned to it even if a firewall rule blocks traffic; the security risk of the interface existing remains.",
+      "why_not_D": "This is a reactive approach (detect and remediate) rather than a preventative one. There is a window of vulnerability between the creation of the IP and the next scan cycle."
+    },
+    "tags": [
+      "Organization Policy",
+      "Shared VPC",
+      "Network Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-113",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services company requires a strict 'four-eyes' principle for all changes to production infrastructure. You are tasked with ensuring that no single administrator can create or modify a Cloud KMS key used for data encryption without a second administrator's approval. Which operational configuration achieves this while minimizing administrative overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable VPC Service Controls (VPC-SC) around the KMS API to prevent unauthorized access from outside the perimeter.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a custom IAM role for KMS and assign it to a Google Group, then require MFA for all members of that group.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a CI/CD pipeline using Terraform where changes to KMS resources are submitted via Pull Request and require a mandatory approval from a separate security reviewer before deployment.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud Audit Logs to trigger a Pub/Sub notification whenever a KMS key is modified, alerting a security team for manual verification.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Google Cloud IAM does not natively support a 'multi-party approval' workflow for single API calls. Implementing 'Infrastructure as Code' (IaC) with a mandatory peer-review process (Pull Request) is the industry-standard way to enforce the four-eyes principle for cloud operations.",
+      "why_not_A": "VPC-SC prevents data exfiltration and unauthorized access from outside a perimeter, but it does not control the internal approval workflow for authorized administrators within the perimeter.",
+      "why_not_B": "MFA ensures the identity of the user but does not prevent a single authorized user from performing an action alone.",
+      "why_not_D": "This is a detective control, not a preventative one. The change has already occurred by the time the alert is received and verified."
+    },
+    "tags": [
+      "KMS",
+      "Governance",
+      "IaC"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcse-mock1-114",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are auditing a project where several GKE clusters are running. You discover that some pods are running as root and have access to the node's host network, which violates the company's security baseline. You need to implement a solution that prevents these insecure pods from being deployed in the future without modifying the application deployment manifests.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Update the GKE cluster to use 'Autopilot' mode, which automatically enforces several security best practices.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Kubernetes Network Policy to block all traffic to the host network from pods.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Install a Policy Controller (Gatekeeper) and define ConstraintTemplates that forbid 'privileged' containers and 'hostNetwork: true'.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Apply a project-wide IAM policy that removes the 'container.pods.create' permission from developers.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Policy Controller (based on Gatekeeper/OPA) allows you to define admission control policies. It can intercept requests to the Kubernetes API server and reject pods that do not meet specific security criteria (like running as root or using host networking) before they are even scheduled.",
+      "why_not_A": "While Autopilot does enforce some constraints, switching an existing standard cluster to Autopilot is not a simple update; it requires migrating workloads to a new cluster. Furthermore, Policy Controller provides more granular, customizable control.",
+      "why_not_B": "Network Policies control traffic flow between pods and services; they cannot prevent a pod from being configured to use the host's network stack at the OS level.",
+      "why_not_D": "Removing the permission to create pods entirely would stop all deployments, not just the insecure ones, breaking the development lifecycle."
+    },
+    "tags": [
+      "GKE",
+      "Policy Controller",
+      "Container Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-115",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is migrating a legacy application to Compute Engine. The application requires a specific service account to access a Cloud Storage bucket. To comply with the principle of least privilege and operational security, how should you associate the service account with the VM to ensure the application can access the bucket securely without managing long-lived JSON keys?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a service account, download the JSON key, and store it in a Secret Manager secret, which the application fetches at startup.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Assign the service account to the VM instance and set the 'cloud-platform' scope during instance creation.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Assign the default Compute Engine service account to the VM and grant that account the 'Storage Admin' role on the bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Workload Identity Pools to link the VM's instance identity to a service account in a separate project.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Assigning a custom service account to the VM and using the 'cloud-platform' scope is the recommended approach. The VM uses the Metadata Server to obtain short-lived OAuth 2.0 tokens, eliminating the need for static JSON keys and providing the most secure operational method.",
+      "why_not_A": "Storing JSON keys, even in Secret Manager, is less secure than using the Metadata Server because the key itself is still a long-lived credential that could be leaked if the application is compromised.",
+      "why_not_C": "The default Compute Engine service account often has overly broad permissions (Editor role by default in some projects), violating the principle of least privilege.",
+      "why_not_D": "Workload Identity Pools are primarily used for identities *outside* of Google Cloud (e.g., AWS, Azure, or on-prem). For resources *inside* GCP, assigning a service account directly to the VM is the native and correct method."
+    },
+    "tags": [
+      "Compute Engine",
+      "IAM",
+      "Service Accounts"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-116",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-operations",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You need to implement a logging and monitoring strategy for a highly regulated environment. You must ensure that all administrative activity (API calls) is logged, that logs cannot be deleted or modified by any user (including the project owner), and that logs are retained for 7 years. Which configuration meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Admin Activity audit logs and configure a Log Sink to export logs to a Cloud Storage bucket with a Bucket Lock policy.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Enable Admin Activity audit logs and set the retention period of the _Default log bucket to 7 years.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable Admin Activity audit logs and export them to BigQuery, then apply a dataset-level IAM restriction to prevent deletions.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Log Sink to export all logs to a Pub/Sub topic, which then feeds into an external third-party immutable storage system.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Cloud Storage Bucket Lock allows you to implement a Write-Once-Read-Many (WORM) policy. By exporting Admin Activity logs (which are enabled by default) to a locked bucket, you ensure that logs are immutable and cannot be deleted even by the project owner until the retention period expires.",
+      "why_not_B": "Standard log buckets in Cloud Logging do not provide the same level of immutability as a locked GCS bucket; a Project Owner or Org Admin can still modify retention settings or delete logs in some scenarios.",
+      "why_not_C": "While BigQuery is excellent for analysis, it does not provide the same native 'locked' immutable object guarantee as GCS Bucket Lock for regulatory compliance.",
+      "why_not_D": "While this works, the question asks for the most efficient configuration within the cloud environment. Relying on a third-party system introduces unnecessary complexity and external dependencies compared to using native GCS Bucket Lock."
+    },
+    "tags": [
+      "Cloud Logging",
+      "Audit Logs",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcse-mock1-117",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A healthcare provider needs to ensure that all Google Compute Engine instances in their project are configured with specific security settings to meet HIPAA compliance. They want a mechanism that not only detects non-compliant instances but automatically remediates them to the desired state. Which solution should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Cloud Logging to create a filter for non-compliant configurations and set up a Pub/Sub notification.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy a custom script via Startup Scripts on all instances to check for compliance upon boot.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a custom Org Policy with a 'deny' constraint to prevent the creation of non-compliant instances.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Security Health Analytics (SHA) and configure a Cloud Function to trigger remediation based on the findings.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Security Health Analytics (SHA) provides the detection mechanism for common security misconfigurations. By integrating SHA findings with Cloud Functions via Pub/Sub, the organization can achieve automated remediation of non-compliant resources.",
+      "why_not_A": "Cloud Logging only provides visibility and notification; it does not provide the logic for automated remediation of the resource state.",
+      "why_not_B": "Startup scripts only run during boot and cannot enforce compliance for resources already running or prevent the creation of non-compliant resources at the API level.",
+      "why_not_C": "Org Policies are preventative (stopping the action) rather than remediating existing resources to a specific desired state based on a security scan."
+    },
+    "tags": [
+      "Security Command Center",
+      "Remediation",
+      "HIPAA"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-118",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A financial services firm requires a detailed audit trail of all administrative actions performed within their GCP organization to satisfy PCI DSS requirements. They need to ensure that these logs are immutable and cannot be deleted by any user, including project owners. How should they achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Data Access audit logs and store them in a standard Cloud Storage bucket.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Log Sink to export Admin Activity logs to a Cloud Storage bucket with a Bucket Lock policy.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Cloud Logging's built-in retention period and set it to 7 years.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable the 'Audit' role for all project members to ensure they cannot delete logs.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Exporting logs to a Cloud Storage bucket with a Bucket Lock (Retention Policy) ensures the logs are immutable and cannot be deleted or modified until the retention period expires, meeting strict compliance requirements.",
+      "why_not_A": "Standard Cloud Storage buckets without a lock policy allow users with sufficient permissions (like Project Owners) to delete objects.",
+      "why_not_C": "Cloud Logging retention periods protect logs from automatic deletion by the system, but they do not prevent a user with appropriate permissions from manually deleting logs or the project.",
+      "why_not_D": "IAM roles control access but do not provide the technical immutability required for compliance audits; a Project Owner can always change roles."
+    },
+    "tags": [
+      "Cloud Logging",
+      "Cloud Storage",
+      "Immutability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-119",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is migrating a workload to GCP that must adhere to strict data residency requirements, ensuring that all data at rest remains within the European Union. Which GCP feature should be used to enforce this at the project level?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the default region of the project to 'europe-west1'.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud IAM conditions to restrict resource creation to EU regions.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement an Organization Policy constraint for 'Resource Location Restriction'.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure VPC Service Controls (VPC-SC) to block traffic to non-EU regions.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The 'Resource Location Restriction' organization policy allows administrators to define a list of allowed locations for new resources, ensuring that data residency requirements are enforced across the project or organization.",
+      "why_not_A": "Setting a default region is a convenience setting; it does not prevent a user from manually selecting a region outside the EU when creating a resource.",
+      "why_not_B": "IAM conditions are used for access control based on attributes, but they are not the primary mechanism for enforcing resource location constraints across all services.",
+      "why_not_D": "VPC-SC is used to prevent data exfiltration by creating a security perimeter around services, but it does not restrict where a resource (like a disk) can be physically created."
+    },
+    "tags": [
+      "Organization Policy",
+      "Data Residency",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-120",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to prove to an auditor that their encryption keys for sensitive data are managed exclusively by them and are not accessible by Google. Which encryption strategy should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use Google-managed encryption keys (Default encryption).",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Customer-Managed Encryption Keys (CMEK) via Cloud KMS.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Customer-Supplied Encryption Keys (CSEK).",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud External Key Manager (EKM) only.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "With CSEK, the customer provides their own key as part of the API call. Google does not store the key on disk; it is only kept in memory for the duration of the request, ensuring Google cannot access the data without the key provided by the customer.",
+      "why_not_A": "Google-managed keys are fully controlled by Google, which does not meet the requirement of the keys being managed exclusively by the customer.",
+      "why_not_B": "While CMEK gives the customer control over key rotation and IAM, the keys are still stored within the Google Cloud KMS infrastructure.",
+      "why_not_D": "EKM is a valid approach, but the question asks for the strategy where keys are not accessible by Google. While EKM keeps keys outside GCP, CSEK is the classic answer for providing the key directly for each operation without storage in GCP."
+    },
+    "tags": [
+      "Encryption",
+      "KMS",
+      "CSEK"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-121",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using a Shared VPC architecture. They need to ensure that developers in the service projects cannot modify the firewall rules of the host project, as this would violate their internal security compliance policy. How should the project be configured?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Grant the 'Compute Network User' role to developers in the service project.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Grant the 'Compute Network Admin' role to developers in the service project.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable VPC Service Controls on the service project to block firewall changes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Project-level IAM policy to deny 'compute.firewalls.update' for all users.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The 'Compute Network User' role allows users to use the network (e.g., attach a VM to a subnet) but does not grant permission to modify firewall rules, which are managed by the host project administrator.",
+      "why_not_B": "The 'Compute Network Admin' role provides full control over the network, including the ability to create and modify firewall rules, which would violate the compliance policy.",
+      "why_not_C": "VPC Service Controls protect data from exfiltration by creating a perimeter; they do not manage granular IAM permissions for firewall configuration.",
+      "why_not_D": "IAM 'deny' policies are a newer feature, but in a Shared VPC context, the standard architectural approach is to use the 'Compute Network User' role to separate network consumption from network administration."
+    },
+    "tags": [
+      "Shared VPC",
+      "IAM",
+      "Network Security"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcse-mock1-122",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A healthcare provider is migrating a legacy application to Google Cloud. The application must comply with HIPAA regulations, requiring that all data at rest be encrypted using keys that the customer manages and rotates every 90 days. The provider wants to minimize operational overhead while maintaining full control over the key rotation schedule. Which solution should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use default Google-managed encryption keys (GMEK) and configure a Cloud Scheduler job to trigger a rotation via API.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Customer-Managed Encryption Keys (CMEK) via Cloud KMS and configure a rotation schedule of 90 days.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Customer-Supplied Encryption Keys (CSEK) and manually upload new keys to the application every 90 days.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement client-side encryption using a third-party HSM before uploading data to Cloud Storage.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud KMS (CMEK) allows customers to manage their own keys and supports automatic rotation schedules, satisfying the 90-day requirement with minimal operational overhead.",
+      "why_not_A": "GMEK keys are managed by Google; customers cannot control the rotation schedule or manage the keys themselves.",
+      "why_not_C": "CSEK requires the customer to manage and provide the key for every single read/write operation, creating significant operational overhead and complexity.",
+      "why_not_D": "While highly secure, client-side encryption adds massive complexity to the application layer and is not the standard way to achieve compliance using cloud-native tools.",
+      "tags": [
+        "Cloud KMS",
+        "HIPAA",
+        "Encryption"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-gcp-pcse-mock1-123",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services firm needs to ensure that no developer can accidentally create a public Cloud Storage bucket in their production project to maintain PCI-DSS compliance. They want a preventative control that applies across all projects in the organization. What is the most efficient way to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a custom IAM role that removes the 'storage.buckets.update' permission from all developers.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Set up a Cloud Monitoring alert that triggers a Cloud Function to make the bucket private whenever a public bucket is detected.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement an Organization Policy constraint 'storage.publicAccessPrevention'.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a VPC Service Control perimeter to block all egress traffic from the storage buckets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Organization Policy constraints provide preventative guardrails at the org level. 'storage.publicAccessPrevention' explicitly prevents public access to buckets regardless of individual IAM permissions.",
+      "why_not_A": "Removing permissions might break legitimate workflows and is a detective/restrictive measure rather than a structural guardrail for public access.",
+      "why_not_B": "This is a detective and reactive control (remediation), not a preventative control. The bucket would be public for a short window.",
+      "why_not_D": "VPC Service Controls protect data exfiltration but do not prevent a bucket from being configured as 'public' to the internet.",
+      "tags": [
+        "Organization Policy",
+        "PCI-DSS",
+        "Cloud Storage"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-gcp-pcse-mock1-124",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is undergoing a SOC2 audit. The auditor requires a comprehensive report showing every administrative action taken in the project over the last 6 months, including who performed the action, when, and what the specific change was. You need to ensure these logs are immutable and cannot be deleted by any user, including the Project Owner. Which configuration is required?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable Cloud Audit Logs and store them in a standard Cloud Storage bucket with a retention policy.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable Data Access logs and export them to a BigQuery dataset with table-level locks.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure a Log Sink to export audit logs to a locked Cloud Storage bucket with a Bucket Lock policy.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Enable the Cloud Logging 'Log Bucket' feature and set the retention period to 180 days.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "A locked Cloud Storage bucket (Bucket Lock) ensures that objects cannot be deleted or overwritten until the retention period expires, providing the immutability required for strict compliance audits.",
+      "why_not_A": "A standard bucket with a retention policy can still be deleted by a Project Owner unless a formal Bucket Lock is applied.",
+      "why_not_B": "BigQuery does not provide the same level of immutable 'WORM' (Write Once Read Many) guarantees as a locked GCS bucket.",
+      "why_not_D": "Standard Log Bucket retention allows the project owner to change the retention settings or delete the logs manually.",
+      "tags": [
+        "Cloud Logging",
+        "SOC2",
+        "Immutability"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-gcp-pcse-mock1-125",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
+  },
+  {
+    "domain_id": "ensuring-compliance",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company must comply with a regulation that requires all data to reside physically within the European Union. They are using Compute Engine and Cloud SQL. Which combination of actions ensures they meet this residency requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the 'resource location' restriction in the Organization Policy and select only EU regions.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Create a VPC in an EU region and use a Shared VPC to force all resources into that region.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Cloud Armor policy to block any traffic originating from outside the EU.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable 'Regional' settings for all Cloud SQL instances and set the Compute Engine zone to europe-west1.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The 'resource location restriction' Organization Policy is the primary mechanism to prevent the creation of resources in unauthorized geographic locations across the entire organization.",
+      "why_not_B": "Shared VPC manages networking, but it does not prevent a user from creating a standalone Compute Engine instance or a Cloud SQL instance in a US region.",
+      "why_not_C": "Cloud Armor controls traffic flow (ingress), not the physical location of the data at rest.",
+      "why_not_D": "While this configures specific resources correctly, it is not a compliance control; it doesn't prevent other users from creating resources in non-EU regions.",
+      "tags": [
+        "Data Residency",
+        "Organization Policy",
+        "Compliance"
+      ],
+      "estimated_time_seconds": 120
+    },
+    "id": "q-gcp-pcse-mock1-126",
+    "exam_id": "gcp-pcse",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved",
+    "estimated_time_seconds": 120,
+    "tags": []
   }
 ]

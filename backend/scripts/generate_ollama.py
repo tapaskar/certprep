@@ -6,7 +6,7 @@ from pathlib import Path
 SEED_DIR = Path("/Volumes/wininstall/prepally/backend/data/seed")
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL = "gemma4:31b-cloud"
-QUESTIONS_PER_EXAM = 75
+QUESTIONS_PER_EXAM = None  # Set to None to use 3x exam's total_questions
 BATCH_SIZE = 5  # gemma4 handles 5 well
 
 MAX_RETRIES = 3
@@ -85,18 +85,21 @@ def generate_exam(exam_dir_name):
     if not domains:
         return 0
 
+    # Target: 3x the exam's total questions (for 3 mock exams)
+    target = QUESTIONS_PER_EXAM if QUESTIONS_PER_EXAM else exam.get("total_questions", 65) * 3
+
     questions_file = exam_dir / "questions.json"
     existing = []
     if questions_file.exists():
         with open(questions_file) as f:
             existing = json.load(f)
-        if len(existing) >= QUESTIONS_PER_EXAM:
-            print(f"  {exam_code}: already has {len(existing)} questions — skip")
+        if len(existing) >= target:
+            print(f"  {exam_code}: already has {len(existing)} questions (target {target}) — skip")
             return 0
 
     print(f"\n{'='*50}")
     print(f"{exam_code}: {exam_name}")
-    print(f"  Model: {MODEL} | Target: {QUESTIONS_PER_EXAM} | Existing: {len(existing)}")
+    print(f"  Model: {MODEL} | Target: {target} | Existing: {len(existing)}")
     print(f"{'='*50}")
 
     total_weight = sum(d.get("weight_pct", 0) for d in domains)
@@ -106,7 +109,8 @@ def generate_exam(exam_dir_name):
     for domain in domains:
         domain_id = domain["id"]
         domain_name = domain["name"]
-        target = max(2, round(QUESTIONS_PER_EXAM * domain["weight_pct"] / total_weight))
+        domain_target_base = QUESTIONS_PER_EXAM if QUESTIONS_PER_EXAM else exam.get("total_questions", 65) * 3
+        target = max(2, round(domain_target_base * domain["weight_pct"] / total_weight))
 
         # Subtract existing questions for this domain
         existing_for_domain = sum(1 for q in existing if q.get("domain_id") == domain_id)

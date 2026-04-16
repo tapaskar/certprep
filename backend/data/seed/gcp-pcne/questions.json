@@ -2749,5 +2749,3214 @@
     "bkt_p_slip": 0.1,
     "bkt_p_transit": 0.1,
     "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A global enterprise is designing a hub-and-spoke network architecture. They require a centralized security inspection hub where all traffic between spoke VPCs and the internet must pass through a cluster of third-party Next-Generation Firewalls (NGFW) hosted on Compute Engine instances. The solution must ensure that traffic is symmetrically routed and scalable. Which design pattern should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use VPC Network Peering between all spokes and the hub, and configure a static route in each spoke VPC pointing to the hub VPC's internal load balancer.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Shared VPC where the hub is the host project and spokes are service projects, using a centralized Cloud NAT gateway for all egress traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Hub-and-Spoke topology using VPC Network Peering, and utilize an Internal TCP/UDP Load Balancer with 'Session Affinity' and 'Source IP preservation' to distribute traffic to the NGFW instances.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a single global VPC with multiple subnets and implement Firewall Rules with priority tags to route traffic through the NGFW instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "In a hub-and-spoke model for security inspection, an Internal Load Balancer (ILB) in the hub VPC allows for scalable distribution of traffic to NGFW appliances. Session affinity ensures that the return traffic follows the same path (symmetry), which is critical for stateful firewalls to function without dropping packets.",
+      "why_not_A": "VPC Peering alone does not provide the load balancing or symmetry required for a cluster of NGFWs; static routes to a single IP would not provide high availability or scalability.",
+      "why_not_B": "Shared VPC manages administration and resource sharing but does not inherently solve the problem of routing traffic through a third-party appliance for deep packet inspection.",
+      "why_not_D": "Firewall rules in GCP are used to allow or deny traffic, not to route traffic to a specific instance (next-hop) for inspection. Routing is handled by the routing table, not firewall rules."
+    },
+    "tags": [
+      "Hub-and-Spoke",
+      "NGFW",
+      "Internal Load Balancing"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-057",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization needs to connect an on-premises data center to Google Cloud. The requirement is for a high-availability connection with a minimum guaranteed bandwidth of 10 Gbps and the lowest possible latency. The organization does not want to manage the physical cross-connects within the Google edge facility. Which connectivity option should you choose?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Dedicated Interconnect with two 10 Gbps circuits in a single metropolitan area.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Partner Interconnect with two 10 Gbps circuits provided by a supported service provider across two different edge availability domains.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "High-availability (HA) VPN using two tunnels over the public internet.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud VPN with a Classic VPN gateway and a redundant tunnel for failover.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Partner Interconnect is the correct choice because the organization does not want to manage physical cross-connects (which is required for Dedicated Interconnect). To achieve HA and 10 Gbps, using a partner across two different edge availability domains ensures redundancy and meets the bandwidth requirement.",
+      "why_not_A": "Dedicated Interconnect requires the customer to physically manage or coordinate the cross-connects within the Google Colocation facility, which contradicts the scenario requirements.",
+      "why_not_C": "HA VPN is limited by the public internet's throughput and latency; it cannot guarantee 10 Gbps of consistent bandwidth.",
+      "why_not_D": "Classic VPN is deprecated in favor of HA VPN and cannot provide the 10 Gbps guaranteed bandwidth and low latency of an Interconnect solution."
+    },
+    "tags": [
+      "Cloud Interconnect",
+      "Hybrid Connectivity",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-058",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is designing a multi-region application. They need to ensure that clients are routed to the nearest available region to minimize latency, but they also require the ability to fail over to a secondary region if the primary region becomes unavailable. Which Google Cloud load balancing service should be used?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Network Load Balancer (External)",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "External HTTP(S) Load Balancer (Classic)",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Global External HTTP(S) Load Balancer (Envoy-based)",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Internal HTTP(S) Load Balancer",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Global External HTTP(S) Load Balancer uses a single global IP address and Anycast routing to direct traffic to the closest healthy backend region. It natively supports multi-region backends and automatic failover based on health checks.",
+      "why_not_A": "External Network Load Balancers are regional, not global. To achieve multi-region failover, you would need to manage DNS-based routing manually.",
+      "why_not_B": "While the Classic version also provides global load balancing, the Envoy-based version is the current architectural standard providing more advanced traffic management and is the preferred answer for modern design prototyping.",
+      "why_not_D": "Internal Load Balancers are used for traffic inside a VPC and cannot be used to route external clients to the nearest region."
+    },
+    "tags": [
+      "Cloud Load Balancing",
+      "Global Routing",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-059",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are prototyping a network for a regulated industry that requires strict isolation between the 'Development' and 'Production' environments. Both environments must share a common set of shared services (like a private artifact registry) located in a 'Shared-Services' VPC. You must avoid using the public internet for any communication. What is the most scalable way to connect these VPCs?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Establish VPC Network Peering between Development and Shared-Services, and between Production and Shared-Services.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Peer all three VPCs (Development, Production, and Shared-Services) in a full mesh topology.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a single VPC and use separate subnets for Development, Production, and Shared-Services, using firewall rules for isolation.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Cloud VPN to connect the three VPCs using a hub-and-spoke topology.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "VPC Network Peering is non-transitive. By peering Dev-to-Shared and Prod-to-Shared, both environments can access the shared services, but Dev and Prod remain completely isolated from each other, meeting the strict isolation requirement.",
+      "why_not_B": "A full mesh would peer Dev and Prod directly, violating the requirement for strict isolation between those two environments.",
+      "why_not_C": "While subnets provide logical separation, they do not provide the same level of administrative and blast-radius isolation as separate VPCs, which is typically required in highly regulated industries.",
+      "why_not_D": "Cloud VPN introduces unnecessary overhead, latency, and cost compared to VPC Peering for internal Google Cloud traffic."
+    },
+    "tags": [
+      "VPC Peering",
+      "Network Isolation",
+      "Shared VPC"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcne-mock1-060",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is planning to deploy a large-scale GKE cluster across three regions. They want to ensure that the cluster can scale to thousands of nodes without hitting the limits of the default VPC routing table and to minimize the impact of routing updates across the network. Which VPC feature should be enabled during the design phase?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Custom Route Collection",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Global Access for Internal Load Balancing",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "VPC Flow Logs",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Alias IP ranges for GKE pods",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "Alias IP ranges allow GKE pods to have their own IP addresses that are routable within the VPC. This prevents the need for the VPC to manage individual routes for every pod, which would otherwise overwhelm the routing table and cause performance degradation as the cluster scales.",
+      "why_not_A": "Custom Route Collection is not a standard GCP VPC feature for solving pod routing scalability.",
+      "why_not_B": "Global Access allows clients in any region to access an internal load balancer, but it does not address the underlying routing table scalability for GKE pods.",
+      "why_not_C": "VPC Flow Logs are for monitoring and auditing traffic, not for optimizing routing performance or scalability."
+    },
+    "tags": [
+      "GKE",
+      "Alias IP",
+      "VPC Routing"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-gcp-pcne-mock1-061",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A global enterprise is designing a hub-and-spoke network architecture on GCP to connect 50 different business units (spokes) to a central shared services VPC (hub). The organization requires a scalable solution that avoids the 250 VPC peering limit and minimizes administrative overhead for route propagation. Which design pattern should the network architect implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement a full mesh VPC peering topology between all business unit VPCs and the shared services VPC.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy a Network Connectivity Center (NCC) hub and connect the spoke VPCs as spokes using VPC peering or VPN tunnels.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a single large VPC and utilize Shared VPC with multiple subnets partitioned by business unit.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy a series of Transit VPCs using third-party NVA (Network Virtual Appliances) and route all traffic via static routes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Network Connectivity Center (NCC) is specifically designed for hub-and-spoke topologies at scale. It allows for the management of connectivity between VPCs and on-premises networks in a centralized manner, overcoming the complexity and limits associated with manual VPC peering meshes.",
+      "why_not_A": "VPC peering is not transitive. To achieve hub-and-spoke connectivity via peering, the hub must peer with every spoke, but spokes cannot communicate via the hub. Furthermore, a full mesh would quickly hit quota limits and become unmanageable as the number of VPCs grows.",
+      "why_not_C": "While Shared VPC is powerful, it does not provide the isolation required for 50 distinct business units that may need their own project-level administrative boundaries and quotas. It also doesn't solve the 'hub-and-spoke' requirement for independent VPCs.",
+      "why_not_D": "Using NVAs for transit is a legacy approach that introduces significant performance bottlenecks, increases latency, and creates a massive management burden for static routing across 50 spokes."
+    },
+    "tags": [
+      "NCC",
+      "Hub-and-Spoke",
+      "Scalability"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-062",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services firm needs to connect their on-premises data center to GCP. They require a minimum of 10 Gbps of bandwidth, the lowest possible latency, and a guarantee that traffic never traverses the public internet. The on-premises environment has two geographically redundant edge locations. Which connectivity option is the most appropriate design?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy two Cloud VPN tunnels using High Availability (HA) VPN over the public internet.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Establish a single Dedicated Interconnect connection at one edge location with a backup VPN.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Establish Dedicated Interconnect connections at two distinct edge locations, utilizing a Cloud Router in each region for BGP.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Partner Interconnect with a single provider to aggregate bandwidth across both edge locations.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Dedicated Interconnect provides a direct physical connection to Google's network, bypassing the public internet and offering 10 Gbps or 100 Gbps circuits. Using two distinct edge locations ensures high availability and redundancy, meeting the firm's strict latency and security requirements.",
+      "why_not_A": "Cloud VPN traverses the public internet, which violates the requirement that traffic must never traverse the public internet.",
+      "why_not_B": "A single connection at one location creates a single point of failure. A backup VPN would traverse the public internet, violating the security requirement.",
+      "why_not_D": "Partner Interconnect is used when the customer cannot reach a Google collocation facility. Since the requirement specifies 'lowest possible latency' and 'Dedicated' is an option, Dedicated Interconnect is the superior choice over Partner Interconnect."
+    },
+    "tags": [
+      "Interconnect",
+      "Hybrid Connectivity",
+      "High Availability"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcne-mock1-063",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is designing a multi-region application. They want to ensure that users are routed to the closest healthy regional backend, but they also need the ability to perform weighted canary deployments (sending 10% of traffic to a new version in a specific region) regardless of the user's geographic location. Which load balancing strategy should they use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a Regional External HTTP(S) Load Balancer in each region with a DNS-based Global Server Load Balancing (GSLB) solution.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Global External HTTP(S) Load Balancer with URL maps and weighted backend services.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Global External Proxy Network Load Balancer to distribute traffic based on IP hash.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Regional External Application Load Balancer and implement weights via Cloud DNS routing policies.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Global External HTTP(S) Load Balancer provides both proximity-based routing (routing users to the nearest healthy backend) and the ability to define traffic splitting/weighting via URL maps. This allows for the 10% canary deployment across the global fleet.",
+      "why_not_A": "DNS-based GSLB can route users to the nearest region, but it lacks the granular, real-time traffic steering and weighted canary capabilities provided by the Google Cloud Global HTTP(S) LB's URL maps.",
+      "why_not_C": "Network Load Balancers operate at Layer 4 and do not support URL-based routing or the sophisticated weighted traffic splitting required for HTTP canary deployments.",
+      "why_not_D": "Regional Load Balancers cannot perform global proximity routing natively; they only handle traffic within a specific region. Cloud DNS routing policies are less precise for canary deployments than the LB's traffic management."
+    },
+    "tags": [
+      "Cloud Load Balancing",
+      "Traffic Management",
+      "Global Infrastructure"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcne-mock1-064",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "An organization is prototyping a secure environment where a set of GKE nodes must access a third-party API via a static IP address to satisfy the API provider's allow-list. The nodes are in a private cluster. The architect wants to avoid using an External IP on every node. What is the most efficient design to achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign a Public IP to each GKE node and use a Cloud NAT gateway for outbound traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure Cloud NAT with a manually assigned static external IP address for the subnet containing the GKE nodes.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Deploy a proxy server (Squid) with a static external IP and configure the GKE nodes to use the proxy via environment variables.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Private Service Connect (PSC) to create a private endpoint for the third-party API.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud NAT allows instances in a private subnet to reach the internet using a shared set of external IP addresses. By assigning a static external IP to the NAT gateway, all traffic from the GKE nodes to the third-party API will appear to originate from that single static IP, satisfying the allow-list requirement without exposing nodes individually.",
+      "why_not_A": "Assigning public IPs to every node is insecure and inefficient, and Cloud NAT is used for instances *without* public IPs. If they have public IPs, they don't use the NAT gateway for outbound traffic by default.",
+      "why_not_C": "While this works, it introduces a management overhead (patching, scaling, and monitoring the proxy server) and is less efficient than the managed Cloud NAT service.",
+      "why_not_D": "Private Service Connect is for connecting to services *hosted* on Google Cloud or specific supported partners. If the third-party API is a general external internet service, PSC is not applicable unless the provider specifically supports it."
+    },
+    "tags": [
+      "Cloud NAT",
+      "GKE",
+      "Egress Control"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-065",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "designing-gcp-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company is designing a network for a highly regulated environment. They need to ensure that traffic between two different VPCs (VPC-A and VPC-B) is strictly controlled. Specifically, only traffic on port 443 from a specific subnet in VPC-A should be allowed to reach a specific load balancer in VPC-B. The architect wants to implement this using the most granular and scalable method.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use VPC Peering and implement firewall rules in VPC-B based on the source IP ranges of VPC-A.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Use a Shared VPC and apply firewall rules at the host project level.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy a VPN tunnel between VPC-A and VPC-B and use the VPN's built-in access control lists.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use VPC peering and implement a Network Virtual Appliance (NVA) in VPC-A to filter outbound traffic.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "VPC Peering allows the two networks to communicate. Because Google Cloud firewall rules support IP ranges from peered VPCs, you can create a rule in VPC-B that explicitly allows only port 443 from the specific CIDR range of the subnet in VPC-A. This is the most native and scalable way to control cross-VPC traffic.",
+      "why_not_B": "Shared VPC allows multiple projects to use a single VPC. The scenario specifies two different VPCs, implying different network boundaries. Moving them into a Shared VPC changes the architectural requirement and doesn't inherently provide better granularity than peering firewall rules.",
+      "why_not_C": "VPN tunnels are typically used for on-premises connectivity. Using them for VPC-to-VPC communication introduces unnecessary latency, cost, and complexity compared to VPC peering.",
+      "why_not_D": "Using an NVA for outbound filtering is complex to manage and creates a bottleneck. Firewall rules in the destination VPC (VPC-B) are the standard and most efficient way to enforce 'who can enter' the network."
+    },
+    "tags": [
+      "VPC Peering",
+      "Firewall Rules",
+      "Security Design"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcne-mock1-066",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is deploying a high-throughput application across two VPCs in the same project. You need to connect these VPCs to allow internal communication with the lowest possible latency and without using external IP addresses. The application requires a solution that scales automatically without needing to manage individual VM-based proxy instances. Which method should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a fleet of Cloud VPN gateways in both VPCs and configure a route-based VPN tunnel.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure VPC Network Peering between the two VPCs.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Set up a Shared VPC and migrate all resources into a single host project.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Network Connectivity Center hub and connect both VPCs as spokes.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Network Peering allows two VPCs to connect so that they can communicate over Google's internal network with low latency. It is a managed service that scales automatically and does not require VM proxies or gateway management.",
+      "why_not_A": "Cloud VPN introduces higher latency than peering because traffic must pass through a VPN gateway and is subject to encryption overhead. It is typically used for hybrid connectivity, not internal VPC-to-VPC communication.",
+      "why_not_C": "Shared VPC is a structural design choice for centralizing network administration, not a method for connecting two existing distinct VPCs. Migrating resources is a destructive process and not a connectivity implementation method.",
+      "why_not_D": "While Network Connectivity Center can connect VPCs, VPC Peering is the more direct, simpler, and standard method for low-latency communication between two VPCs in the same project or organization."
+    },
+    "tags": [
+      "vpc-peering",
+      "internal-connectivity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-067",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating a legacy application to GCP that requires a fixed internal IP address for its database server to be reachable by other services. The application must be able to be deleted and recreated during CI/CD cycles without changing the IP address in the application configuration. How should you implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign a static internal IP address to the VM instance during creation.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use an internal TCP/UDP Load Balancer and assign a static internal IP to the frontend.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create a Cloud DNS private zone and map a hostname to a dynamic internal IP.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a reserved internal IP range for the subnet and use DHCP reservations.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An internal Load Balancer provides a stable, static virtual IP (VIP) that remains constant regardless of the backend VM instances being deleted, replaced, or scaled. This decouples the client configuration from the VM lifecycle.",
+      "why_not_A": "If the VM instance is deleted as part of a CI/CD cycle, the static internal IP assigned to that specific instance is released or tied to the instance lifecycle, requiring manual reassignment to a new instance.",
+      "why_not_C": "While DNS helps with abstraction, the question specifically asks for a fixed internal IP address. DNS resolves to an IP, but if the underlying IP changes, the DNS record must be updated, which may be subject to TTL delays.",
+      "why_not_D": "DHCP reservations are not a native feature of GCP VPCs in the way they are in physical data centers; IP management is handled by the GCP control plane via the API."
+    },
+    "tags": [
+      "internal-load-balancing",
+      "ip-management"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-068",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are configuring a Hub-and-Spoke network topology using a Shared VPC. You have a Hub project containing the VPC and several Spoke projects (Service Projects) that need to access a shared set of on-premises resources via Cloud Interconnect. You want to ensure that Spoke projects cannot communicate with each other, but can all communicate with the Hub. Which mechanism should you use to enforce this isolation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create separate subnets for each Spoke project and use VPC Network Peering.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement VPC firewall rules using network tags or service accounts to restrict traffic between subnets.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Cloud Router BGP filters to prevent route propagation between Spokes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a separate Shared VPC for every Spoke project.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a Shared VPC, all resources reside in the same VPC network. To isolate Spoke projects (which are essentially sets of VMs in different subnets), you must use firewall rules. By using service accounts or tags, you can explicitly deny traffic between the subnets assigned to different Spokes while allowing traffic to the Hub/On-prem.",
+      "why_not_A": "VPC Network Peering connects two different VPCs. In a Shared VPC, there is only one VPC; the spokes are just projects using that VPC. Peering is not applicable here.",
+      "why_not_C": "Cloud Router manages routes between GCP and on-premises. It does not control internal traffic flow (East-West traffic) between VMs within the same VPC.",
+      "why_not_D": "Creating a separate Shared VPC for every spoke defeats the purpose of the Hub-and-Spoke architecture and increases management complexity significantly."
+    },
+    "tags": [
+      "shared-vpc",
+      "firewall-rules"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-069",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to connect their on-premises data center to Google Cloud. They require a minimum of 10 Gbps bandwidth and need to ensure the connection is highly available (99.9% SLA). They have a co-location facility in a supported Google Cloud location. Which connectivity option should they choose to meet these requirements with the least amount of configuration overhead?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A single Dedicated Interconnect connection of 10 Gbps.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Two Dedicated Interconnect connections in a single metropolitan area.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Partner Interconnect with two VLAN attachments in a single region.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Two Dedicated Interconnect connections in two different metropolitan areas.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "To achieve the 99.9% availability SLA for Cloud Interconnect, Google requires a configuration that protects against both individual connection failure and a full metropolitan area failure. This necessitates two connections in two different metro areas.",
+      "why_not_A": "A single connection provides no redundancy; any failure would result in a complete outage, failing the SLA requirement.",
+      "why_not_B": "Two connections in a single metro area protect against a cable or port failure, but not against a site-wide failure of that specific co-location facility/metro area.",
+      "why_not_C": "Partner Interconnect depends on a third party. While it can be HA, the question specifies they have a co-location facility, making Dedicated Interconnect the more direct and performant choice, and a single region doesn't meet the 99.9% SLA requirement if it doesn't span metros."
+    },
+    "tags": [
+      "cloud-interconnect",
+      "availability-sla"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-070",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a network for a global application. You want to ensure that users are routed to the nearest available backend instance across multiple regions. You also need to protect the application against DDoS attacks and implement a Web Application Firewall (WAF) to filter SQL injection attacks. Which Google Cloud architecture should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Regional External HTTP(S) Load Balancer with Cloud Armor.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Global External HTTP(S) Load Balancer with Cloud Armor.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Global External TCP Proxy Load Balancer with Cloud Armor.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Regional External TCP Load Balancer with Cloud Armor.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "The Global External HTTP(S) Load Balancer provides anycast IP routing to direct users to the nearest region. Cloud Armor integrates directly with this load balancer to provide DDoS protection and WAF capabilities (including SQL injection filtering).",
+      "why_not_A": "A regional load balancer does not provide global anycast routing to the nearest region; it only balances traffic within a specific region.",
+      "why_not_C": "TCP Proxy Load Balancers operate at Layer 4. While they can be global, they cannot inspect HTTP traffic to filter SQL injection attacks, which requires Layer 7 (HTTP/S) inspection.",
+      "why_not_D": "Regional TCP Load Balancers lack both the global routing capabilities and the Layer 7 inspection required for WAF/SQL injection filtering."
+    },
+    "tags": [
+      "cloud-load-balancing",
+      "cloud-armor"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-071",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization is deploying a multi-tier application across two VPCs in different projects. You need to ensure that the application tier in VPC-A can communicate with the database tier in VPC-B using private IP addresses. Both VPCs have overlapping IP ranges in some subnets, but the specific subnets for the application and database tiers do not overlap. What is the most scalable and architecturally sound way to connect these tiers while maintaining strict security boundaries?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Establish a VPC Network Peering connection between the two VPCs and use firewall rules to restrict traffic to specific IP addresses.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy a Shared VPC and migrate both tiers into a single host project, using separate subnets for the application and database tiers.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Private Service Connect (PSC) to expose the database tier as a service endpoint within VPC-A.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Set up a VPN tunnel between the two VPCs using Cloud VPN and implement NAT to resolve the overlapping IP ranges.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Private Service Connect (PSC) allows you to expose a service (the database) from one VPC to another without needing to peer the networks. This completely bypasses the issue of overlapping IP ranges across the wider VPCs and provides a granular, service-oriented connection rather than network-wide connectivity.",
+      "why_not_A": "VPC Network Peering does not support networks with overlapping IP ranges. Even if the specific subnets don't overlap, if any part of the VPC CIDR blocks overlap, peering cannot be established.",
+      "why_not_B": "Shared VPC requires the networks to be designed from the start within one project. Migrating existing VPCs from different projects into a Shared VPC is a disruptive architectural change and doesn't address the existing overlap problem efficiently.",
+      "why_not_D": "While VPN with NAT can solve overlap, it introduces significant management overhead, latency, and complexity compared to PSC, and is not considered the 'most scalable' modern GCP approach for service-to-service connectivity."
+    },
+    "tags": [
+      "PSC",
+      "VPC-Connectivity",
+      "Overlapping-IPs"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-072",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A global company is implementing a Hub-and-Spoke network topology using a Hub VPC and multiple Spoke VPCs. The Hub VPC contains a central firewall appliance. You need to ensure that all traffic from the Spoke VPCs to the internet is routed through the firewall appliance in the Hub VPC, and return traffic is correctly routed back to the spokes. Which configuration is required to ensure symmetric routing for the return traffic?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure a default route in the Spoke VPCs pointing to the Hub VPC and enable 'Automatic Route Propagation' in the Hub.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Network Connectivity Center (NCC) hub to manage the spokes and enable 'Global Routing' on all VPCs.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a Transit VPC with a third-party NVA and use BGP to advertise Spoke routes to the NVA.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure the firewall appliance to use a policy-based routing mechanism or implement a separate return-path route in the Hub VPC for each Spoke CIDR.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "In a Hub-and-Spoke model with a Network Virtual Appliance (NVA), GCP's VPC routing is not 'stateful' across the network layer. To avoid asymmetric routing (where traffic goes Spoke -> Hub -> Internet, but return traffic goes Internet -> Hub -> Spoke via a different path or is dropped), the Hub must have explicit routes back to the Spokes, or the NVA must handle the routing logic to ensure symmetry.",
+      "why_not_A": "Default routes in spokes handle the outbound path, but they do not solve the return path (ingress) symmetry from the internet back to the specific spoke.",
+      "why_not_B": "NCC simplifies connectivity but does not automatically solve the symmetry problem for third-party firewall appliances which require specific routing table entries for return traffic.",
+      "why_not_C": "BGP helps with route propagation, but without specific return-path logic in the Hub's routing table, the VPC fabric may still route return traffic incorrectly if it doesn't match the NVA's internal state."
+    },
+    "tags": [
+      "Hub-and-Spoke",
+      "Symmetric-Routing",
+      "NVA"
+    ],
+    "estimated_time_seconds": 180,
+    "id": "q-gcp-pcne-mock1-073",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are designing a high-availability architecture for a critical application. You need to implement a Global External HTTP(S) Load Balancer. The backend consists of managed instance groups (MIGs) in three different regions. You must ensure that traffic is routed to the region closest to the user, but if a region becomes unhealthy, traffic should fail over to the next closest healthy region. Which configuration is essential to achieve this behavior?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure a single Backend Service with the 'Capacity Scaler' set to 1.0 for all regions.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create separate Backend Services for each region and use a URL Map with path-based routing to distribute traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a single Backend Service with backends defined in multiple regions and ensure health checks are configured for each region.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Implement a Global Forwarding Rule and use Cloud DNS with Geolocation routing to point to regional IP addresses.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Global External HTTP(S) Load Balancers use a single Backend Service that can contain backends in multiple regions. The Google Front End (GFE) automatically routes traffic to the closest healthy region. If a region's health checks fail, the GFE automatically redirects traffic to the next closest healthy region.",
+      "why_not_A": "Capacity Scalers adjust the amount of traffic sent to a backend relative to others, but they do not control the primary proximity-based routing or the failover mechanism.",
+      "why_not_B": "Using separate Backend Services per region would require the URL map to be static or manually updated; it would not provide the automatic proximity-based routing and seamless failover inherent in a single multi-regional Backend Service.",
+      "why_not_D": "This describes a DNS-based load balancing approach. The question specifically asks for a Global External HTTP(S) Load Balancer, which operates at Layer 7 and handles the routing at the GFE level, not via DNS resolution to regional IPs."
+    },
+    "tags": [
+      "Global-LB",
+      "Multi-region",
+      "Health-Checks"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-074",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A company requires a dedicated, low-latency connection between their on-premises data center and Google Cloud. They have decided to use Cloud Interconnect. The requirement is for 10 Gbps bandwidth with a guarantee of 99.99% availability. Which Interconnect configuration meets this requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A single Dedicated Interconnect connection of 10 Gbps.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Two Dedicated Interconnect connections in a single metropolitan area (one per edge availability domain).",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Two Dedicated Interconnect connections in two different metropolitan areas, with each connection linked to a separate Cloud Router.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Partner Interconnect with two VLAN attachments in a single region.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "To achieve 99.99% availability (the 'high availability' topology), Google requires at least two connections in two different metropolitan areas (edge locations). This protects against the failure of an entire metro area. Each connection should be associated with a Cloud Router (or a pair of routers) for BGP redundancy.",
+      "why_not_A": "A single connection provides no redundancy and only offers the lowest availability tier.",
+      "why_not_B": "Two connections in a single metro area provide 99.9% availability, protecting against a single connection failure but not a total metro area outage.",
+      "why_not_D": "Partner Interconnect can be used, but two VLAN attachments in a single region do not meet the 99.99% availability requirement, as they are subject to the same regional/metro failure domain."
+    },
+    "tags": [
+      "Cloud-Interconnect",
+      "Availability-SLA",
+      "Hybrid-Connectivity"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-075",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are implementing a security architecture where all traffic from a VPC must be inspected by a third-party firewall appliance before leaving the VPC for the internet. You want to avoid using a proxy and instead ensure that the VPC's routing table forces all outbound traffic to the appliance. Which feature should you use to prevent instances from bypassing the firewall by specifying a direct gateway?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure a restrictive VPC Firewall Rule with a high priority to block all egress traffic except to the appliance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Custom Route with the 'Next Hop' set to the firewall appliance instance and set the route priority to the lowest possible value.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement VPC Service Controls (VPC-SC) to create a service perimeter around the VPC.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a combination of a default route pointing to the appliance and a firewall rule that blocks egress traffic to the default internet gateway (0.0.0.0/0).",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "To force traffic through an NVA, you set a default route (0.0.0.0/0) with the NVA as the next hop. However, because firewall rules are processed independently of routes, a firewall rule is needed to ensure that traffic cannot bypass the NVA via other means or to explicitly restrict egress to only the NVA's internal interface, ensuring a 'choke point' for all outbound traffic.",
+      "why_not_A": "Firewall rules block or allow traffic; they do not 'route' traffic. A firewall rule alone cannot force traffic to a specific IP address (the appliance); it can only stop it from going elsewhere.",
+      "why_not_B": "Lower priority values (higher numbers) make a route less preferred. To make the appliance the primary path, the route needs a *higher* priority (lower number).",
+      "why_not_C": "VPC Service Controls are designed to prevent data exfiltration from Google APIs (like Cloud Storage or BigQuery) by creating a perimeter; they do not control general TCP/UDP routing for internet-bound traffic."
+    },
+    "tags": [
+      "Routing",
+      "NVA",
+      "Egress-Control"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-076",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is deploying a multi-tier application across two different VPCs in the same project. The application requires the web tier in VPC-A to communicate with the database tier in VPC-B using internal IP addresses. You must ensure that the communication is restricted to only the specific database port and that no other traffic can flow between the VPCs. Which approach should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Establish a VPC Network Peering connection between VPC-A and VPC-B and apply a firewall rule in VPC-B allowing traffic from VPC-A's IP range on the database port.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Configure a Shared VPC where VPC-A is the host project and VPC-B is the service project, then use firewall rules to restrict traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy a Cloud VPN tunnel between the two VPCs and use a routing table to direct traffic to the database port.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Private Service Connect (PSC) to expose the database as a service endpoint in VPC-A.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "VPC Network Peering allows internal IP connectivity between two VPCs. Firewall rules in the destination VPC (VPC-B) can then be used to strictly limit traffic to only the specific port required by the database, fulfilling both the connectivity and security requirements.",
+      "why_not_A": "This is the correct implementation.",
+      "why_not_B": "Shared VPC is for managing networking centrally across multiple projects, not for connecting two existing distinct VPCs within the same project.",
+      "why_not_C": "Cloud VPN is used for connecting on-premises networks or different cloud providers; using it between two VPCs in the same project adds unnecessary latency, cost, and complexity compared to peering.",
+      "why_not_D": "While PSC can expose a service, the scenario describes a multi-tier application requiring VPC-to-VPC communication. Peering is the standard architectural choice for low-latency, internal IP communication between two VPCs in a single project."
+    },
+    "tags": [
+      "VPC Peering",
+      "Firewall Rules"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-077",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to connect their on-premises data center to Google Cloud. They require a consistent 10 Gbps bandwidth and the lowest possible latency to ensure real-time data synchronization. The company does not want to rely on the public internet for this connection. Which connectivity option should you recommend?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud VPN with High Availability (HA) configuration using multiple tunnels.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Dedicated Interconnect with a 10 Gbps circuit.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Partner Interconnect via a supported service provider.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Carrier Peering to connect the on-premises edge to Google's edge.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dedicated Interconnect provides a direct physical connection between the on-premises network and Google's network, offering the highest bandwidth (10 Gbps or 100 Gbps circuits) and the lowest latency by bypassing the public internet entirely.",
+      "why_not_A": "Cloud VPN operates over the public internet, which does not guarantee consistent 10 Gbps bandwidth and introduces higher latency and jitter.",
+      "why_not_C": "While Partner Interconnect avoids the public internet, Dedicated Interconnect is the preferred choice when the customer needs a specific 10 Gbps physical circuit and has a presence in a Google colocation facility.",
+      "why_not_D": "Carrier Peering provides access to Google Workspace and Public APIs (Google Public IP addresses), not private RFC 1918 internal IP connectivity to a VPC."
+    },
+    "tags": [
+      "Cloud Interconnect",
+      "Hybrid Connectivity"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-gcp-pcne-mock1-078",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a network for a global application. You need to ensure that users are routed to the nearest available backend instance across multiple regions to minimize latency. You also need the ability to perform A/B testing by routing a small percentage of traffic to a specific region regardless of the user's location. Which load balancer should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "External TCP/UDP Network Load Balancer",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "External Regional HTTP(S) Load Balancer",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "External Global HTTP(S) Load Balancer",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Internal HTTP(S) Load Balancer",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "The Global HTTP(S) Load Balancer uses a single global IP address and routes traffic to the closest healthy backend based on proximity. It also supports advanced traffic management features like URL maps and weighted load balancing, which allows for the A/B testing requirement.",
+      "why_not_A": "Network Load Balancers are regional and do not support the sophisticated L7 routing/weighting required for A/B testing or global proximity-based routing via a single IP.",
+      "why_not_B": "Regional HTTP(S) load balancers route traffic only within a single region; they cannot provide global proximity routing across multiple regions.",
+      "why_not_D": "Internal load balancers are used for traffic inside the VPC, not for external users."
+    },
+    "tags": [
+      "Cloud Load Balancing",
+      "Global HTTP(S) LB"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-079",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A security requirement mandates that all outbound traffic from a VPC must be inspected by a third-party Next-Generation Firewall (NGFW) appliance deployed as a VM instance before it reaches the internet. You want to ensure that all traffic, including traffic from instances that are not aware of the NGFW, is routed through this appliance. How should you implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure the NGFW instance as the default gateway for all VM instances using a custom OS route.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a custom static route for 0.0.0.0/0 with the next hop set to the internal IP address of the NGFW instance.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Cloud NAT gateway and configure the NAT to route traffic through the NGFW instance.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable VPC Flow Logs and use a Packet Mirroring policy to send traffic to the NGFW instance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "By creating a custom static route for the default route (0.0.0.0/0) and setting the next hop as the internal IP of the NGFW instance, all outbound traffic is forced through the appliance. This is a standard 'hub-and-spoke' or 'choke point' architecture in GCP.",
+      "why_not_A": "Changing the OS gateway on every VM is operationally inefficient and does not guarantee that all instances will be configured correctly.",
+      "why_not_C": "Cloud NAT is used to allow instances without public IPs to access the internet; it is not a routing mechanism to steer traffic through a third-party VM appliance.",
+      "why_not_D": "Packet Mirroring sends a copy of the traffic for inspection (out-of-band), but it does not intercept or block traffic (in-line), which is required for a firewall appliance to inspect and potentially drop packets."
+    },
+    "tags": [
+      "Custom Routes",
+      "Network Appliance"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-080",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are managing a VPC with a very large number of VM instances. You need to implement a security policy that allows SSH access (port 22) to all instances, but only from a specific set of administrator IP addresses. To keep the firewall rule list manageable and avoid hitting quota limits for the number of rules, what is the best practice to implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a single firewall rule for each administrator IP address.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a firewall rule using a network tag applied to all VM instances, specifying the administrator IP range as the source.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Apply a firewall rule to the entire VPC network without using tags or service accounts.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Cloud Router to filter SSH traffic before it enters the VPC.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Using network tags allows you to apply a single firewall rule to a group of instances. By tagging all target VMs and specifying the admin IP range in the source field, you minimize the number of rules regardless of how many VMs are added to the group.",
+      "why_not_A": "Creating a rule for every single IP is the opposite of manageable and will quickly lead to hitting the project's firewall rule quota.",
+      "why_not_C": "Applying a rule to the entire VPC without tags is too broad and violates the principle of least privilege if only certain instances should be accessible via SSH.",
+      "why_not_D": "Cloud Router is used for dynamic routing (BGP) and does not function as a stateful firewall for filtering traffic into the VPC."
+    },
+    "tags": [
+      "Firewall Rules",
+      "Network Tags"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-gcp-pcne-mock1-081",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "implementing-network",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A global financial institution is migrating a high-frequency trading application to Google Cloud. The architecture requires a hub-and-spoke topology using Shared VPC. The 'hub' project manages the network, while three 'spoke' projects host the workloads. To meet strict compliance requirements, you must ensure that traffic between two specific spoke projects (Spoke A and Spoke B) is forbidden, while both must maintain connectivity to a centralized security appliance (NGFW) located in a dedicated 'security-spoke' project. The NGFW is deployed as a cluster of instances with an internal load balancer (ILB). You have implemented a custom route in the hub project with the next hop set to the ILB of the security appliance. However, you observe that traffic from Spoke A to Spoke B is bypassing the NGFW and communicating directly via the default VPC routing. Which configuration change will ensure all inter-spoke traffic is forced through the NGFW while maintaining the Shared VPC structure?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a higher priority custom route in the hub project for the destination ranges of Spoke B, setting the next hop to the NGFW ILB, and disable 'Virtual Routing' on the Spoke A instances.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a firewall policy at the hub project level that denies all traffic between Spoke A and Spoke B, and create a specific allow rule for traffic destined for the NGFW ILB IP.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure a custom route in the hub project for the Spoke B subnet range with the next hop as the NGFW ILB, and ensure that the 'Custom Route' priority is lower (numerically smaller) than the default local VPC route.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a custom route in the hub project for the Spoke B range with the next hop as the NGFW ILB, and apply a firewall rule in the hub project that denies traffic from Spoke A's subnet to Spoke B's subnet, except when the source is the NGFW's internal IP.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "In a Shared VPC, local VPC routes (subnet routes) always take precedence over custom static routes. To force traffic between subnets in the same VPC (even across different projects) through an appliance, you cannot rely on routes alone because the local route will always win. You must use a combination of a custom route to direct traffic to the appliance AND a firewall rule to block the direct 'local' path between the subnets. By denying direct communication between Spoke A and Spoke B but allowing it via the NGFW, you force the traffic flow to the appliance.",
+      "why_not_A": "'Virtual Routing' is not a configurable setting on individual VM instances in this context; routing is handled by the VPC fabric. Disabling it is not a valid GCP mechanism to override local routes.",
+      "why_not_B": "A firewall policy that denies all traffic between Spoke A and B would block the traffic, but it wouldn't 'force' it through the NGFW unless the routing is already correct. More importantly, if you only block the traffic, the custom route still won't be used because the local route is preferred over the custom route for internal VPC traffic.",
+      "why_not_C": "In Google Cloud VPCs, local routes (routes to subnets within the same VPC) always have the highest priority and cannot be overridden by custom static routes, regardless of the priority number assigned to the custom route.",
+      "why_not_D": "This is the only way to achieve 'forced' steering in a single VPC/Shared VPC: since you cannot override the local route, you must block the direct path using firewall rules, effectively making the only viable path the one steered by the custom route to the appliance (provided the appliance is configured to forward the traffic)."
+    },
+    "tags": [
+      "Shared VPC",
+      "Custom Routes",
+      "NGFW",
+      "Traffic Steering"
+    ],
+    "estimated_time_seconds": 180,
+    "id": "q-gcp-pcne-mock1-082",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your organization is experiencing intermittent connectivity drops between two VPCs connected via VPC Network Peering. You need to identify whether the issue is caused by packet loss within the Google Cloud network or by a configuration error in the guest OS firewall. Which tool should you use to get a granular view of the network path and packet drops?",
+    "options": [
+      {
+        "id": "A",
+        "text": "VPC Flow Logs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Connectivity Tests",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Monitoring Dashboard",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Packet Mirroring",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Connectivity Tests (part of Network Intelligence Center) perform a static analysis of the configuration and a dynamic probe of the data plane to pinpoint exactly where a packet is being dropped, including whether it's due to a firewall rule or a network issue.",
+      "why_not_A": "VPC Flow Logs show that a connection was attempted or established, but they do not provide a hop-by-hop path analysis to identify the specific point of failure.",
+      "why_not_C": "Cloud Monitoring provides aggregate metrics (like CPU or throughput) but does not provide the granular packet-level path analysis required to debug intermittent drops between specific endpoints.",
+      "why_not_D": "Packet Mirroring clones traffic for inspection by a third-party appliance. While it can see the packets, it is overkill for identifying a drop point and does not analyze the network path itself."
+    },
+    "tags": [
+      "Network Intelligence Center",
+      "Connectivity Tests"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-083",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A network administrator needs to monitor the throughput of a Cloud Interconnect connection to ensure it does not exceed 80% of the provisioned capacity. They want to be alerted automatically when this threshold is breached. What is the most efficient way to implement this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable VPC Flow Logs and create a Log-based Metric in Cloud Logging.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure a Cloud Monitoring Alert Policy using the 'interconnect/egress_bytes_count' metric.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a custom script running on a GCE instance to poll the Interconnect API every minute.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set up Packet Mirroring to send all Interconnect traffic to a monitoring VM.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Monitoring provides native metrics for Cloud Interconnect. Creating an Alert Policy based on these predefined metrics is the standard, most efficient way to monitor capacity and trigger notifications.",
+      "why_not_A": "VPC Flow Logs provide sample-based data and are designed for security/audit analysis, not for real-time precision capacity monitoring of a physical link.",
+      "why_not_C": "Custom scripts introduce management overhead, potential points of failure, and are less efficient than the native monitoring service provided by GCP.",
+      "why_not_D": "Packet Mirroring is used for deep packet inspection (DPI) and security analysis; using it just to calculate throughput is computationally expensive and architecturally incorrect."
+    },
+    "tags": [
+      "Cloud Monitoring",
+      "Cloud Interconnect"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-gcp-pcne-mock1-084",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "You are troubleshooting a performance issue where an application is experiencing high latency. You suspect that some traffic is taking a suboptimal route through the Google network. Which feature allows you to visualize the actual paths traffic takes between your VPC and external destinations?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Network Topology",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Firewall Insights",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud DNS Logging",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Route Analysis",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Network Topology provides a visual representation of your network resources and the traffic flows between them, allowing you to see the actual paths and identify potential bottlenecks or suboptimal routing.",
+      "why_not_B": "Firewall Insights helps identify unused or overly permissive firewall rules, not the physical or logical path of the traffic.",
+      "why_not_C": "Cloud DNS Logging tracks DNS queries and responses, which does not provide information about the network routing path of the actual data packets.",
+      "why_not_D": "While 'Route Analysis' is a general term, the specific tool in the Network Intelligence Center for visualizing traffic flow and paths is Network Topology."
+    },
+    "tags": [
+      "Network Intelligence Center",
+      "Network Topology"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-085",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your company has a strict compliance requirement to log every single network connection attempt (both allowed and denied) for all instances in a production VPC. You are concerned about the cost and performance impact of logging. What is the best approach to achieve this while optimizing costs?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable VPC Flow Logs for the entire VPC with a sampling rate of 100%.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable VPC Flow Logs only on the specific subnets containing production workloads with a sampling rate of 100%.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use Packet Mirroring to send all traffic to a centralized logging server.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable Cloud Audit Logs for the Compute Engine API.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "VPC Flow Logs can be enabled at the subnet level. By targeting only the production subnets and setting the sampling rate to 100% (to meet compliance), you avoid the cost of logging non-production or management traffic.",
+      "why_not_A": "Enabling logs for the entire VPC would include all subnets, including development or test environments, leading to unnecessary costs.",
+      "why_not_C": "Packet Mirroring is significantly more expensive and resource-intensive than Flow Logs, as it copies every packet rather than just logging the flow metadata.",
+      "why_not_D": "Cloud Audit Logs track API calls (e.g., 'who created this VM'), not the actual network traffic flows between instances."
+    },
+    "tags": [
+      "VPC Flow Logs",
+      "Cost Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-086",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company is using a Shared VPC architecture. The host project administrator notices that several service projects are creating an excessive number of firewall rules, making the network difficult to manage and potentially slowing down rule evaluation. What is the best practice to optimize this operation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Move all workloads to a single VPC to eliminate the need for Shared VPC.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Hierarchical Firewall Policies to define common rules at the Organization or Folder level.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the quota for firewall rules in the host project.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Disable firewall logging to improve rule evaluation performance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Hierarchical Firewall Policies allow administrators to define rules at the Org or Folder level that apply to all VPCs underneath. This reduces redundancy and ensures consistent security posture across service projects without cluttering the VPC-level rule list.",
+      "why_not_A": "Moving everything to one VPC destroys the isolation and administrative boundaries provided by Shared VPC and is not a scalable solution.",
+      "why_not_C": "Increasing quotas solves the 'limit' problem but not the 'management' or 'complexity' problem; it does not optimize operations.",
+      "why_not_D": "Firewall logging has no impact on the performance of the firewall rule evaluation engine itself; it only affects the cost and volume of logs generated."
+    },
+    "tags": [
+      "Shared VPC",
+      "Hierarchical Firewall Policies"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-087",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is experiencing intermittent connectivity drops between a GKE cluster in us-central1 and a database on-premises. You suspect packet loss is occurring within the Google Cloud network. You need to identify the exact hop where the packets are being dropped while minimizing the impact on production traffic. Which tool should you use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Standard ICMP ping and traceroute from a VM in the same VPC",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Connectivity Tests in the Network Intelligence Center",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "VPC Flow Logs analyzed via Cloud Logging",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Packet Mirroring sent to a third-party IDS appliance",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Connectivity Tests use active probing and analysis of the network configuration (static analysis) to provide a hop-by-hop visualization of the path, specifically identifying where a packet is dropped (e.g., firewall rule or routing issue) without requiring manual packet capture.",
+      "why_not_A": "Standard traceroute often fails in GCP because many internal Google hops do not respond to ICMP TTL expired messages, leading to '***' and incomplete paths.",
+      "why_not_C": "Flow Logs show that a connection happened or was rejected, but they do not provide hop-by-hop path analysis to pinpoint exactly where in the transit the drop occurred.",
+      "why_not_D": "Packet Mirroring is used for deep packet inspection of the payload, but it does not provide a path analysis across the entire network fabric to the on-premises environment."
+    },
+    "tags": [
+      "Network Intelligence Center",
+      "Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-088",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company requires a detailed audit trail of all changes made to their VPC firewall rules to comply with regulatory requirements. They need to know who changed a rule, what the previous value was, and when the change occurred. Which GCP feature provides this specific historical data?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud Monitoring Dashboard for Network",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Firewall Insights",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Audit Logs",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "VPC Flow Logs",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Audit Logs (specifically Admin Activity logs) record every API call made to modify resources, including the identity of the caller, the timestamp, and the request/response bodies which detail the changes to the firewall rule.",
+      "why_not_A": "Cloud Monitoring tracks metrics (like CPU or throughput) but does not log configuration change history.",
+      "why_not_B": "Firewall Insights helps identify shadowed rules or unused rules based on traffic patterns, but it does not provide a historical audit log of who changed the rules.",
+      "why_not_D": "VPC Flow Logs record network traffic (IPs, ports, bytes), not changes to the infrastructure configuration."
+    },
+    "tags": [
+      "Audit",
+      "Governance"
+    ],
+    "estimated_time_seconds": 90,
+    "id": "q-gcp-pcne-mock1-089",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are managing a global application using a Global External HTTP(S) Load Balancer. You notice that users in Asia are experiencing high latency. You want to optimize the network path by ensuring that traffic enters the Google network as close to the user as possible and is routed over Google's private backbone. Which configuration should you verify?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Ensure you are using Premium Tier network service tier",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Switch to Standard Tier network service tier",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a Regional External HTTP(S) Load Balancer in Asia",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Increase the number of backend instances in the Asia region",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "The Premium Tier uses Google's global fiber backbone. Traffic is ingested at the nearest Edge Point of Presence (PoP) and carried over Google's private network to the destination, minimizing exposure to the public internet and reducing latency.",
+      "why_not_B": "Standard Tier routes traffic over the public internet for a longer duration and only enters the Google network closer to the destination region, which typically increases latency for global users.",
+      "why_not_C": "A Regional Load Balancer does not provide the same global anycast IP benefit and global backbone optimization that a Global Load Balancer with Premium Tier provides.",
+      "why_not_D": "Increasing backend instances improves processing capacity (throughput) but does not optimize the network path (latency) from the user to the Google network."
+    },
+    "tags": [
+      "Network Service Tiers",
+      "Optimization"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-090",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company has deployed several Shared VPCs. The network administrator needs to monitor for 'shadowed' firewall rules\u2014rules that are never hit because a previous rule in the priority list matches the traffic first. Which tool provides this specific operational insight?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Packet Mirroring",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Firewall Insights",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Logging with custom filters",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Network Topology visualization",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Firewall Insights specifically analyzes firewall rule usage and identifies shadowed rules (rules that are never triggered because a higher-priority rule matches the traffic), helping administrators clean up and optimize their security posture.",
+      "why_not_A": "Packet Mirroring clones traffic for analysis but doesn't analyze the logic of firewall rule priorities or shadowing.",
+      "why_not_C": "While you can see which rules are hit via logs, manually calculating which rules are 'shadowed' across thousands of logs is impractical compared to the automated analysis of Firewall Insights.",
+      "why_not_D": "Network Topology provides a visual map of resources and their communication paths, but not the logical analysis of firewall rule effectiveness."
+    },
+    "tags": [
+      "Firewall Insights",
+      "Optimization"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-gcp-pcne-mock1-091",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are troubleshooting a performance issue where a specific application is experiencing throughput bottlenecks. You suspect the VM's network interface is hitting a limit. You need to verify if the VM is experiencing packet drops due to egress bandwidth throttling. Where should you look for this information?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The VPC Flow Logs 'drop' field",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Monitoring metrics for 'network/sent_bytes_count'",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Compute Engine VM instance metrics for 'network/egress_packet_drop_count'",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The Cloud Router BGP session logs",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Compute Engine provides specific metrics at the VM level that track packet drops. 'egress_packet_drop_count' specifically indicates when the VM is attempting to send more data than the allocated bandwidth for its machine type allows.",
+      "why_not_A": "VPC Flow Logs show if a packet was dropped by a firewall rule, but they do not report drops caused by hardware/bandwidth throttling at the NIC level.",
+      "why_not_B": "Sent bytes count tells you how much data was sent, but it doesn't tell you how much was dropped due to throttling.",
+      "why_not_D": "Cloud Router logs focus on BGP peering and route advertisements, not the internal bandwidth limits of a specific VM instance."
+    },
+    "tags": [
+      "Monitoring",
+      "Performance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-092",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization uses a Shared VPC architecture with multiple service projects. You are observing intermittent packet loss and high latency between a GKE cluster in Service Project A and a database in Service Project B. You suspect a network bottleneck or a routing loop. Which combination of tools and methods should you use to pinpoint the exact hop causing the latency while maintaining visibility across project boundaries?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use the standard 'traceroute' utility from a pod in the GKE cluster and cross-reference the IP addresses with the VPC flow logs in the Host Project.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Enable VPC Flow Logs on all subnets, then use Cloud Monitoring to create a dashboard tracking the 'packets_dropped' metric across the Shared VPC.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use Connectivity Tests in the Network Intelligence Center, specifying the source pod IP and the destination database IP, and analyze the visualized path and configuration errors.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy a Packet Mirroring policy on the GKE subnet and send the traffic to a collector instance running tcpdump to analyze the TTL values of returning packets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Connectivity Tests (Network Intelligence Center) provide a managed way to perform static and dynamic analysis of the network path. It can detect misconfigured firewall rules, routing issues, and visualize the exact path a packet takes across a Shared VPC, even across different service projects, without requiring manual packet captures.",
+      "why_not_A": "Standard traceroute often fails in GCP because the Andromeda virtual network does not support traditional ICMP TTL expiration in the same way physical routers do; it usually shows a single hop or times out.",
+      "why_not_B": "Flow logs show that traffic occurred (or didn't), but they do not provide a hop-by-hop latency breakdown or identify the specific network component causing the delay.",
+      "why_not_D": "Packet Mirroring is resource-intensive and provides raw packets. While it shows what arrived, it doesn't easily reveal where in the Google Cloud fabric the latency occurred, as the fabric itself is abstracted from the mirrored traffic."
+    },
+    "tags": [
+      "Network Intelligence Center",
+      "Shared VPC",
+      "Connectivity Tests"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-093",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A global application is experiencing sporadic 502 Bad Gateway errors. You suspect that the Global External HTTP(S) Load Balancer is failing to connect to some backend instances in a specific region. You need to determine if the issue is due to backend timeouts, health check failures, or capacity exhaustion without modifying the application code. Which approach provides the most granular insight?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Check the Load Balancer's 'Backend Latency' metric in Cloud Monitoring and correlate it with the 'Frontend Request Count'.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Analyze the Cloud Load Balancing logs, specifically filtering for 'statusDetails' and 'backend_service_name' to identify specific error codes like 'failed_to_pick_backend'.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Increase the health check frequency and lower the unhealthy threshold to force the load balancer to rotate instances faster.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Enable VPC Flow Logs on the backend subnet and look for TCP RST packets coming from the backend instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Cloud Load Balancing logs include a 'statusDetails' field that provides the specific reason for the 502 error (e.g., 'failed_to_pick_backend' if no healthy backends exist, or 'backend_timeout'). This allows you to distinguish between a network timeout and a capacity issue.",
+      "why_not_A": "Latency metrics show performance degradation but do not explain the root cause of a 502 error, which is a connectivity/availability failure, not necessarily a slowness issue.",
+      "why_not_C": "Changing health check parameters is a mitigation attempt, not a diagnostic method. It may mask the problem or cause 'flapping' without identifying why the instances are failing.",
+      "why_not_D": "VPC Flow Logs show that a connection was reset, but they don't tell you if the Load Balancer initiated the reset due to a timeout or if the application crashed. They lack the HTTP-layer context provided by LB logs."
+    },
+    "tags": [
+      "Cloud Load Balancing",
+      "Monitoring",
+      "Troubleshooting"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-094",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are optimizing costs and performance for a multi-region deployment. You have a high volume of traffic between GKE clusters in us-central1 and europe-west1. You notice that traffic is occasionally routing through an unexpected third region, increasing latency. You are using a Global VPC. How should you ensure the most efficient path and monitor for deviations?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create static routes with the highest priority for the destination CIDRs and use the 'Network Topology' tool to visualize the traffic flow.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement a Hub-and-Spoke model using VPC Network Peering and monitor traffic using the 'Inter-region' metric in Cloud Monitoring.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Configure a Cloud Router in each region and use BGP community tags to influence the path, then monitor using the Network Topology tool.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Rely on the default Global VPC routing (which is shortest path) and use the Network Topology tool to identify if traffic is traversing unexpected regions via the 'Traffic' view.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "In a Global VPC, Google Cloud automatically routes traffic over its premium backbone using the shortest path. You cannot manually 'steer' internal VPC traffic using static routes to a different region if the destination is in another region of the same VPC. The Network Topology tool is the correct way to visualize this flow and detect anomalies.",
+      "why_not_A": "Static routes within a VPC cannot be used to force traffic to take a specific physical path between regions; the underlying fabric handles the routing.",
+      "why_not_B": "VPC Peering is for connecting different VPCs, not for optimizing traffic within a single Global VPC. It would add unnecessary complexity.",
+      "why_not_C": "Cloud Router and BGP are used for Hybrid Connectivity (VPN/Interconnect), not for internal routing between regions within a single Google Cloud VPC."
+    },
+    "tags": [
+      "Global VPC",
+      "Network Topology",
+      "Optimization"
+    ],
+    "estimated_time_seconds": 140,
+    "id": "q-gcp-pcne-mock1-095",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A security audit requires that all traffic entering your production VPC from the internet be inspected by a third-party Next-Generation Firewall (NGFW) appliance before reaching the application servers. You have implemented a 'sandwich' architecture with an external load balancer and an internal load balancer. You are seeing 'asymmetric routing' where requests enter through the NGFW but responses bypass it. How do you fix this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Change the external load balancer to a Network Load Balancer and enable 'Session Affinity' on the backend service.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Configure the NGFW appliances to perform Source NAT (SNAT) on all incoming traffic before forwarding it to the internal load balancer.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Disable the internal load balancer and use a Shared VPC with a single subnet for both the NGFW and the application servers.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Apply a firewall rule with a high priority that forces all egress traffic from the app servers to the NGFW's IP address.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a firewall sandwich, asymmetric routing occurs because the app server sees the original client IP as the source and tries to respond directly to it via the default gateway (the VPC fabric). By performing SNAT on the NGFW, the app server sees the NGFW's IP as the source, forcing the return traffic back to the NGFW for inspection.",
+      "why_not_A": "Session affinity ensures a client hits the same backend, but it doesn't solve the routing path issue for the return packet.",
+      "why_not_C": "Putting them in the same subnet doesn't change the routing logic; the app server will still use the default VPC gateway to respond to the client.",
+      "why_not_D": "Firewall rules in GCP are for allowing/denying traffic, not for routing. You cannot use a firewall rule to change the next-hop of a packet."
+    },
+    "tags": [
+      "NGFW",
+      "Asymmetric Routing",
+      "SNAT"
+    ],
+    "estimated_time_seconds": 160,
+    "id": "q-gcp-pcne-mock1-096",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "You are managing a complex environment with multiple VPCs connected via VPC Network Peering. You need to implement a centralized monitoring system that captures all traffic metadata for compliance. You find that VPC Flow Logs are generating too much data, leading to high costs, but you cannot lose visibility into 'rejected' packets. What is the most efficient way to optimize this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Set the flow log sampling rate to 10% and use a Log Sink to filter for only 'denied' packets in Cloud Logging.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Disable VPC Flow Logs and use Packet Mirroring for all subnets, sending the data to a BigQuery dataset.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Set the sampling rate to 0% for 'accepted' traffic and 100% for 'rejected' traffic using the Flow Log configuration.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Set a low sampling rate for the overall subnet but use a Log Sink with a filter for 'jsonPayload.disposition = \"DENY\"' to ensure all rejected packets are captured and archived.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Wait, actually, the most efficient way to handle this in GCP is to adjust the sampling rate to reduce volume. However, sampling is applied *before* the log is generated. To ensure you don't miss 'denied' packets while saving cost, you must balance the sampling rate. Option A is the most realistic approach given that GCP does not allow different sampling rates for 'Allow' vs 'Deny' traffic. You sample the flow and then filter the results. (Correction: In a real scenario, you would use a sampling rate that captures enough data and then use a Sink to only keep the 'DENY' logs in a long-term bucket to save on storage/analysis costs).",
+      "why_not_B": "Packet Mirroring is significantly more expensive than Flow Logs as it mirrors the entire packet, not just metadata.",
+      "why_not_C": "GCP VPC Flow Logs do not support separate sampling rates for accepted vs rejected traffic; there is only one sampling rate per subnet.",
+      "why_not_D": "If the sampling rate is low, the 'DENY' packets are sampled *before* they reach the Log Sink. If a packet is not sampled, it will never reach the sink, regardless of the filter."
+    },
+    "tags": [
+      "VPC Flow Logs",
+      "Cloud Logging",
+      "Cost Optimization"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcne-mock1-097",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services company is experiencing intermittent packet loss between two VPCs connected via VPC Network Peering. The network team needs to identify if the issue is caused by firewall rules or a transient routing failure. Which Google Cloud tool should be used to pinpoint the exact hop where the packet loss is occurring within the Google Cloud network fabric?",
+    "options": [
+      {
+        "id": "A",
+        "text": "VPC Flow Logs",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Connectivity Tests",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Cloud Monitoring Network Metrics",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Packet Mirroring",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Connectivity Tests use active probing and analysis of the VPC configuration (routes, firewall rules) to provide a detailed trace of the path between two endpoints, allowing engineers to see exactly where a packet is dropped.",
+      "why_not_A": "VPC Flow Logs provide a record of what happened (source, destination, port), but they do not provide a hop-by-hop trace of the network fabric to identify the specific point of failure.",
+      "why_not_C": "Network Metrics provide aggregate data on throughput and error rates but cannot pinpoint a specific failure point in a path between two specific VMs.",
+      "why_not_D": "Packet Mirroring clones traffic for deep packet inspection (DPI) and security analysis, but it is not a tool for diagnosing routing hops or firewall drops in the control plane."
+    },
+    "tags": [
+      "Network Intelligence Center",
+      "Connectivity Tests"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-098",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization uses a Shared VPC architecture. You notice that a specific project's application is experiencing high latency when communicating with a database in another project. You suspect the issue is related to the internal load balancer's backend health checks. How can you verify if the load balancer is frequently flapping the backend instances?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Check the 'Health check' metric in Cloud Monitoring for the specific backend service.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Analyze VPC Flow Logs for 'REJECT' actions on the health check port.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Enable Packet Mirroring on the backend instances and analyze the TCP handshakes.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Run a Connectivity Test from the Load Balancer IP to the backend instances.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Cloud Monitoring provides specific metrics for Load Balancers, including health check status. Monitoring the health check metric allows you to see if instances are moving between HEALTHY and UNHEALTHY states (flapping).",
+      "why_not_B": "VPC Flow Logs show traffic, but they don't explicitly show the 'state' of the health check result in a way that identifies flapping patterns as efficiently as metrics.",
+      "why_not_C": "Packet Mirroring is too resource-intensive and complex for simply verifying if a health check is failing; it is used for payload analysis, not state monitoring.",
+      "why_not_D": "Connectivity Tests verify if a path is open, but they provide a snapshot in time and cannot show a historical pattern of flapping health checks."
+    },
+    "tags": [
+      "Cloud Monitoring",
+      "Internal Load Balancing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-099",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is utilizing Cloud Interconnect to connect their on-premises data center to GCP. They are observing periodic throughput drops. The network administrator wants to ensure that traffic is balanced across multiple VLAN attachments to avoid saturating a single link. Which feature should be implemented to optimize this traffic distribution?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Increase the bandwidth of the existing VLAN attachment.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Implement Equal-Cost Multi-Path (ECMP) routing.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure a Priority-based route for the primary VLAN attachment.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Global Load Balancer to distribute traffic to the on-premises site.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "ECMP allows the network to distribute traffic across multiple paths of equal cost, effectively utilizing multiple VLAN attachments to increase aggregate bandwidth and prevent a single link from becoming a bottleneck.",
+      "why_not_A": "Increasing bandwidth on one attachment doesn't solve the distribution problem and is limited by the maximum capacity of a single attachment.",
+      "why_not_C": "Priority-based routing creates a primary/backup scenario, which means only one link is used at a time, failing to optimize throughput across multiple links.",
+      "why_not_D": "Global Load Balancers distribute traffic to backends within GCP; they do not manage the L3 routing distribution across Interconnect VLAN attachments."
+    },
+    "tags": [
+      "Cloud Interconnect",
+      "ECMP"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-100",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are tasked with auditing all firewall rule changes across a large organization with 50+ projects to ensure compliance with security policies. You need a way to see who changed a specific firewall rule and what the previous configuration was. Which tool is most appropriate for this audit?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Firewall Insights",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Cloud Asset Inventory",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Cloud Audit Logs",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "VPC Flow Logs",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Audit Logs (specifically Admin Activity logs) record every API call made to modify resources, including the identity of the user, the timestamp, and the request/response details of the change.",
+      "why_not_A": "Firewall Insights helps identify unused or overly permissive rules, but it does not provide a historical audit trail of who changed a rule.",
+      "why_not_B": "Cloud Asset Inventory provides a snapshot of current assets or a history of asset states, but Audit Logs are the primary source for 'who' performed the action.",
+      "why_not_D": "VPC Flow Logs record network traffic, not configuration changes to the firewall rules themselves."
+    },
+    "tags": [
+      "Cloud Audit Logs",
+      "Compliance"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-101",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "managing-network-ops",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "An application is experiencing high latency during peak hours. You suspect that the Virtual Machine's network throughput is being throttled by the Google Cloud egress bandwidth limits. How can you definitively confirm if the VM is hitting the network throughput limit?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Check the 'Network throughput' metric in Cloud Monitoring for the VM instance.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Analyze the 'dropped_packets' metric in the VM's OS-level logs.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use the 'compute.googleapis.com/instance/network/sent_bytes_count' metric and compare it to the machine type's theoretical limit.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Run a traceroute from the VM to an external target to see if there is a bottleneck at the gateway.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "By monitoring the bytes sent per second and comparing that value to the maximum egress bandwidth allowed for that specific machine type (and number of vCPUs), you can determine if the VM is operating at its ceiling.",
+      "why_not_A": "While 'Network throughput' is a general term, you must specifically look at the sent bytes count and correlate it with the machine type limits to confirm throttling.",
+      "why_not_B": "OS-level dropped packets can be caused by many things (buffer overflows, firewall drops) and do not explicitly indicate GCP infrastructure throttling.",
+      "why_not_D": "Traceroute identifies the path and latency of hops, but it cannot tell you if the VM's NIC is being throttled by the hypervisor based on machine type limits."
+    },
+    "tags": [
+      "VM Networking",
+      "Cloud Monitoring"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-102",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A global enterprise requires a high-availability connection between their on-premises data center and a Google Cloud VPC. They have opted for Cloud Interconnect. To ensure maximum resiliency and meet the Google-recommended architecture for high availability, they want to avoid any single point of failure. Which configuration should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A single Dedicated Interconnect connection with two VLAN attachments in the same region.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Two Dedicated Interconnect connections in a single metropolitan area, each connected to a different edge availability domain.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Two Dedicated Interconnect connections in the same edge availability domain using a single router.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "One Dedicated Interconnect connection and one Partner Interconnect connection as a backup.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "For high availability, Google recommends using two connections in different edge availability domains (metropolitan areas) to protect against the failure of an entire location.",
+      "why_not_A": "A single connection is a single point of failure; if the physical link or the port fails, connectivity is lost.",
+      "why_not_C": "Using the same edge availability domain means a site-wide power outage or network failure at that specific location would drop all connectivity.",
+      "why_not_D": "While this provides redundancy, it is not the standard architectural pattern for high-performance high-availability and creates inconsistent performance/bandwidth characteristics."
+    },
+    "tags": [
+      "Cloud Interconnect",
+      "High Availability",
+      "Edge Availability Domain"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-103",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is using Cloud Router to manage dynamic routing between an on-premises environment and a VPC via Cloud VPN. You notice that traffic from the VPC to on-premises is taking a suboptimal path, preferring a remote VPN tunnel over a local one despite both having the same prefix length. Which BGP attribute should you modify to influence the path selection for traffic leaving the VPC?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Modify the AS-Path prepend on the on-premises router.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Change the Local Preference on the Cloud Router.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Adjust the MED (Multi-Exit Discriminator) value on the on-premises router for the preferred tunnel.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Increase the BGP keepalive timer on the Cloud Router.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "MED is used to influence how traffic enters an autonomous system. By lowering the MED value on the preferred on-premises router/tunnel, Cloud Router will prefer that path for egress traffic from the VPC.",
+      "why_not_A": "AS-Path prepending influences how traffic enters the on-premises network from Google Cloud, but MED is the standard way to signal preference for specific entry points into the on-premises AS.",
+      "why_not_B": "Cloud Router does not allow users to manually configure 'Local Preference' in the same way a traditional BGP router does; it is an internal Google attribute.",
+      "why_not_D": "Keepalive timers affect session stability and failure detection, not path selection/routing preference."
+    },
+    "tags": [
+      "Cloud Router",
+      "BGP",
+      "Routing Policy"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-104",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is migrating to Google Cloud and needs to connect multiple VPCs in different projects to a single on-premises data center. They want to minimize the number of VPN tunnels and simplify management. Which architecture should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a separate Cloud VPN gateway for every VPC and establish tunnels to the on-premises gateway.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Shared VPC where the host project manages the Cloud VPN and provides connectivity to service projects.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement VPC Network Peering between all VPCs and use a single VPN in one of the peered VPCs.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a transit VPC with a third-party Network Virtual Appliance (NVA) to route traffic between VPCs and on-premises.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Shared VPC allows a host project to manage the network resources (including VPNs) and share them with service projects, centralizing the hybrid connection and reducing the number of tunnels.",
+      "why_not_A": "This creates massive management overhead and exceeds the number of tunnels supported by many on-premises hardware gateways.",
+      "why_not_C": "VPC Network Peering is non-transitive. If VPC A is peered with VPC B, and VPC B has a VPN to on-premises, VPC A cannot reach on-premises via VPC B.",
+      "why_not_D": "While possible, this adds significant complexity, cost, and a potential performance bottleneck compared to the native Shared VPC approach."
+    },
+    "tags": [
+      "Shared VPC",
+      "Cloud VPN",
+      "Network Architecture"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-105",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a hybrid connectivity solution for a client who requires 10 Gbps of bandwidth and needs to ensure that the connection is encrypted in transit. They have already decided on using Dedicated Interconnect. How should you achieve the encryption requirement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable the 'Encrypted' checkbox in the VLAN attachment settings of the Interconnect.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud VPN (HA VPN) over the Dedicated Interconnect VLAN attachments.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Dedicated Interconnect is encrypted by default at the physical layer; no further action is needed.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure MACsec on the Dedicated Interconnect physical ports.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dedicated Interconnect does not encrypt traffic by default. To get encrypted traffic over a private connection, you must run HA VPN tunnels over the Interconnect VLAN attachments (VPN over Cloud Interconnect).",
+      "why_not_A": "There is no such 'Encrypted' checkbox for VLAN attachments in the Google Cloud Console.",
+      "why_not_C": "Interconnect provides a private path, but the data is not encrypted by Google. Encryption must be handled by the customer.",
+      "why_not_D": "While MACsec is a standard, Google Cloud Dedicated Interconnect does not currently support customer-managed MACsec for encryption of the data plane."
+    },
+    "tags": [
+      "Dedicated Interconnect",
+      "Cloud VPN",
+      "Encryption"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-106",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company is using a Hub-and-Spoke network topology using VPC Network Peering. The Hub VPC contains the Cloud Router and the VPN connection to on-premises. The Spoke VPCs need to communicate with the on-premises network. You have configured the VPN and the peering. However, the Spokes cannot reach on-premises. What is the most likely cause?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The Hub VPC does not have a default route to the internet.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "The Spoke VPCs are not peering with each other.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "The 'Export custom routes' and 'Import custom routes' options are not enabled on the peering connection.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "The Cloud Router is not configured to advertise the Spoke VPC ranges to on-premises.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "By default, VPC peering only exchanges subnet routes. Dynamic routes (like those from Cloud Router/VPN) are considered custom routes and must be explicitly enabled for export/import in the peering settings to be shared between VPCs.",
+      "why_not_A": "Internet connectivity is irrelevant to the internal routing between a Spoke VPC and an on-premises network via a Hub.",
+      "why_not_B": "Spokes do not need to peer with each other; they only need to peer with the Hub to reach the shared resources.",
+      "why_not_D": "While the Cloud Router must advertise ranges, the scenario states the Hub has the VPN; if the peering is not configured to exchange custom routes, the Spoke VPC will never see the route to on-premises, regardless of what the Cloud Router advertises."
+    },
+    "tags": [
+      "VPC Network Peering",
+      "Custom Routes",
+      "Hub-and-Spoke"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-107",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A global financial services firm is implementing a high-availability hybrid architecture. They have two on-premises data centers in different regions and require 10 Gbps throughput to a single VPC in GCP. They have deployed two Cloud Interconnect (Dedicated) connections in two different metropolitan areas. To ensure maximum resiliency (99.99% SLA) and avoid suboptimal routing, they must ensure that traffic from Data Center A always prefers the Interconnect in the same metro area unless a total failure occurs. Which configuration achieves this while adhering to GCP's best practices for BGP routing?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure BGP Local Preference on the on-premises routers to prefer the local Interconnect and use AS-Path prepending on the Google side to influence return traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use BGP MED (Multi-Exit Discriminator) values on the on-premises routers, assigning a lower MED to the local Interconnect and a higher MED to the remote Interconnect.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Configure the Cloud Router to use 'Custom Route Advertisement' with a more specific prefix for the local data center across the local Interconnect.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a policy-based routing (PBR) mechanism on the VPC network to force traffic to the specific Interconnect attachment based on the destination IP range.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "For influencing ingress traffic (GCP to on-premises), Google Cloud Routers respect BGP MED. By assigning a lower MED value to the preferred (local) path, Google will prefer that path for outbound traffic. This is the standard mechanism for influencing path selection in a multi-homed Dedicated Interconnect setup to avoid 'tromboning' or suboptimal routing.",
+      "why_not_A": "Local Preference is a non-transitive attribute used within an AS to influence egress traffic (on-premises to GCP). It cannot be used to influence how Google sends traffic back to the data center.",
+      "why_not_C": "Cloud Router does not support 'Custom Route Advertisement' in a way that allows the on-premises router to dictate prefix specificity to Google for the purpose of path preference; the on-premises router advertises the prefixes, and Google's routing table selects the best path based on BGP attributes.",
+      "why_not_D": "VPC networks in GCP do not support Policy-Based Routing (PBR) at the network layer to steer traffic to specific Interconnect attachments; routing is handled by the Cloud Router via BGP."
+    },
+    "tags": [
+      "Cloud Interconnect",
+      "BGP",
+      "Traffic Engineering"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-108",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "An enterprise is migrating a legacy application to GCP that requires a strictly non-overlapping IP space but must communicate with an on-premises environment via Cloud VPN. Due to a merger, the on-premises network has developed overlapping CIDRs with the GCP VPC. The company cannot re-address the on-premises network. They need to implement a solution that allows a specific set of GCP instances to access a specific set of on-premises servers without causing routing loops or global routing instability. What is the most scalable and architecturally sound approach?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a transit VPC with a network virtual appliance (NVA) performing 1:1 Static NAT for every required server communication.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Private Service Connect (PSC) to create endpoints for the on-premises services, treating the on-premises environment as a service producer.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement a 'Landing Zone' VPC with a Cloud Router using BGP, and deploy a proxy layer (such as Envoy or Nginx) to handle the translation between the overlapping IP ranges.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Deploy a dedicated NAT Gateway instance in a separate 'Transit VPC' that performs Destination NAT (DNAT) and Source NAT (SNAT) to map the overlapping on-premises range to a non-overlapping 'virtual' range.",
+        "is_correct": true
+      }
+    ],
+    "correct_answer": "D",
+    "explanation": {
+      "why_correct": "When dealing with overlapping CIDRs that cannot be changed, the industry standard is to use a 'Virtual IP' (VIP) range. A NAT gateway (NVA) in a transit VPC maps the overlapping on-premises range to a unique, non-overlapping range. GCP instances route to the VIP range, the NVA translates this to the actual on-premises IP, and SNATs the source to ensure the return path is valid. This prevents routing table pollution in the main VPC.",
+      "why_not_A": "1:1 Static NAT for every single server is not scalable for an enterprise environment and creates an administrative nightmare as the application grows.",
+      "why_not_B": "PSC is designed for connecting to services within GCP or specific supported SaaS; it is not a general-purpose tool for solving overlapping CIDR issues across a VPN tunnel to a legacy on-premises data center.",
+      "why_not_C": "A proxy layer works at Layer 7. If the application requires Layer 3/4 connectivity (TCP/UDP) for various ports or non-HTTP protocols, a proxy is insufficient and introduces significant latency and overhead compared to a NAT gateway."
+    },
+    "tags": [
+      "Cloud VPN",
+      "Overlapping CIDRs",
+      "NAT"
+    ],
+    "estimated_time_seconds": 180,
+    "id": "q-gcp-pcne-mock1-109",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "hybrid-connectivity",
+    "type": "scenario",
+    "difficulty": 5,
+    "stem": "A company uses a Shared VPC architecture with multiple service projects. They have a Hybrid Connectivity hub in the host project connected via Partner Interconnect to an on-premises environment. They are experiencing a 'route exhaustion' issue where the on-premises routers are struggling with the number of specific routes being advertised from GCP. The goal is to maintain granular control over which service projects can access which on-premises subnets while minimizing the number of routes advertised to on-premises. Which strategy is most effective?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Enable 'Global Dynamic Routing' in the VPC and use BGP route aggregation on the Cloud Router to advertise a single summary route for all VPC subnets.",
+        "is_correct": true
+      },
+      {
+        "id": "B",
+        "text": "Disable Global Dynamic Routing and use Regional Dynamic Routing, creating a separate Cloud Router in every region to split the route load.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement VPC Network Peering between service projects and the host project to distribute the BGP sessions across multiple Cloud Routers.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use Static Routes in the host project to point to the Interconnect attachment and disable BGP on the Cloud Router entirely.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "A",
+    "explanation": {
+      "why_correct": "Global Dynamic Routing allows a single Cloud Router to advertise routes for the entire VPC across all regions. By using BGP route aggregation (summarization) on the Cloud Router, the company can advertise a few large CIDR blocks to on-premises instead of dozens of small subnet routes, solving the route exhaustion issue while still allowing connectivity to all service projects.",
+      "why_not_B": "Regional Dynamic Routing would actually increase the complexity and potentially the number of BGP sessions needed, and it would not solve the problem of the total number of routes being advertised to the on-premises router.",
+      "why_not_C": "Shared VPC already handles the connectivity between service projects and the host project; adding peering is redundant and does not solve the BGP route advertisement limit on the on-premises router.",
+      "why_not_D": "Disabling BGP removes the ability to have automatic failover and dynamic path selection, which is critical for a Professional Cloud Network Engineer's design. Static routes would require manual updates for every new subnet, which is not scalable."
+    },
+    "tags": [
+      "Shared VPC",
+      "Cloud Router",
+      "BGP Aggregation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-110",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company needs to restrict traffic to their internal application servers so that they only accept requests from a specific set of trusted internal proxy servers. They want to implement this security layer using the most efficient GCP native mechanism that allows for grouping instances without relying on static IP addresses. Which approach should they use?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a firewall rule using the source IP ranges of the proxy servers.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create a firewall rule using a target service account and a source network tag.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create a firewall rule using a target service account and a source service account.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use a Shared VPC and implement a single firewall rule at the host project level for all subnets.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Using service accounts for both the source and target allows for identity-based security that is independent of IP addresses or network tags. This is the most scalable and secure method for internal microservice-to-microservice communication.",
+      "why_not_A": "IP ranges are static and difficult to maintain in dynamic cloud environments where instances may be recreated or scaled.",
+      "why_not_B": "Network tags are applied to instances and can be changed by anyone with Compute Instance Admin permissions, making them less secure than service accounts for identity-based filtering.",
+      "why_not_D": "A single firewall rule for all subnets is too broad and violates the principle of least privilege."
+    },
+    "tags": [
+      "firewall-rules",
+      "service-accounts"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-111",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "An organization is deploying a multi-tier application. They require a security architecture where the database tier is completely isolated from the public internet and can only be accessed by the application tier. Which design pattern fulfills this requirement while adhering to Google Cloud best practices?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Place the database in a separate VPC and use VPC Network Peering with a firewall rule allowing only the application VPC range.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Place the database in a private subnet with no External IP and use a firewall rule allowing ingress only from the application tier's service account.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Assign a Public IP to the database but use a firewall rule to block all traffic except from the application tier.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use a Cloud NAT gateway on the database subnet to allow it to communicate with the application tier.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Removing the external IP ensures the instance is not routable from the internet. Combining this with a service-account-based firewall rule ensures strict identity-based access from the application tier.",
+      "why_not_A": "While peering works, placing tiers in separate VPCs adds unnecessary complexity for a single application's tiering unless there are strict organizational boundary requirements.",
+      "why_not_C": "Assigning a public IP increases the attack surface and violates the requirement for the database to be 'completely isolated' from the internet.",
+      "why_not_D": "Cloud NAT is used for outbound connectivity (egress) from private instances to the internet, not for internal communication between tiers."
+    },
+    "tags": [
+      "network-isolation",
+      "vpc-design"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-112",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company wants to inspect all outbound traffic from their GCP environment to a third-party API to ensure no sensitive data is being leaked (Data Loss Prevention). They need a solution that can perform deep packet inspection (DPI) on the traffic. Which solution should they implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Implement Hierarchical Firewall Policies to filter traffic by port and protocol.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud Armor to filter outbound requests based on signatures.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Deploy a third-party Network Virtual Appliance (NVA) and route outbound traffic through it using a custom route.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Configure a Cloud NAT gateway with a static IP to track outbound connections.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "GCP native firewall rules and Cloud Armor (which is for ingress) do not perform Deep Packet Inspection (DPI). To perform DPI on outbound traffic, a Network Virtual Appliance (NVA) is required, with traffic routed to it via a custom route (next-hop).",
+      "why_not_A": "Hierarchical Firewall Policies control access based on L3/L4 headers but cannot inspect the payload of the packets.",
+      "why_not_B": "Cloud Armor is an edge security service designed to protect against incoming (ingress) attacks, not for outbound (egress) inspection.",
+      "why_not_D": "Cloud NAT provides a way for private instances to reach the internet, but it does not inspect the content of the traffic."
+    },
+    "tags": [
+      "nva",
+      "outbound-inspection"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-113",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "Your organization is implementing a 'Hub and Spoke' network topology using Shared VPC. You need to ensure that the spoke projects cannot communicate with each other, but all spoke projects must be able to communicate with the hub project for centralized security services. How should you design the firewall rules?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create a single firewall rule in the host project allowing all internal traffic within the Shared VPC.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Create firewall rules in the host project that allow traffic from spoke service accounts to the hub's service accounts, but do not create rules allowing spoke-to-spoke traffic.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Create firewall rules in each spoke project to block traffic coming from other spoke projects.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use VPC Network Peering between each spoke project to control the traffic flow.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a Shared VPC, firewall rules are managed in the host project. By explicitly allowing spoke-to-hub traffic and relying on the implicit deny for spoke-to-spoke traffic (or creating an explicit deny rule), you achieve the required isolation.",
+      "why_not_A": "Allowing all internal traffic would permit spoke-to-spoke communication, violating the security requirement.",
+      "why_not_C": "Firewall rules for a Shared VPC must be defined in the host project; spoke projects cannot manage the firewall rules for the shared network.",
+      "why_not_D": "The scenario specifies a Shared VPC; VPC Peering is a different connectivity model and would not be the primary method for managing internal traffic within a single Shared VPC network."
+    },
+    "tags": [
+      "shared-vpc",
+      "hub-and-spoke"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-114",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 2,
+    "stem": "A company wants to expose a private internal service to a small group of external partners. They want to avoid using public IP addresses on their backend instances and want to ensure that only specific source IP addresses from the partners can access the service. Which architectural combination is most appropriate?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud VPN and a firewall rule allowing the partner's IP range.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "External HTTP(S) Load Balancer with Cloud Armor and backend instances without public IPs.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Identity-Aware Proxy (IAP) combined with a public IP on the backend instances.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Internal Load Balancer with a Cloud NAT gateway for the partners.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An External HTTP(S) Load Balancer allows the backend instances to remain private (no public IPs). Cloud Armor can then be used to create a whitelist of the partners' specific source IP addresses, providing the required security layer.",
+      "why_not_A": "Cloud VPN is used for site-to-site connectivity. While secure, it requires the partner to set up a VPN gateway, which may be too complex for a 'small group of partners' compared to a load balancer.",
+      "why_not_C": "The requirement specifically states they want to avoid using public IP addresses on backend instances.",
+      "why_not_D": "Internal Load Balancers are not reachable from the public internet, and Cloud NAT is for outbound traffic, not for allowing inbound partner access."
+    },
+    "tags": [
+      "cloud-armor",
+      "load-balancing"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-115",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "Your organization is implementing a hub-and-spoke network topology using Shared VPC. You need to ensure that traffic from the spoke projects can only reach the hub's centralized security appliances (IDS/IPS) before exiting to the internet, and that spoke-to-spoke communication is strictly prohibited. Which design pattern should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Apply a single high-priority firewall rule in the Shared VPC host project allowing all traffic from spoke ranges to the security appliance IP.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use VPC Firewall Rules with priority-based ordering and target tags, combined with a centralized appliance using a custom route with a next-hop IP address.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Implement Hierarchical Firewall Policies at the folder level to allow traffic to the appliance and deny all other traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Configure a Cloud NAT gateway in each spoke project to route traffic through the hub appliance.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "To force traffic through a security appliance (inspection), you must use a custom route (next-hop IP) to redirect traffic. To prevent spoke-to-spoke communication, you must use firewall rules (target tags or service accounts) to explicitly deny traffic between spoke subnets while allowing traffic to the appliance.",
+      "why_not_A": "A single allow rule does not prevent spoke-to-spoke communication, nor does it force traffic to the appliance; it only permits it if the routing is already correct.",
+      "why_not_C": "While Hierarchical Policies can deny traffic, they cannot replace the routing mechanism (next-hop) required to physically steer traffic through a third-party appliance.",
+      "why_not_D": "Cloud NAT is used for outbound internet access for private instances; it is not a mechanism for routing internal traffic through a security appliance for inspection."
+    },
+    "tags": [
+      "Shared VPC",
+      "Traffic Steering",
+      "Firewall Rules"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-116",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A financial services client requires a secure connection between their on-premises data center and a Google Cloud VPC. They mandate that traffic must be encrypted in transit and must not traverse the public internet. Which connectivity solution meets these requirements?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Cloud VPN (HA VPN) over the public internet.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Dedicated Interconnect with MACsec encryption.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Partner Interconnect without any additional encryption layers.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Cloud VPN over a Dedicated Interconnect connection.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "Dedicated Interconnect provides a private physical connection (not traversing the public internet). MACsec (Layer 2 encryption) ensures that the traffic is encrypted between the on-premises router and the Google edge, meeting both the 'no public internet' and 'encrypted in transit' requirements.",
+      "why_not_A": "Cloud VPN traverses the public internet, which violates the client's mandate.",
+      "why_not_C": "Standard Interconnect provides a private path but does not encrypt the data in transit by default.",
+      "why_not_D": "While possible, Cloud VPN over Interconnect is typically used for IPsec (Layer 3). MACsec on Dedicated Interconnect is the more performant, industry-standard way to meet this specific physical-layer encryption requirement for high-capacity links."
+    },
+    "tags": [
+      "Hybrid Connectivity",
+      "Interconnect",
+      "MACsec"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcne-mock1-117",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a security architecture for a multi-tier application. The application consists of a public-facing load balancer, a web tier, and a database tier. You want to implement a 'Zero Trust' approach to ensure the database tier only accepts traffic from the web tier, regardless of the IP addresses assigned to the instances. How should you achieve this?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Create firewall rules using the IP ranges of the web tier subnets as the source filter.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use a Shared VPC and apply a single firewall rule to the host project.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Create firewall rules using Service Accounts as the source and target filters.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use Network Tags to identify the web tier and the database tier in the firewall rules.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Service Accounts are the most secure way to implement identity-based filtering in GCP. Unlike IP ranges or tags, Service Accounts are tied to the identity of the VM instance, making the security policy independent of network changes or accidental tag modifications, aligning with Zero Trust principles.",
+      "why_not_A": "IP-based rules are brittle; if the subnet changes or instances are moved, the rules must be updated. It is not identity-based.",
+      "why_not_B": "Shared VPC is a networking construct for administration, not a security mechanism for inter-tier traffic control.",
+      "why_not_D": "Network tags are effective but can be modified by anyone with the 'compute.instances.setTags' permission, making them less secure and less 'identity-driven' than Service Accounts."
+    },
+    "tags": [
+      "Zero Trust",
+      "Firewall Rules",
+      "Service Accounts"
+    ],
+    "estimated_time_seconds": 100,
+    "id": "q-gcp-pcne-mock1-118",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "A company needs to expose a private GKE cluster's internal services to a small group of trusted external partners. The solution must provide Layer 7 filtering, SSL termination, and the ability to restrict access based on the partner's source IP addresses. Which configuration is the most secure and scalable?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Assign public IP addresses to the GKE nodes and use node-level firewall rules.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy a Cloud Armor policy attached to an External HTTP(S) Load Balancer with a Serverless NEGs or GKE Ingress.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Set up a Site-to-Site VPN and allow the partners to access the internal cluster IP range.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Use an Internal HTTP(S) Load Balancer and a Proxy-only subnet.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "An External HTTP(S) Load Balancer provides L7 capabilities and SSL termination. Cloud Armor allows for precise IP-based access control (allow-listing) at the edge, preventing unauthorized traffic from even reaching the GKE cluster.",
+      "why_not_A": "Assigning public IPs to nodes increases the attack surface significantly and does not provide L7 filtering or centralized SSL termination.",
+      "why_not_C": "VPNs are for site-to-site connectivity. While secure, they are not scalable for 'small groups of partners' and do not provide the L7 filtering/SSL termination required by the prompt.",
+      "why_not_D": "Internal Load Balancers are not reachable from the external internet without additional complex tunneling or proxies."
+    },
+    "tags": [
+      "Cloud Armor",
+      "Load Balancing",
+      "GKE Security"
+    ],
+    "estimated_time_seconds": 130,
+    "id": "q-gcp-pcne-mock1-119",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 3,
+    "stem": "You are designing a security architecture to protect a set of sensitive VMs from DDoS attacks and common web exploits (SQL injection, XSS). You want to minimize the operational overhead of managing your own WAF appliances. Which Google Cloud native solution should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Deploy a fleet of NVA (Network Virtual Appliances) in a dedicated security VPC.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Use Cloud IDS to monitor traffic and manually block IPs via firewall rules.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Implement Cloud Armor with pre-configured WAF rules attached to an External HTTP(S) Load Balancer.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Use VPC Service Controls (VPC SC) to create a service perimeter around the VMs.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "Cloud Armor is Google's native WAF and DDoS protection service. It integrates directly with the External HTTP(S) Load Balancer and provides pre-configured rules for common OWASP Top 10 threats like SQLi and XSS, minimizing operational overhead.",
+      "why_not_A": "NVAs increase operational overhead (patching, scaling, managing), which the prompt explicitly asks to minimize.",
+      "why_not_B": "Cloud IDS is a detection service, not a prevention service. Manually blocking IPs is reactive and not scalable for DDoS or complex web exploits.",
+      "why_not_D": "VPC Service Controls are designed to prevent data exfiltration from Google APIs (like Cloud Storage or BigQuery); they do not protect against L7 web exploits like SQL injection."
+    },
+    "tags": [
+      "Cloud Armor",
+      "WAF",
+      "DDoS Protection"
+    ],
+    "estimated_time_seconds": 110,
+    "id": "q-gcp-pcne-mock1-120",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "A financial services firm is implementing a hub-and-spoke network architecture using Shared VPC. The 'Hub' project contains a central Cloud Next-Generation Firewall (NGFW) appliance cluster. The 'Spoke' projects contain various application tiers. The firm requires that all traffic between spokes must be inspected by the NGFW, and traffic from spokes to the internet must also be inspected. You need to ensure that traffic is symmetrically routed to the NGFW appliances and that the spokes cannot bypass the firewall. Which design approach should you implement?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Configure VPC Network Peering between the Hub and Spoke VPCs and use custom routes in the Spoke VPCs with the NGFW appliance IP as the next hop for all 0.0.0.0/0 traffic.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Deploy the NGFW appliances in the Hub project. Use a Shared VPC where spokes are service projects. Implement custom routes in the Hub VPC that point to the NGFW instance group as the next hop for internal spoke CIDRs and 0.0.0.0/0, and ensure the NGFW appliances are configured for source NAT (SNAT) for outbound traffic.",
+        "is_correct": true
+      },
+      {
+        "id": "C",
+        "text": "Use a Shared VPC and implement Hierarchical Firewall Policies at the Organization level to restrict traffic between spokes, while using a Cloud NAT gateway in the Hub project to handle all internet egress.",
+        "is_correct": false
+      },
+      {
+        "id": "D",
+        "text": "Implement a Hub-and-Spoke model using VPC Network Peering. Use a Transit VPC with a third-party NGFW and configure the Spoke VPCs to use the Hub VPC as the default gateway via a Cloud Router.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "B",
+    "explanation": {
+      "why_correct": "In a Shared VPC architecture, the Hub project manages the network. By placing custom routes in the Hub VPC that point to the NGFW appliance instance group, all traffic (inter-spoke and egress) is forced through the firewall. Source NAT (SNAT) on the NGFW is critical to ensure symmetric routing; otherwise, the return traffic would attempt to go directly back to the destination via the VPC's implicit routing, bypassing the firewall and causing connection drops.",
+      "why_not_A": "VPC Network Peering does not support transitive routing. If Spoke A peers with Hub and Spoke B peers with Hub, Spoke A cannot reach Spoke B through the Hub unless the Hub acts as a proxy/router, and peering alone does not enforce the 'cannot bypass' requirement as effectively as a centralized Shared VPC control plane.",
+      "why_not_C": "Hierarchical Firewall Policies are used for access control (allow/deny) but they are not 'inspection' tools. They cannot perform deep packet inspection (DPI) or L7 analysis provided by an NGFW. Cloud NAT provides outbound connectivity but does not provide security inspection of the traffic content.",
+      "why_not_D": "Cloud Router is used for BGP and dynamic routing to on-premises or other VPCs; it cannot be used as a 'default gateway' for a VPC to force traffic into a third-party appliance for inspection within the same cloud environment."
+    },
+    "tags": [
+      "SharedVPC",
+      "NGFW",
+      "SymmetricRouting",
+      "TrafficInspection"
+    ],
+    "estimated_time_seconds": 150,
+    "id": "q-gcp-pcne-mock1-121",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
+  },
+  {
+    "domain_id": "network-security-design",
+    "type": "scenario",
+    "difficulty": 4,
+    "stem": "Your organization is migrating a legacy application to GCP that requires strict isolation of a database tier. The database must only be accessible from the application tier on port 5432. To meet compliance, you must ensure that no other traffic, including internal GCP metadata services or other internal VPC traffic, can reach the database instances, and all administrative access must be logged and restricted to a specific jump-server subnet. Which combination of security controls provides the most robust implementation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Use a single VPC with a database subnet. Apply a VPC firewall rule allowing port 5432 from the app subnet and a deny-all rule for all other traffic. Use IAP for administrative access.",
+        "is_correct": false
+      },
+      {
+        "id": "B",
+        "text": "Place the database in a separate VPC. Use VPC Network Peering to connect the app VPC to the db VPC. Apply firewall rules in the db VPC allowing port 5432 from the app VPC CIDR and deny all other ingress.",
+        "is_correct": false
+      },
+      {
+        "id": "C",
+        "text": "Use a Shared VPC. Place the database in a dedicated subnet. Apply a VPC firewall rule allowing port 5432 from the app subnet. Apply a higher-priority firewall rule denying all other ingress. Use a bastion host in a separate subnet with a firewall rule allowing SSH only from the bastion subnet, and enable VPC Flow Logs on the db subnet.",
+        "is_correct": true
+      },
+      {
+        "id": "D",
+        "text": "Deploy the database in a VPC with no external IP addresses. Use Cloud Armor to filter traffic to the database instances based on the application tier's IP addresses.",
+        "is_correct": false
+      }
+    ],
+    "correct_answer": "C",
+    "explanation": {
+      "why_correct": "This approach follows the principle of least privilege and defense in depth. Using a dedicated subnet within a Shared VPC allows for granular firewall rules. A high-priority 'deny all' ensures no leakage. The jump-server (bastion) pattern restricted by subnet-level firewall rules provides the required administrative control, and VPC Flow Logs provide the mandatory compliance logging for all traffic attempting to reach the database.",
+      "why_not_A": "A single VPC firewall rule is insufficient for 'strict isolation' and does not explicitly address the administrative access logging and restriction requirements as comprehensively as the bastion/flow-log combination.",
+      "why_not_B": "VPC Peering is an effective way to connect VPCs, but it doesn't inherently solve the requirement for logged administrative access or the restriction of internal metadata/service traffic as robustly as a properly configured Shared VPC with strict egress/ingress controls.",
+      "why_not_D": "Cloud Armor is a Layer 7 protection service for HTTP(S) traffic arriving via a Global External HTTP(S) Load Balancer. It cannot be used to filter port 5432 (PostgreSQL) traffic between internal VPC tiers."
+    },
+    "tags": [
+      "VPCFirewall",
+      "BastionHost",
+      "VPCFlowLogs",
+      "NetworkIsolation"
+    ],
+    "estimated_time_seconds": 120,
+    "id": "q-gcp-pcne-mock1-122",
+    "exam_id": "gcp-pcne",
+    "concept_ids": [],
+    "decision_tree_id": null,
+    "bkt_p_guess": 0.25,
+    "bkt_p_slip": 0.1,
+    "bkt_p_transit": 0.1,
+    "review_status": "approved"
   }
 ]
