@@ -1,30 +1,38 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
   DollarSign,
-  Zap,
+  Zap as ZapIcon,
   Activity,
-  Shield,
+  Shield as ShieldIcon,
   Trash2,
   RotateCcw,
   Download,
-  X,
-  Plus,
+  Link as LinkIcon,
+  MousePointer2,
 } from "lucide-react";
 import {
   awsServices,
   type AwsService,
   type ServiceCategory,
 } from "@/lib/aws-services-data";
+import { ServiceIcon } from "@/lib/service-icons";
 
 interface PlacedService {
   instanceId: string;
   serviceId: string;
-  x: number;
+  x: number; // % of canvas width
   y: number;
+}
+
+interface Connection {
+  id: string;
+  from: string; // instanceId
+  to: string;
+  label?: string;
 }
 
 const categoryOrder: ServiceCategory[] = [
@@ -39,52 +47,90 @@ const categoryOrder: ServiceCategory[] = [
 ];
 
 const categoryLabels: Record<ServiceCategory, string> = {
-  compute: "🖥️ Compute",
-  storage: "💾 Storage",
-  database: "🗄️ Database",
-  network: "🌐 Network",
-  messaging: "📬 Messaging",
-  security: "🔐 Security",
-  analytics: "📊 Analytics",
-  ml: "🤖 ML",
-  cdn: "🌍 CDN",
+  compute: "Compute",
+  storage: "Storage",
+  database: "Database",
+  network: "Network",
+  messaging: "Messaging",
+  security: "Security",
+  analytics: "Analytics",
+  ml: "ML",
+  cdn: "CDN",
 };
 
-const presets: Array<{ name: string; description: string; services: string[] }> = [
+const presets: Array<{
+  name: string;
+  description: string;
+  services: string[];
+  // Optional: connection definitions (by index in services array)
+  connections?: Array<[number, number]>;
+}> = [
   {
     name: "3-Tier Web App",
-    description: "Classic web application with LB, app servers, and DB",
+    description: "Classic web app with LB, app servers, and DB",
     services: ["route53", "cloudfront", "alb", "ec2", "rds", "elasticache"],
+    connections: [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+      [3, 4],
+      [3, 5],
+    ],
   },
   {
     name: "Serverless API",
-    description: "Fully serverless backend with API Gateway + Lambda",
+    description: "Fully serverless with API Gateway + Lambda",
     services: ["apigateway", "lambda", "dynamodb", "s3", "cloudfront"],
+    connections: [
+      [4, 0],
+      [0, 1],
+      [1, 2],
+      [1, 3],
+    ],
   },
   {
     name: "Microservices",
-    description: "Containerized microservices on Fargate with EventBridge",
+    description: "Containerized services on Fargate",
     services: ["alb", "fargate", "aurora", "eventbridge", "sqs", "lambda"],
+    connections: [
+      [0, 1],
+      [1, 2],
+      [1, 3],
+      [3, 4],
+      [4, 5],
+    ],
   },
   {
     name: "Data Pipeline",
-    description: "Streaming ingest → processing → analytics warehouse",
+    description: "Streaming ingest → processing → warehouse",
     services: ["kinesis", "lambda", "s3", "redshift"],
+    connections: [
+      [0, 1],
+      [1, 2],
+      [2, 3],
+    ],
   },
   {
     name: "Static Website",
     description: "Cheap, fast static site with global CDN",
     services: ["s3", "cloudfront", "route53", "waf"],
+    connections: [
+      [2, 1],
+      [3, 1],
+      [1, 0],
+    ],
   },
 ];
 
 export function SimulatorClient() {
   const [placed, setPlaced] = useState<PlacedService[]>([]);
+  const [connections, setConnections] = useState<Connection[]>([]);
   const [selectedInstance, setSelectedInstance] = useState<string | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [mode, setMode] = useState<"select" | "connect">("select");
+  const [connectFrom, setConnectFrom] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Group services by category
   const servicesByCategory = useMemo(() => {
     const grouped: Record<string, AwsService[]> = {};
     for (const s of awsServices) {
@@ -94,7 +140,6 @@ export function SimulatorClient() {
     return grouped;
   }, []);
 
-  // Calculate totals
   const metrics = useMemo(() => {
     const services = placed
       .map((p) => awsServices.find((s) => s.id === p.serviceId))
@@ -106,12 +151,8 @@ export function SimulatorClient() {
 
     const cost = services.reduce((sum, s) => sum + s.costPerMonth, 0);
     const latency = services.reduce((sum, s) => sum + s.latencyMs, 0);
-    // Reliability multiplies (system fails if ANY component fails)
-    const reliability = services.reduce(
-      (acc, s) => acc * (s.reliability / 100),
-      1
-    ) * 100;
-    // Security is the average (weakest link is concerning but not deterministic)
+    const reliability =
+      services.reduce((acc, s) => acc * (s.reliability / 100), 1) * 100;
     const security =
       services.reduce((sum, s) => sum + s.securityLevel, 0) / services.length;
 
@@ -124,55 +165,101 @@ export function SimulatorClient() {
     };
   }, [placed]);
 
-  const handleDragStart = (e: React.DragEvent, serviceId: string) => {
+  // Drag from palette → drop on canvas
+  const handlePaletteDragStart = (e: React.DragEvent, serviceId: string) => {
+    e.dataTransfer.setData("type", "palette");
     e.dataTransfer.setData("serviceId", serviceId);
     e.dataTransfer.effectAllowed = "copy";
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const serviceId = e.dataTransfer.getData("serviceId");
-    if (!serviceId || !canvasRef.current) return;
-
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-    setPlaced((prev) => [
-      ...prev,
-      {
-        instanceId: `${serviceId}-${Date.now()}-${Math.random()
-          .toString(36)
-          .slice(2, 6)}`,
-        serviceId,
-        x: Math.max(5, Math.min(95, x)),
-        y: Math.max(5, Math.min(95, y)),
-      },
-    ]);
-  };
-
-  const handlePlacedDragStart = (instanceId: string) => {
+  // Drag a placed node
+  const handleNodeDragStart = (e: React.DragEvent, instanceId: string) => {
+    if (mode === "connect") {
+      e.preventDefault();
+      return;
+    }
+    e.dataTransfer.setData("type", "node");
+    e.dataTransfer.setData("instanceId", instanceId);
     setDraggingId(instanceId);
   };
 
-  const handlePlacedDragEnd = (e: React.DragEvent) => {
-    if (!draggingId || !canvasRef.current) return;
+  const handleCanvasDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!canvasRef.current) return;
+
     const rect = canvasRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setPlaced((prev) =>
-      prev.map((p) =>
-        p.instanceId === draggingId
-          ? { ...p, x: Math.max(5, Math.min(95, x)), y: Math.max(5, Math.min(95, y)) }
-          : p
-      )
-    );
-    setDraggingId(null);
+    const clampedX = Math.max(5, Math.min(95, x));
+    const clampedY = Math.max(8, Math.min(92, y));
+
+    const type = e.dataTransfer.getData("type");
+
+    if (type === "node") {
+      const instanceId = e.dataTransfer.getData("instanceId");
+      setPlaced((prev) =>
+        prev.map((p) =>
+          p.instanceId === instanceId ? { ...p, x: clampedX, y: clampedY } : p
+        )
+      );
+      setDraggingId(null);
+    } else {
+      const serviceId = e.dataTransfer.getData("serviceId");
+      if (!serviceId) return;
+      setPlaced((prev) => [
+        ...prev,
+        {
+          instanceId: `${serviceId}-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 6)}`,
+          serviceId,
+          x: clampedX,
+          y: clampedY,
+        },
+      ]);
+    }
+  };
+
+  const handleNodeClick = (instanceId: string) => {
+    if (mode === "connect") {
+      if (!connectFrom) {
+        setConnectFrom(instanceId);
+      } else if (connectFrom !== instanceId) {
+        // Don't add duplicate connection
+        const exists = connections.some(
+          (c) =>
+            (c.from === connectFrom && c.to === instanceId) ||
+            (c.from === instanceId && c.to === connectFrom)
+        );
+        if (!exists) {
+          setConnections((prev) => [
+            ...prev,
+            {
+              id: `conn-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+              from: connectFrom,
+              to: instanceId,
+            },
+          ]);
+        }
+        setConnectFrom(null);
+      } else {
+        setConnectFrom(null);
+      }
+    } else {
+      setSelectedInstance(instanceId);
+    }
   };
 
   const handleRemove = (instanceId: string) => {
     setPlaced((prev) => prev.filter((p) => p.instanceId !== instanceId));
+    setConnections((prev) =>
+      prev.filter((c) => c.from !== instanceId && c.to !== instanceId)
+    );
     if (selectedInstance === instanceId) setSelectedInstance(null);
+  };
+
+  const handleRemoveConnection = (id: string) => {
+    setConnections((prev) => prev.filter((c) => c.id !== id));
   };
 
   const handleSwap = (instanceId: string, newServiceId: string) => {
@@ -187,16 +274,30 @@ export function SimulatorClient() {
     const newPlaced: PlacedService[] = preset.services.map((sid, i) => ({
       instanceId: `${sid}-${Date.now()}-${i}`,
       serviceId: sid,
-      x: 15 + (i % 4) * 20,
-      y: 15 + Math.floor(i / 4) * 25,
+      x: 18 + (i % 4) * 22,
+      y: 20 + Math.floor(i / 4) * 30,
     }));
     setPlaced(newPlaced);
+    if (preset.connections) {
+      const newConns: Connection[] = preset.connections.map(([a, b], i) => ({
+        id: `conn-${Date.now()}-${i}`,
+        from: newPlaced[a].instanceId,
+        to: newPlaced[b].instanceId,
+      }));
+      setConnections(newConns);
+    } else {
+      setConnections([]);
+    }
     setSelectedInstance(null);
+    setMode("select");
+    setConnectFrom(null);
   };
 
   const clearAll = () => {
     setPlaced([]);
+    setConnections([]);
     setSelectedInstance(null);
+    setConnectFrom(null);
   };
 
   const exportJson = () => {
@@ -204,6 +305,15 @@ export function SimulatorClient() {
       services: placed.map((p) => {
         const s = awsServices.find((x) => x.id === p.serviceId);
         return { id: p.serviceId, name: s?.name, x: p.x, y: p.y };
+      }),
+      connections: connections.map((c) => {
+        const fromP = placed.find((p) => p.instanceId === c.from);
+        const toP = placed.find((p) => p.instanceId === c.to);
+        return {
+          from: fromP?.serviceId,
+          to: toP?.serviceId,
+          label: c.label,
+        };
       }),
       metrics,
       generatedAt: new Date().toISOString(),
@@ -233,7 +343,7 @@ export function SimulatorClient() {
           className="inline-flex items-center gap-2 text-sm font-medium text-stone-600 hover:text-stone-900"
         >
           <ArrowLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Back to Home</span>
+          <span className="hidden sm:inline">Back</span>
         </Link>
         <h1 className="text-base sm:text-lg font-bold text-stone-900">
           ⚡ AWS Architecture Simulator
@@ -257,6 +367,56 @@ export function SimulatorClient() {
         </div>
       </div>
 
+      {/* Mode Toolbar */}
+      <div className="flex items-center gap-2 px-4 sm:px-6 py-2 border-b bg-stone-50 shrink-0">
+        <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+          Mode:
+        </span>
+        <div className="inline-flex rounded-lg border border-stone-300 bg-white p-0.5">
+          <button
+            onClick={() => {
+              setMode("select");
+              setConnectFrom(null);
+            }}
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md transition-colors ${
+              mode === "select"
+                ? "bg-amber-500 text-white"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <MousePointer2 className="h-3 w-3" />
+            Select &amp; Drag
+          </button>
+          <button
+            onClick={() => {
+              setMode("connect");
+              setSelectedInstance(null);
+            }}
+            disabled={placed.length < 2}
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-md transition-colors disabled:opacity-40 ${
+              mode === "connect"
+                ? "bg-blue-500 text-white"
+                : "text-stone-600 hover:text-stone-900"
+            }`}
+          >
+            <LinkIcon className="h-3 w-3" />
+            Connect Nodes
+          </button>
+        </div>
+        {mode === "connect" && (
+          <span className="text-xs text-blue-700 font-medium">
+            {connectFrom
+              ? "→ Click second node to connect"
+              : "Click first node to start"}
+          </span>
+        )}
+        <span className="ml-auto text-xs text-stone-500">
+          {placed.length} {placed.length === 1 ? "node" : "nodes"} ·{" "}
+          {connections.length}{" "}
+          {connections.length === 1 ? "connection" : "connections"}
+        </span>
+      </div>
+
       {/* Main 3-pane layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Service Palette */}
@@ -272,7 +432,7 @@ export function SimulatorClient() {
             if (!services?.length) return null;
             return (
               <div key={cat} className="mb-3">
-                <div className="text-[11px] font-semibold text-stone-700 mb-1 px-1">
+                <div className="text-[11px] font-bold text-stone-700 mb-1 px-1 uppercase tracking-wider">
                   {categoryLabels[cat]}
                 </div>
                 <div className="space-y-1">
@@ -280,11 +440,16 @@ export function SimulatorClient() {
                     <div
                       key={s.id}
                       draggable
-                      onDragStart={(e) => handleDragStart(e, s.id)}
+                      onDragStart={(e) => handlePaletteDragStart(e, s.id)}
                       className="group cursor-grab active:cursor-grabbing flex items-center gap-2 px-2 py-1.5 rounded-md border border-stone-200 hover:border-amber-400 hover:bg-amber-50 transition-colors text-xs"
                       style={{ borderLeftWidth: 3, borderLeftColor: s.color }}
                     >
-                      <span className="text-base shrink-0">{s.emoji}</span>
+                      <div
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-white"
+                        style={{ background: s.color }}
+                      >
+                        <ServiceIcon iconKey={s.icon} className="h-4 w-4" />
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold text-stone-900 truncate">
                           {s.shortName}
@@ -308,7 +473,10 @@ export function SimulatorClient() {
             e.preventDefault();
             e.dataTransfer.dropEffect = draggingId ? "move" : "copy";
           }}
-          onDrop={draggingId ? handlePlacedDragEnd : handleDrop}
+          onDrop={handleCanvasDrop}
+          onClick={() => {
+            if (mode === "select") setSelectedInstance(null);
+          }}
           className="flex-1 relative overflow-hidden"
           style={{
             backgroundImage:
@@ -318,16 +486,16 @@ export function SimulatorClient() {
           }}
         >
           {placed.length === 0 ? (
-            <div className="absolute inset-0 flex items-center justify-center text-center px-6">
-              <div className="max-w-md">
+            <div className="absolute inset-0 flex items-center justify-center text-center px-6 pointer-events-none">
+              <div className="max-w-md pointer-events-auto">
                 <div className="text-5xl mb-4">🎨</div>
                 <h2 className="text-xl font-bold text-stone-700 mb-2">
                   Build Your AWS Architecture
                 </h2>
                 <p className="text-sm text-stone-500 mb-6">
-                  Drag services from the left palette onto this canvas. See
-                  live cost, latency, reliability, and security impact on the
-                  right.
+                  Drag services from the left palette. Then switch to
+                  &quot;Connect Nodes&quot; mode to draw connections between
+                  them.
                 </p>
                 <div className="text-xs font-semibold text-stone-600 mb-2">
                   Or start from a preset:
@@ -352,35 +520,119 @@ export function SimulatorClient() {
             </div>
           ) : (
             <>
+              {/* SVG layer for connection lines */}
+              <svg
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                style={{ overflow: "visible" }}
+              >
+                <defs>
+                  <marker
+                    id="arrow"
+                    viewBox="0 0 10 10"
+                    refX="9"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+                  </marker>
+                </defs>
+                {connections.map((conn) => {
+                  const from = placed.find((p) => p.instanceId === conn.from);
+                  const to = placed.find((p) => p.instanceId === conn.to);
+                  if (!from || !to) return null;
+                  return (
+                    <g key={conn.id} className="pointer-events-auto">
+                      <line
+                        x1={`${from.x}%`}
+                        y1={`${from.y}%`}
+                        x2={`${to.x}%`}
+                        y2={`${to.y}%`}
+                        stroke="#64748b"
+                        strokeWidth="2"
+                        strokeDasharray="5 4"
+                        markerEnd="url(#arrow)"
+                        opacity="0.7"
+                      />
+                      {/* Click target — wider invisible line for hit testing */}
+                      <line
+                        x1={`${from.x}%`}
+                        y1={`${from.y}%`}
+                        x2={`${to.x}%`}
+                        y2={`${to.y}%`}
+                        stroke="transparent"
+                        strokeWidth="14"
+                        className="cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveConnection(conn.id);
+                        }}
+                      >
+                        <title>Click to delete connection</title>
+                      </line>
+                    </g>
+                  );
+                })}
+
+                {/* Pending connection from connect mode */}
+                {mode === "connect" && connectFrom && (
+                  <PendingConnection
+                    from={placed.find((p) => p.instanceId === connectFrom)!}
+                  />
+                )}
+              </svg>
+
+              {/* Nodes */}
               {placed.map((p) => {
                 const s = awsServices.find((x) => x.id === p.serviceId);
                 if (!s) return null;
+                const isSelected = selectedInstance === p.instanceId;
+                const isConnectFrom = connectFrom === p.instanceId;
                 return (
                   <div
                     key={p.instanceId}
-                    draggable
-                    onDragStart={() => handlePlacedDragStart(p.instanceId)}
+                    draggable={mode === "select"}
+                    onDragStart={(e) => handleNodeDragStart(e, p.instanceId)}
                     onClick={(e) => {
                       e.stopPropagation();
-                      setSelectedInstance(p.instanceId);
+                      handleNodeClick(p.instanceId);
                     }}
                     style={{
                       left: `${p.x}%`,
                       top: `${p.y}%`,
-                      borderColor: s.color,
                     }}
-                    className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-move bg-white rounded-xl border-2 shadow-md hover:shadow-lg transition-all px-3 py-2 min-w-[100px] text-center ${
-                      selectedInstance === p.instanceId
-                        ? "ring-4 ring-amber-300 scale-110"
-                        : ""
-                    }`}
+                    className={`absolute -translate-x-1/2 -translate-y-1/2 ${
+                      mode === "select" ? "cursor-move" : "cursor-pointer"
+                    } group`}
                   >
-                    <div className="text-2xl mb-0.5">{s.emoji}</div>
-                    <div className="text-xs font-bold text-stone-900 leading-tight">
-                      {s.shortName}
-                    </div>
-                    <div className="text-[10px] text-stone-500">
-                      ${s.costPerMonth}/mo
+                    {/* Card */}
+                    <div
+                      className={`relative bg-white rounded-xl border-2 shadow-md hover:shadow-xl transition-all px-3 py-2 min-w-[110px] text-center ${
+                        isSelected
+                          ? "ring-4 ring-amber-300 scale-110"
+                          : isConnectFrom
+                          ? "ring-4 ring-blue-300 scale-110"
+                          : ""
+                      }`}
+                      style={{
+                        borderColor: s.color,
+                      }}
+                    >
+                      <div
+                        className="mx-auto mb-1 flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-inner"
+                        style={{
+                          background: `linear-gradient(135deg, ${s.color}, ${s.color}cc)`,
+                        }}
+                      >
+                        <ServiceIcon iconKey={s.icon} className="h-6 w-6" />
+                      </div>
+                      <div className="text-xs font-bold text-stone-900 leading-tight">
+                        {s.shortName}
+                      </div>
+                      <div className="text-[10px] text-stone-500">
+                        ${s.costPerMonth}/mo
+                      </div>
                     </div>
                   </div>
                 );
@@ -405,10 +657,10 @@ export function SimulatorClient() {
                 tone="emerald"
               />
               <MetricCard
-                icon={<Zap className="h-4 w-4 text-amber-600" />}
+                icon={<ZapIcon className="h-4 w-4 text-amber-600" />}
                 label="End-to-end Latency"
                 value={`~${metrics.latency}ms`}
-                hint="Sum of all service latencies"
+                hint="Sum of service latencies"
                 tone="amber"
               />
               <MetricCard
@@ -419,7 +671,7 @@ export function SimulatorClient() {
                 tone="blue"
               />
               <MetricCard
-                icon={<Shield className="h-4 w-4 text-rose-600" />}
+                icon={<ShieldIcon className="h-4 w-4 text-rose-600" />}
                 label="Security Score"
                 value={`${metrics.security}/100`}
                 hint="Avg. across services"
@@ -432,12 +684,23 @@ export function SimulatorClient() {
           {selectedService && selected && (
             <div className="p-4 border-b bg-stone-50">
               <div className="flex items-start justify-between mb-2">
-                <div>
-                  <div className="text-xs text-stone-500 uppercase tracking-wider">
-                    Selected
+                <div className="flex items-center gap-2">
+                  <div
+                    className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+                    style={{ background: selectedService.color }}
+                  >
+                    <ServiceIcon
+                      iconKey={selectedService.icon}
+                      className="h-4 w-4"
+                    />
                   </div>
-                  <div className="text-sm font-bold text-stone-900 flex items-center gap-1">
-                    {selectedService.emoji} {selectedService.name}
+                  <div>
+                    <div className="text-[10px] text-stone-500 uppercase tracking-wider">
+                      Selected
+                    </div>
+                    <div className="text-sm font-bold text-stone-900">
+                      {selectedService.name}
+                    </div>
                   </div>
                 </div>
                 <button
@@ -462,8 +725,10 @@ export function SimulatorClient() {
                       {selectedService.alternatives.map((altId) => {
                         const alt = awsServices.find((s) => s.id === altId);
                         if (!alt) return null;
-                        const costDelta = alt.costPerMonth - selectedService.costPerMonth;
-                        const latencyDelta = alt.latencyMs - selectedService.latencyMs;
+                        const costDelta =
+                          alt.costPerMonth - selectedService.costPerMonth;
+                        const latencyDelta =
+                          alt.latencyMs - selectedService.latencyMs;
                         return (
                           <button
                             key={altId}
@@ -471,8 +736,12 @@ export function SimulatorClient() {
                             className="w-full text-left rounded-md border border-stone-200 hover:border-amber-400 hover:bg-white px-2 py-1.5 transition-colors"
                           >
                             <div className="flex items-center justify-between">
-                              <div className="font-semibold text-xs text-stone-900">
-                                {alt.emoji} {alt.shortName}
+                              <div className="flex items-center gap-1.5 font-semibold text-xs text-stone-900">
+                                <ServiceIcon
+                                  iconKey={alt.icon}
+                                  className="h-3 w-3"
+                                />
+                                {alt.shortName}
                               </div>
                               <div className="text-[10px] flex gap-1.5">
                                 <span
@@ -505,6 +774,48 @@ export function SimulatorClient() {
             </div>
           )}
 
+          {/* Connections list */}
+          {connections.length > 0 && (
+            <div className="p-4 border-b">
+              <div className="text-[11px] font-semibold text-stone-500 uppercase mb-2">
+                Connections ({connections.length})
+              </div>
+              <div className="space-y-1">
+                {connections.map((c) => {
+                  const from = placed.find((p) => p.instanceId === c.from);
+                  const to = placed.find((p) => p.instanceId === c.to);
+                  const fromS = from
+                    ? awsServices.find((s) => s.id === from.serviceId)
+                    : null;
+                  const toS = to
+                    ? awsServices.find((s) => s.id === to.serviceId)
+                    : null;
+                  if (!fromS || !toS) return null;
+                  return (
+                    <div
+                      key={c.id}
+                      className="flex items-center justify-between text-xs px-2 py-1 rounded-md hover:bg-stone-100"
+                    >
+                      <span className="flex items-center gap-1 text-stone-700 min-w-0">
+                        <ServiceIcon iconKey={fromS.icon} className="h-3 w-3 shrink-0" />
+                        <span className="truncate">{fromS.shortName}</span>
+                        <span className="text-stone-400">→</span>
+                        <ServiceIcon iconKey={toS.icon} className="h-3 w-3 shrink-0" />
+                        <span className="truncate">{toS.shortName}</span>
+                      </span>
+                      <button
+                        onClick={() => handleRemoveConnection(c.id)}
+                        className="text-stone-400 hover:text-rose-600 shrink-0"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Component list */}
           {placed.length > 0 && (
             <div className="p-4 flex-1">
@@ -518,7 +829,10 @@ export function SimulatorClient() {
                   return (
                     <button
                       key={p.instanceId}
-                      onClick={() => setSelectedInstance(p.instanceId)}
+                      onClick={() => {
+                        setMode("select");
+                        setSelectedInstance(p.instanceId);
+                      }}
                       className={`w-full flex items-center justify-between text-xs px-2 py-1.5 rounded-md ${
                         selectedInstance === p.instanceId
                           ? "bg-amber-100 text-amber-900"
@@ -526,7 +840,7 @@ export function SimulatorClient() {
                       }`}
                     >
                       <span className="flex items-center gap-1.5">
-                        <span>{s.emoji}</span>
+                        <ServiceIcon iconKey={s.icon} className="h-3 w-3" />
                         <span>{s.shortName}</span>
                       </span>
                       <span className="text-[10px] text-stone-400">
@@ -561,6 +875,41 @@ export function SimulatorClient() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Animated dashed line from a node to the cursor while in connect mode
+function PendingConnection({ from }: { from: PlacedService }) {
+  const [cursor, setCursor] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const canvasEl = document.querySelector(
+        "main[class*='flex-1']"
+      ) as HTMLElement | null;
+      if (!canvasEl) return;
+      const rect = canvasEl.getBoundingClientRect();
+      setCursor({
+        x: ((e.clientX - rect.left) / rect.width) * 100,
+        y: ((e.clientY - rect.top) / rect.height) * 100,
+      });
+    };
+    window.addEventListener("mousemove", handler);
+    return () => window.removeEventListener("mousemove", handler);
+  }, []);
+
+  if (!cursor) return null;
+  return (
+    <line
+      x1={`${from.x}%`}
+      y1={`${from.y}%`}
+      x2={`${cursor.x}%`}
+      y2={`${cursor.y}%`}
+      stroke="#3b82f6"
+      strokeWidth="2"
+      strokeDasharray="6 4"
+      opacity="0.6"
+    />
   );
 }
 

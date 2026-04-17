@@ -1,64 +1,115 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Html, Line } from "@react-three/drei";
-import { useRef } from "react";
+import {
+  OrbitControls,
+  Html,
+  Line,
+  Float,
+  Edges,
+  Environment,
+  ContactShadows,
+} from "@react-three/drei";
+import { useRef, Suspense } from "react";
 import * as THREE from "three";
 import { getService } from "@/lib/aws-services-data";
 import type { Scenario } from "@/lib/scenarios-data";
+import type { Shape3D } from "@/lib/aws-services-data";
+
+function NodeGeometry({ shape }: { shape: Shape3D }) {
+  switch (shape) {
+    case "box":
+      return <boxGeometry args={[0.5, 0.5, 0.5]} />;
+    case "cylinder":
+      return <cylinderGeometry args={[0.28, 0.28, 0.5, 32]} />;
+    case "octahedron":
+      return <octahedronGeometry args={[0.38, 0]} />;
+    case "torus":
+      return <torusGeometry args={[0.28, 0.11, 16, 32]} />;
+    case "icosahedron":
+      return <icosahedronGeometry args={[0.36, 0]} />;
+    case "cone":
+      return <coneGeometry args={[0.32, 0.55, 16]} />;
+    default:
+      return <sphereGeometry args={[0.3, 32, 32]} />;
+  }
+}
 
 function Node({
   position,
   color,
+  shape,
   emoji,
   label,
 }: {
   position: [number, number, number];
   color: string;
+  shape: Shape3D;
   emoji: string;
   label: string;
 }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      meshRef.current.position.y =
-        position[1] + Math.sin(state.clock.elapsedTime + position[0]) * 0.04;
-      meshRef.current.rotation.y += 0.003;
-    }
+  const meshRef = useRef<THREE.Group>(null);
+  useFrame(() => {
+    if (meshRef.current) meshRef.current.rotation.y += 0.005;
   });
 
   return (
-    <group position={position}>
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[0.3, 32, 32]} />
-        <meshStandardMaterial
-          color={color}
-          emissive={color}
-          emissiveIntensity={0.3}
-          roughness={0.3}
-          metalness={0.6}
-        />
-      </mesh>
+    <Float
+      speed={1.4}
+      rotationIntensity={0.2}
+      floatIntensity={0.3}
+      position={position}
+    >
+      <group ref={meshRef}>
+        <mesh castShadow receiveShadow>
+          <NodeGeometry shape={shape} />
+          <meshPhysicalMaterial
+            color={color}
+            metalness={0.7}
+            roughness={0.2}
+            clearcoat={1}
+            clearcoatRoughness={0.1}
+            emissive={color}
+            emissiveIntensity={0.2}
+            envMapIntensity={1.4}
+          />
+          <Edges color="white" threshold={15} scale={1.001}>
+            <lineBasicMaterial
+              color="#ffffff"
+              transparent
+              opacity={0.25}
+              toneMapped={false}
+            />
+          </Edges>
+        </mesh>
+      </group>
+
       <Html
-        position={[0, -0.55, 0]}
+        position={[0, -0.7, 0]}
         center
-        distanceFactor={6}
-        style={{
-          pointerEvents: "none",
-          fontFamily: "system-ui",
-          fontSize: "11px",
-          fontWeight: 600,
-          color: "white",
-          background: "rgba(0,0,0,0.7)",
-          padding: "2px 6px",
-          borderRadius: "3px",
-          whiteSpace: "nowrap",
-        }}
+        distanceFactor={7}
+        style={{ pointerEvents: "none" }}
       >
-        {emoji} {label}
+        <div
+          style={{
+            fontSize: "11px",
+            fontWeight: 700,
+            color: "white",
+            background: "rgba(15, 23, 42, 0.85)",
+            border: `1px solid ${color}`,
+            padding: "2px 7px",
+            borderRadius: "5px",
+            whiteSpace: "nowrap",
+            boxShadow: `0 0 10px ${color}66`,
+            backdropFilter: "blur(4px)",
+            fontFamily: "system-ui, sans-serif",
+          }}
+        >
+          <span style={{ marginRight: 3 }}>{emoji}</span>
+          {label}
+        </div>
       </Html>
-    </group>
+    </Float>
   );
 }
 
@@ -75,7 +126,7 @@ function Flow({
   const offset = useRef(Math.random());
   useFrame((state) => {
     if (ref.current) {
-      const t = ((state.clock.elapsedTime * 0.3 + offset.current) % 1);
+      const t = (state.clock.elapsedTime * 0.35 + offset.current) % 1;
       ref.current.position.x = start[0] + (end[0] - start[0]) * t;
       ref.current.position.y = start[1] + (end[1] - start[1]) * t;
       ref.current.position.z = start[2] + (end[2] - start[2]) * t;
@@ -83,8 +134,8 @@ function Flow({
   });
   return (
     <mesh ref={ref}>
-      <sphereGeometry args={[0.05, 8, 8]} />
-      <meshBasicMaterial color={color} />
+      <sphereGeometry args={[0.06, 12, 12]} />
+      <meshBasicMaterial color={color} toneMapped={false} />
     </mesh>
   );
 }
@@ -96,6 +147,7 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
       ...n,
       key: `${n.serviceId}-${i}`,
       color: svc?.color || "#666",
+      shape: svc?.shape3d || "box",
       emoji: svc?.emoji || "●",
       label: n.label || svc?.shortName || n.serviceId,
     };
@@ -103,7 +155,6 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
 
   const edges = scenario.architecture.edges
     .map((e) => {
-      // Find first matching node instance for from and to
       const fromNode = nodes.find((n) => n.serviceId === e.from);
       const toNode = nodes.find((n) => n.serviceId === e.to);
       if (!fromNode || !toNode) return null;
@@ -113,54 +164,84 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
 
   return (
     <Canvas
-      camera={{ position: [0, 0, 10], fov: 55 }}
+      camera={{ position: [0, 1, 11], fov: 52 }}
+      shadows
+      gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }}
       style={{
-        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+        background:
+          "radial-gradient(ellipse at center, #1e293b 0%, #0f172a 60%, #050816 100%)",
       }}
     >
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-5, -5, -5]} intensity={0.4} color="#4080ff" />
+      <Suspense fallback={null}>
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[10, 10, 10]} intensity={1.2} castShadow />
+        <pointLight
+          position={[-5, -5, -5]}
+          intensity={0.5}
+          color="#4080ff"
+          distance={20}
+        />
+        <pointLight
+          position={[5, 5, 5]}
+          intensity={0.4}
+          color="#ff8040"
+          distance={20}
+        />
 
-      {edges.map((e, i) => (
-        <Line
-          key={`edge-${i}`}
-          points={[e.from.position, e.to.position]}
-          color="#60a5fa"
-          lineWidth={1}
-          transparent
+        <Environment preset="city" />
+
+        <ContactShadows
+          position={[0, -3, 0]}
           opacity={0.4}
+          scale={20}
+          blur={3}
+          far={6}
+          color="#000000"
         />
-      ))}
 
-      {edges.map((e, i) => (
-        <Flow
-          key={`flow-${i}`}
-          start={e.from.position}
-          end={e.to.position}
-          color={e.from.color}
+        {edges.map((e, i) => (
+          <Line
+            key={`edge-${i}`}
+            points={[e.from.position, e.to.position]}
+            color="#60a5fa"
+            lineWidth={1.4}
+            transparent
+            opacity={0.45}
+          />
+        ))}
+
+        {edges.map((e, i) => (
+          <Flow
+            key={`flow-${i}`}
+            start={e.from.position}
+            end={e.to.position}
+            color={e.from.color}
+          />
+        ))}
+
+        {nodes.map((n) => (
+          <Node
+            key={n.key}
+            position={n.position}
+            color={n.color}
+            shape={n.shape}
+            emoji={n.emoji}
+            label={n.label}
+          />
+        ))}
+
+        <OrbitControls
+          enablePan
+          enableZoom
+          enableRotate
+          minDistance={5}
+          maxDistance={20}
+          autoRotate
+          autoRotateSpeed={0.5}
+          enableDamping
+          dampingFactor={0.05}
         />
-      ))}
-
-      {nodes.map((n) => (
-        <Node
-          key={n.key}
-          position={n.position}
-          color={n.color}
-          emoji={n.emoji}
-          label={n.label}
-        />
-      ))}
-
-      <OrbitControls
-        enablePan
-        enableZoom
-        enableRotate
-        minDistance={5}
-        maxDistance={20}
-        autoRotate
-        autoRotateSpeed={0.4}
-      />
+      </Suspense>
     </Canvas>
   );
 }

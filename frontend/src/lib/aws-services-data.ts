@@ -14,6 +14,44 @@ export type ServiceCategory =
   | "ml"
   | "cdn";
 
+// 3D shape per category — semantically chosen
+export type Shape3D =
+  | "box" // Compute — server cube
+  | "cylinder" // Storage / Database — drum
+  | "octahedron" // Security — diamond/shield
+  | "torus" // Network / CDN — routing ring
+  | "icosahedron" // Messaging — many-faceted
+  | "cone"; // Analytics — funnel
+
+// Lucide icon name per service (semantic)
+// These are imported in components from lucide-react
+export type IconKey =
+  | "Server"
+  | "Zap"
+  | "Container"
+  | "Boxes"
+  | "Hexagon"
+  | "Database"
+  | "HardDrive"
+  | "FolderOpen"
+  | "FolderTree"
+  | "Archive"
+  | "Layers"
+  | "BarChart3"
+  | "Network"
+  | "Cable"
+  | "Globe"
+  | "Building2"
+  | "DoorOpen"
+  | "MessageSquare"
+  | "Megaphone"
+  | "Workflow"
+  | "Waves"
+  | "Shield"
+  | "ShieldAlert"
+  | "KeyRound"
+  | "Lock";
+
 export interface AwsService {
   id: string;
   name: string;
@@ -30,6 +68,8 @@ export interface AwsService {
   position: [number, number, number];
   color: string;
   emoji: string;
+  icon: IconKey; // Lucide icon for the simulator
+  shape3d: Shape3D; // 3D geometry for the visualizer
   alternatives?: string[]; // service IDs for swap
 }
 
@@ -49,6 +89,8 @@ export const awsServices: AwsService[] = [
     position: [-3, 1, 0],
     color: "#ff9900",
     emoji: "🖥️",
+    icon: "Server",
+    shape3d: "box",
     alternatives: ["lambda", "fargate", "ecs"],
   },
   {
@@ -65,6 +107,8 @@ export const awsServices: AwsService[] = [
     position: [-3, -1, 0],
     color: "#ff9900",
     emoji: "λ",
+    icon: "Zap",
+    shape3d: "box",
     alternatives: ["ec2", "fargate"],
   },
   {
@@ -81,6 +125,8 @@ export const awsServices: AwsService[] = [
     position: [-3, 0, 2],
     color: "#ff9900",
     emoji: "📦",
+    icon: "Container",
+    shape3d: "box",
     alternatives: ["ec2", "ecs", "lambda"],
   },
   {
@@ -97,6 +143,8 @@ export const awsServices: AwsService[] = [
     position: [-3, -2, 1],
     color: "#ff9900",
     emoji: "🐳",
+    icon: "Boxes",
+    shape3d: "box",
     alternatives: ["fargate", "eks"],
   },
   {
@@ -113,6 +161,8 @@ export const awsServices: AwsService[] = [
     position: [-3, 2, 1],
     color: "#ff9900",
     emoji: "☸️",
+    icon: "Hexagon",
+    shape3d: "box",
     alternatives: ["ecs", "fargate"],
   },
 
@@ -131,6 +181,8 @@ export const awsServices: AwsService[] = [
     position: [3, 1, 0],
     color: "#569a31",
     emoji: "🪣",
+    icon: "Archive",
+    shape3d: "cylinder",
     alternatives: ["efs", "ebs"],
   },
   {
@@ -147,6 +199,8 @@ export const awsServices: AwsService[] = [
     position: [3, -1, 0],
     color: "#569a31",
     emoji: "💾",
+    icon: "HardDrive",
+    shape3d: "cylinder",
     alternatives: ["efs", "s3"],
   },
   {
@@ -163,6 +217,8 @@ export const awsServices: AwsService[] = [
     position: [3, 2, 0],
     color: "#569a31",
     emoji: "📁",
+    icon: "FolderOpen",
+    shape3d: "cylinder",
     alternatives: ["s3", "fsx"],
   },
   {
@@ -179,6 +235,8 @@ export const awsServices: AwsService[] = [
     position: [3, -2, 0],
     color: "#569a31",
     emoji: "📂",
+    icon: "FolderTree",
+    shape3d: "cylinder",
     alternatives: ["efs", "s3"],
   },
 
@@ -197,6 +255,8 @@ export const awsServices: AwsService[] = [
     position: [0, 2, -3],
     color: "#3b48cc",
     emoji: "🗄️",
+    icon: "Database",
+    shape3d: "cylinder",
     alternatives: ["aurora", "dynamodb"],
   },
   {
@@ -213,6 +273,8 @@ export const awsServices: AwsService[] = [
     position: [0, 1, -3],
     color: "#3b48cc",
     emoji: "🌌",
+    icon: "Database",
+    shape3d: "cylinder",
     alternatives: ["rds", "dynamodb"],
   },
   {
@@ -229,6 +291,8 @@ export const awsServices: AwsService[] = [
     position: [0, 0, -3],
     color: "#3b48cc",
     emoji: "⚡",
+    icon: "Layers",
+    shape3d: "cylinder",
     alternatives: ["rds", "aurora"],
   },
   {
@@ -245,6 +309,8 @@ export const awsServices: AwsService[] = [
     position: [0, -1, -3],
     color: "#3b48cc",
     emoji: "⚡",
+    icon: "Zap",
+    shape3d: "cylinder",
   },
   {
     id: "redshift",
@@ -260,6 +326,8 @@ export const awsServices: AwsService[] = [
     position: [0, -2, -3],
     color: "#3b48cc",
     emoji: "📊",
+    icon: "BarChart3",
+    shape3d: "cone",
   },
 
   // Network
@@ -277,6 +345,8 @@ export const awsServices: AwsService[] = [
     position: [0, 3, 0],
     color: "#cf1126",
     emoji: "⚖️",
+    icon: "Network",
+    shape3d: "torus",
     alternatives: ["nlb", "clb"],
   },
   {
@@ -293,6 +363,8 @@ export const awsServices: AwsService[] = [
     position: [0, 3, 2],
     color: "#cf1126",
     emoji: "🔌",
+    icon: "Cable",
+    shape3d: "torus",
     alternatives: ["alb"],
   },
   {
@@ -309,6 +381,8 @@ export const awsServices: AwsService[] = [
     position: [0, 4, 0],
     color: "#cf1126",
     emoji: "🌐",
+    icon: "Globe",
+    shape3d: "torus",
   },
   {
     id: "vpc",
@@ -324,6 +398,8 @@ export const awsServices: AwsService[] = [
     position: [-2, 3, 0],
     color: "#cf1126",
     emoji: "🏙️",
+    icon: "Building2",
+    shape3d: "torus",
   },
   {
     id: "apigateway",
@@ -339,6 +415,8 @@ export const awsServices: AwsService[] = [
     position: [2, 3, 0],
     color: "#cf1126",
     emoji: "🚪",
+    icon: "DoorOpen",
+    shape3d: "torus",
     alternatives: ["alb"],
   },
   {
@@ -355,6 +433,8 @@ export const awsServices: AwsService[] = [
     position: [0, 3, 3],
     color: "#cf1126",
     emoji: "🌍",
+    icon: "Globe",
+    shape3d: "torus",
   },
 
   // Messaging
@@ -372,6 +452,8 @@ export const awsServices: AwsService[] = [
     position: [3, 0, 3],
     color: "#e7157b",
     emoji: "📬",
+    icon: "MessageSquare",
+    shape3d: "icosahedron",
     alternatives: ["sns", "eventbridge"],
   },
   {
@@ -388,6 +470,8 @@ export const awsServices: AwsService[] = [
     position: [3, 1, 3],
     color: "#e7157b",
     emoji: "📢",
+    icon: "Megaphone",
+    shape3d: "icosahedron",
     alternatives: ["sqs", "eventbridge"],
   },
   {
@@ -404,6 +488,8 @@ export const awsServices: AwsService[] = [
     position: [3, -1, 3],
     color: "#e7157b",
     emoji: "🎯",
+    icon: "Workflow",
+    shape3d: "icosahedron",
     alternatives: ["sns", "sqs"],
   },
   {
@@ -420,6 +506,8 @@ export const awsServices: AwsService[] = [
     position: [3, -2, 3],
     color: "#e7157b",
     emoji: "🌊",
+    icon: "Waves",
+    shape3d: "cone",
     alternatives: ["kafka", "eventbridge"],
   },
 
@@ -438,6 +526,8 @@ export const awsServices: AwsService[] = [
     position: [-2, 4, -2],
     color: "#d93732",
     emoji: "🔐",
+    icon: "Shield",
+    shape3d: "octahedron",
   },
   {
     id: "kms",
@@ -453,6 +543,8 @@ export const awsServices: AwsService[] = [
     position: [2, 4, -2],
     color: "#d93732",
     emoji: "🔑",
+    icon: "KeyRound",
+    shape3d: "octahedron",
   },
   {
     id: "waf",
@@ -468,6 +560,8 @@ export const awsServices: AwsService[] = [
     position: [0, 5, 0],
     color: "#d93732",
     emoji: "🛡️",
+    icon: "ShieldAlert",
+    shape3d: "octahedron",
   },
 ];
 

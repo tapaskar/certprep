@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Zap, Shield, DollarSign, Activity } from "lucide-react";
 import { NetworkScene } from "./network-scene";
+import { ServiceIcon } from "@/lib/service-icons";
 import type { AwsService } from "@/lib/aws-services-data";
 
 const categoryLabels: Record<string, string> = {
@@ -79,7 +80,12 @@ export function VisualizerClient() {
                 {categoryLabels[selected.category]}
               </div>
               <h2 className="mt-2 text-xl font-bold flex items-center gap-2">
-                <span>{selected.emoji}</span>
+                <span
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-white"
+                  style={{ background: selected.color }}
+                >
+                  <ServiceIcon iconKey={selected.icon} className="h-4 w-4" />
+                </span>
                 {selected.name}
               </h2>
             </div>
@@ -130,26 +136,29 @@ export function VisualizerClient() {
 
       {/* Legend (bottom-left) */}
       <div className="hidden md:block absolute bottom-4 left-4 z-20 rounded-lg bg-stone-900/80 backdrop-blur-md border border-white/10 p-3 text-xs max-w-xs">
-        <div className="font-semibold mb-1.5 text-stone-300">Legend</div>
+        <div className="font-semibold mb-2 text-stone-300">Shape & Color Legend</div>
         <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-stone-400">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#ff9900]" /> Compute
+            <span className="inline-block w-2.5 h-2.5 bg-[#ff9900]" /> ▢ Compute
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#569a31]" /> Storage
+            <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[#569a31]" /> ▥ Storage
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#3b48cc]" /> Database
+            <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[#3b48cc]" /> ▥ Database
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#cf1126]" /> Network
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-[#cf1126]" /> ◯ Network
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#e7157b]" /> Messaging
+            <span className="inline-block w-2.5 h-2.5 bg-[#e7157b]" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }} /> ◇ Messaging
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#d93732]" /> Security
+            <span className="inline-block w-2.5 h-2.5 bg-[#d93732]" style={{ clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)' }} /> ◇ Security
           </div>
+        </div>
+        <div className="mt-2 pt-2 border-t border-white/10 text-[10px] text-stone-500">
+          Particles flow along edges showing service traffic.
         </div>
       </div>
 
