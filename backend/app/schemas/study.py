@@ -50,6 +50,10 @@ class CreateSessionRequest(BaseModel):
     exam_id: str
     duration_minutes: int = 30
     session_type: str = "focused"
+    # Optional filters: when set, only return questions matching these concept_ids
+    # or belonging to one of the listed domain_ids. Used by the study explorer.
+    concept_ids: list[str] | None = None
+    domain_ids: list[str] | None = None
 
 
 class QuestionData(BaseModel):

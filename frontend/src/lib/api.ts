@@ -102,7 +102,8 @@ class ApiClient {
   async createSession(
     examId: string,
     durationMinutes: number,
-    sessionType: string = "focused"
+    sessionType: string = "focused",
+    filters?: { concept_ids?: string[]; domain_ids?: string[] }
   ): Promise<SessionPlan> {
     return this.request("/study/session", {
       method: "POST",
@@ -110,6 +111,8 @@ class ApiClient {
         exam_id: examId,
         duration_minutes: durationMinutes,
         session_type: sessionType,
+        ...(filters?.concept_ids ? { concept_ids: filters.concept_ids } : {}),
+        ...(filters?.domain_ids ? { domain_ids: filters.domain_ids } : {}),
       }),
     });
   }

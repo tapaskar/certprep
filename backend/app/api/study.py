@@ -218,6 +218,23 @@ async def create_session(
     concept_scores.sort(key=lambda x: x[1], reverse=True)
     selected_concept_ids = [cs[0] for cs in concept_scores[:max_questions * 2]]
 
+    # ── Explicit user filters from the study explorer ──────────
+    # If the user clicked a specific concept or domain in the left explorer,
+    # honor that selection instead of the adaptive picker.
+    if request.concept_ids:
+        selected_concept_ids = request.concept_ids
+    elif request.domain_ids:
+        # Resolve domain_ids → all concept_ids in those domains
+        domain_concepts_result = await db.execute(
+            select(Concept.id).where(
+                and_(
+                    Concept.exam_id == request.exam_id,
+                    Concept.domain_id.in_(request.domain_ids),
+                )
+            )
+        )
+        selected_concept_ids = [r[0] for r in domain_concepts_result.all()]
+
     # Get questions the user has NOT recently answered for the selected concepts
     recently_answered_result = await db.execute(
         select(UserAnswer.question_id)

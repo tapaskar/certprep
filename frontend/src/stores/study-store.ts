@@ -33,7 +33,11 @@ interface StudyState {
 
   // Actions
   setMode: (mode: StudyMode) => void;
-  createSession: (examId: string, durationMinutes: number) => Promise<void>;
+  createSession: (
+    examId: string,
+    durationMinutes: number,
+    filters?: { concept_ids?: string[]; domain_ids?: string[] }
+  ) => Promise<void>;
   markFactLearned: (index: number) => void;
   startQuiz: () => void;
   selectOption: (option: string) => void;
@@ -66,10 +70,10 @@ export const useStudyStore = create<StudyState>((set, get) => ({
     set({ mode });
   },
 
-  createSession: async (examId, durationMinutes) => {
+  createSession: async (examId, durationMinutes, filters) => {
     set({ isLoading: true });
     try {
-      const data = await api.createSession(examId, durationMinutes);
+      const data = await api.createSession(examId, durationMinutes, "focused", filters);
       const questions = data.plan.questions.map((q) => ({
         id: q.question_id || q.id,
         stem: q.stem,
