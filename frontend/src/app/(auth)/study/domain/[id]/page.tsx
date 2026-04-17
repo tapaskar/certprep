@@ -15,7 +15,6 @@ import {
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { useStudyStore } from "@/stores/study-store";
-import { StudyExplorer } from "@/components/study/study-explorer";
 import { cn } from "@/lib/utils";
 import type { ConceptSummary } from "@/lib/api-types";
 
@@ -87,16 +86,6 @@ export default function DomainDetailPage({
     }
   };
 
-  const handleNavigateToConcept = (id: string) => {
-    router.push(`/study/concept/${id}`);
-  };
-
-  const handleNavigateToDomain = (id: string) => {
-    if (id !== domainId) {
-      router.push(`/study/domain/${id}`);
-    }
-  };
-
   // Group by topic_id
   const byTopic = new Map<string, ConceptSummary[]>();
   for (const c of concepts) {
@@ -119,26 +108,14 @@ export default function DomainDetailPage({
   }
 
   return (
-    <div className="flex gap-4">
-      <aside className="hidden lg:block shrink-0 w-72 xl:w-80 sticky top-20 self-start">
-        <div className="rounded-xl border border-stone-200 bg-white shadow-sm h-[calc(100vh-6rem)] overflow-hidden flex flex-col">
-          <StudyExplorer
-            onFocusConcept={handleNavigateToConcept}
-            onFocusDomain={handleNavigateToDomain}
-            activeConceptId={null}
-            className="flex-1 min-h-0"
-          />
-        </div>
-      </aside>
-
-      <div className="flex-1 min-w-0">
-        <Link
-          href="/study"
-          className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-amber-600 mb-4"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Study Home
-        </Link>
+    <div>
+      <Link
+        href="/study"
+        className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-amber-600 mb-4"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Study Home
+      </Link>
 
         {loading ? (
           <div className="flex h-64 items-center justify-center">
@@ -263,7 +240,6 @@ export default function DomainDetailPage({
             )}
           </div>
         )}
-      </div>
     </div>
   );
 }

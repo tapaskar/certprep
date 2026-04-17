@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useEffect, useCallback, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { useStudyStore } from "@/stores/study-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { SessionPlan } from "@/components/study/session-plan";
@@ -11,8 +11,6 @@ import { ConfidenceSelector } from "@/components/study/confidence-selector";
 import { AnswerFeedback } from "@/components/study/answer-feedback";
 import { SessionSummary } from "@/components/study/session-summary";
 import { CheatSheet } from "@/components/study/cheat-sheet";
-import { StudyExplorer } from "@/components/study/study-explorer";
-import { PanelLeftOpen, PanelLeftClose } from "lucide-react";
 
 export default function StudyPage() {
   return (
@@ -28,7 +26,6 @@ export default function StudyPage() {
 
 function StudyPageInner() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const urlMode = searchParams.get("mode");
   const examId = useAuthStore((s) => s.user?.active_exam_id);
 
@@ -52,9 +49,6 @@ function StudyPageInner() {
     isLoading,
     tick,
   } = useStudyStore();
-
-  // Explorer visibility — show in idle + learning phases by default
-  const [explorerOpen, setExplorerOpen] = useState(true);
 
   // Auto-start session if URL has ?mode=review or ?mode=mock
   useEffect(() => {
@@ -106,219 +100,98 @@ function StudyPageInner() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Explorer handlers — navigate to dedicated pages (URL = source of truth)
-  const focusOnConcept = (conceptId: string) => {
-    router.push(`/study/concept/${conceptId}`);
-  };
-
-  const focusOnDomain = (domainId: string) => {
-    router.push(`/study/domain/${domainId}`);
-  };
-
-  // Render phase content
-  const renderPhaseContent = () => {
-    if (phase === "idle") {
-      if (urlMode === "review" || urlMode === "mock") {
-        return (
-          <div className="flex h-64 flex-col items-center justify-center gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-stone-200 border-t-amber-500" />
-            <p className="text-sm text-stone-500">
-              {urlMode === "review" ? "Loading review queue..." : "Preparing mock exam..."}
-            </p>
-          </div>
-        );
-      }
+  // Phase-driven content. The persistent sidebar lives in the layout.
+  if (phase === "idle") {
+    if (urlMode === "review" || urlMode === "mock") {
       return (
-        <div className="space-y-6">
-          <div className="rounded-xl border border-stone-200 bg-white p-6">
-            <h1 className="text-2xl font-bold text-stone-900 mb-2">
-              Start a study session
-            </h1>
-            <p className="text-sm text-stone-600 mb-4">
-              Browse the exam structure on the left to focus on a specific
-              concept or domain, or start an adaptive session below — our AI
-              will pick what you need to study next.
-            </p>
-          </div>
-          <SessionPlan />
+        <div className="flex h-64 flex-col items-center justify-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-stone-200 border-t-amber-500" />
+          <p className="text-sm text-stone-500">
+            {urlMode === "review" ? "Loading review queue..." : "Preparing mock exam..."}
+          </p>
         </div>
       );
     }
-
-    if (phase === "learning" && learningConcept) {
-      return (
-        <ConceptLearn
-          concept={learningConcept}
-          factsChecked={factsChecked}
-          onFactCheck={markFactLearned}
-          onReady={startQuiz}
-          onSkip={startQuiz}
-        />
-      );
-    }
-
-    if (phase === "answering" && currentQuestion) {
-      return (
-        <div className="space-y-4">
-          {urlMode === "mock" && (
-            <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-700">
-              Mock Exam — {totalQuestions} questions
-            </div>
-          )}
-          {urlMode === "review" && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700">
-              Review Queue — Spaced Repetition
-            </div>
-          )}
-          {currentQuestionConcept && !urlMode && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
-              Testing: <strong>{currentQuestionConcept.concept.name}</strong>
-            </div>
-          )}
-
-          <QuestionCard
-            question={currentQuestion}
-            selectedOption={selectedOption}
-            onSelect={selectOption}
-            questionNumber={currentIndex + 1}
-            totalQuestions={totalQuestions}
-            timerSeconds={timerSeconds}
-          />
-
-          {selectedOption && <ConfidenceSelector onSelect={submitAnswer} />}
-
-          {currentQuestionConcept && (
-            <CheatSheet concept={currentQuestionConcept} collapsible />
-          )}
+    return (
+      <div className="space-y-6">
+        <div className="rounded-xl border border-stone-200 bg-white p-6">
+          <h1 className="text-2xl font-bold text-stone-900 mb-2">
+            Start a study session
+          </h1>
+          <p className="text-sm text-stone-600 mb-4">
+            Browse the exam structure on the left to focus on a specific
+            concept or domain, or start an adaptive session below — our AI
+            will pick what you need to study next.
+          </p>
         </div>
-      );
-    }
+        <SessionPlan />
+      </div>
+    );
+  }
 
-    if (phase === "feedback" && currentQuestion && answerResult && selectedOption) {
-      return (
-        <AnswerFeedback
+  if (phase === "learning" && learningConcept) {
+    return (
+      <ConceptLearn
+        concept={learningConcept}
+        factsChecked={factsChecked}
+        onFactCheck={markFactLearned}
+        onReady={startQuiz}
+        onSkip={startQuiz}
+      />
+    );
+  }
+
+  if (phase === "answering" && currentQuestion) {
+    return (
+      <div className="space-y-4">
+        {urlMode === "mock" && (
+          <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-700">
+            Mock Exam — {totalQuestions} questions
+          </div>
+        )}
+        {urlMode === "review" && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700">
+            Review Queue — Spaced Repetition
+          </div>
+        )}
+        {currentQuestionConcept && !urlMode && (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
+            Testing: <strong>{currentQuestionConcept.concept.name}</strong>
+          </div>
+        )}
+
+        <QuestionCard
           question={currentQuestion}
           selectedOption={selectedOption}
-          result={answerResult}
-          onNext={nextQuestion}
+          onSelect={selectOption}
+          questionNumber={currentIndex + 1}
+          totalQuestions={totalQuestions}
+          timerSeconds={timerSeconds}
         />
-      );
-    }
 
-    if (phase === "summary" && sessionSummary) {
-      return <SessionSummary summary={sessionSummary} />;
-    }
+        {selectedOption && <ConfidenceSelector onSelect={submitAnswer} />}
 
-    return null;
-  };
-
-  // Hide explorer during actual quiz to maximize focus; keep it in idle/learning/summary
-  const shouldShowExplorer =
-    explorerOpen && (phase === "idle" || phase === "learning" || phase === "summary");
-
-  return (
-    <div className="flex gap-4">
-      {/* Left explorer */}
-      {shouldShowExplorer && (
-        <aside className="hidden lg:block shrink-0 w-72 xl:w-80 sticky top-20 self-start">
-          <div className="rounded-xl border border-stone-200 bg-white shadow-sm h-[calc(100vh-6rem)] overflow-hidden flex flex-col">
-            <StudyExplorer
-              onFocusConcept={focusOnConcept}
-              onFocusDomain={focusOnDomain}
-              activeConceptId={currentQuestionConceptId ?? null}
-              className="flex-1 min-h-0"
-            />
-          </div>
-        </aside>
-      )}
-
-      {/* Main content */}
-      <div className="flex-1 min-w-0">
-        {/* Toggle explorer (desktop) */}
-        {(phase === "idle" || phase === "learning" || phase === "summary") && (
-          <div className="hidden lg:flex mb-3 items-center gap-2">
-            <button
-              onClick={() => setExplorerOpen((v) => !v)}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-stone-900 rounded-md px-2 py-1 hover:bg-stone-100"
-            >
-              {shouldShowExplorer ? (
-                <>
-                  <PanelLeftClose className="h-3.5 w-3.5" /> Hide Explorer
-                </>
-              ) : (
-                <>
-                  <PanelLeftOpen className="h-3.5 w-3.5" /> Show Explorer
-                </>
-              )}
-            </button>
-          </div>
+        {currentQuestionConcept && (
+          <CheatSheet concept={currentQuestionConcept} collapsible />
         )}
-
-        {/* Mobile explorer toggle + inline explorer */}
-        {(phase === "idle") && (
-          <MobileExplorer
-            onFocusConcept={focusOnConcept}
-            onFocusDomain={focusOnDomain}
-            activeConceptId={null}
-          />
-        )}
-
-        {renderPhaseContent()}
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-// Collapsible mobile version of the explorer (shown under the hero)
-function MobileExplorer({
-  onFocusConcept,
-  onFocusDomain,
-  activeConceptId,
-}: {
-  onFocusConcept: (id: string) => void;
-  onFocusDomain: (id: string) => void;
-  activeConceptId: string | null;
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="lg:hidden mb-4">
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm font-semibold text-stone-700 shadow-sm"
-      >
-        {open ? (
-          <>
-            <span className="flex items-center gap-2">
-              <PanelLeftClose className="h-4 w-4" /> Hide Exam Explorer
-            </span>
-          </>
-        ) : (
-          <>
-            <span className="flex items-center gap-2">
-              <PanelLeftOpen className="h-4 w-4" /> Browse Exam Structure
-            </span>
-            <span className="text-xs font-normal text-stone-500">
-              Domain → Topic → Concept
-            </span>
-          </>
-        )}
-      </button>
-      {open && (
-        <div className="mt-2 rounded-xl border border-stone-200 bg-white shadow-sm h-[60vh] overflow-hidden flex flex-col">
-          <StudyExplorer
-            onFocusConcept={(id) => {
-              setOpen(false);
-              onFocusConcept(id);
-            }}
-            onFocusDomain={(id) => {
-              setOpen(false);
-              onFocusDomain(id);
-            }}
-            activeConceptId={activeConceptId}
-            className="flex-1 min-h-0"
-          />
-        </div>
-      )}
-    </div>
-  );
+  if (phase === "feedback" && currentQuestion && answerResult && selectedOption) {
+    return (
+      <AnswerFeedback
+        question={currentQuestion}
+        selectedOption={selectedOption}
+        result={answerResult}
+        onNext={nextQuestion}
+      />
+    );
+  }
+
+  if (phase === "summary" && sessionSummary) {
+    return <SessionSummary summary={sessionSummary} />;
+  }
+
+  return null;
 }

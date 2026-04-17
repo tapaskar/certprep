@@ -16,7 +16,6 @@ import {
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { useStudyStore } from "@/stores/study-store";
-import { StudyExplorer } from "@/components/study/study-explorer";
 import { BloomsBadge } from "@/components/study/blooms-badge";
 import { AudioTutor } from "@/components/study/audio-tutor";
 import { cn } from "@/lib/utils";
@@ -90,16 +89,6 @@ export default function ConceptDetailPage({
     }
   };
 
-  const handleNavigateToConcept = (id: string) => {
-    if (id !== conceptId) {
-      router.push(`/study/concept/${id}`);
-    }
-  };
-
-  const handleNavigateToDomain = (id: string) => {
-    router.push(`/study/domain/${id}`);
-  };
-
   if (!examId) {
     return (
       <div className="mx-auto max-w-lg text-center py-16">
@@ -115,52 +104,37 @@ export default function ConceptDetailPage({
   }
 
   return (
-    <div className="flex gap-4">
-      {/* Left explorer — same sidebar, but click navigates via URL */}
-      <aside className="hidden lg:block shrink-0 w-72 xl:w-80 sticky top-20 self-start">
-        <div className="rounded-xl border border-stone-200 bg-white shadow-sm h-[calc(100vh-6rem)] overflow-hidden flex flex-col">
-          <StudyExplorer
-            onFocusConcept={handleNavigateToConcept}
-            onFocusDomain={handleNavigateToDomain}
-            activeConceptId={conceptId}
-            className="flex-1 min-h-0"
-          />
+    <div>
+      <Link
+        href="/study"
+        className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-amber-600 mb-4"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to Study Home
+      </Link>
+
+      {loading ? (
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
         </div>
-      </aside>
-
-      {/* Main content */}
-      <div className="flex-1 min-w-0">
-        <Link
-          href="/study"
-          className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-amber-600 mb-4"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Study Home
-        </Link>
-
-        {loading ? (
-          <div className="flex h-64 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
-          </div>
-        ) : error ? (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-center">
-            <p className="font-bold text-rose-700">Could not load concept</p>
-            <p className="text-sm text-rose-600 mt-1">{error}</p>
-          </div>
-        ) : detail ? (
-          <ConceptDetailView
-            detail={detail}
-            factsChecked={factsChecked}
-            onToggleFact={toggleFact}
-            onStartPractice={handleStartPractice}
-            isStarting={starting || isLoading}
-          />
-        ) : (
-          <div className="rounded-xl border border-stone-200 bg-stone-50 p-6 text-center text-stone-500">
-            Concept not found.
-          </div>
-        )}
-      </div>
+      ) : error ? (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-center">
+          <p className="font-bold text-rose-700">Could not load concept</p>
+          <p className="text-sm text-rose-600 mt-1">{error}</p>
+        </div>
+      ) : detail ? (
+        <ConceptDetailView
+          detail={detail}
+          factsChecked={factsChecked}
+          onToggleFact={toggleFact}
+          onStartPractice={handleStartPractice}
+          isStarting={starting || isLoading}
+        />
+      ) : (
+        <div className="rounded-xl border border-stone-200 bg-stone-50 p-6 text-center text-stone-500">
+          Concept not found.
+        </div>
+      )}
     </div>
   );
 }
