@@ -220,7 +220,10 @@ async def create_session(
 
     # ── Explicit user filters from the study explorer ──────────
     # If the user clicked a specific concept or domain in the left explorer,
-    # honor that selection instead of the adaptive picker.
+    # honor that selection instead of the adaptive picker. When the user
+    # explicitly filters, we MUST NOT backfill with random questions from
+    # other domains — that would silently show them the wrong topic.
+    has_explicit_filter = bool(request.concept_ids) or bool(request.domain_ids)
     if request.concept_ids:
         selected_concept_ids = request.concept_ids
     elif request.domain_ids:
@@ -284,11 +287,16 @@ async def create_session(
             seen_ids.add(q.id)
             unique_concept_questions.append(q)
 
-    # If we have enough concept-matched questions, use those; otherwise backfill
-    if len(unique_concept_questions) >= max_questions:
+    # If the user explicitly filtered by concept/domain, honor that filter
+    # strictly — do NOT backfill. Returning fewer-than-requested questions
+    # (or zero) is preferable to showing the user the wrong topic.
+    if has_explicit_filter:
+        candidate_questions = unique_concept_questions
+    elif len(unique_concept_questions) >= max_questions:
         candidate_questions = unique_concept_questions
     else:
-        # Backfill with other questions from the exam
+        # Adaptive mode — backfill with other exam questions so the session
+        # is never empty when the bandit falls short.
         backfill_result = await db.execute(
             select(Question)
             .where(
@@ -317,6 +325,18 @@ async def create_session(
 
     candidate_questions.sort(key=question_priority, reverse=True)
     questions = candidate_questions[:max_questions]
+
+    # When the user explicitly filtered but no questions matched, fail fast
+    # with a clear message instead of creating an empty session.
+    if has_explicit_filter and len(questions) == 0:
+        target = (
+            f"concept '{request.concept_ids[0]}'" if request.concept_ids
+            else f"domain '{request.domain_ids[0]}'"
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No practice questions available yet for {target}. Try another concept or the adaptive session.",
+        )
 
     # Create session
     session = StudySession(

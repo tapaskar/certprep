@@ -45,6 +45,7 @@ export default function DomainDetailPage({
   const [concepts, setConcepts] = useState<ConceptSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
+  const [practiceError, setPracticeError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!examId || !domainId) {
@@ -77,10 +78,15 @@ export default function DomainDetailPage({
   const handleStartDomainPractice = async () => {
     if (!examId) return;
     setStarting(true);
+    setPracticeError(null);
     setMode("quick_quiz");
     try {
       await createSession(examId, 20, { domain_ids: [domainId] });
       router.push("/study");
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Could not start practice session.";
+      setPracticeError(msg.replace(/^API \d+:\s*/, ""));
     } finally {
       setStarting(false);
     }
@@ -161,21 +167,28 @@ export default function DomainDetailPage({
               </div>
 
               <div className="mt-5">
-                <button
-                  onClick={handleStartDomainPractice}
-                  disabled={starting || isLoading || concepts.length === 0}
-                  className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-3 text-sm font-bold text-white shadow-md hover:scale-[1.02] disabled:opacity-50 transition-all"
-                >
-                  {starting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )}
-                  Start 20-min Domain Practice
-                </button>
-                <span className="ml-3 text-xs text-stone-500">
-                  Questions from all concepts in this domain.
-                </span>
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={handleStartDomainPractice}
+                    disabled={starting || isLoading || concepts.length === 0}
+                    className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-3 text-sm font-bold text-white shadow-md hover:scale-[1.02] disabled:opacity-50 transition-all"
+                  >
+                    {starting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Play className="h-4 w-4" />
+                    )}
+                    Start 20-min Domain Practice
+                  </button>
+                  <span className="text-xs text-stone-500">
+                    Questions strictly from concepts in this domain.
+                  </span>
+                </div>
+                {practiceError && (
+                  <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">
+                    {practiceError}
+                  </div>
+                )}
               </div>
             </div>
 

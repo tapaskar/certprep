@@ -36,6 +36,7 @@ export default function ConceptDetailPage({
   const [error, setError] = useState<string | null>(null);
   const [factsChecked, setFactsChecked] = useState<Set<number>>(new Set());
   const [starting, setStarting] = useState(false);
+  const [practiceError, setPracticeError] = useState<string | null>(null);
 
   // Fetch THIS concept's details — single source of truth for what's shown
   useEffect(() => {
@@ -79,11 +80,18 @@ export default function ConceptDetailPage({
   const handleStartPractice = async () => {
     if (!examId || !detail) return;
     setStarting(true);
+    setPracticeError(null);
     setMode("quick_quiz");
     try {
       await createSession(examId, 15, { concept_ids: [conceptId] });
       // Jump to /study — it will render the active session from the store
       router.push("/study");
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Could not start practice session.";
+      // Strip the "API 404: " prefix for cleaner display
+      const cleaned = msg.replace(/^API \d+:\s*/, "");
+      setPracticeError(cleaned);
     } finally {
       setStarting(false);
     }
@@ -129,6 +137,7 @@ export default function ConceptDetailPage({
           onToggleFact={toggleFact}
           onStartPractice={handleStartPractice}
           isStarting={starting || isLoading}
+          practiceError={practiceError}
         />
       ) : (
         <div className="rounded-xl border border-stone-200 bg-stone-50 p-6 text-center text-stone-500">
@@ -145,12 +154,14 @@ function ConceptDetailView({
   onToggleFact,
   onStartPractice,
   isStarting,
+  practiceError,
 }: {
   detail: ConceptDetail;
   factsChecked: Set<number>;
   onToggleFact: (i: number) => void;
   onStartPractice: () => void;
   isStarting: boolean;
+  practiceError: string | null;
 }) {
   const { concept, user_mastery, question_count } = detail;
   const {
@@ -240,22 +251,39 @@ function ConceptDetailView({
         )}
 
         {/* Practice CTA */}
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button
-            onClick={onStartPractice}
-            disabled={isStarting || question_count === 0}
-            className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-3 text-sm font-bold text-white shadow-md hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-          >
-            {isStarting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Play className="h-4 w-4" />
-            )}
-            {isStarting ? "Starting..." : "Start 15-min Practice"}
-          </button>
-          <span className="text-xs text-stone-500 self-center">
-            Questions are filtered to this concept.
-          </span>
+        <div className="mt-6">
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={onStartPractice}
+              disabled={isStarting || question_count === 0}
+              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-3 text-sm font-bold text-white shadow-md hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              {isStarting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Play className="h-4 w-4" />
+              )}
+              {isStarting
+                ? "Starting..."
+                : question_count === 0
+                ? "No questions available"
+                : "Start 15-min Practice"}
+            </button>
+            <span className="text-xs text-stone-500 self-center">
+              Questions are filtered strictly to this concept.
+            </span>
+          </div>
+          {practiceError && (
+            <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700">
+              {practiceError}
+            </div>
+          )}
+          {question_count === 0 && !practiceError && (
+            <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
+              No practice questions are mapped to this concept yet. Pick
+              another concept from the explorer or start an adaptive session.
+            </div>
+          )}
         </div>
       </div>
 
