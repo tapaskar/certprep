@@ -373,62 +373,72 @@ export default function LandingPage() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <Link
             href="/visualizer"
-            className="group relative overflow-hidden rounded-2xl border-2 border-stone-200 bg-gradient-to-br from-stone-900 to-stone-800 p-6 text-white hover:border-amber-400 hover:shadow-xl transition-all"
+            className="group rounded-2xl border border-stone-200 bg-white p-6 shadow-md shadow-stone-200/60 hover:border-amber-400 hover:shadow-xl transition-all"
           >
-            <div className="text-4xl mb-3">🌐</div>
-            <h3 className="text-lg font-bold mb-1">3D Network Visualizer</h3>
-            <p className="text-sm text-stone-300 mb-3">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-violet-100 text-3xl">
+              🌐
+            </div>
+            <h3 className="text-lg font-semibold text-stone-900">
+              3D Network Visualizer
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-stone-500">
               Explore 30+ AWS services and connections in interactive 3D.
             </p>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 group-hover:gap-2 transition-all">
+            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
               Try it →
             </span>
           </Link>
 
           <Link
             href="/simulator"
-            className="group rounded-2xl border-2 border-stone-200 bg-white p-6 hover:border-amber-400 hover:shadow-xl transition-all"
+            className="group rounded-2xl border border-stone-200 bg-white p-6 shadow-md shadow-stone-200/60 hover:border-amber-400 hover:shadow-xl transition-all"
           >
-            <div className="text-4xl mb-3">⚡</div>
-            <h3 className="text-lg font-bold mb-1 text-stone-900">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-amber-100 text-3xl">
+              ⚡
+            </div>
+            <h3 className="text-lg font-semibold text-stone-900">
               Architecture Simulator
             </h3>
-            <p className="text-sm text-stone-600 mb-3">
+            <p className="mt-2 text-sm leading-6 text-stone-500">
               Drag AWS services onto a canvas. See live cost &amp; latency impact.
             </p>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
+            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
               Build one →
             </span>
           </Link>
 
           <Link
             href="/scenarios"
-            className="group rounded-2xl border-2 border-stone-200 bg-white p-6 hover:border-amber-400 hover:shadow-xl transition-all"
+            className="group rounded-2xl border border-stone-200 bg-white p-6 shadow-md shadow-stone-200/60 hover:border-amber-400 hover:shadow-xl transition-all"
           >
-            <div className="text-4xl mb-3">🎯</div>
-            <h3 className="text-lg font-bold mb-1 text-stone-900">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-rose-100 text-3xl">
+              🎯
+            </div>
+            <h3 className="text-lg font-semibold text-stone-900">
               Scenario Library
             </h3>
-            <p className="text-sm text-stone-600 mb-3">
+            <p className="mt-2 text-sm leading-6 text-stone-500">
               Real-world AWS design challenges with 3D diagrams &amp; solutions.
             </p>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
+            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
               Browse →
             </span>
           </Link>
 
           <Link
             href="/study/heuristics"
-            className="group rounded-2xl border-2 border-stone-200 bg-white p-6 hover:border-amber-400 hover:shadow-xl transition-all"
+            className="group rounded-2xl border border-stone-200 bg-white p-6 shadow-md shadow-stone-200/60 hover:border-amber-400 hover:shadow-xl transition-all"
           >
-            <div className="text-4xl mb-3">📘</div>
-            <h3 className="text-lg font-bold mb-1 text-stone-900">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-blue-100 text-3xl">
+              📘
+            </div>
+            <h3 className="text-lg font-semibold text-stone-900">
               Exam Heuristics
             </h3>
-            <p className="text-sm text-stone-600 mb-3">
+            <p className="mt-2 text-sm leading-6 text-stone-500">
               20+ decision rules that tell you the AWS-expected answer.
             </p>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
+            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
               Read rules →
             </span>
           </Link>
