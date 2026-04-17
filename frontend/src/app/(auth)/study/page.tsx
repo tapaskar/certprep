@@ -247,15 +247,17 @@ function StudyPageInner() {
     <div className="flex gap-4">
       {/* Left explorer */}
       {shouldShowExplorer && (
-        <aside className="hidden lg:flex shrink-0 w-72 xl:w-80 rounded-xl border border-stone-200 bg-white shadow-sm max-h-[calc(100vh-6rem)] sticky top-20 overflow-hidden">
-          <StudyExplorer
-            onFocusConcept={focusOnConcept}
-            onFocusDomain={focusOnDomain}
-            activeConceptId={
-              focusedConcept?.id ?? currentQuestionConceptId ?? null
-            }
-            className="flex-1"
-          />
+        <aside className="hidden lg:block shrink-0 w-72 xl:w-80 sticky top-20 self-start">
+          <div className="rounded-xl border border-stone-200 bg-white shadow-sm h-[calc(100vh-6rem)] overflow-hidden flex flex-col">
+            <StudyExplorer
+              onFocusConcept={focusOnConcept}
+              onFocusDomain={focusOnDomain}
+              activeConceptId={
+                focusedConcept?.id ?? currentQuestionConceptId ?? null
+              }
+              className="flex-1 min-h-0"
+            />
+          </div>
         </aside>
       )}
 
@@ -331,7 +333,7 @@ function MobileExplorer({
         )}
       </button>
       {open && (
-        <div className="mt-2 rounded-xl border border-stone-200 bg-white shadow-sm max-h-[60vh] overflow-hidden">
+        <div className="mt-2 rounded-xl border border-stone-200 bg-white shadow-sm h-[60vh] overflow-hidden flex flex-col">
           <StudyExplorer
             onFocusConcept={(id, name) => {
               setOpen(false);
@@ -342,6 +344,7 @@ function MobileExplorer({
               onFocusDomain(id, name);
             }}
             activeConceptId={activeConceptId}
+            className="flex-1 min-h-0"
           />
         </div>
       )}

@@ -216,9 +216,9 @@ export function StudyExplorer({
   }
 
   return (
-    <div className={cn("flex flex-col", className)}>
+    <div className={cn("flex flex-col min-h-0 h-full overflow-hidden", className)}>
       {/* Exam header */}
-      <div className="p-4 border-b border-stone-200 bg-gradient-to-br from-amber-50/50 to-white">
+      <div className="shrink-0 p-4 border-b border-stone-200 bg-gradient-to-br from-amber-50/50 to-white">
         <div className="flex items-center gap-2 mb-1">
           <BookOpen className="h-4 w-4 text-amber-600" />
           <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
@@ -253,7 +253,7 @@ export function StudyExplorer({
       </div>
 
       {/* Tree */}
-      <div className="flex-1 overflow-y-auto px-2 py-3">
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 py-3">
         {examDetails?.domains?.map((domain) => {
           const bucket = tree.get(domain.id);
           const isExpanded = expandedDomains.has(domain.id);
