@@ -274,6 +274,18 @@ export default function LandingPage() {
           {/* Desktop Nav Links + Auth */}
           <div className="hidden sm:flex items-center gap-1">
             <Link
+              href="/simulator"
+              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+            >
+              Tools
+            </Link>
+            <Link
+              href="/scenarios"
+              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
+            >
+              Scenarios
+            </Link>
+            <Link
               href="/blog"
               className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
             >
@@ -284,12 +296,6 @@ export default function LandingPage() {
               className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
             >
               Pricing
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
-            >
-              Contact
             </Link>
             <div className="h-5 w-px bg-stone-200 mx-2" />
             <Link
@@ -348,6 +354,84 @@ export default function LandingPage() {
           <span>Video Tutorials</span>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
           <span>Hands-on Labs</span>
+        </div>
+      </section>
+
+      {/* Free Interactive Tools */}
+      <section className="mx-auto max-w-6xl px-6 pb-24">
+        <div className="text-center mb-10">
+          <div className="inline-block text-xs font-bold uppercase tracking-wider text-violet-600 bg-violet-100 px-3 py-1 rounded-full mb-3">
+            ✨ New — No Signup Required
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+            Free Interactive Tools
+          </h2>
+          <p className="mt-3 text-stone-600">
+            Visual, hands-on AWS learning tools — free forever.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Link
+            href="/visualizer"
+            className="group relative overflow-hidden rounded-2xl border-2 border-stone-200 bg-gradient-to-br from-stone-900 to-stone-800 p-6 text-white hover:border-amber-400 hover:shadow-xl transition-all"
+          >
+            <div className="text-4xl mb-3">🌐</div>
+            <h3 className="text-lg font-bold mb-1">3D Network Visualizer</h3>
+            <p className="text-sm text-stone-300 mb-3">
+              Explore 30+ AWS services and connections in interactive 3D.
+            </p>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 group-hover:gap-2 transition-all">
+              Try it →
+            </span>
+          </Link>
+
+          <Link
+            href="/simulator"
+            className="group rounded-2xl border-2 border-stone-200 bg-white p-6 hover:border-amber-400 hover:shadow-xl transition-all"
+          >
+            <div className="text-4xl mb-3">⚡</div>
+            <h3 className="text-lg font-bold mb-1 text-stone-900">
+              Architecture Simulator
+            </h3>
+            <p className="text-sm text-stone-600 mb-3">
+              Drag AWS services onto a canvas. See live cost &amp; latency impact.
+            </p>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
+              Build one →
+            </span>
+          </Link>
+
+          <Link
+            href="/scenarios"
+            className="group rounded-2xl border-2 border-stone-200 bg-white p-6 hover:border-amber-400 hover:shadow-xl transition-all"
+          >
+            <div className="text-4xl mb-3">🎯</div>
+            <h3 className="text-lg font-bold mb-1 text-stone-900">
+              Scenario Library
+            </h3>
+            <p className="text-sm text-stone-600 mb-3">
+              Real-world AWS design challenges with 3D diagrams &amp; solutions.
+            </p>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
+              Browse →
+            </span>
+          </Link>
+
+          <Link
+            href="/study/heuristics"
+            className="group rounded-2xl border-2 border-stone-200 bg-white p-6 hover:border-amber-400 hover:shadow-xl transition-all"
+          >
+            <div className="text-4xl mb-3">📘</div>
+            <h3 className="text-lg font-bold mb-1 text-stone-900">
+              Exam Heuristics
+            </h3>
+            <p className="text-sm text-stone-600 mb-3">
+              20+ decision rules that tell you the AWS-expected answer.
+            </p>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
+              Read rules →
+            </span>
+          </Link>
         </div>
       </section>
 
@@ -460,18 +544,24 @@ export default function LandingPage() {
           <p className="text-xs text-stone-400">
             Trusted by professionals preparing for cloud certifications worldwide
           </p>
-          <div className="flex items-center gap-6 text-sm font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium">
+            <Link href="/visualizer" className="text-stone-500 transition-colors hover:text-amber-600">
+              3D Visualizer
+            </Link>
+            <Link href="/simulator" className="text-stone-500 transition-colors hover:text-amber-600">
+              Simulator
+            </Link>
+            <Link href="/scenarios" className="text-stone-500 transition-colors hover:text-amber-600">
+              Scenarios
+            </Link>
+            <Link href="/study/heuristics" className="text-stone-500 transition-colors hover:text-amber-600">
+              Heuristics
+            </Link>
             <Link href="/blog" className="text-stone-500 transition-colors hover:text-amber-600">
               Blog
             </Link>
             <Link href="/pricing" className="text-stone-500 transition-colors hover:text-amber-600">
               Pricing
-            </Link>
-            <Link href="/login" className="text-stone-500 transition-colors hover:text-amber-600">
-              Log In
-            </Link>
-            <Link href="/register" className="text-stone-500 transition-colors hover:text-amber-600">
-              Register
             </Link>
             <Link href="/contact" className="text-stone-500 transition-colors hover:text-amber-600">
               Contact

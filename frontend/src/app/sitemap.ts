@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { blogPosts } from "@/lib/blog-data";
+import { scenarios } from "@/lib/scenarios-data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.sparkupcloud.com";
@@ -7,6 +8,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blogUrls: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
     lastModified: new Date(post.date),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const scenarioUrls: MetadataRoute.Sitemap = scenarios.map((s) => ({
+    url: `${baseUrl}/scenarios/${s.id}`,
+    lastModified: new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
@@ -23,6 +31,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/visualizer`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/simulator`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/scenarios`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    ...scenarioUrls,
+    {
+      url: `${baseUrl}/study/heuristics`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/study/anti-patterns`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
     {
       url: `${baseUrl}/blog`,

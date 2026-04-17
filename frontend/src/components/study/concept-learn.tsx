@@ -14,6 +14,8 @@ import {
 import { cn } from "@/lib/utils";
 import type { ConceptDetail } from "@/lib/api-types";
 import { CheatSheet } from "./cheat-sheet";
+import { BloomsBadge } from "./blooms-badge";
+import { AudioTutor } from "./audio-tutor";
 
 // --- Curated YouTube videos per concept (all URLs verified) ---
 interface VideoResource {
@@ -247,6 +249,8 @@ export function ConceptLearn({
               {concept.concept.domain_id.replace(/-/g, " ")}
             </span>
           )}
+          {/* Bloom's Taxonomy badge */}
+          <BloomsBadge difficultyTier={difficulty_tier} />
           {/* Difficulty stars */}
           <div className="flex items-center gap-0.5">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -283,6 +287,27 @@ export function ConceptLearn({
           </p>
         )}
       </div>
+
+      {/* Audio Tutor */}
+      <AudioTutor
+        title={concept.concept.name}
+        sections={[
+          ...(concept.concept.description
+            ? [{ heading: "Overview", body: concept.concept.description }]
+            : []),
+          ...(key_facts.length > 0
+            ? [{ heading: "Key facts", body: key_facts.join(". ") }]
+            : []),
+          ...(common_misconceptions.length > 0
+            ? [
+                {
+                  heading: "Common misconceptions",
+                  body: common_misconceptions.join(". "),
+                },
+              ]
+            : []),
+        ]}
+      />
 
       {/* Key Facts */}
       {key_facts.length > 0 && (

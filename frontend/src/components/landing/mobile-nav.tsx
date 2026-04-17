@@ -5,6 +5,10 @@ import Link from "next/link";
 import { Menu, X, LogIn } from "lucide-react";
 
 const navLinks = [
+  { href: "/visualizer", label: "🌐 3D Visualizer" },
+  { href: "/simulator", label: "⚡ Simulator" },
+  { href: "/scenarios", label: "🎯 Scenarios" },
+  { href: "/study/heuristics", label: "📘 Heuristics" },
   { href: "/blog", label: "Blog" },
   { href: "/pricing", label: "Pricing" },
   { href: "/contact", label: "Contact" },
