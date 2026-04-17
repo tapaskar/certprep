@@ -40,8 +40,8 @@ interface ConceptWithMastery extends ConceptSummary {
 }
 
 interface StudyExplorerProps {
-  onFocusConcept?: (conceptId: string, conceptName: string) => void;
-  onFocusDomain?: (domainId: string, domainName: string) => void;
+  onFocusConcept?: (conceptId: string) => void;
+  onFocusDomain?: (domainId: string) => void;
   activeConceptId?: string | null;
   className?: string;
 }
@@ -304,7 +304,7 @@ export function StudyExplorer({
                 </button>
                 {onFocusDomain && conceptCount > 0 && (
                   <button
-                    onClick={() => onFocusDomain(domain.id, domain.name)}
+                    onClick={() => onFocusDomain(domain.id)}
                     title="Focus 15-min study session on this domain"
                     className="shrink-0 mr-1 inline-flex items-center gap-1 rounded-md bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
                   >
@@ -347,7 +347,7 @@ export function StudyExplorer({
                               return (
                                 <button
                                   key={c.id}
-                                  onClick={() => onFocusConcept?.(c.id, c.name)}
+                                  onClick={() => onFocusConcept?.(c.id)}
                                   className={cn(
                                     "group w-full flex items-center gap-2 px-1.5 py-1 rounded text-left transition-colors",
                                     isActive

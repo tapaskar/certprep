@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useCallback, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useStudyStore } from "@/stores/study-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { SessionPlan } from "@/components/study/session-plan";
@@ -28,6 +28,7 @@ export default function StudyPage() {
 
 function StudyPageInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const urlMode = searchParams.get("mode");
   const examId = useAuthStore((s) => s.user?.active_exam_id);
 
@@ -54,15 +55,6 @@ function StudyPageInner() {
 
   // Explorer visibility — show in idle + learning phases by default
   const [explorerOpen, setExplorerOpen] = useState(true);
-  // Track which concept/domain the user focused from the explorer
-  const [focusedConcept, setFocusedConcept] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
-  const [focusedDomain, setFocusedDomain] = useState<{
-    id: string;
-    name: string;
-  } | null>(null);
 
   // Auto-start session if URL has ?mode=review or ?mode=mock
   useEffect(() => {
@@ -114,21 +106,13 @@ function StudyPageInner() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Explorer handlers — start a focused session
-  const focusOnConcept = async (conceptId: string, conceptName: string) => {
-    if (!examId) return;
-    setFocusedConcept({ id: conceptId, name: conceptName });
-    setFocusedDomain(null);
-    setMode("learn_practice");
-    await createSession(examId, 15, { concept_ids: [conceptId] });
+  // Explorer handlers — navigate to dedicated pages (URL = source of truth)
+  const focusOnConcept = (conceptId: string) => {
+    router.push(`/study/concept/${conceptId}`);
   };
 
-  const focusOnDomain = async (domainId: string, domainName: string) => {
-    if (!examId) return;
-    setFocusedDomain({ id: domainId, name: domainName });
-    setFocusedConcept(null);
-    setMode("learn_practice");
-    await createSession(examId, 15, { domain_ids: [domainId] });
+  const focusOnDomain = (domainId: string) => {
+    router.push(`/study/domain/${domainId}`);
   };
 
   // Render phase content
@@ -176,17 +160,6 @@ function StudyPageInner() {
     if (phase === "answering" && currentQuestion) {
       return (
         <div className="space-y-4">
-          {/* Focused session banner */}
-          {focusedConcept && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
-              Focused study: <strong>{focusedConcept.name}</strong>
-            </div>
-          )}
-          {focusedDomain && (
-            <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2 text-sm text-violet-700">
-              Focused domain: <strong>{focusedDomain.name}</strong>
-            </div>
-          )}
           {urlMode === "mock" && (
             <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-700">
               Mock Exam — {totalQuestions} questions
@@ -197,7 +170,7 @@ function StudyPageInner() {
               Review Queue — Spaced Repetition
             </div>
           )}
-          {currentQuestionConcept && !urlMode && !focusedConcept && !focusedDomain && (
+          {currentQuestionConcept && !urlMode && (
             <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
               Testing: <strong>{currentQuestionConcept.concept.name}</strong>
             </div>
@@ -252,9 +225,7 @@ function StudyPageInner() {
             <StudyExplorer
               onFocusConcept={focusOnConcept}
               onFocusDomain={focusOnDomain}
-              activeConceptId={
-                focusedConcept?.id ?? currentQuestionConceptId ?? null
-              }
+              activeConceptId={currentQuestionConceptId ?? null}
               className="flex-1 min-h-0"
             />
           </div>
@@ -288,7 +259,7 @@ function StudyPageInner() {
           <MobileExplorer
             onFocusConcept={focusOnConcept}
             onFocusDomain={focusOnDomain}
-            activeConceptId={focusedConcept?.id ?? null}
+            activeConceptId={null}
           />
         )}
 
@@ -304,8 +275,8 @@ function MobileExplorer({
   onFocusDomain,
   activeConceptId,
 }: {
-  onFocusConcept: (id: string, name: string) => void;
-  onFocusDomain: (id: string, name: string) => void;
+  onFocusConcept: (id: string) => void;
+  onFocusDomain: (id: string) => void;
   activeConceptId: string | null;
 }) {
   const [open, setOpen] = useState(false);
@@ -335,13 +306,13 @@ function MobileExplorer({
       {open && (
         <div className="mt-2 rounded-xl border border-stone-200 bg-white shadow-sm h-[60vh] overflow-hidden flex flex-col">
           <StudyExplorer
-            onFocusConcept={(id, name) => {
+            onFocusConcept={(id) => {
               setOpen(false);
-              onFocusConcept(id, name);
+              onFocusConcept(id);
             }}
-            onFocusDomain={(id, name) => {
+            onFocusDomain={(id) => {
               setOpen(false);
-              onFocusDomain(id, name);
+              onFocusDomain(id);
             }}
             activeConceptId={activeConceptId}
             className="flex-1 min-h-0"
