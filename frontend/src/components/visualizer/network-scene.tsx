@@ -19,24 +19,25 @@ import {
   type AwsService,
   type Shape3D,
 } from "@/lib/aws-services-data";
+import { ServiceIcon } from "@/lib/service-icons";
 
 // ── Geometry per category — semantically distinct ─────────────────
 function ServiceGeometry({ shape }: { shape: Shape3D }) {
   switch (shape) {
     case "box":
-      return <boxGeometry args={[0.55, 0.55, 0.55]} />;
+      return <boxGeometry args={[0.7, 0.7, 0.7]} />;
     case "cylinder":
-      return <cylinderGeometry args={[0.32, 0.32, 0.55, 32]} />;
+      return <cylinderGeometry args={[0.4, 0.4, 0.7, 32]} />;
     case "octahedron":
-      return <octahedronGeometry args={[0.42, 0]} />;
+      return <octahedronGeometry args={[0.55, 0]} />;
     case "torus":
-      return <torusGeometry args={[0.32, 0.13, 16, 32]} />;
+      return <torusGeometry args={[0.4, 0.16, 16, 32]} />;
     case "icosahedron":
-      return <icosahedronGeometry args={[0.4, 0]} />;
+      return <icosahedronGeometry args={[0.5, 0]} />;
     case "cone":
-      return <coneGeometry args={[0.35, 0.6, 16]} />;
+      return <coneGeometry args={[0.45, 0.75, 16]} />;
     default:
-      return <sphereGeometry args={[0.35, 32, 32]} />;
+      return <sphereGeometry args={[0.45, 32, 32]} />;
   }
 }
 
@@ -52,7 +53,8 @@ function ServiceNode({ service, onClick, selected }: ServiceNodeProps) {
 
   useFrame((state) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y += selected ? 0.012 : 0.004;
+      groupRef.current.rotation.y += selected ? 0.012 : 0.003;
+      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.05;
     }
     if (haloRef.current && selected) {
       const pulse = 1 + Math.sin(state.clock.elapsedTime * 3) * 0.18;
@@ -65,15 +67,15 @@ function ServiceNode({ service, onClick, selected }: ServiceNodeProps) {
   return (
     <Float
       speed={1.2}
-      rotationIntensity={0.15}
-      floatIntensity={0.25}
+      rotationIntensity={0.1}
+      floatIntensity={0.3}
       position={service.position}
     >
       <group>
         {/* Halo when selected */}
         {selected && (
           <mesh ref={haloRef} rotation={[Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[0.6, 0.78, 48]} />
+            <ringGeometry args={[0.85, 1.05, 48]} />
             <meshBasicMaterial
               color={service.color}
               transparent
@@ -84,7 +86,7 @@ function ServiceNode({ service, onClick, selected }: ServiceNodeProps) {
           </mesh>
         )}
 
-        {/* Main mesh with distinct geometry per category */}
+        {/* 3D shape — backdrop for depth */}
         <group ref={groupRef}>
           <mesh
             onClick={(e) => {
@@ -104,63 +106,81 @@ function ServiceNode({ service, onClick, selected }: ServiceNodeProps) {
             <ServiceGeometry shape={service.shape3d} />
             <meshPhysicalMaterial
               color={service.color}
-              metalness={0.7}
-              roughness={0.18}
+              metalness={0.85}
+              roughness={0.15}
               clearcoat={1}
-              clearcoatRoughness={0.08}
+              clearcoatRoughness={0.05}
               emissive={service.color}
-              emissiveIntensity={selected ? 0.5 : 0.18}
-              envMapIntensity={1.5}
+              emissiveIntensity={selected ? 0.55 : 0.22}
+              envMapIntensity={1.8}
             />
             <Edges color="white" threshold={15} scale={1.001}>
               <lineBasicMaterial
                 color="#ffffff"
                 transparent
-                opacity={0.25}
+                opacity={0.35}
                 toneMapped={false}
               />
             </Edges>
           </mesh>
-
-          {/* Inner glowing core */}
-          <mesh scale={0.65}>
-            <sphereGeometry args={[0.22, 16, 16]} />
-            <meshBasicMaterial
-              color={service.color}
-              transparent
-              opacity={0.4}
-              toneMapped={false}
-            />
-          </mesh>
         </group>
 
-        {/* Floating label card */}
+        {/* Lucide icon billboard — always faces camera, primary identifier */}
         <Html
-          position={[0, -0.85, 0]}
+          position={[0, 0, 0]}
           center
-          distanceFactor={9}
-          occlude={false}
-          style={{
-            pointerEvents: "none",
-            fontFamily:
-              "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
-          }}
+          distanceFactor={6}
+          zIndexRange={[100, 0]}
+          style={{ pointerEvents: "none" }}
         >
           <div
             style={{
-              fontSize: "12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              background: `linear-gradient(135deg, ${service.color}, ${service.color}dd)`,
+              boxShadow: `0 0 20px ${service.color}aa, inset 0 1px 0 rgba(255,255,255,0.4)`,
+              border: `2px solid ${service.color}`,
+              color: "white",
+              transform: selected ? "scale(1.18)" : "scale(1)",
+              transition: "transform 0.2s ease",
+            }}
+          >
+            <ServiceIcon
+              iconKey={service.icon}
+              className="h-6 w-6"
+              strokeWidth={2.5}
+            />
+          </div>
+        </Html>
+
+        {/* Floating label below */}
+        <Html
+          position={[0, -1, 0]}
+          center
+          distanceFactor={9}
+          occlude={false}
+          style={{ pointerEvents: "none" }}
+        >
+          <div
+            style={{
+              fontSize: "11px",
               fontWeight: 700,
               color: "white",
-              background: "rgba(15, 23, 42, 0.85)",
+              background: "rgba(15, 23, 42, 0.88)",
               border: `1px solid ${service.color}`,
               padding: "3px 10px",
               borderRadius: "6px",
               whiteSpace: "nowrap",
-              boxShadow: `0 0 12px ${service.color}66`,
+              boxShadow: `0 0 12px ${service.color}55`,
               backdropFilter: "blur(4px)",
+              fontFamily:
+                "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
             }}
           >
-            <span style={{ marginRight: 4 }}>{service.emoji}</span>
             {service.shortName}
           </div>
         </Html>
@@ -198,7 +218,6 @@ function ParticleFlow({ start, end, color, speed, offset }: ParticleFlowProps) {
 
   return (
     <>
-      {/* Trail */}
       <mesh ref={trailRef}>
         <sphereGeometry args={[0.04, 8, 8]} />
         <meshBasicMaterial
@@ -208,7 +227,6 @@ function ParticleFlow({ start, end, color, speed, offset }: ParticleFlowProps) {
           toneMapped={false}
         />
       </mesh>
-      {/* Head */}
       <mesh ref={ref}>
         <sphereGeometry args={[0.07, 12, 12]} />
         <meshBasicMaterial color={color} toneMapped={false} />
@@ -249,8 +267,8 @@ export function NetworkScene({ selectedId, onSelect }: NetworkSceneProps) {
       }}
     >
       <Suspense fallback={null}>
-        {/* Lighting setup — key + fill + rim */}
-        <ambientLight intensity={0.35} />
+        {/* Lighting */}
+        <ambientLight intensity={0.4} />
         <directionalLight
           position={[10, 12, 8]}
           intensity={1.4}
@@ -271,7 +289,6 @@ export function NetworkScene({ selectedId, onSelect }: NetworkSceneProps) {
           color="#ff8040"
           distance={25}
         />
-        {/* Top accent for rim lighting */}
         <spotLight
           position={[0, 15, 0]}
           intensity={0.8}
@@ -281,10 +298,8 @@ export function NetworkScene({ selectedId, onSelect }: NetworkSceneProps) {
           distance={30}
         />
 
-        {/* HDR environment for realistic reflections on metallic services */}
         <Environment preset="city" />
 
-        {/* Background stars */}
         <Stars
           radius={80}
           depth={40}
@@ -294,7 +309,6 @@ export function NetworkScene({ selectedId, onSelect }: NetworkSceneProps) {
           speed={0.2}
         />
 
-        {/* Subtle ground plane to ground the scene visually */}
         <ContactShadows
           position={[0, -4, 0]}
           opacity={0.5}
@@ -304,7 +318,7 @@ export function NetworkScene({ selectedId, onSelect }: NetworkSceneProps) {
           color="#000000"
         />
 
-        {/* Connection edges with glow */}
+        {/* Connection edges */}
         {edges.map(({ from, to }, i) => (
           <Line
             key={`edge-${i}`}
@@ -316,7 +330,7 @@ export function NetworkScene({ selectedId, onSelect }: NetworkSceneProps) {
           />
         ))}
 
-        {/* Particle flows along each edge */}
+        {/* Particle flows along edges */}
         {edges.map(({ from, to, weight }, i) =>
           Array.from({ length: Math.max(1, Math.floor(weight / 1.5)) }).map(
             (_, j) => (

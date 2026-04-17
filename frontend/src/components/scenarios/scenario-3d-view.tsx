@@ -12,26 +12,26 @@ import {
 } from "@react-three/drei";
 import { useRef, Suspense } from "react";
 import * as THREE from "three";
-import { getService } from "@/lib/aws-services-data";
+import { getService, type IconKey, type Shape3D } from "@/lib/aws-services-data";
+import { ServiceIcon } from "@/lib/service-icons";
 import type { Scenario } from "@/lib/scenarios-data";
-import type { Shape3D } from "@/lib/aws-services-data";
 
 function NodeGeometry({ shape }: { shape: Shape3D }) {
   switch (shape) {
     case "box":
-      return <boxGeometry args={[0.5, 0.5, 0.5]} />;
+      return <boxGeometry args={[0.65, 0.65, 0.65]} />;
     case "cylinder":
-      return <cylinderGeometry args={[0.28, 0.28, 0.5, 32]} />;
+      return <cylinderGeometry args={[0.36, 0.36, 0.65, 32]} />;
     case "octahedron":
-      return <octahedronGeometry args={[0.38, 0]} />;
+      return <octahedronGeometry args={[0.5, 0]} />;
     case "torus":
-      return <torusGeometry args={[0.28, 0.11, 16, 32]} />;
+      return <torusGeometry args={[0.36, 0.14, 16, 32]} />;
     case "icosahedron":
-      return <icosahedronGeometry args={[0.36, 0]} />;
+      return <icosahedronGeometry args={[0.46, 0]} />;
     case "cone":
-      return <coneGeometry args={[0.32, 0.55, 16]} />;
+      return <coneGeometry args={[0.4, 0.7, 16]} />;
     default:
-      return <sphereGeometry args={[0.3, 32, 32]} />;
+      return <sphereGeometry args={[0.4, 32, 32]} />;
   }
 }
 
@@ -39,13 +39,13 @@ function Node({
   position,
   color,
   shape,
-  emoji,
+  iconKey,
   label,
 }: {
   position: [number, number, number];
   color: string;
   shape: Shape3D;
-  emoji: string;
+  iconKey: IconKey;
   label: string;
 }) {
   const meshRef = useRef<THREE.Group>(null);
@@ -56,8 +56,8 @@ function Node({
   return (
     <Float
       speed={1.4}
-      rotationIntensity={0.2}
-      floatIntensity={0.3}
+      rotationIntensity={0.15}
+      floatIntensity={0.35}
       position={position}
     >
       <group ref={meshRef}>
@@ -65,27 +65,57 @@ function Node({
           <NodeGeometry shape={shape} />
           <meshPhysicalMaterial
             color={color}
-            metalness={0.7}
-            roughness={0.2}
+            metalness={0.85}
+            roughness={0.15}
             clearcoat={1}
-            clearcoatRoughness={0.1}
+            clearcoatRoughness={0.05}
             emissive={color}
-            emissiveIntensity={0.2}
-            envMapIntensity={1.4}
+            emissiveIntensity={0.25}
+            envMapIntensity={1.6}
           />
           <Edges color="white" threshold={15} scale={1.001}>
             <lineBasicMaterial
               color="#ffffff"
               transparent
-              opacity={0.25}
+              opacity={0.35}
               toneMapped={false}
             />
           </Edges>
         </mesh>
       </group>
 
+      {/* Lucide icon billboard — primary identifier */}
       <Html
-        position={[0, -0.7, 0]}
+        position={[0, 0, 0]}
+        center
+        distanceFactor={5}
+        zIndexRange={[100, 0]}
+        style={{ pointerEvents: "none" }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 40,
+            height: 40,
+            borderRadius: 9,
+            background: `linear-gradient(135deg, ${color}, ${color}dd)`,
+            boxShadow: `0 0 18px ${color}aa, inset 0 1px 0 rgba(255,255,255,0.4)`,
+            border: `2px solid ${color}`,
+            color: "white",
+          }}
+        >
+          <ServiceIcon
+            iconKey={iconKey}
+            className="h-5 w-5"
+            strokeWidth={2.5}
+          />
+        </div>
+      </Html>
+
+      <Html
+        position={[0, -0.85, 0]}
         center
         distanceFactor={7}
         style={{ pointerEvents: "none" }}
@@ -95,17 +125,16 @@ function Node({
             fontSize: "11px",
             fontWeight: 700,
             color: "white",
-            background: "rgba(15, 23, 42, 0.85)",
+            background: "rgba(15, 23, 42, 0.88)",
             border: `1px solid ${color}`,
             padding: "2px 7px",
             borderRadius: "5px",
             whiteSpace: "nowrap",
-            boxShadow: `0 0 10px ${color}66`,
+            boxShadow: `0 0 10px ${color}55`,
             backdropFilter: "blur(4px)",
             fontFamily: "system-ui, sans-serif",
           }}
         >
-          <span style={{ marginRight: 3 }}>{emoji}</span>
           {label}
         </div>
       </Html>
@@ -147,8 +176,8 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
       ...n,
       key: `${n.serviceId}-${i}`,
       color: svc?.color || "#666",
-      shape: svc?.shape3d || "box",
-      emoji: svc?.emoji || "●",
+      shape: (svc?.shape3d || "box") as Shape3D,
+      iconKey: (svc?.icon || "Server") as IconKey,
       label: n.label || svc?.shortName || n.serviceId,
     };
   });
@@ -173,8 +202,8 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
       }}
     >
       <Suspense fallback={null}>
-        <ambientLight intensity={0.4} />
-        <directionalLight position={[10, 10, 10]} intensity={1.2} castShadow />
+        <ambientLight intensity={0.45} />
+        <directionalLight position={[10, 10, 10]} intensity={1.3} castShadow />
         <pointLight
           position={[-5, -5, -5]}
           intensity={0.5}
@@ -225,7 +254,7 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
             position={n.position}
             color={n.color}
             shape={n.shape}
-            emoji={n.emoji}
+            iconKey={n.iconKey}
             label={n.label}
           />
         ))}
