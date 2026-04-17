@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { api } from "@/lib/api";
+import { setAuthCookie, clearAuthCookie } from "@/lib/auth-cookie";
 
 export interface EnrolledExam {
   exam_id: string;
@@ -49,6 +50,12 @@ export const useAuthStore = create<AuthState>()(
         const data = await api.login(email, password);
         localStorage.setItem("sparkupcloud_token", data.access_token);
         api.setToken(data.access_token);
+        // Mirror to cookie so SSR/public pages can detect auth
+        setAuthCookie({
+          e: data.user.email,
+          n: data.user.display_name,
+          p: "free",
+        });
         set({
           token: data.access_token,
           user: { ...data.user, is_admin: false, plan: "free", active_exam_id: null, enrolled_exams: [] },
@@ -66,6 +73,7 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         localStorage.removeItem("sparkupcloud_token");
         api.setToken(null);
+        clearAuthCookie();
         set({
           token: null,
           user: null,
@@ -83,6 +91,13 @@ export const useAuthStore = create<AuthState>()(
         api.setToken(token);
         try {
           const me = await api.getMe();
+          // Refresh the cookie with the latest plan/name
+          setAuthCookie({
+            e: me.email,
+            n: me.display_name,
+            p: me.plan ?? "free",
+            ...(me.is_admin ? { a: 1 as const } : {}),
+          });
           set({
             token,
             user: {
@@ -101,6 +116,7 @@ export const useAuthStore = create<AuthState>()(
           // Token is invalid or expired
           localStorage.removeItem("sparkupcloud_token");
           api.setToken(null);
+          clearAuthCookie();
           set({
             token: null,
             user: null,
@@ -113,6 +129,12 @@ export const useAuthStore = create<AuthState>()(
       setAuthFromToken: (token: string, user: AuthUser) => {
         localStorage.setItem("sparkupcloud_token", token);
         api.setToken(token);
+        setAuthCookie({
+          e: user.email,
+          n: user.display_name,
+          p: user.plan,
+          ...(user.is_admin ? { a: 1 as const } : {}),
+        });
         set({
           token,
           user,

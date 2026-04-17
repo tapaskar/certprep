@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
+import { readPendingPlan } from "@/lib/auth-cookie";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,10 +28,14 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      // Check for redirect param or stored plan intent
+      // Resume checkout if user came from a pricing CTA
+      const pendingPlan = readPendingPlan();
       const savedPlan = sessionStorage.getItem("sparkupcloud_selected_plan");
       if (redirectTo) {
         router.push(redirectTo);
+      } else if (pendingPlan) {
+        // Pricing page will detect the cookie and auto-open checkout
+        router.push("/pricing");
       } else if (savedPlan) {
         sessionStorage.removeItem("sparkupcloud_selected_plan");
         router.push(`/onboarding?plan=${savedPlan}`);

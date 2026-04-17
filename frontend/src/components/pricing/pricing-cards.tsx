@@ -1,10 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Check, X, Shield, Zap, BookOpen, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
+import {
+  readAuthCookie,
+  setPendingPlan,
+  readPendingPlan,
+  clearPendingPlan,
+} from "@/lib/auth-cookie";
 
 type Billing = "monthly" | "annual";
 
@@ -108,10 +114,43 @@ const tiers: Tier[] = [
 export default function PricingCards() {
   const [billing, setBilling] = useState<Billing>("annual");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const autoCheckoutTriggered = useRef(false);
+
+  // Open Stripe / Gumroad checkout for the given plan
+  const openCheckout = async (plan: string) => {
+    try {
+      const { checkout_url } = await api.createCheckout(plan);
+      window.open(checkout_url, "_blank");
+    } catch {
+      const urls: Record<string, string> = {
+        single: "https://tapasaurus.gumroad.com/l/eutwyu",
+        pro_monthly: "https://tapasaurus.gumroad.com/l/arfrcr",
+        pro_annual: "https://tapasaurus.gumroad.com/l/zpchn",
+      };
+      if (urls[plan]) window.open(urls[plan], "_blank");
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("sparkupcloud_token");
-    setIsLoggedIn(!!token);
+    // Prefer cookie (faster, no race with zustand hydration)
+    const cookie = readAuthCookie();
+    const tokenInStorage =
+      typeof window !== "undefined"
+        ? localStorage.getItem("sparkupcloud_token")
+        : null;
+    const loggedIn = !!cookie || !!tokenInStorage;
+    setIsLoggedIn(loggedIn);
+
+    // If user just logged in/registered with a pending plan, auto-trigger checkout
+    if (loggedIn && !autoCheckoutTriggered.current) {
+      const pending = readPendingPlan();
+      if (pending) {
+        autoCheckoutTriggered.current = true;
+        clearPendingPlan();
+        // Small delay so the page has time to render
+        setTimeout(() => openCheckout(pending), 300);
+      }
+    }
   }, []);
 
   return (
@@ -241,22 +280,11 @@ export default function PricingCards() {
               {/* CTA */}
               {isLoggedIn && tier.name !== "Free" ? (
                 <button
-                  onClick={async () => {
+                  onClick={() => {
                     const plan = tier.showToggle
                       ? `pro_${billing}`
                       : "single";
-                    try {
-                      const { checkout_url } = await api.createCheckout(plan);
-                      window.open(checkout_url, "_blank");
-                    } catch {
-                      // Fallback to direct Gumroad link
-                      const urls: Record<string, string> = {
-                        single: "https://tapasaurus.gumroad.com/l/eutwyu",
-                        pro_monthly: "https://tapasaurus.gumroad.com/l/arfrcr",
-                        pro_annual: "https://tapasaurus.gumroad.com/l/zpchn",
-                      };
-                      window.open(urls[plan], "_blank");
-                    }
+                    openCheckout(plan);
                   }}
                   className={cn(
                     "flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all cursor-pointer",
@@ -268,6 +296,13 @@ export default function PricingCards() {
                 >
                   {tier.cta}
                 </button>
+              ) : isLoggedIn && tier.name === "Free" ? (
+                <Link
+                  href="/dashboard"
+                  className="flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all bg-stone-100 text-stone-600 hover:bg-stone-200"
+                >
+                  ✓ Current Plan
+                </Link>
               ) : (
                 <Link
                   href={
@@ -275,6 +310,15 @@ export default function PricingCards() {
                       ? `${tier.ctaHref}-${billing}`
                       : tier.ctaHref
                   }
+                  onClick={() => {
+                    // Save the plan choice so we can resume checkout after auth
+                    if (tier.name !== "Free") {
+                      const plan = tier.showToggle
+                        ? `pro_${billing}`
+                        : "single";
+                      setPendingPlan(plan);
+                    }
+                  }}
                   className={cn(
                     "flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all",
                     tier.ctaStyle === "primary" &&

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
+import { readPendingPlan } from "@/lib/auth-cookie";
 
 export default function VerifyEmailPage() {
   const router = useRouter();
@@ -72,8 +73,17 @@ export default function VerifyEmailPage() {
       const data = await api.verifyEmail(email, fullCode);
       setSuccess("Email verified successfully!");
       setAuthFromToken(data.access_token, { ...data.user, is_admin: false, plan: "free", active_exam_id: null, enrolled_exams: [] });
+      // Resume checkout if user came here from a pricing CTA
+      const pendingPlan = readPendingPlan();
       const savedPlan = sessionStorage.getItem("sparkupcloud_selected_plan");
-      const destination = savedPlan ? `/onboarding?plan=${savedPlan}` : "/onboarding";
+      let destination: string;
+      if (pendingPlan) {
+        destination = "/pricing";
+      } else if (savedPlan) {
+        destination = `/onboarding?plan=${savedPlan}`;
+      } else {
+        destination = "/onboarding";
+      }
       sessionStorage.removeItem("sparkupcloud_selected_plan");
       setTimeout(() => router.push(destination), 1000);
     } catch (err: unknown) {

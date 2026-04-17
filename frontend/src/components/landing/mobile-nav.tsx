@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, LogIn } from "lucide-react";
+import { Menu, X, LogIn, LayoutDashboard, Crown } from "lucide-react";
+import { readAuthCookie, type AuthCookiePayload } from "@/lib/auth-cookie";
 
 const navLinks = [
   { href: "/visualizer", label: "🌐 3D Visualizer" },
@@ -16,6 +17,13 @@ const navLinks = [
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
+  const [auth, setAuth] = useState<AuthCookiePayload | null>(null);
+
+  useEffect(() => {
+    setAuth(readAuthCookie());
+  }, [open]);
+
+  const isPaid = auth && auth.p && auth.p !== "free";
 
   return (
     <div className="sm:hidden">
@@ -50,21 +58,51 @@ export function MobileNav() {
                 </Link>
               ))}
               <div className="my-2 h-px bg-stone-200" />
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-100"
-              >
-                <LogIn className="h-4 w-4" />
-                Log In
-              </Link>
-              <Link
-                href="/register"
-                onClick={() => setOpen(false)}
-                className="mt-1 flex items-center justify-center rounded-lg bg-stone-900 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-stone-800"
-              >
-                Get Started Free
-              </Link>
+
+              {auth ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-100"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </Link>
+                  {!isPaid ? (
+                    <Link
+                      href="/pricing"
+                      onClick={() => setOpen(false)}
+                      className="mt-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-3 text-sm font-bold text-white"
+                    >
+                      <Crown className="h-4 w-4" />
+                      Upgrade to Pro
+                    </Link>
+                  ) : (
+                    <div className="px-4 py-2 text-xs text-stone-500">
+                      Plan: <span className="font-semibold text-amber-600">{auth.p.replace("_", " ")}</span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-100"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Log In
+                  </Link>
+                  <Link
+                    href="/register"
+                    onClick={() => setOpen(false)}
+                    className="mt-1 flex items-center justify-center rounded-lg bg-stone-900 px-4 py-3 text-sm font-bold text-white transition-all hover:bg-stone-800"
+                  >
+                    Get Started Free
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </>

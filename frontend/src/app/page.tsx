@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive, LogIn, BookOpen, Zap, Target, Star, Layers, Monitor, Wifi, HardHat, Lightbulb, Palette } from "lucide-react";
+import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive, BookOpen, Zap, Target, Star, Layers, Monitor, Wifi, HardHat, Lightbulb, Palette } from "lucide-react";
 import { CertTabs } from "@/components/landing/cert-tabs";
 import { HomepageFAQ } from "@/components/landing/homepage-faq";
 import { MobileNav } from "@/components/landing/mobile-nav";
+import { AuthCTA } from "@/components/landing/auth-cta";
 
 const features = [
   {
@@ -298,18 +299,7 @@ export default function LandingPage() {
               Pricing
             </Link>
             <div className="h-5 w-px bg-stone-200 mx-2" />
-            <Link
-              href="/login"
-              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
-            >
-              Log In
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex items-center rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-stone-800"
-            >
-              Get Started Free
-            </Link>
+            <AuthCTA variant="nav-desktop" />
           </div>
 
           {/* Mobile Nav */}
@@ -333,18 +323,7 @@ export default function LandingPage() {
           Concept tutorials, practice questions, and hands-on labs — all in one place.
         </p>
         <div className="mt-10 flex flex-col items-center gap-3">
-          <Link
-            href="/register"
-            className="inline-flex h-12 items-center justify-center rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 text-base font-bold text-white shadow-md shadow-stone-200/60 hover:scale-105 transition-all"
-          >
-            Get Started Free
-          </Link>
-          <Link
-            href="/pricing"
-            className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
-          >
-            View Pricing &rarr;
-          </Link>
+          <AuthCTA variant="hero" />
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-stone-500 sm:gap-6">
           <span>55+ Certifications</span>
@@ -525,19 +504,7 @@ export default function LandingPage() {
             Join thousands of professionals preparing with AI-powered learning.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/register"
-              className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-8 text-base font-bold text-amber-600 shadow-md transition-all hover:scale-105"
-            >
-              Create Free Account
-            </Link>
-            <Link
-              href="/login"
-              className="inline-flex h-12 items-center gap-2 justify-center rounded-lg border-2 border-white/40 px-8 text-base font-semibold text-white transition-all hover:bg-white/10"
-            >
-              <LogIn className="h-4 w-4" />
-              Sign In to Your Account
-            </Link>
+            <AuthCTA variant="cta-banner" />
           </div>
         </div>
       </section>
