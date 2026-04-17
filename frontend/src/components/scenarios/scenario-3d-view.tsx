@@ -170,11 +170,11 @@ function Flow({
 }
 
 export function Scenario3DView({ scenario }: { scenario: Scenario }) {
-  const nodes = scenario.architecture.nodes.map((n, i) => {
+  const nodes = scenario.architecture.nodes.map((n) => {
     const svc = getService(n.serviceId);
     return {
       ...n,
-      key: `${n.serviceId}-${i}`,
+      key: n.id,
       color: svc?.color || "#666",
       shape: (svc?.shape3d || "box") as Shape3D,
       iconKey: (svc?.icon || "Server") as IconKey,
@@ -182,10 +182,13 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
     };
   });
 
+  // Build a lookup so duplicate services connect correctly via unique node IDs
+  const nodeById = new Map(nodes.map((n) => [n.id, n]));
+
   const edges = scenario.architecture.edges
     .map((e) => {
-      const fromNode = nodes.find((n) => n.serviceId === e.from);
-      const toNode = nodes.find((n) => n.serviceId === e.to);
+      const fromNode = nodeById.get(e.from);
+      const toNode = nodeById.get(e.to);
       if (!fromNode || !toNode) return null;
       return { from: fromNode, to: toNode };
     })
