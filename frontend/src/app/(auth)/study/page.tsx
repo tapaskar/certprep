@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useStudyStore } from "@/stores/study-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { SessionPlan } from "@/components/study/session-plan";
@@ -26,6 +26,7 @@ export default function StudyPage() {
 
 function StudyPageInner() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const urlMode = searchParams.get("mode");
   const examId = useAuthStore((s) => s.user?.active_exam_id);
 
@@ -50,17 +51,20 @@ function StudyPageInner() {
     tick,
   } = useStudyStore();
 
-  // Auto-start session if URL has ?mode=review or ?mode=mock
+  // Auto-start a short review session if URL has ?mode=review.
+  // Real mock exams use the dedicated /mock-exam route (different backend
+  // endpoints, timer, flagging, pass/fail scoring). The old ?mode=mock
+  // branch here was misleading — it just ran a 60-minute study session.
+  // Users arriving here with ?mode=mock are redirected to the right route.
   useEffect(() => {
     if (phase !== "idle" || isLoading || !examId) return;
     if (urlMode === "review") {
       setMode("quick_quiz");
       createSession(examId, 15);
     } else if (urlMode === "mock") {
-      setMode("quick_quiz");
-      createSession(examId, 60);
+      router.replace("/mock-exam");
     }
-  }, [urlMode, phase, isLoading, examId, setMode, createSession]);
+  }, [urlMode, phase, isLoading, examId, setMode, createSession, router]);
 
   const currentQuestion = questions[currentIndex] || null;
   const totalQuestions = questions.length;
@@ -107,7 +111,9 @@ function StudyPageInner() {
         <div className="flex h-64 flex-col items-center justify-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-stone-200 border-t-amber-500" />
           <p className="text-sm text-stone-500">
-            {urlMode === "review" ? "Loading review queue..." : "Preparing mock exam..."}
+            {urlMode === "review"
+              ? "Loading review queue..."
+              : "Redirecting to Mock Exams..."}
           </p>
         </div>
       );
@@ -144,11 +150,6 @@ function StudyPageInner() {
   if (phase === "answering" && currentQuestion) {
     return (
       <div className="space-y-4">
-        {urlMode === "mock" && (
-          <div className="rounded-lg border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-700">
-            Mock Exam — {totalQuestions} questions
-          </div>
-        )}
         {urlMode === "review" && (
           <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700">
             Review Queue — Spaced Repetition

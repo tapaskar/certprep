@@ -37,7 +37,7 @@ export function QuickActions({ reviewCount = 0 }: QuickActionsProps) {
 
       {/* Take Mock Exam */}
       <Link
-        href="/study?mode=mock"
+        href="/mock-exam"
         className="relative flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-5 text-stone-700 shadow-md shadow-stone-200/60 transition-all duration-200 hover:border-amber-400 hover:scale-[1.02]"
       >
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100">
