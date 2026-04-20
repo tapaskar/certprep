@@ -32,7 +32,10 @@ export default function MockExamPage() {
 
   const [phase, setPhase] = useState<Phase>("select");
   const [mockStatus, setMockStatus] = useState<MockStatus | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Only show the loading spinner if we're actually about to fetch — when
+  // examId is missing we render the ExamSelector immediately.
+  const [loading, setLoading] = useState(!!examId);
+  const [statusError, setStatusError] = useState<string | null>(null);
 
   // Exam state
   const [sessionId, setSessionId] = useState<string>("");
@@ -47,13 +50,24 @@ export default function MockExamPage() {
   // Results
   const [results, setResults] = useState<Results | null>(null);
 
-  // Load mock exam status
+  // Load mock exam status — only when an examId is present
   useEffect(() => {
-    if (!examId) return;
+    if (!examId) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setStatusError(null);
     api
       .getMockExamStatus(examId)
       .then(setMockStatus)
-      .catch(() => {})
+      .catch((err) => {
+        const msg =
+          err instanceof Error
+            ? err.message.replace(/^API \d+:\s*/, "")
+            : "Could not load mock exam status.";
+        setStatusError(msg);
+      })
       .finally(() => setLoading(false));
   }, [examId]);
 
@@ -584,6 +598,25 @@ export default function MockExamPage() {
   // ── NO EXAM SELECTED — show exam list ──
   if (!examId) {
     return <ExamSelector />;
+  }
+
+  // ── Error state ──
+  if (statusError) {
+    return (
+      <div className="mx-auto max-w-lg px-4 py-16 text-center">
+        <AlertTriangle className="mx-auto mb-3 h-10 w-10 text-rose-500" />
+        <h2 className="text-xl font-bold text-stone-900">
+          Couldn&apos;t load mock exam
+        </h2>
+        <p className="mt-2 text-sm text-stone-500">{statusError}</p>
+        <button
+          onClick={() => router.push("/mock-exam")}
+          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-stone-900 px-5 py-2 text-sm font-bold text-white hover:bg-stone-800"
+        >
+          ← Pick another exam
+        </button>
+      </div>
+    );
   }
 
   return (
