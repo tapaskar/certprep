@@ -17,6 +17,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CertBadge } from "@/components/cert-badge";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ExamDetails = any;
@@ -57,19 +58,26 @@ export default function ExamDetailPage() {
       {/* Header */}
       <div className="rounded-2xl border border-stone-200 bg-white p-8 shadow-lg">
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase text-amber-700">
-              {exam.provider?.toUpperCase()}
-            </span>
-            <h1 className="mt-3 text-3xl font-bold text-stone-900">
-              {exam.name}
-            </h1>
-            {exam.code && (
-              <p className="mt-1 text-lg text-stone-500">{exam.code}</p>
-            )}
+          <div className="flex items-start gap-5 flex-1 min-w-0">
+            <CertBadge
+              code={exam.code}
+              provider={exam.provider}
+              size={104}
+            />
+            <div className="flex-1 min-w-0">
+              <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase text-amber-700">
+                {exam.provider?.toUpperCase()}
+              </span>
+              <h1 className="mt-3 text-3xl font-bold text-stone-900">
+                {exam.name}
+              </h1>
+              {exam.code && (
+                <p className="mt-1 text-lg text-stone-500">{exam.code}</p>
+              )}
+            </div>
           </div>
           {info?.difficulty_rating && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 shrink-0">
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star
                   key={s}

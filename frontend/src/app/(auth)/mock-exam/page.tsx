@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { CertBadge } from "@/components/cert-badge";
 import {
   Clock,
   ChevronLeft,
@@ -671,15 +672,18 @@ function ExamSelector() {
                   onClick={() =>
                     router.push(`/mock-exam?examId=${e.id}`)
                   }
-                  className="rounded-xl border border-stone-200 bg-white p-4 text-left transition-all hover:border-amber-400 hover:shadow-md"
+                  className="flex items-start gap-3 rounded-xl border border-stone-200 bg-white p-4 text-left transition-all hover:border-amber-400 hover:shadow-md"
                 >
-                  <h3 className="text-sm font-bold text-stone-900">
-                    {e.name}
-                  </h3>
-                  <p className="mt-1 text-xs text-stone-400">
-                    {e.code} &middot; {e.total_questions} Qs &middot;{" "}
-                    {e.time_limit_minutes} min
-                  </p>
+                  <CertBadge code={e.code} provider={e.provider} size={56} />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-bold text-stone-900 leading-snug">
+                      {e.name}
+                    </h3>
+                    <p className="mt-1 text-xs text-stone-400">
+                      {e.code} &middot; {e.total_questions} Qs &middot;{" "}
+                      {e.time_limit_minutes} min
+                    </p>
+                  </div>
                 </button>
               ))}
           </div>

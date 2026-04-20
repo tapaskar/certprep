@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BookOpen, Clock, Target, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import { CertBadge } from "@/components/cert-badge";
 
 export const metadata: Metadata = {
   title: "55+ Certification Practice Exams — Free Mock Tests",
@@ -130,18 +131,25 @@ export default async function ExamsListPage() {
                     href={`/exams/${exam.id}`}
                     className="group rounded-xl border border-stone-200 bg-white p-5 transition-all hover:border-amber-400 hover:shadow-lg"
                   >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <span
-                          className={`inline-block rounded-full px-2 py-0.5 text-xs font-bold ${meta.color} ${meta.bg}`}
-                        >
-                          {exam.code}
-                        </span>
-                        <h3 className="mt-2 text-sm font-bold text-stone-900 group-hover:text-amber-600">
+                    <div className="flex items-start gap-3">
+                      <CertBadge
+                        code={exam.code}
+                        provider={exam.provider}
+                        size={64}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2">
+                          <span
+                            className={`inline-block rounded-full px-2 py-0.5 text-xs font-bold ${meta.color} ${meta.bg}`}
+                          >
+                            {exam.code}
+                          </span>
+                          <ArrowRight className="h-4 w-4 text-stone-300 group-hover:text-amber-500 mt-0.5" />
+                        </div>
+                        <h3 className="mt-2 text-sm font-bold text-stone-900 group-hover:text-amber-600 leading-snug">
                           {exam.name}
                         </h3>
                       </div>
-                      <ArrowRight className="h-4 w-4 text-stone-300 group-hover:text-amber-500" />
                     </div>
                     <div className="mt-3 flex gap-4 text-xs text-stone-500">
                       <span>{exam.total_questions} Qs</span>
