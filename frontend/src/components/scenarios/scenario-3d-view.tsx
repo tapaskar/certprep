@@ -6,85 +6,34 @@ import {
   Html,
   Line,
   Float,
-  Edges,
   Environment,
   ContactShadows,
 } from "@react-three/drei";
 import { useRef, Suspense } from "react";
 import * as THREE from "three";
-import { getService, type IconKey, type Shape3D } from "@/lib/aws-services-data";
+import { getService, type IconKey } from "@/lib/aws-services-data";
 import { ServiceIcon } from "@/lib/service-icons";
 import type { Scenario } from "@/lib/scenarios-data";
-
-function NodeGeometry({ shape }: { shape: Shape3D }) {
-  switch (shape) {
-    case "box":
-      return <boxGeometry args={[0.65, 0.65, 0.65]} />;
-    case "cylinder":
-      return <cylinderGeometry args={[0.36, 0.36, 0.65, 32]} />;
-    case "octahedron":
-      return <octahedronGeometry args={[0.5, 0]} />;
-    case "torus":
-      return <torusGeometry args={[0.36, 0.14, 16, 32]} />;
-    case "icosahedron":
-      return <icosahedronGeometry args={[0.46, 0]} />;
-    case "cone":
-      return <coneGeometry args={[0.4, 0.7, 16]} />;
-    default:
-      return <sphereGeometry args={[0.4, 32, 32]} />;
-  }
-}
 
 function Node({
   position,
   color,
-  shape,
   iconKey,
   label,
 }: {
   position: [number, number, number];
   color: string;
-  shape: Shape3D;
   iconKey: IconKey;
   label: string;
 }) {
-  const meshRef = useRef<THREE.Group>(null);
-  useFrame(() => {
-    if (meshRef.current) meshRef.current.rotation.y += 0.005;
-  });
-
   return (
     <Float
       speed={1.4}
-      rotationIntensity={0.15}
-      floatIntensity={0.35}
+      rotationIntensity={0.05}
+      floatIntensity={0.3}
       position={position}
     >
-      <group ref={meshRef}>
-        <mesh castShadow receiveShadow>
-          <NodeGeometry shape={shape} />
-          <meshPhysicalMaterial
-            color={color}
-            metalness={0.85}
-            roughness={0.15}
-            clearcoat={1}
-            clearcoatRoughness={0.05}
-            emissive={color}
-            emissiveIntensity={0.25}
-            envMapIntensity={1.6}
-          />
-          <Edges color="white" threshold={15} scale={1.001}>
-            <lineBasicMaterial
-              color="#ffffff"
-              transparent
-              opacity={0.35}
-              toneMapped={false}
-            />
-          </Edges>
-        </mesh>
-      </group>
-
-      {/* Lucide icon billboard — primary identifier */}
+      {/* Icon billboard — primary visual */}
       <Html
         position={[0, 0, 0]}
         center
@@ -97,25 +46,25 @@ function Node({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 40,
-            height: 40,
-            borderRadius: 9,
-            background: `linear-gradient(135deg, ${color}, ${color}dd)`,
-            boxShadow: `0 0 18px ${color}aa, inset 0 1px 0 rgba(255,255,255,0.4)`,
+            width: 44,
+            height: 44,
+            borderRadius: 11,
+            background: `linear-gradient(135deg, ${color}, ${color}cc)`,
+            boxShadow: `0 0 20px ${color}aa, 0 4px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4)`,
             border: `2px solid ${color}`,
             color: "white",
           }}
         >
           <ServiceIcon
             iconKey={iconKey}
-            className="h-5 w-5"
-            strokeWidth={2.5}
+            className="h-6 w-6"
+            strokeWidth={2.25}
           />
         </div>
       </Html>
 
       <Html
-        position={[0, -0.85, 0]}
+        position={[0, -0.75, 0]}
         center
         distanceFactor={7}
         style={{ pointerEvents: "none" }}
@@ -176,13 +125,11 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
       ...n,
       key: n.id,
       color: svc?.color || "#666",
-      shape: (svc?.shape3d || "box") as Shape3D,
       iconKey: (svc?.icon || "Server") as IconKey,
       label: n.label || svc?.shortName || n.serviceId,
     };
   });
 
-  // Build a lookup so duplicate services connect correctly via unique node IDs
   const nodeById = new Map(nodes.map((n) => [n.id, n]));
 
   const edges = scenario.architecture.edges
@@ -256,7 +203,6 @@ export function Scenario3DView({ scenario }: { scenario: Scenario }) {
             key={n.key}
             position={n.position}
             color={n.color}
-            shape={n.shape}
             iconKey={n.iconKey}
             label={n.label}
           />

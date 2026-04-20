@@ -8,7 +8,6 @@ import {
   Line,
   Stars,
   Float,
-  Edges,
   Environment,
   ContactShadows,
 } from "@react-three/drei";
@@ -17,29 +16,8 @@ import {
   awsServices,
   defaultArchitectureEdges,
   type AwsService,
-  type Shape3D,
 } from "@/lib/aws-services-data";
 import { ServiceIcon } from "@/lib/service-icons";
-
-// ── Geometry per category — semantically distinct ─────────────────
-function ServiceGeometry({ shape }: { shape: Shape3D }) {
-  switch (shape) {
-    case "box":
-      return <boxGeometry args={[0.7, 0.7, 0.7]} />;
-    case "cylinder":
-      return <cylinderGeometry args={[0.4, 0.4, 0.7, 32]} />;
-    case "octahedron":
-      return <octahedronGeometry args={[0.55, 0]} />;
-    case "torus":
-      return <torusGeometry args={[0.4, 0.16, 16, 32]} />;
-    case "icosahedron":
-      return <icosahedronGeometry args={[0.5, 0]} />;
-    case "cone":
-      return <coneGeometry args={[0.45, 0.75, 16]} />;
-    default:
-      return <sphereGeometry args={[0.45, 32, 32]} />;
-  }
-}
 
 interface ServiceNodeProps {
   service: AwsService;
@@ -48,14 +26,10 @@ interface ServiceNodeProps {
 }
 
 function ServiceNode({ service, onClick, selected }: ServiceNodeProps) {
-  const groupRef = useRef<THREE.Group>(null);
   const haloRef = useRef<THREE.Mesh>(null);
+  const hitMeshRef = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += selected ? 0.012 : 0.003;
-      groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.05;
-    }
     if (haloRef.current && selected) {
       const pulse = 1 + Math.sin(state.clock.elapsedTime * 3) * 0.18;
       haloRef.current.scale.set(pulse, pulse, pulse);
@@ -67,15 +41,15 @@ function ServiceNode({ service, onClick, selected }: ServiceNodeProps) {
   return (
     <Float
       speed={1.2}
-      rotationIntensity={0.1}
-      floatIntensity={0.3}
+      rotationIntensity={0.05}
+      floatIntensity={0.25}
       position={service.position}
     >
       <group>
-        {/* Halo when selected */}
+        {/* Halo ring when selected — sits behind the icon */}
         {selected && (
           <mesh ref={haloRef} rotation={[Math.PI / 2, 0, 0]}>
-            <ringGeometry args={[0.85, 1.05, 48]} />
+            <ringGeometry args={[0.6, 0.8, 48]} />
             <meshBasicMaterial
               color={service.color}
               transparent
@@ -86,46 +60,26 @@ function ServiceNode({ service, onClick, selected }: ServiceNodeProps) {
           </mesh>
         )}
 
-        {/* 3D shape — backdrop for depth */}
-        <group ref={groupRef}>
-          <mesh
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick(service);
-            }}
-            onPointerOver={(e) => {
-              e.stopPropagation();
-              document.body.style.cursor = "pointer";
-            }}
-            onPointerOut={() => {
-              document.body.style.cursor = "default";
-            }}
-            castShadow
-            receiveShadow
-          >
-            <ServiceGeometry shape={service.shape3d} />
-            <meshPhysicalMaterial
-              color={service.color}
-              metalness={0.85}
-              roughness={0.15}
-              clearcoat={1}
-              clearcoatRoughness={0.05}
-              emissive={service.color}
-              emissiveIntensity={selected ? 0.55 : 0.22}
-              envMapIntensity={1.8}
-            />
-            <Edges color="white" threshold={15} scale={1.001}>
-              <lineBasicMaterial
-                color="#ffffff"
-                transparent
-                opacity={0.35}
-                toneMapped={false}
-              />
-            </Edges>
-          </mesh>
-        </group>
+        {/* Invisible hit mesh — captures clicks where the icon billboard appears */}
+        <mesh
+          ref={hitMeshRef}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick(service);
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation();
+            document.body.style.cursor = "pointer";
+          }}
+          onPointerOut={() => {
+            document.body.style.cursor = "default";
+          }}
+        >
+          <sphereGeometry args={[0.5, 16, 16]} />
+          <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+        </mesh>
 
-        {/* Lucide icon billboard — always faces camera, primary identifier */}
+        {/* Lucide icon billboard — the primary visual */}
         <Html
           position={[0, 0, 0]}
           center
@@ -138,28 +92,28 @@ function ServiceNode({ service, onClick, selected }: ServiceNodeProps) {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              width: 44,
-              height: 44,
-              borderRadius: 10,
-              background: `linear-gradient(135deg, ${service.color}, ${service.color}dd)`,
-              boxShadow: `0 0 20px ${service.color}aa, inset 0 1px 0 rgba(255,255,255,0.4)`,
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              background: `linear-gradient(135deg, ${service.color}, ${service.color}cc)`,
+              boxShadow: `0 0 24px ${service.color}aa, 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.4)`,
               border: `2px solid ${service.color}`,
               color: "white",
-              transform: selected ? "scale(1.18)" : "scale(1)",
+              transform: selected ? "scale(1.2)" : "scale(1)",
               transition: "transform 0.2s ease",
             }}
           >
             <ServiceIcon
               iconKey={service.icon}
-              className="h-6 w-6"
-              strokeWidth={2.5}
+              className="h-7 w-7"
+              strokeWidth={2.25}
             />
           </div>
         </Html>
 
-        {/* Floating label below */}
+        {/* Floating label below the icon */}
         <Html
-          position={[0, -1, 0]}
+          position={[0, -0.85, 0]}
           center
           distanceFactor={9}
           occlude={false}

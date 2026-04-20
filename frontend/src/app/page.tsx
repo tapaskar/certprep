@@ -326,13 +326,28 @@ export default function LandingPage() {
           <AuthCTA variant="hero" />
         </div>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-stone-500 sm:gap-6">
-          <span>55+ Certifications</span>
+          <Link href="/exams" className="hover:text-amber-600 hover:underline transition-colors">
+            55+ Certifications →
+          </Link>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
-          <span>500+ Questions</span>
+          <Link href="/try-questions" className="hover:text-amber-600 hover:underline transition-colors">
+            8,800+ Questions →
+          </Link>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
-          <span>Video Tutorials</span>
+          <span>Adaptive AI Study</span>
           <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
-          <span>Hands-on Labs</span>
+          <span>Free Mock Exams</span>
+        </div>
+
+        {/* Try Questions CTA — secondary action */}
+        <div className="mt-4 text-sm">
+          <Link
+            href="/try-questions"
+            className="inline-flex items-center gap-1 text-stone-500 hover:text-amber-600 transition-colors"
+          >
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Try 5 free practice questions — no signup →
+          </Link>
         </div>
       </section>
 
@@ -542,6 +557,18 @@ export default function LandingPage() {
             </Link>
             <Link href="/contact" className="text-stone-500 transition-colors hover:text-amber-600">
               Contact
+            </Link>
+            <Link href="/exams" className="text-stone-500 transition-colors hover:text-amber-600">
+              All Exams
+            </Link>
+            <Link href="/try-questions" className="text-stone-500 transition-colors hover:text-amber-600">
+              Try Questions
+            </Link>
+            <Link href="/terms" className="text-stone-400 transition-colors hover:text-amber-600">
+              Terms
+            </Link>
+            <Link href="/privacy" className="text-stone-400 transition-colors hover:text-amber-600">
+              Privacy
             </Link>
           </div>
         </div>
