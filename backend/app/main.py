@@ -8,6 +8,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import admin, auth, contact, content, learning_paths, mock_exam, onboarding, payments, progress, study, tutor
 from app.config import settings
 
+# Public-facing API identity. Hard-coded so the title shown in the OpenAPI
+# spec / docs / root response is always "SparkUpCloud API" — not whatever
+# any `.env` happens to set.
+API_NAME = "SparkUpCloud API"
+API_VERSION = "0.1.0"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -17,10 +23,22 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title=settings.app_name,
-    version="0.1.0",
+    title=API_NAME,
+    version=API_VERSION,
+    description="SparkUpCloud — AI-powered cloud certification exam prep platform.",
     lifespan=lifespan,
 )
+
+
+@app.get("/")
+async def root():
+    """Public health/info endpoint."""
+    return {
+        "name": API_NAME,
+        "version": API_VERSION,
+        "docs": "/docs",
+        "status": "ok",
+    }
 
 # CORS
 app.add_middleware(
@@ -47,4 +65,4 @@ app.include_router(learning_paths.router, prefix=f"/api/{settings.api_version}")
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "version": "0.1.0"}
+    return {"status": "ok", "name": API_NAME, "version": API_VERSION}
