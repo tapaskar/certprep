@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, BookOpen, BarChart3, User, LogOut, Shield, GraduationCap, Map } from "lucide-react";
+import { LayoutDashboard, BookOpen, BarChart3, User, LogOut, Shield, Map } from "lucide-react";
 import { CoachSidePanel } from "@/components/tutor/coach-side-panel";
 import { CoachFAB } from "@/components/tutor/coach-fab";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,6 @@ const baseNavItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Paths", href: "/paths", icon: Map },
   { label: "Study", href: "/study", icon: BookOpen },
-  { label: "Coach", href: "/tutor", icon: GraduationCap },
   { label: "Progress", href: "/progress", icon: BarChart3 },
   { label: "Profile", href: "/profile", icon: User },
 ];
