@@ -1,8 +1,11 @@
-"""Claude API integration for contextual explanations."""
+"""LLM-powered contextual explanations.
 
-import anthropic
+Provider-agnostic — uses whichever LLM is configured via
+settings.llm_provider (Anthropic or local llama.cpp).
+"""
 
 from app.config import settings
+from app.services.ai.llm_provider import get_chat_provider
 
 EXPLANATION_PROMPT = (  # noqa: E501
     "You are an AWS Solutions Architect exam tutor. "
@@ -68,13 +71,10 @@ async def generate_explanation(
         why_selected=why_selected,
     )
 
-    client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-
-    message = await client.messages.create(
-        model=settings.ai_model,
+    provider = get_chat_provider()
+    return await provider.chat(
+        system="",
+        messages=[{"role": "user", "content": prompt}],
         max_tokens=settings.ai_max_tokens,
         temperature=settings.ai_temperature,
-        messages=[{"role": "user", "content": prompt}],
     )
-
-    return message.content[0].text

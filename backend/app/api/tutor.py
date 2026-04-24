@@ -16,8 +16,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Literal
 
-import anthropic
 import json
+
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import and_, select
@@ -33,6 +33,7 @@ from app.services.ai.coach_agent import (
     decide_intervention,
     llm_decide_intervention,
 )
+from app.services.ai.llm_provider import LLMUnavailable, get_chat_provider
 
 router = APIRouter(prefix="/tutor", tags=["tutor"])
 
@@ -485,29 +486,20 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
     api_history = history[-HISTORY_TURN_CAP:]
     api_messages = [{"role": m["role"], "content": m["content"]} for m in api_history]
 
-    # ── Call Claude ─────────────────────────────────────
-    if not settings.anthropic_api_key:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Tutor is temporarily unavailable. Try again shortly.",
-        )
-
-    client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
-
+    # ── Call the configured LLM provider ─────────────────
+    provider = get_chat_provider()
     try:
-        message = await client.messages.create(
-            model=settings.ai_model,
-            max_tokens=700,
-            temperature=0.7,
+        reply = await provider.chat(
             system=system_prompt,
             messages=api_messages,
+            max_tokens=700,
+            temperature=0.7,
         )
-        reply = message.content[0].text if message.content else ""
-    except anthropic.APIError as e:
+    except LLMUnavailable as e:
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"Tutor service error: {str(e)[:200]}",
-        )
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Tutor is temporarily unavailable: {e}",
+        ) from e
 
     # ── Persist updated history ─────────────────────────
     now_iso = datetime.now(timezone.utc).isoformat()

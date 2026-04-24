@@ -38,7 +38,13 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
 
-    # Claude API
+    # ── LLM provider selection ────────────────────────────────
+    # "anthropic" (default) routes to Claude via the Anthropic API.
+    # "local" routes to a llama.cpp server running on this host
+    # (or anywhere reachable via local_llm_url).
+    llm_provider: str = "anthropic"
+
+    # Anthropic Claude API
     anthropic_api_key: str = ""
     ai_model: str = "claude-sonnet-4-20250514"
     ai_max_tokens: int = 300
@@ -47,6 +53,11 @@ class Settings(BaseSettings):
     ai_per_user_per_hour: int = 20
     ai_per_user_per_day: int = 100
     ai_budget_monthly_usd: float = 500.0
+
+    # Local llama.cpp (only used when llm_provider == "local")
+    local_llm_url: str = "http://127.0.0.1:8080"
+    local_llm_model: str = "qwen2.5-7b-instruct-q4_k_m"
+    local_llm_timeout_seconds: float = 120.0
 
     # CORS
     cors_origins: list[str] = [

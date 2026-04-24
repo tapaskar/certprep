@@ -25,9 +25,7 @@ import json
 from dataclasses import dataclass
 from typing import Literal
 
-import anthropic
-
-from app.config import settings
+from app.services.ai.llm_provider import LLMUnavailable, get_chat_provider
 
 
 InterventionType = Literal["nudge", "intervene", "celebrate", "takeover_offer"]
@@ -259,14 +257,12 @@ async def llm_decide_intervention(
     weak_concepts: list[dict],
     in_path_step: dict | None,
 ) -> CoachIntervention | None:
-    """Optional second-pass: ask Claude to judge subtle cases.
+    """Optional second-pass: ask the LLM to judge subtle cases.
 
     Only call this when the rules engine returned None AND the situation
     looks ambiguous (e.g. mixed correct/wrong, low confidence overall).
+    Works with whichever provider is configured (Anthropic or local).
     """
-    if not settings.anthropic_api_key:
-        return None
-
     events_summary = "\n".join(
         f"- {e.kind}"
         + (f" concept={e.concept_name or e.concept_id}" if e.concept_id else "")
@@ -289,15 +285,19 @@ async def llm_decide_intervention(
         step_context=step_context,
     )
 
-    client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
+    provider = get_chat_provider()
     try:
-        resp = await client.messages.create(
-            model=settings.ai_model,
-            max_tokens=300,
-            temperature=0.3,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        text = resp.content[0].text.strip() if resp.content else ""
+        text = (
+            await provider.chat(
+                system="",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=300,
+                temperature=0.3,
+            )
+        ).strip()
+    except LLMUnavailable:
+        return None
+    try:
         # Find first JSON object in text
         start = text.find("{")
         end = text.rfind("}")
