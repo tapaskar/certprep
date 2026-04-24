@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useCallback, useRef } from "react";
+import { Suspense, useEffect, useCallback, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useStudyStore } from "@/stores/study-store";
 import { useAuthStore } from "@/stores/auth-store";
@@ -13,6 +13,9 @@ import { AnswerFeedback } from "@/components/study/answer-feedback";
 import { SessionSummary } from "@/components/study/session-summary";
 import { CheatSheet } from "@/components/study/cheat-sheet";
 import { CoachInterventionBanner } from "@/components/tutor/coach-intervention-banner";
+import { TutorChat } from "@/components/tutor/tutor-chat";
+import { ChevronRight, ChevronLeft, Lightbulb } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function StudyPage() {
   return (
@@ -150,96 +153,234 @@ function StudyPageInner() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
-  // Phase-driven content. The persistent sidebar lives in the layout.
-  if (phase === "idle") {
-    if (urlMode === "review" || urlMode === "mock") {
+  // ── Render phase content (without Coach wrapper — applied below) ──
+  const renderPhase = (): React.ReactNode => {
+    if (phase === "idle") {
+      if (urlMode === "review" || urlMode === "mock") {
+        return (
+          <div className="flex h-64 flex-col items-center justify-center gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-stone-200 border-t-amber-500" />
+            <p className="text-sm text-stone-500">
+              {urlMode === "review"
+                ? "Loading review queue..."
+                : "Redirecting to Mock Exams..."}
+            </p>
+          </div>
+        );
+      }
       return (
-        <div className="flex h-64 flex-col items-center justify-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-stone-200 border-t-amber-500" />
-          <p className="text-sm text-stone-500">
-            {urlMode === "review"
-              ? "Loading review queue..."
-              : "Redirecting to Mock Exams..."}
-          </p>
+        <div className="space-y-6">
+          <div className="rounded-xl border border-stone-200 bg-white p-6">
+            <h1 className="text-2xl font-bold text-stone-900 mb-2">
+              Start a study session
+            </h1>
+            <p className="text-sm text-stone-600 mb-4">
+              Browse the exam structure on the left, ask Coach for a
+              recommendation on the right, or start an adaptive session below.
+            </p>
+          </div>
+          <SessionPlan />
         </div>
       );
     }
-    return (
-      <div className="space-y-6">
-        <div className="rounded-xl border border-stone-200 bg-white p-6">
-          <h1 className="text-2xl font-bold text-stone-900 mb-2">
-            Start a study session
-          </h1>
-          <p className="text-sm text-stone-600 mb-4">
-            Browse the exam structure on the left to focus on a specific
-            concept or domain, or start an adaptive session below — our AI
-            will pick what you need to study next.
-          </p>
+
+    if (phase === "learning" && learningConcept) {
+      return (
+        <ConceptLearn
+          concept={learningConcept}
+          factsChecked={factsChecked}
+          onFactCheck={markFactLearned}
+          onReady={startQuiz}
+          onSkip={startQuiz}
+        />
+      );
+    }
+
+    if (phase === "answering" && currentQuestion) {
+      return (
+        <div className="space-y-4">
+          <CoachInterventionBanner />
+          {urlMode === "review" && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700">
+              Review Queue — Spaced Repetition
+            </div>
+          )}
+          {currentQuestionConcept && !urlMode && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
+              Testing: <strong>{currentQuestionConcept.concept.name}</strong>
+            </div>
+          )}
+
+          <QuestionCard
+            question={currentQuestion}
+            selectedOption={selectedOption}
+            onSelect={selectOption}
+            questionNumber={currentIndex + 1}
+            totalQuestions={totalQuestions}
+            timerSeconds={timerSeconds}
+          />
+
+          {selectedOption && <ConfidenceSelector onSelect={submitAnswer} />}
+
+          {currentQuestionConcept && (
+            <CheatSheet concept={currentQuestionConcept} collapsible />
+          )}
         </div>
-        <SessionPlan />
-      </div>
-    );
-  }
+      );
+    }
 
-  if (phase === "learning" && learningConcept) {
-    return (
-      <ConceptLearn
-        concept={learningConcept}
-        factsChecked={factsChecked}
-        onFactCheck={markFactLearned}
-        onReady={startQuiz}
-        onSkip={startQuiz}
-      />
-    );
-  }
-
-  if (phase === "answering" && currentQuestion) {
-    return (
-      <div className="space-y-4">
-        <CoachInterventionBanner />
-        {urlMode === "review" && (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700">
-            Review Queue — Spaced Repetition
-          </div>
-        )}
-        {currentQuestionConcept && !urlMode && (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
-            Testing: <strong>{currentQuestionConcept.concept.name}</strong>
-          </div>
-        )}
-
-        <QuestionCard
+    if (
+      phase === "feedback" &&
+      currentQuestion &&
+      answerResult &&
+      selectedOption
+    ) {
+      return (
+        <AnswerFeedback
           question={currentQuestion}
           selectedOption={selectedOption}
-          onSelect={selectOption}
-          questionNumber={currentIndex + 1}
-          totalQuestions={totalQuestions}
-          timerSeconds={timerSeconds}
+          result={answerResult}
+          onNext={nextQuestion}
         />
+      );
+    }
 
-        {selectedOption && <ConfidenceSelector onSelect={submitAnswer} />}
+    if (phase === "summary" && sessionSummary) {
+      return <SessionSummary summary={sessionSummary} />;
+    }
 
-        {currentQuestionConcept && (
-          <CheatSheet concept={currentQuestionConcept} collapsible />
+    return null;
+  };
+
+  // ── Wrap phase content in a 2-column layout with Coach on the right ──
+  return (
+    <StudyWithCoach
+      examId={examId ?? undefined}
+      conceptId={currentQuestionConceptId ?? undefined}
+      conceptName={currentQuestionConcept?.concept.name}
+      phase={phase}
+    >
+      {renderPhase()}
+    </StudyWithCoach>
+  );
+}
+
+// ───────────────────────────────────────────────────────────────────────
+// Persistent Coach side panel — Coach is always visible during a study
+// session (not hidden behind a FAB). Collapsible to a thin sliver to
+// reclaim space when needed.
+// ───────────────────────────────────────────────────────────────────────
+
+function StudyWithCoach({
+  children,
+  examId,
+  conceptId,
+  conceptName,
+  phase,
+}: {
+  children: React.ReactNode;
+  examId?: string;
+  conceptId?: string;
+  conceptName?: string;
+  phase: string;
+}) {
+  // Collapsed state persists in localStorage so user prefs survive reload
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  useEffect(() => {
+    const v = localStorage.getItem("sparkupcloud_study_coach_collapsed");
+    if (v === "1") setCollapsed(true);
+  }, []);
+  useEffect(() => {
+    localStorage.setItem(
+      "sparkupcloud_study_coach_collapsed",
+      collapsed ? "1" : "0"
+    );
+  }, [collapsed]);
+
+  // Hide Coach entirely on the very brief redirect screens (no value to show)
+  const isRedirectingScreen = phase === "idle" && false;
+
+  // Phase-aware seed prompt suggestion that Coach can offer up
+  const phaseHint =
+    phase === "idle"
+      ? "Tip: Ask Coach to recommend what to study next based on your weak areas."
+      : phase === "answering"
+      ? "Stuck? Ask Coach for a hint that doesn't give it away."
+      : phase === "feedback"
+      ? "Ask Coach to explain why your answer was wrong, in your terms."
+      : phase === "learning"
+      ? "Ask Coach to quiz you on this concept before the questions start."
+      : phase === "summary"
+      ? "Ask Coach what to focus on for tomorrow's session."
+      : null;
+
+  if (isRedirectingScreen) {
+    return <>{children}</>;
+  }
+
+  return (
+    <div
+      className={cn(
+        "grid gap-4 transition-[grid-template-columns] duration-300",
+        collapsed
+          ? "lg:grid-cols-[1fr_44px]"
+          : "lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_420px]"
+      )}
+    >
+      {/* Main content (left) */}
+      <main className="min-w-0">{children}</main>
+
+      {/* Coach (right) — sticky on desktop, collapsible to a sliver */}
+      <aside className="hidden lg:block self-start sticky top-20">
+        {collapsed ? (
+          <button
+            onClick={() => setCollapsed(false)}
+            className="group relative w-11 h-[calc(100vh-6rem)] rounded-xl border border-stone-200 bg-white shadow-sm hover:border-amber-400 hover:shadow-md transition-all flex flex-col items-center justify-between py-4"
+            title="Show Coach"
+            aria-label="Show Coach panel"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-amber-500 text-white">
+              <Lightbulb className="h-4 w-4" />
+            </div>
+            <span
+              className="text-[11px] font-bold tracking-wider text-stone-500 group-hover:text-stone-900"
+              style={{ writingMode: "vertical-rl" }}
+            >
+              SHOW COACH
+            </span>
+            <ChevronLeft className="h-4 w-4 text-stone-400 group-hover:text-stone-700" />
+          </button>
+        ) : (
+          <div className="rounded-xl overflow-hidden border border-stone-200 bg-white shadow-sm h-[calc(100vh-6rem)] flex flex-col">
+            <div className="flex items-center justify-between border-b border-stone-200 px-3 py-2 shrink-0">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
+                Coach is watching · scoped to this session
+              </span>
+              <button
+                onClick={() => setCollapsed(true)}
+                className="rounded-md p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+                title="Collapse Coach"
+                aria-label="Collapse Coach panel"
+              >
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <div className="flex-1 min-h-0">
+              <TutorChat
+                examId={examId}
+                conceptId={conceptId}
+                conceptName={conceptName}
+                className="h-full border-0 rounded-none shadow-none"
+              />
+            </div>
+            {phaseHint && (
+              <div className="border-t border-stone-200 bg-amber-50/40 px-3 py-2 text-[11px] text-amber-800 shrink-0">
+                💡 {phaseHint}
+              </div>
+            )}
+          </div>
         )}
-      </div>
-    );
-  }
-
-  if (phase === "feedback" && currentQuestion && answerResult && selectedOption) {
-    return (
-      <AnswerFeedback
-        question={currentQuestion}
-        selectedOption={selectedOption}
-        result={answerResult}
-        onNext={nextQuestion}
-      />
-    );
-  }
-
-  if (phase === "summary" && sessionSummary) {
-    return <SessionSummary summary={sessionSummary} />;
-  }
-
-  return null;
+      </aside>
+    </div>
+  );
 }

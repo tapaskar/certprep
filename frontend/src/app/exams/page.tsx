@@ -85,6 +85,35 @@ export default async function ExamsListPage() {
           </div>
         </div>
 
+        {/* Red Hat / non-listed certs callout */}
+        <div className="mt-10 rounded-2xl border-2 border-rose-200 bg-gradient-to-br from-rose-50 to-orange-50 p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="shrink-0 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-rose-600 text-white shadow-md text-2xl">
+              🎯
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs font-bold uppercase tracking-wider text-rose-700 mb-1">
+                Looking for Red Hat / Linux / Container exams?
+              </div>
+              <h3 className="text-lg font-bold text-stone-900 mb-1">
+                Red Hat EX188V4K — Containers with Podman
+              </h3>
+              <p className="text-sm text-stone-600">
+                Full step-by-step guided learning path — 6 modules, 22 steps,
+                hands-on labs, and quizzes after each module. Coach guides you
+                start to finish.
+              </p>
+            </div>
+            <Link
+              href="/paths"
+              className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white px-5 py-2.5 text-sm font-bold whitespace-nowrap"
+            >
+              View Paths
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+
         {/* Exam listing by provider */}
         {providers.map((prov) => {
           const meta = providerMeta[prov] || {
