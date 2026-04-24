@@ -15,10 +15,33 @@ export function HomeNav() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 24);
-    update(); // initial — important if the user lands deep-linked
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
+    // Hysteresis: use different thresholds for shrink vs grow with a wide
+    // dead-zone in between. This prevents the nav from oscillating when
+    // its own height change shifts the page enough to flip the trigger
+    // (the classic "dancing logo" feedback loop).
+    const SHRINK_AT = 80; // grow → shrink only after meaningful scroll
+    const GROW_AT = 8; //   shrink → grow only when very close to the top
+
+    let ticking = false;
+    const update = () => {
+      const y = window.scrollY;
+      setScrolled((prev) => {
+        if (prev && y <= GROW_AT) return false;
+        if (!prev && y >= SHRINK_AT) return true;
+        return prev; // inside the dead zone — don't change
+      });
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    update(); // initial — important if user deep-links mid-page
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
