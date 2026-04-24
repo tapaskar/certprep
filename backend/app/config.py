@@ -57,10 +57,12 @@ class Settings(BaseSettings):
 
     # Amazon Bedrock (when llm_provider == "bedrock")
     bedrock_region: str = "ap-south-1"
-    bedrock_model: str = "anthropic.claude-sonnet-4-20250514-v1:0"
-    # 3.5 Haiku isn't available in ap-south-1 (Mumbai). Haiku 4.5 is the
-    # newest cheap variant and is region-available — use that instead.
-    bedrock_model_fast: str = "anthropic.claude-haiku-4-5-20251001-v1:0"
+    # In ap-south-1 these models are only invokable via cross-region
+    # inference profiles, not on-demand by raw model ID.
+    # `apac.*` keeps traffic inside Asia-Pacific.
+    # Haiku 4.5 has no APAC profile yet — only `global.*`.
+    bedrock_model: str = "apac.anthropic.claude-sonnet-4-20250514-v1:0"
+    bedrock_model_fast: str = "global.anthropic.claude-haiku-4-5-20251001-v1:0"
 
     # Local llama.cpp (when llm_provider == "local")
     local_llm_url: str = "http://127.0.0.1:8080"
