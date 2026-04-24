@@ -10,6 +10,7 @@ import { StatsBanner } from "@/components/landing/stats-banner";
 import { FeatureSections } from "@/components/landing/feature-sections";
 import { ComparisonTable } from "@/components/landing/comparison-table";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
+import { HomeNav } from "@/components/landing/home-nav";
 
 const features = [
   {
@@ -267,51 +268,8 @@ export default function LandingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
-      {/* Navigation Header */}
-      <nav className="sticky top-0 z-50 border-b border-stone-200/60 bg-white/80 backdrop-blur-lg">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <img src="/logo.svg" alt="SparkUpCloud" className="h-8 w-auto" />
-            <span className="text-lg font-bold text-stone-900">
-              Spark<span className="text-amber-500">Up</span>Cloud
-            </span>
-          </Link>
-
-          {/* Desktop Nav Links + Auth */}
-          <div className="hidden sm:flex items-center gap-1">
-            <Link
-              href="/simulator"
-              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
-            >
-              Tools
-            </Link>
-            <Link
-              href="/scenarios"
-              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
-            >
-              Scenarios
-            </Link>
-            <Link
-              href="/blog"
-              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
-            >
-              Blog
-            </Link>
-            <Link
-              href="/pricing"
-              className="inline-flex items-center rounded-lg px-3 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-900"
-            >
-              Pricing
-            </Link>
-            <div className="h-5 w-px bg-stone-200 mx-2" />
-            <AuthCTA variant="nav-desktop" />
-          </div>
-
-          {/* Mobile Nav */}
-          <MobileNav />
-        </div>
-      </nav>
+      {/* Navigation Header — scroll-responsive */}
+      <HomeNav />
 
       {/* Hero — split layout with mockup */}
       <section className="relative overflow-hidden">
