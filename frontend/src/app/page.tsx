@@ -4,6 +4,12 @@ import { CertTabs } from "@/components/landing/cert-tabs";
 import { HomepageFAQ } from "@/components/landing/homepage-faq";
 import { MobileNav } from "@/components/landing/mobile-nav";
 import { AuthCTA } from "@/components/landing/auth-cta";
+import { HeroMockup } from "@/components/landing/hero-mockup";
+import { ProviderTrustStrip } from "@/components/landing/provider-trust-strip";
+import { StatsBanner } from "@/components/landing/stats-banner";
+import { FeatureSections } from "@/components/landing/feature-sections";
+import { ComparisonTable } from "@/components/landing/comparison-table";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
 
 const features = [
   {
@@ -307,52 +313,78 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="flex flex-col items-center justify-center px-6 pt-16 pb-24 text-center">
-        <img src="/logo.svg" alt="SparkUpCloud" className="mb-10 h-40 w-auto" />
-        <h1 className="max-w-3xl text-5xl font-bold tracking-tight text-stone-900 sm:text-6xl lg:text-7xl">
-          Master Your{" "}
-          <span className="relative inline-block">
-            Certification
-            <span className="absolute -bottom-2 left-0 h-1 w-full rounded-full bg-amber-500" />
-          </span>{" "}
-          Exam
-        </h1>
-        <p className="mt-8 max-w-xl text-lg leading-8 text-stone-600">
-          AI-powered adaptive learning for AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications.
-          Concept tutorials, practice questions, and hands-on labs — all in one place.
-        </p>
-        <div className="mt-10 flex flex-col items-center gap-3">
-          <AuthCTA variant="hero" />
-        </div>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-sm font-medium text-stone-500 sm:gap-6">
-          <Link href="/exams" className="hover:text-amber-600 hover:underline transition-colors">
-            55+ Certifications →
-          </Link>
-          <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
-          <Link href="/try-questions" className="hover:text-amber-600 hover:underline transition-colors">
-            8,800+ Questions →
-          </Link>
-          <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
-          <span>Adaptive AI Study</span>
-          <span className="hidden sm:inline h-1 w-1 rounded-full bg-amber-400" />
-          <span>Free Mock Exams</span>
-        </div>
+      {/* Hero — split layout with mockup */}
+      <section className="relative overflow-hidden">
+        {/* Decorative background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-white to-violet-50/50 -z-10" />
+        <div className="absolute inset-0 -z-10 opacity-[0.03]" style={{
+          backgroundImage: "radial-gradient(circle at 1px 1px, #57534e 1px, transparent 0)",
+          backgroundSize: "32px 32px",
+        }} />
 
-        {/* Try Questions CTA — secondary action */}
-        <div className="mt-4 text-sm">
-          <Link
-            href="/try-questions"
-            className="inline-flex items-center gap-1 text-stone-500 hover:text-amber-600 transition-colors"
-          >
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Try 5 free practice questions — no signup →
-          </Link>
+        <div className="mx-auto max-w-7xl px-6 pt-16 pb-20 sm:pt-24 sm:pb-28">
+          <div className="grid gap-12 lg:gap-16 lg:grid-cols-[1.1fr_1fr] items-center">
+            {/* Left: copy */}
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800 mb-6">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                New: Coach AI Tutor + Guided Learning Paths
+              </div>
+              <h1 className="text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.05]">
+                Pass your cert exam — with{" "}
+                <span className="relative inline-block">
+                  <span className="bg-gradient-to-r from-amber-600 to-rose-600 bg-clip-text text-transparent">
+                    a real coach
+                  </span>
+                  <span className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-gradient-to-r from-amber-400 to-rose-400 opacity-60" />
+                </span>{" "}
+                next to you.
+              </h1>
+              <p className="mt-6 max-w-xl mx-auto lg:mx-0 text-base sm:text-lg leading-relaxed text-stone-600">
+                AI-powered adaptive practice + a stateful 1-on-1 tutor that
+                knows your weak topics, watches your progress, and steps in
+                when you start to struggle. AWS, Azure, GCP, CompTIA, NVIDIA,
+                Red Hat — all 55+ certs in one place.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                <AuthCTA variant="hero" />
+              </div>
+              <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs sm:text-sm text-stone-500">
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Free plan: 10 questions/day
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  No credit card
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Pass-or-refund on Pro
+                </span>
+              </div>
+            </div>
+
+            {/* Right: mockup */}
+            <div className="relative">
+              <HeroMockup />
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Free Interactive Tools */}
-      <section className="mx-auto max-w-6xl px-6 pb-24">
+      {/* Provider trust strip */}
+      <ProviderTrustStrip />
+
+      {/* Stats banner */}
+      <StatsBanner />
+
+      {/* Feature deep-dive sections — Coach, Paths, Simulator, Adaptive, Mocks */}
+      <FeatureSections />
+
+      {/* OLD Free Interactive Tools — kept as a quick "Free tools" mini-grid further down
+          (the deep-dives above are the primary feature story) */}
+      <section className="mx-auto max-w-6xl px-6 pt-16 pb-20 hidden">
         <div className="text-center mb-10">
           <div className="inline-block text-xs font-bold uppercase tracking-wider text-violet-600 bg-violet-100 px-3 py-1 rounded-full mb-3">
             ✨ New — No Signup Required
@@ -481,8 +513,11 @@ export default function LandingPage() {
       {/* Certifications with Provider Tabs */}
       <CertTabs />
 
-      {/* Features */}
-      <section className="mx-auto max-w-5xl px-6 pb-24">
+      {/* Honest comparison vs competitors */}
+      <ComparisonTable />
+
+      {/* OLD How It Works grid — kept hidden as fallback */}
+      <section className="mx-auto max-w-5xl px-6 pb-24 hidden">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
             How It Works
@@ -509,41 +544,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="mx-auto max-w-5xl px-6 pb-24">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
-            Trusted by Certified Professionals
-          </h2>
-          <p className="mt-3 text-base text-stone-500">
-            See what our users say about their certification journey.
-          </p>
-        </div>
-        <div className="grid gap-6 sm:grid-cols-3">
-          {testimonials.map((t) => (
-            <div
-              key={t.name}
-              className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm"
-            >
-              <div className="flex gap-1 mb-4">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star
-                    key={s}
-                    className="h-4 w-4 fill-amber-400 text-amber-400"
-                  />
-                ))}
-              </div>
-              <p className="text-sm italic leading-relaxed text-stone-600">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="mt-4 border-t border-stone-100 pt-4">
-                <p className="text-sm font-bold text-stone-900">{t.name}</p>
-                <p className="text-xs text-stone-400">{t.role}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Polished testimonials with avatars + aggregate rating */}
+      <TestimonialsSection />
 
       {/* FAQ */}
       <HomepageFAQ />
