@@ -84,6 +84,48 @@ async def get_available_mocks(exam_id: str, user: CurrentUser, db: DB):
     }
 
 
+@router.get("/recent")
+async def recent_mock_exams(user: CurrentUser, db: DB, limit: int = 8):
+    """User's recent mock exam attempts across ALL exams (for the dashboard)."""
+    result = await db.execute(
+        select(MockExamSession)
+        .where(MockExamSession.user_id == user.id)
+        .order_by(MockExamSession.started_at.desc())
+        .limit(min(max(limit, 1), 20))
+    )
+    sessions = result.scalars().all()
+
+    # Pull exam names in one query
+    exam_ids = list({s.exam_id for s in sessions})
+    exam_map: dict[str, Exam] = {}
+    if exam_ids:
+        ex_result = await db.execute(select(Exam).where(Exam.id.in_(exam_ids)))
+        for e in ex_result.scalars().all():
+            exam_map[e.id] = e
+
+    out = []
+    for s in sessions:
+        exam = exam_map.get(s.exam_id)
+        out.append(
+            {
+                "session_id": str(s.id),
+                "exam_id": s.exam_id,
+                "exam_code": exam.code if exam else None,
+                "exam_name": exam.name if exam else s.exam_id,
+                "mock_number": s.mock_number,
+                "started_at": s.started_at.isoformat() if s.started_at else None,
+                "ended_at": s.ended_at.isoformat() if s.ended_at else None,
+                "completed": bool(s.completed),
+                "score_pct": float(s.score_pct) if s.score_pct is not None else None,
+                "passed": s.passed,
+                "passing_score_pct": exam.passing_score_pct if exam else None,
+                "questions_answered": s.questions_answered,
+                "total_questions": s.total_questions,
+            }
+        )
+    return {"attempts": out, "count": len(out)}
+
+
 @router.post("/start")
 async def start_mock_exam(request: StartMockExamRequest, user: CurrentUser, db: DB):
     """Start a timed mock exam. Returns all questions at once."""

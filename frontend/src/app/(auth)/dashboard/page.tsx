@@ -10,6 +10,7 @@ import { WeakConcepts } from "@/components/dashboard/weak-concepts";
 import { BadgesCard } from "@/components/dashboard/badges-card";
 import { LeagueCard } from "@/components/dashboard/league-card";
 import { ChallengeCard } from "@/components/dashboard/challenge-card";
+import { RecentMockExams } from "@/components/dashboard/recent-mock-exams";
 import { BookOpen, Plus, Crown, Zap } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -202,10 +203,17 @@ export default function DashboardPage() {
           {/* Quick actions */}
           <QuickActions reviewCount={progress.upcoming_reviews.overdue} />
 
-          {/* Weak concepts */}
-          {progress.weakest_concepts.length > 0 && (
-            <WeakConcepts concepts={progress.weakest_concepts} />
-          )}
+          {/* Recent mock exam attempts + weak concepts */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <RecentMockExams />
+            {progress.weakest_concepts.length > 0 ? (
+              <WeakConcepts concepts={progress.weakest_concepts} />
+            ) : (
+              <div className="rounded-xl border border-stone-200 bg-stone-50 p-5 flex items-center justify-center text-sm text-stone-500">
+                Answer a few questions to surface your weak concepts.
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>

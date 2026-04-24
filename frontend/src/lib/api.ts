@@ -97,6 +97,27 @@ class ApiClient {
     return this.request(`/mock-exam/${sessionId}/results`);
   }
 
+  async getRecentMockExams(limit = 8): Promise<{
+    attempts: Array<{
+      session_id: string;
+      exam_id: string;
+      exam_code: string | null;
+      exam_name: string;
+      mock_number: number;
+      started_at: string | null;
+      ended_at: string | null;
+      completed: boolean;
+      score_pct: number | null;
+      passed: boolean | null;
+      passing_score_pct: number | null;
+      questions_answered: number;
+      total_questions: number;
+    }>;
+    count: number;
+  }> {
+    return this.request(`/mock-exam/recent?limit=${limit}`);
+  }
+
   // ── Study Session ──────────────────────────────────────────────
 
   async createSession(

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { TutorChat } from "@/components/tutor/tutor-chat";
+import { IntegratedCoachPanel } from "@/components/tutor/integrated-coach-panel";
 import { CoachInterventionBanner } from "@/components/tutor/coach-intervention-banner";
 import { useCoachStore } from "@/stores/coach-store";
 import { cn } from "@/lib/utils";
@@ -259,24 +260,51 @@ export default function PathRunnerPage({
           )}
         </main>
 
-        {/* Right: Coach */}
-        <aside
-          className={cn(
-            "lg:block",
-            coachOpenMobile ? "block" : "hidden"
-          )}
-        >
-          <div className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)]">
-            <TutorChat
-              pathId={pathId}
-              pathTitle={path.title}
-              examId={path.exam_id ?? undefined}
-              stepId={activeStepId ?? undefined}
-              stepTitle={activeStep?.step?.title}
-              className="lg:h-[calc(100vh-7rem)] h-[60vh]"
-            />
+        {/* Right: Coach (desktop) — same panel as /study, always integrated */}
+        <IntegratedCoachPanel
+          pathId={pathId}
+          pathTitle={path.title}
+          examId={path.exam_id ?? undefined}
+          stepId={activeStepId ?? undefined}
+          stepTitle={activeStep?.step?.title}
+          contextHint={
+            activeStep?.step?.type === "hands-on"
+              ? "Stuck on a command? Ask Coach for the exact syntax."
+              : activeStep?.step?.type === "quiz"
+              ? "Don't peek — ask Coach to walk you through the reasoning instead."
+              : activeStep?.step?.type === "lecture"
+              ? "Ask Coach for a concrete real-world example of this concept."
+              : "Coach knows your path progress and the current step."
+          }
+          storageKey="sparkupcloud_path_coach_collapsed"
+        />
+
+        {/* Mobile Coach drawer — keeps the existing toggle UX on small screens */}
+        {coachOpenMobile && (
+          <div className="lg:hidden fixed inset-x-2 bottom-2 top-16 z-30 rounded-xl border border-stone-200 bg-white shadow-xl flex flex-col">
+            <div className="flex items-center justify-between border-b border-stone-200 px-3 py-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-stone-500">
+                Coach
+              </span>
+              <button
+                onClick={() => setCoachOpenMobile(false)}
+                className="rounded-md px-2 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-100"
+              >
+                Close
+              </button>
+            </div>
+            <div className="flex-1 min-h-0">
+              <TutorChat
+                pathId={pathId}
+                pathTitle={path.title}
+                examId={path.exam_id ?? undefined}
+                stepId={activeStepId ?? undefined}
+                stepTitle={activeStep?.step?.title}
+                className="h-full border-0 rounded-none shadow-none"
+              />
+            </div>
           </div>
-        </aside>
+        )}
       </div>
     </div>
   );

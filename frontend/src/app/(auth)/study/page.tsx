@@ -13,8 +13,7 @@ import { AnswerFeedback } from "@/components/study/answer-feedback";
 import { SessionSummary } from "@/components/study/session-summary";
 import { CheatSheet } from "@/components/study/cheat-sheet";
 import { CoachInterventionBanner } from "@/components/tutor/coach-intervention-banner";
-import { TutorChat } from "@/components/tutor/tutor-chat";
-import { ChevronRight, ChevronLeft, Lightbulb } from "lucide-react";
+import { IntegratedCoachPanel } from "@/components/tutor/integrated-coach-panel";
 import { cn } from "@/lib/utils";
 
 export default function StudyPage() {
@@ -266,9 +265,9 @@ function StudyPageInner() {
 }
 
 // ───────────────────────────────────────────────────────────────────────
-// Persistent Coach side panel — Coach is always visible during a study
-// session (not hidden behind a FAB). Collapsible to a thin sliver to
-// reclaim space when needed.
+// 2-column wrapper that puts the persistent IntegratedCoachPanel on the
+// right of every study phase. Same panel is reused on /paths/[id] so
+// the integration looks identical in both places.
 // ───────────────────────────────────────────────────────────────────────
 
 function StudyWithCoach({
@@ -284,23 +283,25 @@ function StudyWithCoach({
   conceptName?: string;
   phase: string;
 }) {
-  // Collapsed state persists in localStorage so user prefs survive reload
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  // Persisted collapse state lives inside IntegratedCoachPanel; we just
+  // need to know whether to allocate the wide track or the sliver track.
+  const [collapsed, setCollapsed] = useState(false);
   useEffect(() => {
     const v = localStorage.getItem("sparkupcloud_study_coach_collapsed");
-    if (v === "1") setCollapsed(true);
+    setCollapsed(v === "1");
+    const onStorage = () => {
+      const v2 = localStorage.getItem("sparkupcloud_study_coach_collapsed");
+      setCollapsed(v2 === "1");
+    };
+    window.addEventListener("storage", onStorage);
+    // Listen for our own writes too — fire a custom event from the panel.
+    const id = setInterval(onStorage, 600);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      clearInterval(id);
+    };
   }, []);
-  useEffect(() => {
-    localStorage.setItem(
-      "sparkupcloud_study_coach_collapsed",
-      collapsed ? "1" : "0"
-    );
-  }, [collapsed]);
 
-  // Hide Coach entirely on the very brief redirect screens (no value to show)
-  const isRedirectingScreen = phase === "idle" && false;
-
-  // Phase-aware seed prompt suggestion that Coach can offer up
   const phaseHint =
     phase === "idle"
       ? "Tip: Ask Coach to recommend what to study next based on your weak areas."
@@ -312,11 +313,7 @@ function StudyWithCoach({
       ? "Ask Coach to quiz you on this concept before the questions start."
       : phase === "summary"
       ? "Ask Coach what to focus on for tomorrow's session."
-      : null;
-
-  if (isRedirectingScreen) {
-    return <>{children}</>;
-  }
+      : undefined;
 
   return (
     <div
@@ -327,60 +324,14 @@ function StudyWithCoach({
           : "lg:grid-cols-[1fr_360px] xl:grid-cols-[1fr_420px]"
       )}
     >
-      {/* Main content (left) */}
       <main className="min-w-0">{children}</main>
-
-      {/* Coach (right) — sticky on desktop, collapsible to a sliver */}
-      <aside className="hidden lg:block self-start sticky top-20">
-        {collapsed ? (
-          <button
-            onClick={() => setCollapsed(false)}
-            className="group relative w-11 h-[calc(100vh-6rem)] rounded-xl border border-stone-200 bg-white shadow-sm hover:border-amber-400 hover:shadow-md transition-all flex flex-col items-center justify-between py-4"
-            title="Show Coach"
-            aria-label="Show Coach panel"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-amber-500 text-white">
-              <Lightbulb className="h-4 w-4" />
-            </div>
-            <span
-              className="text-[11px] font-bold tracking-wider text-stone-500 group-hover:text-stone-900"
-              style={{ writingMode: "vertical-rl" }}
-            >
-              SHOW COACH
-            </span>
-            <ChevronLeft className="h-4 w-4 text-stone-400 group-hover:text-stone-700" />
-          </button>
-        ) : (
-          <div className="rounded-xl overflow-hidden border border-stone-200 bg-white shadow-sm h-[calc(100vh-6rem)] flex flex-col">
-            <div className="flex items-center justify-between border-b border-stone-200 px-3 py-2 shrink-0">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-stone-500">
-                Coach is watching · scoped to this session
-              </span>
-              <button
-                onClick={() => setCollapsed(true)}
-                className="rounded-md p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
-                title="Collapse Coach"
-                aria-label="Collapse Coach panel"
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-            <div className="flex-1 min-h-0">
-              <TutorChat
-                examId={examId}
-                conceptId={conceptId}
-                conceptName={conceptName}
-                className="h-full border-0 rounded-none shadow-none"
-              />
-            </div>
-            {phaseHint && (
-              <div className="border-t border-stone-200 bg-amber-50/40 px-3 py-2 text-[11px] text-amber-800 shrink-0">
-                💡 {phaseHint}
-              </div>
-            )}
-          </div>
-        )}
-      </aside>
+      <IntegratedCoachPanel
+        examId={examId}
+        conceptId={conceptId}
+        conceptName={conceptName}
+        contextHint={phaseHint}
+        storageKey="sparkupcloud_study_coach_collapsed"
+      />
     </div>
   );
 }
