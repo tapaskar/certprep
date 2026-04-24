@@ -1,0 +1,647 @@
+[
+  {
+    "id": "redhat-ex188-v4k",
+    "title": "Red Hat EX188V4K — Containers with Podman",
+    "exam_code": "EX188V4K",
+    "exam_id": null,
+    "provider": "redhat",
+    "difficulty": "intermediate",
+    "estimated_hours": 30,
+    "description": "Master container technology with Podman from environment setup through certification. Covers Podman fundamentals, Containerfiles, pods, registries, networking, storage, and troubleshooting — exactly what Red Hat tests on EX188.",
+    "color": "#EE0000",
+    "modules": [
+      {
+        "id": "m1",
+        "title": "Module 1 — Environment Setup (free)",
+        "summary": "Get a Red Hat-compatible environment running on your machine without spending a rupee.",
+        "steps": [
+          {
+            "id": "s1-1",
+            "title": "Why this exam, what you'll build",
+            "type": "lecture",
+            "duration_min": 5,
+            "summary": "Overview of EX188V4K: what Red Hat tests, hands-on format, why Podman replaces Docker in enterprise.",
+            "content_md": "## Welcome\n\nEX188V4K is Red Hat's **Containers with Podman** specialist exam. It's a **performance-based** exam — you'll be given real tasks on a real Red Hat system and graded on whether they work, not on multiple-choice answers.\n\n**What you'll learn in this path:**\n\n- Run a free RHEL-compatible environment (Fedora) at zero cost\n- Podman fundamentals — the rootless successor to Docker\n- Build images with `Containerfile`\n- Multi-container apps using **pods** (Podman's killer feature)\n- Networking, storage, registries, security, troubleshooting\n- Quadlets for systemd-managed containers\n\nEach module ends with a quiz. Coach (the chat panel on the right →) is here for any question — `Ask Coach` if anything is unclear."
+          },
+          {
+            "id": "s1-2",
+            "title": "Install Fedora in VirtualBox (free RHEL-compatible)",
+            "type": "hands-on",
+            "duration_min": 30,
+            "summary": "Fedora is the upstream of RHEL — same package manager, same systemd, same Podman. And it's free.",
+            "content_md": "## Why Fedora and not RHEL?\n\nRHEL requires a paid subscription (or a free Developer Subscription with hoops to jump through). **Fedora** is the upstream that RHEL is built from — same `dnf`, same `systemd`, same Podman. For learning purposes it's identical *and free*.\n\n## What you'll do\n\n1. Install VirtualBox (free hypervisor) on your laptop\n2. Download the Fedora Workstation ISO\n3. Create a VM, boot the ISO, install Fedora\n\n> **Tip from Coach**: 4 GB RAM and 2 CPU cores for the VM is enough. 30 GB disk.",
+            "instructions": [
+              "Download VirtualBox 7.x for your OS: https://www.virtualbox.org/wiki/Downloads",
+              "Download Fedora Workstation ISO: https://fedoraproject.org/workstation/download",
+              "Open VirtualBox → New → Name: 'fedora-podman' → Type: Linux → Version: Fedora (64-bit)",
+              "Allocate 4096 MB RAM, 2 CPUs, 30 GB VDI disk",
+              "Settings → Storage → attach the Fedora ISO to the optical drive",
+              "Start the VM → click 'Install Fedora to Hard Drive' on the desktop",
+              "Follow installer: keyboard, language, target disk (auto), set root password + create user 'student'",
+              "Reboot, log in to your Fedora desktop"
+            ],
+            "checkpoints": [
+              "VirtualBox is installed and runs",
+              "Fedora VM is created with 4 GB RAM and 30 GB disk",
+              "Fedora desktop has booted and you're logged in as 'student'"
+            ]
+          },
+          {
+            "id": "s1-3",
+            "title": "Install Podman + verify",
+            "type": "hands-on",
+            "duration_min": 10,
+            "summary": "Fedora ships with Podman in the default repos. One command to install, one to verify.",
+            "content_md": "## Install\n\nOpen the **Terminal** app on Fedora and run:\n\n```bash\nsudo dnf install -y podman\n```\n\nThis pulls Podman and its dependencies (conmon, runc, slirp4netns, etc.).\n\n## Verify\n\n```bash\npodman --version\npodman info\n```\n\nThe `info` command should show:\n- `host.os: linux`\n- `host.kernel: 6.x.x-...fc...`\n- `store.graphRoot: /home/student/.local/share/containers/storage` (rootless!)\n\n> **Why rootless matters**: Unlike Docker, Podman runs without a daemon and without root. Each user has their own container store. This is one of Red Hat's biggest selling points — and a common exam question.",
+            "instructions": [
+              "Run `sudo dnf install -y podman` in the terminal",
+              "Run `podman --version` (expect 4.x or 5.x)",
+              "Run `podman info | grep -i graphRoot` to confirm rootless storage path",
+              "Run `podman run hello-world` — should pull and print 'Hello from Docker!'"
+            ],
+            "checkpoints": [
+              "`podman --version` prints 4.x or 5.x",
+              "Storage graphRoot is under /home/student (not /var/lib/)",
+              "`podman run hello-world` succeeded"
+            ]
+          },
+          {
+            "id": "s1-q",
+            "title": "Module 1 Quiz",
+            "type": "quiz",
+            "duration_min": 5,
+            "summary": "5 questions on environment setup and the Podman vs Docker model.",
+            "questions": [
+              {
+                "id": "q1",
+                "stem": "Which is the most important reason Podman runs rootless by default?",
+                "options": [
+                  {"id": "A", "text": "Better performance than Docker"},
+                  {"id": "B", "text": "Reduced attack surface — no privileged daemon listening on a socket"},
+                  {"id": "C", "text": "Smaller install size"},
+                  {"id": "D", "text": "Faster image pulls"}
+                ],
+                "correct": "B",
+                "explanation": "Rootless Podman means no `dockerd`-style daemon running as root. If a container is compromised, it can't escalate to host root."
+              },
+              {
+                "id": "q2",
+                "stem": "On Fedora, the rootless container store lives in:",
+                "options": [
+                  {"id": "A", "text": "/var/lib/containers/storage"},
+                  {"id": "B", "text": "/etc/containers"},
+                  {"id": "C", "text": "$HOME/.local/share/containers/storage"},
+                  {"id": "D", "text": "/run/containers"}
+                ],
+                "correct": "C",
+                "explanation": "Each user gets their own container store under their home directory."
+              },
+              {
+                "id": "q3",
+                "stem": "Why is Fedora a fine substitute for RHEL when learning EX188?",
+                "options": [
+                  {"id": "A", "text": "Fedora is faster than RHEL"},
+                  {"id": "B", "text": "Fedora is the upstream of RHEL — same dnf, systemd, and Podman versions"},
+                  {"id": "C", "text": "Fedora supports more hardware"},
+                  {"id": "D", "text": "RHEL doesn't include Podman"}
+                ],
+                "correct": "B",
+                "explanation": "RHEL is downstream of Fedora; the container tooling stack is identical for the purposes of EX188 prep."
+              },
+              {
+                "id": "q4",
+                "stem": "Which command installs Podman on Fedora?",
+                "options": [
+                  {"id": "A", "text": "apt-get install podman"},
+                  {"id": "B", "text": "yum install podman"},
+                  {"id": "C", "text": "dnf install podman"},
+                  {"id": "D", "text": "snap install podman"}
+                ],
+                "correct": "C",
+                "explanation": "`dnf` is the package manager on modern Fedora and RHEL 8+."
+              },
+              {
+                "id": "q5",
+                "stem": "What does `podman info` primarily show?",
+                "options": [
+                  {"id": "A", "text": "List of running containers"},
+                  {"id": "B", "text": "Host, store, registries and runtime configuration of your Podman install"},
+                  {"id": "C", "text": "Container logs"},
+                  {"id": "D", "text": "List of installed images"}
+                ],
+                "correct": "B"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "m2",
+        "title": "Module 2 — Podman Fundamentals",
+        "summary": "Run, stop, inspect, and remove containers. Understand the container lifecycle.",
+        "steps": [
+          {
+            "id": "s2-1",
+            "title": "Your first container — run, ps, logs",
+            "type": "hands-on",
+            "duration_min": 15,
+            "summary": "Run nginx in the background, see it in `podman ps`, follow its logs.",
+            "content_md": "## Run a container\n\n```bash\npodman run -d --name web -p 8080:80 docker.io/library/nginx:latest\n```\n\n- `-d` detached (run in background)\n- `--name web` give it a friendly name\n- `-p 8080:80` map host port 8080 → container port 80\n- The image is pulled from Docker Hub if not already local\n\n## Verify\n\n```bash\npodman ps                # running containers\npodman logs web          # see nginx access log\ncurl http://localhost:8080  # should return the nginx welcome page\n```\n\n## Stop and clean up\n\n```bash\npodman stop web\npodman rm web\n```",
+            "instructions": [
+              "Run the nginx container detached on port 8080",
+              "Use `podman ps` to confirm it's running",
+              "`curl localhost:8080` and see the nginx HTML",
+              "Stop and remove the container"
+            ],
+            "checkpoints": [
+              "nginx is running in a detached container named 'web'",
+              "curl localhost:8080 returns nginx HTML",
+              "Container is stopped and removed cleanly"
+            ]
+          },
+          {
+            "id": "s2-2",
+            "title": "Image vs Container — inspect both",
+            "type": "lecture",
+            "duration_min": 10,
+            "summary": "An image is a read-only template; a container is a running instance with a writable layer.",
+            "content_md": "## Mental model\n\n- **Image** = baked, immutable, layered filesystem + metadata. Stored once.\n- **Container** = running process(es) + a thin writable layer on top of the image.\n\n## Useful commands\n\n```bash\npodman images                    # list local images\npodman image inspect nginx       # JSON: layers, env, entrypoint, exposed ports\npodman ps -a                      # containers including stopped\npodman container inspect web     # JSON: state, mounts, networks, IP\npodman diff web                   # what files the container changed vs its image\n```\n\n> **Coach tip**: When troubleshooting, `inspect` is your best friend. The `Config.Cmd` and `Config.Entrypoint` fields tell you what the container actually runs.",
+            "instructions": [
+              "List your local images",
+              "Inspect the nginx image and find its `ExposedPorts`",
+              "Run a container, then inspect it to find its IP address",
+              "Make a change inside the container and use `podman diff` to see it"
+            ]
+          },
+          {
+            "id": "s2-3",
+            "title": "Environment variables, port mapping, restart policy",
+            "type": "hands-on",
+            "duration_min": 15,
+            "summary": "Pass env vars, expose multiple ports, control auto-restart behaviour.",
+            "content_md": "## Pass env vars\n\n```bash\npodman run -d --name db \\\n  -e POSTGRES_PASSWORD=secret \\\n  -e POSTGRES_DB=app \\\n  -p 5432:5432 \\\n  --restart=unless-stopped \\\n  docker.io/library/postgres:16\n```\n\n## Restart policies (memorize for exam)\n\n- `no` (default) — never restart\n- `on-failure[:N]` — restart only if exit code != 0, optionally N times\n- `always` — always restart\n- `unless-stopped` — same as `always` except don't restart after manual stop"
+          },
+          {
+            "id": "s2-q",
+            "title": "Module 2 Quiz",
+            "type": "quiz",
+            "duration_min": 5,
+            "summary": "5 questions on lifecycle and basic flags.",
+            "questions": [
+              {
+                "id": "q1",
+                "stem": "Which flag combination runs a container detached and gives it the name 'web'?",
+                "options": [
+                  {"id": "A", "text": "podman run -it --label web nginx"},
+                  {"id": "B", "text": "podman run -d --name web nginx"},
+                  {"id": "C", "text": "podman create --tag web -d nginx"},
+                  {"id": "D", "text": "podman start --background --id web nginx"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q2",
+                "stem": "An image is to a container as ___ is to ___.",
+                "options": [
+                  {"id": "A", "text": "Process — file"},
+                  {"id": "B", "text": "Class — instance"},
+                  {"id": "C", "text": "Snapshot — backup"},
+                  {"id": "D", "text": "Disk — partition"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q3",
+                "stem": "Which command shows the IP address Podman assigned to a running container?",
+                "options": [
+                  {"id": "A", "text": "podman logs <container>"},
+                  {"id": "B", "text": "podman ps -i"},
+                  {"id": "C", "text": "podman container inspect <container>"},
+                  {"id": "D", "text": "podman network show"}
+                ],
+                "correct": "C"
+              },
+              {
+                "id": "q4",
+                "stem": "Which restart policy will NOT restart the container after the user manually `podman stop`s it?",
+                "options": [
+                  {"id": "A", "text": "always"},
+                  {"id": "B", "text": "unless-stopped"},
+                  {"id": "C", "text": "on-failure"},
+                  {"id": "D", "text": "All of the above will restart it"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q5",
+                "stem": "What does `podman diff <container>` show?",
+                "options": [
+                  {"id": "A", "text": "Differences between two container images"},
+                  {"id": "B", "text": "Files added/modified/deleted in the container's writable layer"},
+                  {"id": "C", "text": "CPU usage delta"},
+                  {"id": "D", "text": "Network changes"}
+                ],
+                "correct": "B"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "m3",
+        "title": "Module 3 — Building Images with Containerfile",
+        "summary": "Write a Containerfile (Podman's term for Dockerfile), build, tag, and inspect.",
+        "steps": [
+          {
+            "id": "s3-1",
+            "title": "Your first Containerfile",
+            "type": "hands-on",
+            "duration_min": 20,
+            "summary": "FROM, RUN, COPY, CMD — the four core instructions.",
+            "content_md": "## What's a Containerfile?\n\nIt's the same as a Dockerfile — Podman just prefers the more vendor-neutral name. Both filenames work.\n\n## Example\n\n```dockerfile\nFROM registry.access.redhat.com/ubi9/python-39\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD [\"gunicorn\", \"app:app\", \"--bind\", \"0.0.0.0:8000\"]\n```\n\n## Build it\n\n```bash\npodman build -t myapp:1.0 .\npodman images | grep myapp\npodman run -d -p 8000:8000 --name app myapp:1.0\n```",
+            "instructions": [
+              "Create a directory `myapp` with a Containerfile",
+              "Build with `podman build -t myapp:1.0 .`",
+              "Run it and curl localhost:8000 to verify"
+            ]
+          },
+          {
+            "id": "s3-2",
+            "title": "Multi-stage builds + image size",
+            "type": "lecture",
+            "duration_min": 10,
+            "summary": "Use a builder stage to compile, then copy artefacts into a slim runtime image.",
+            "content_md": "## Why multi-stage?\n\nA Go binary needs a 700 MB build environment to compile. The runtime needs nothing but the binary. Multi-stage builds keep the final image tiny.\n\n```dockerfile\nFROM golang:1.22 AS build\nWORKDIR /src\nCOPY . .\nRUN go build -o /out/app ./cmd/app\n\nFROM registry.access.redhat.com/ubi9-minimal\nCOPY --from=build /out/app /usr/local/bin/app\nCMD [\"app\"]\n```\n\nBefore: ~900 MB. After: ~120 MB."
+          },
+          {
+            "id": "s3-3",
+            "title": "Tagging, pushing, and pulling from a registry",
+            "type": "hands-on",
+            "duration_min": 15,
+            "summary": "Push an image to quay.io (free) using your Red Hat account.",
+            "content_md": "## Tag and push\n\n```bash\npodman tag myapp:1.0 quay.io/myuser/myapp:1.0\npodman login quay.io      # interactive — enter your quay.io credentials\npodman push quay.io/myuser/myapp:1.0\n```\n\n## Pull from anywhere\n\n```bash\npodman pull quay.io/myuser/myapp:1.0\n```\n\n> **Exam tip**: The exam may use a private registry. Practice `podman login <registry>` and verify with `cat $XDG_RUNTIME_DIR/containers/auth.json`."
+          },
+          {
+            "id": "s3-q",
+            "title": "Module 3 Quiz",
+            "type": "quiz",
+            "duration_min": 5,
+            "summary": "5 questions on building, tagging, and pushing images.",
+            "questions": [
+              {
+                "id": "q1",
+                "stem": "What's the relationship between a Containerfile and a Dockerfile?",
+                "options": [
+                  {"id": "A", "text": "Different syntax — Containerfile uses YAML"},
+                  {"id": "B", "text": "Identical syntax — Containerfile is just a vendor-neutral name"},
+                  {"id": "C", "text": "Containerfile is for OCI; Dockerfile is for legacy Docker"},
+                  {"id": "D", "text": "Containerfile only works with Podman; Dockerfile only with Docker"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q2",
+                "stem": "In a multi-stage build, the `COPY --from=build` syntax does what?",
+                "options": [
+                  {"id": "A", "text": "Copies from the host filesystem"},
+                  {"id": "B", "text": "Copies from a previous build stage's filesystem"},
+                  {"id": "C", "text": "Copies from a remote registry"},
+                  {"id": "D", "text": "Copies from another running container"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q3",
+                "stem": "Where does Podman store registry login credentials by default (rootless)?",
+                "options": [
+                  {"id": "A", "text": "/etc/containers/auth.json"},
+                  {"id": "B", "text": "$HOME/.docker/config.json"},
+                  {"id": "C", "text": "$XDG_RUNTIME_DIR/containers/auth.json"},
+                  {"id": "D", "text": "/var/lib/containers/auth.json"}
+                ],
+                "correct": "C"
+              },
+              {
+                "id": "q4",
+                "stem": "Which command builds an image tagged `webapp:dev` from the current directory?",
+                "options": [
+                  {"id": "A", "text": "podman build webapp:dev ."},
+                  {"id": "B", "text": "podman create -t webapp:dev ."},
+                  {"id": "C", "text": "podman build -t webapp:dev ."},
+                  {"id": "D", "text": "podman tag . webapp:dev"}
+                ],
+                "correct": "C"
+              },
+              {
+                "id": "q5",
+                "stem": "Which Red Hat registry hosts officially-supported UBI base images?",
+                "options": [
+                  {"id": "A", "text": "docker.io"},
+                  {"id": "B", "text": "registry.access.redhat.com"},
+                  {"id": "C", "text": "quay.io/library"},
+                  {"id": "D", "text": "github.io"}
+                ],
+                "correct": "B"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "m4",
+        "title": "Module 4 — Pods (Multi-Container Apps)",
+        "summary": "Pods are Podman's killer feature: multiple containers sharing a network namespace, like Kubernetes.",
+        "steps": [
+          {
+            "id": "s4-1",
+            "title": "Why pods? The web + db pattern",
+            "type": "lecture",
+            "duration_min": 10,
+            "summary": "A pod = N containers + 1 shared network namespace.",
+            "content_md": "## The killer feature\n\nA **pod** lets multiple containers share `localhost`. Your web container can talk to the database on `localhost:5432` even though they're separate containers.\n\nThis is the same model Kubernetes uses, and it's where 'Podman' got its name.\n\n## When to use a pod\n\n- A web app that needs an attached cache (Redis sidecar)\n- An app + log shipper sidecar\n- Anything you'd put in a single Kubernetes pod"
+          },
+          {
+            "id": "s4-2",
+            "title": "Create a pod with web + postgres",
+            "type": "hands-on",
+            "duration_min": 20,
+            "summary": "One pod, two containers, shared localhost.",
+            "content_md": "## Steps\n\n```bash\n# 1. Create the pod (publishes port 8080 to host)\npodman pod create --name webapp -p 8080:80\n\n# 2. Add the postgres container\npodman run -d --pod webapp \\\n  -e POSTGRES_PASSWORD=secret \\\n  -e POSTGRES_DB=app \\\n  --name db postgres:16\n\n# 3. Add the web container — talks to postgres on localhost!\npodman run -d --pod webapp \\\n  -e DATABASE_URL=postgres://postgres:secret@localhost:5432/app \\\n  --name web nginx\n\n# 4. Inspect\npodman pod ps           # see your pod\npodman pod inspect webapp\npodman ps --pod         # containers grouped by pod\n```",
+            "instructions": [
+              "Create a pod called 'webapp' that publishes port 8080",
+              "Add a postgres container into that pod",
+              "Add an nginx (or your app) container into that pod",
+              "Verify both are running with `podman ps --pod`"
+            ]
+          },
+          {
+            "id": "s4-3",
+            "title": "Generate Kubernetes YAML from a pod",
+            "type": "hands-on",
+            "duration_min": 10,
+            "summary": "podman generate kube — your pod becomes a real K8s manifest.",
+            "content_md": "## Why this matters\n\nPodman pods speak the same shape as Kubernetes pods. You can build and test locally, then export a manifest for your team's K8s cluster.\n\n```bash\npodman generate kube webapp > webapp.yaml\ncat webapp.yaml          # valid Kubernetes Pod YAML\n```\n\nThis is a tested exam topic — know the command."
+          },
+          {
+            "id": "s4-q",
+            "title": "Module 4 Quiz",
+            "type": "quiz",
+            "duration_min": 5,
+            "summary": "5 questions on pods.",
+            "questions": [
+              {
+                "id": "q1",
+                "stem": "Containers in the same pod share which Linux namespaces?",
+                "options": [
+                  {"id": "A", "text": "All of them — same as a single container"},
+                  {"id": "B", "text": "Only the network and IPC namespaces (others are separate)"},
+                  {"id": "C", "text": "Only the user namespace"},
+                  {"id": "D", "text": "Only the mount namespace"}
+                ],
+                "correct": "B",
+                "explanation": "Network + IPC are shared so containers can talk on localhost. Mount, PID, UTS namespaces stay isolated."
+              },
+              {
+                "id": "q2",
+                "stem": "Which command exports a Podman pod as a Kubernetes manifest?",
+                "options": [
+                  {"id": "A", "text": "podman pod export"},
+                  {"id": "B", "text": "podman generate kube <pod>"},
+                  {"id": "C", "text": "podman kube create <pod>"},
+                  {"id": "D", "text": "podman save --kube <pod>"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q3",
+                "stem": "If your web container talks to its database via `localhost:5432`, that database must be:",
+                "options": [
+                  {"id": "A", "text": "Running on the host"},
+                  {"id": "B", "text": "Running in another container in the SAME pod"},
+                  {"id": "C", "text": "Running in another container in any pod"},
+                  {"id": "D", "text": "Embedded in the same container"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q4",
+                "stem": "Port mappings (`-p`) on a pod's containers are:",
+                "options": [
+                  {"id": "A", "text": "Set on each container individually"},
+                  {"id": "B", "text": "Set on the POD itself with `podman pod create -p`"},
+                  {"id": "C", "text": "Set in the Containerfile"},
+                  {"id": "D", "text": "Set with `podman network publish`"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q5",
+                "stem": "What's the special 'infra' container Podman creates inside each pod for?",
+                "options": [
+                  {"id": "A", "text": "Health checks"},
+                  {"id": "B", "text": "Holds the shared network namespace alive even if other containers die"},
+                  {"id": "C", "text": "Logging"},
+                  {"id": "D", "text": "Image caching"}
+                ],
+                "correct": "B"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "m5",
+        "title": "Module 5 — Storage, Networking, Quadlets",
+        "summary": "Persistent volumes, custom networks, and systemd integration with Quadlet.",
+        "steps": [
+          {
+            "id": "s5-1",
+            "title": "Volumes: persistent storage",
+            "type": "hands-on",
+            "duration_min": 15,
+            "summary": "Named volumes vs bind mounts vs tmpfs.",
+            "content_md": "## Three mount types\n\n```bash\n# 1. Named volume — Podman manages the location\npodman volume create pgdata\npodman run -d --name db -v pgdata:/var/lib/postgresql/data postgres:16\n\n# 2. Bind mount — host path\npodman run -d --name web -v /home/student/site:/usr/share/nginx/html:Z nginx\n\n# 3. tmpfs — RAM, gone on stop\npodman run -d --tmpfs /tmp/cache nginx\n```\n\n> **The `:Z` flag is critical on Fedora/RHEL** — it sets the SELinux label so the container can access the bind mount. Without it you'll get permission denied. This is a top-3 exam gotcha.",
+            "instructions": [
+              "Create a named volume called 'pgdata'",
+              "Run postgres with the volume mounted",
+              "Stop and remove the container",
+              "Recreate it — your data is still there",
+              "Try a bind mount with and without `:Z` to see SELinux behaviour"
+            ]
+          },
+          {
+            "id": "s5-2",
+            "title": "Custom networks",
+            "type": "hands-on",
+            "duration_min": 10,
+            "summary": "Create a network, connect containers, resolve by name.",
+            "content_md": "```bash\npodman network create app-net\npodman run -d --network app-net --name db -e POSTGRES_PASSWORD=x postgres\npodman run -d --network app-net --name web nginx\n# 'web' can reach 'db' as hostname `db` (DNS provided by aardvark-dns)\n```"
+          },
+          {
+            "id": "s5-3",
+            "title": "Quadlet: run containers as systemd services",
+            "type": "hands-on",
+            "duration_min": 25,
+            "summary": "The modern (RHEL 9+) way to make containers auto-start and be managed by systemd.",
+            "content_md": "## What's a Quadlet?\n\nA `.container` file dropped under `~/.config/containers/systemd/` (rootless) or `/etc/containers/systemd/` (rootful). Systemd auto-generates a real `.service` unit from it.\n\n## Example\n\n`~/.config/containers/systemd/web.container`\n\n```ini\n[Unit]\nDescription=My web app\nAfter=network-online.target\n\n[Container]\nImage=quay.io/myuser/myapp:1.0\nPublishPort=8080:80\nVolume=app-data:/data:Z\n\n[Install]\nWantedBy=default.target\n```\n\n## Activate\n\n```bash\nsystemctl --user daemon-reload\nsystemctl --user start web.service\nsystemctl --user enable web.service       # auto-start on login\nloginctl enable-linger student            # keep services running when user logs out\n```\n\n> **Quadlet is the new exam favourite** — it's the official replacement for `podman generate systemd` (deprecated in 5.0+). Know the file format."
+          },
+          {
+            "id": "s5-q",
+            "title": "Module 5 Quiz",
+            "type": "quiz",
+            "duration_min": 5,
+            "summary": "5 questions on storage, networks, Quadlets.",
+            "questions": [
+              {
+                "id": "q1",
+                "stem": "On Fedora/RHEL, omitting the `:Z` flag on a bind mount typically causes:",
+                "options": [
+                  {"id": "A", "text": "The mount to fail at start"},
+                  {"id": "B", "text": "Permission denied errors inside the container due to SELinux"},
+                  {"id": "C", "text": "Slower I/O"},
+                  {"id": "D", "text": "The host directory to be deleted"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q2",
+                "stem": "Containers on the same custom Podman network can resolve each other by:",
+                "options": [
+                  {"id": "A", "text": "IP address only"},
+                  {"id": "B", "text": "Container name (DNS provided by aardvark-dns)"},
+                  {"id": "C", "text": "MAC address"},
+                  {"id": "D", "text": "Hostname after manual /etc/hosts edits"}
+                ],
+                "correct": "B"
+              },
+              {
+                "id": "q3",
+                "stem": "Where do rootless Quadlet `.container` files live?",
+                "options": [
+                  {"id": "A", "text": "/etc/containers/systemd/"},
+                  {"id": "B", "text": "/var/lib/podman/quadlets/"},
+                  {"id": "C", "text": "$HOME/.config/containers/systemd/"},
+                  {"id": "D", "text": "$HOME/.podman/quadlets/"}
+                ],
+                "correct": "C"
+              },
+              {
+                "id": "q4",
+                "stem": "What does `loginctl enable-linger <user>` do?",
+                "options": [
+                  {"id": "A", "text": "Keeps user systemd services running after they log out"},
+                  {"id": "B", "text": "Adds the user to the docker group"},
+                  {"id": "C", "text": "Allows passwordless sudo"},
+                  {"id": "D", "text": "Enables SSH for the user"}
+                ],
+                "correct": "A"
+              },
+              {
+                "id": "q5",
+                "stem": "Which is the OFFICIALLY RECOMMENDED Red Hat way to run Podman containers as systemd services on RHEL 9+?",
+                "options": [
+                  {"id": "A", "text": "podman generate systemd"},
+                  {"id": "B", "text": "Quadlet (.container files)"},
+                  {"id": "C", "text": "docker-compose"},
+                  {"id": "D", "text": "Crontab @reboot"}
+                ],
+                "correct": "B"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "m6",
+        "title": "Module 6 — Final Prep",
+        "summary": "Mock scenarios, exam-day strategy, and a 20-question practice test.",
+        "steps": [
+          {
+            "id": "s6-1",
+            "title": "Top 10 exam-day commands to memorize",
+            "type": "lecture",
+            "duration_min": 15,
+            "summary": "The commands that come up over and over in EX188 tasks.",
+            "content_md": "## Memorize these patterns\n\n```bash\n# Run with all the bells\npodman run -d --name X -p 8080:80 -v vol:/data:Z -e KEY=val --restart=always image:tag\n\n# Build & push\npodman build -t quay.io/me/app:1 . && podman push quay.io/me/app:1\n\n# Pod with an app + sidecar\npodman pod create --name p -p 8080:80\npodman run -d --pod p --name app image\n\n# Quadlet skeleton — under ~/.config/containers/systemd/X.container\n# [Container]\n# Image=...\n# PublishPort=...\n# Volume=...:Z\n\n# Generate K8s YAML\npodman generate kube p > p.yaml\n\n# Inspect & debug\npodman logs -f X\npodman exec -it X bash\npodman container inspect X\n```"
+          },
+          {
+            "id": "s6-2",
+            "title": "Mock scenario: 'Run a web app + cache + db as a unit'",
+            "type": "hands-on",
+            "duration_min": 30,
+            "summary": "A typical exam task. Coach can grade your solution if you describe it.",
+            "content_md": "## Task\n\n> Create a pod called `shop` exposing port `8080:80`. Inside the pod, run:\n> - A `valkey:latest` container named `cache` with `requirepass=hunter2`\n> - A `postgres:16` container named `db` with password `hunter2` and database `shop`\n> - An `nginx:latest` container named `web` (placeholder for the real app)\n> Make all three persist across reboots using Quadlet.\n\nWrite the commands you'd run, then **`Ask Coach`** to grade them."
+          },
+          {
+            "id": "s6-q",
+            "title": "Final 20-question practice test",
+            "type": "quiz",
+            "duration_min": 30,
+            "summary": "Mixed difficulty, all modules. 70% to pass.",
+            "questions": [
+              {"id": "q1", "stem": "Which command shows ALL containers (running + stopped)?", "options": [{"id": "A", "text": "podman ps"}, {"id": "B", "text": "podman ps -a"}, {"id": "C", "text": "podman ls"}, {"id": "D", "text": "podman containers"}], "correct": "B"},
+              {"id": "q2", "stem": "Rootless Podman networks use which DNS resolver by default on modern systems?", "options": [{"id": "A", "text": "dnsmasq"}, {"id": "B", "text": "aardvark-dns"}, {"id": "C", "text": "systemd-resolved"}, {"id": "D", "text": "BIND"}], "correct": "B"},
+              {"id": "q3", "stem": "The `--rm` flag on `podman run` does what?", "options": [{"id": "A", "text": "Removes the image after stop"}, {"id": "B", "text": "Removes the container after it exits"}, {"id": "C", "text": "Removes any existing container with the same name"}, {"id": "D", "text": "Removes attached volumes"}], "correct": "B"},
+              {"id": "q4", "stem": "Which OCI runtime does Podman use by default?", "options": [{"id": "A", "text": "containerd"}, {"id": "B", "text": "crun (or runc)"}, {"id": "C", "text": "Docker"}, {"id": "D", "text": "rkt"}], "correct": "B"},
+              {"id": "q5", "stem": "An image tag like `nginx:1.25-alpine` is roughly:", "options": [{"id": "A", "text": "Strictly versioned and immutable"}, {"id": "B", "text": "A mutable label that can point to different image digests over time"}, {"id": "C", "text": "Always pulled fresh from the registry"}, {"id": "D", "text": "Equivalent to a digest"}], "correct": "B"},
+              {"id": "q6", "stem": "How do you inject a multi-line config file into a container without baking it in?", "options": [{"id": "A", "text": "ConfigMap"}, {"id": "B", "text": "podman --config-from-file"}, {"id": "C", "text": "Bind mount the file from the host with -v"}, {"id": "D", "text": "Pass it via -e"}], "correct": "C"},
+              {"id": "q7", "stem": "Best command to stream live logs from a container?", "options": [{"id": "A", "text": "podman logs <c>"}, {"id": "B", "text": "podman logs -f <c>"}, {"id": "C", "text": "podman tail <c>"}, {"id": "D", "text": "journalctl -fu <c>"}], "correct": "B"},
+              {"id": "q8", "stem": "podman exec -it <c> bash gives you:", "options": [{"id": "A", "text": "A new container"}, {"id": "B", "text": "A new bash process inside the running container"}, {"id": "C", "text": "Access to the image filesystem"}, {"id": "D", "text": "Root on the host"}], "correct": "B"},
+              {"id": "q9", "stem": "A Containerfile USER instruction sets:", "options": [{"id": "A", "text": "The OS user that container processes run as"}, {"id": "B", "text": "The build-time user"}, {"id": "C", "text": "The registry user"}, {"id": "D", "text": "The user that mounted the volumes"}], "correct": "A"},
+              {"id": "q10", "stem": "Default healthcheck retries before marking unhealthy?", "options": [{"id": "A", "text": "1"}, {"id": "B", "text": "3"}, {"id": "C", "text": "5"}, {"id": "D", "text": "10"}], "correct": "B"},
+              {"id": "q11", "stem": "What's wrong with `podman run -p 80:8080 nginx`?", "options": [{"id": "A", "text": "Nothing"}, {"id": "B", "text": "Privileged port 80 needs root or sysctl tweak in rootless mode"}, {"id": "C", "text": "Port order is wrong (always container:host)"}, {"id": "D", "text": "Nginx doesn't listen on 8080"}], "correct": "B"},
+              {"id": "q12", "stem": "Which file controls the registries Podman searches when you `podman pull nginx` (no registry prefix)?", "options": [{"id": "A", "text": "/etc/podman/registries.conf"}, {"id": "B", "text": "/etc/containers/registries.conf"}, {"id": "C", "text": "/etc/docker/daemon.json"}, {"id": "D", "text": "$HOME/.podman/registries.toml"}], "correct": "B"},
+              {"id": "q13", "stem": "`podman cp` copies between:", "options": [{"id": "A", "text": "Two images"}, {"id": "B", "text": "Host and container (or container and container)"}, {"id": "C", "text": "Two volumes"}, {"id": "D", "text": "Two registries"}], "correct": "B"},
+              {"id": "q14", "stem": "What does `podman system prune` do?", "options": [{"id": "A", "text": "Deletes ALL containers and images"}, {"id": "B", "text": "Removes stopped containers, dangling images, and unused networks"}, {"id": "C", "text": "Reinstalls Podman"}, {"id": "D", "text": "Resets container storage"}], "correct": "B"},
+              {"id": "q15", "stem": "Which command shows real-time CPU/memory usage of containers?", "options": [{"id": "A", "text": "podman ps --stats"}, {"id": "B", "text": "podman stats"}, {"id": "C", "text": "podman top"}, {"id": "D", "text": "podman info --resource"}], "correct": "B"},
+              {"id": "q16", "stem": "If a container's process is PID 1 inside the container, on the host it appears as:", "options": [{"id": "A", "text": "Also PID 1"}, {"id": "B", "text": "A different, normal PID — namespaces remap"}, {"id": "C", "text": "It's hidden from the host"}, {"id": "D", "text": "An init process owned by root"}], "correct": "B"},
+              {"id": "q17", "stem": "podman save outputs:", "options": [{"id": "A", "text": "A YAML file"}, {"id": "B", "text": "A tar archive of the image"}, {"id": "C", "text": "A JSON manifest"}, {"id": "D", "text": "An OCI bundle directory"}], "correct": "B"},
+              {"id": "q18", "stem": "podman play kube does what?", "options": [{"id": "A", "text": "Runs a Kubernetes Pod YAML against a real K8s cluster"}, {"id": "B", "text": "Re-creates a Pod/Deployment locally from K8s YAML"}, {"id": "C", "text": "Validates K8s YAML"}, {"id": "D", "text": "Converts Compose to K8s"}], "correct": "B"},
+              {"id": "q19", "stem": "Which is true about rootless container UIDs?", "options": [{"id": "A", "text": "All processes are root inside AND outside"}, {"id": "B", "text": "Root inside is mapped to your unprivileged UID outside via subuid"}, {"id": "C", "text": "Containers can't run as root"}, {"id": "D", "text": "subuid is only for Docker"}], "correct": "B"},
+              {"id": "q20", "stem": "Best practice for SECRETS in containers?", "options": [{"id": "A", "text": "Hard-code in the image"}, {"id": "B", "text": "Pass via -e environment variables"}, {"id": "C", "text": "Use podman secret create + --secret on run, or mount from a controlled file"}, {"id": "D", "text": "Commit to your Git repo"}], "correct": "C"}
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "aws-saa-foundations",
+    "title": "AWS SAA-C03 Foundations Path",
+    "exam_code": "SAA-C03",
+    "exam_id": "aws-saa-c03",
+    "provider": "aws",
+    "difficulty": "beginner",
+    "estimated_hours": 12,
+    "description": "A 6-module guided tour through the SAA-C03 essentials. Pairs with the existing 8,800-question SparkUpCloud bank.",
+    "color": "#FF9900",
+    "modules": [
+      {
+        "id": "m1",
+        "title": "Module 1 — Pillars of the Well-Architected Framework",
+        "summary": "The 6 pillars and how AWS expects you to think.",
+        "steps": [
+          {
+            "id": "s1",
+            "title": "Why architects, not just operators",
+            "type": "lecture",
+            "duration_min": 10,
+            "summary": "SAA tests trade-offs, not commands.",
+            "content_md": "## The mindset shift\n\nSAA is **not** a memorization test. Every question gives you a scenario where multiple AWS services would technically work — your job is to pick the one with the right trade-off.\n\nThe 6 pillars frame those trade-offs:\n\n1. **Operational Excellence** — can you operate this at scale?\n2. **Security** — least privilege, encryption everywhere\n3. **Reliability** — survives AZ failure, recovers from region failure\n4. **Performance Efficiency** — right-sized, right-service\n5. **Cost Optimization** — you're not paying for unused capacity\n6. **Sustainability** — efficient use of resources\n\nWhen two answers seem right, ask: which pillar is the question really testing?"
+          },
+          {
+            "id": "s1-q",
+            "title": "Module 1 Quiz",
+            "type": "quiz",
+            "duration_min": 5,
+            "summary": "Pillar identification.",
+            "questions": [
+              {"id": "q1", "stem": "A question asks how to design 'minimal downtime' on AZ failure. Which pillar?", "options": [{"id": "A", "text": "Performance"}, {"id": "B", "text": "Reliability"}, {"id": "C", "text": "Cost"}, {"id": "D", "text": "Security"}], "correct": "B"},
+              {"id": "q2", "stem": "A question asks how to reduce monthly spend on dev environments. Which pillar?", "options": [{"id": "A", "text": "Cost"}, {"id": "B", "text": "Reliability"}, {"id": "C", "text": "Operational Excellence"}, {"id": "D", "text": "Performance"}], "correct": "A"}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,29 +1,32 @@
-"""AI Tutor — 1-on-1 conversational teacher powered by Claude.
+"""AI Tutor — stateful 1-on-1 conversational teacher powered by Claude.
 
-A persistent "hand-holding" coach that:
-- Knows the user's enrolled exam, mastery levels, weak concepts
-- Optionally focuses the conversation around a specific concept
-- Walks through topics like a patient human tutor would
-- Quizzes the user, gives examples, explains different ways
+Coach is persistent per (user, scope). Scope can be:
+  - an exam_id (e.g. "aws-saa-c03") for general exam coaching
+  - "path:<path_id>" for a guided learning path
+  - "global" if neither is specified
 
-Free tier: 10 messages per day.
-Paid tier (single / pro_*): unlimited.
+Conversation history is stored in the DB and replayed on each turn.
+
+Free tier: 10 messages per day. Paid: unlimited.
 """
 
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Literal
 
 import anthropic
+import json
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
-from sqlalchemy import and_, func, select
+from sqlalchemy import and_, select
 
 from app.api.deps import DB, CurrentUser
 from app.config import settings
 from app.models.exam import Concept, Exam
 from app.models.progress import UserConceptMastery, UserExamEnrollment
+from app.models.tutor import TutorConversation, UserPathProgress
 
 router = APIRouter(prefix="/tutor", tags=["tutor"])
 
@@ -37,23 +40,24 @@ class TutorMessage(BaseModel):
 
 
 class TutorChatRequest(BaseModel):
-    """A turn in the tutor conversation.
+    """Send the latest user message; the server replays prior history."""
 
-    `messages` is the full history (frontend keeps it). The latest user
-    message must be at the end.
-    """
-
-    messages: list[TutorMessage] = Field(..., min_length=1, max_length=40)
-    exam_id: str | None = None  # Defaults to user's active exam
-    concept_id: str | None = None  # Optional focused concept
+    message: str = Field(..., min_length=1, max_length=4000)
+    exam_id: str | None = None  # For exam coaching
+    concept_id: str | None = None  # Optional concept focus
+    path_id: str | None = None  # When user is in a guided path
+    step_id: str | None = None  # Current step within the path
+    # If true, wipe stored history and start fresh from this message.
+    reset: bool = False
 
 
 class TutorChatResponse(BaseModel):
     role: Literal["assistant"] = "assistant"
     content: str
-    daily_limit: int | None = None  # None = unlimited
+    history: list[TutorMessage]
+    daily_limit: int | None = None
     used_today: int
-    remaining: int | None = None  # None = unlimited
+    remaining: int | None = None
 
 
 # ── Plan-based limits ────────────────────────────────────────────────────
@@ -66,37 +70,48 @@ PLAN_DAILY_TUTOR_LIMITS: dict[str, int | None] = {
     "pro_annual": None,
 }
 
+# Cap conversation history sent to Claude. Older messages still live in DB
+# but only the last N are sent to the model to stay within the context window.
+HISTORY_TURN_CAP = 30
+# Hard cap on what we persist per scope.
+HISTORY_PERSIST_CAP = 60
+
 
 # ── Prompt construction ─────────────────────────────────────────────────
 
 
 SYSTEM_PROMPT_TEMPLATE = """\
-You are a patient, encouraging 1-on-1 tutor on SparkUpCloud. Your name is "Coach".
-The student is preparing for a certification exam.
+You are Coach — a patient, encouraging 1-on-1 tutor on SparkUpCloud.
 
 STUDENT CONTEXT
 - Name: {display_name}
-- Studying for: {exam_name}{exam_code}
-- Current overall readiness: {readiness_pct}%
+- Currently studying: {study_target}
 - Plan: {plan}
-{concept_focus}
-{weak_concepts}
+{readiness_block}
+{path_block}
+{concept_block}
+{weak_block}
 
 YOUR TEACHING STYLE
 - Conversational, warm, and patient — like a great human tutor.
 - Always check understanding before moving on. End most replies with a question.
-- Use concrete examples (real AWS services, real numbers, real scenarios) — never abstract.
+- Use concrete examples (real services, real numbers, real scenarios).
 - When asked a tough question, walk through the reasoning step-by-step.
 - If the student is wrong, acknowledge what they got right first, then redirect.
 - Adapt depth to the student's apparent level — don't lecture an expert, don't overwhelm a beginner.
-- If the conversation drifts off-topic, gently steer back to exam prep.
 - Keep replies short (under 200 words usually). Long lectures lose attention.
-- Use simple markdown: **bold**, `code`, and bullet lists. No code fences for prose.
+- Use simple markdown: **bold**, `code`, code fences for shell snippets, and bullet lists.
 - Prefer "Let's try this together" over "You should do X".
+
+WHEN GUIDING A LEARNING PATH STEP
+- Reference the current step explicitly when relevant.
+- If the step is hands-on, anticipate where students get stuck and offer specific commands.
+- For quiz steps, do NOT reveal the correct answers up front — guide the student to reason it out.
+- Recommend `Mark Step Complete` only when you're confident the student has understood.
 
 WHAT TO AVOID
 - Do NOT make up exam questions or claim something will appear on the real exam.
-- Do NOT give away which option is correct in a practice question without first
+- Do NOT give away which option is correct on a practice question without first
   asking the student to reason through it.
 - Do NOT be a search engine — you are a teacher. Ask, explain, check.
 """
@@ -107,51 +122,78 @@ def build_system_prompt(
     display_name: str,
     exam_name: str | None,
     exam_code: str | None,
-    readiness_pct: float,
     plan: str,
+    readiness_pct: float | None,
+    path: dict | None,
+    step: dict | None,
     focused_concept: dict | None,
     weak_concepts: list[dict],
 ) -> str:
-    code_str = f" ({exam_code})" if exam_code else ""
+    if path:
+        study_target = f"the **{path['title']}** learning path"
+        if exam_name:
+            study_target += f" ({exam_name})"
+    elif exam_name:
+        code_str = f" ({exam_code})" if exam_code else ""
+        study_target = f"{exam_name}{code_str}"
+    else:
+        study_target = "a certification exam"
 
+    readiness_block = (
+        f"- Overall readiness: {int(readiness_pct)}%\n" if readiness_pct is not None else ""
+    )
+
+    path_block = ""
+    if path:
+        path_block = (
+            f"\nLEARNING PATH: {path['title']}\n"
+            f"- Description: {path.get('description', '—')}\n"
+            f"- Progress: {path.get('completed_count', 0)} / {path.get('total_steps', '?')} steps complete\n"
+        )
+        if step:
+            path_block += (
+                f"\nCURRENT STEP — guide the student through this:\n"
+                f"- Module: {step.get('module_title', '—')}\n"
+                f"- Step: {step.get('title', '—')}\n"
+                f"- Type: {step.get('type', 'lecture')}\n"
+                f"- What it covers: {step.get('summary', '—')}\n"
+            )
+            if step.get("instructions"):
+                joined = "; ".join(step["instructions"][:6])
+                path_block += f"- Hands-on instructions you can reference: {joined}\n"
+
+    concept_block = ""
     if focused_concept:
-        concept_focus = (
-            f"\nFOCUSED CONCEPT (this conversation should center here):\n"
+        concept_block = (
+            f"\nFOCUSED CONCEPT (in addition to any path step):\n"
             f"- Name: {focused_concept['name']}\n"
             f"- Description: {focused_concept.get('description', '—')}\n"
-            f"- Student's mastery: {focused_concept['mastery_pct']}%\n"
-            f"- Difficulty tier: {focused_concept.get('difficulty_tier', '—')}\n"
+            f"- Student's mastery: {focused_concept.get('mastery_pct', 0)}%\n"
         )
         if focused_concept.get("key_facts"):
             facts = "; ".join(focused_concept["key_facts"][:5])
-            concept_focus += f"- Key facts you can reference: {facts}\n"
-    else:
-        concept_focus = "\nNo specific concept focus — be ready to help anywhere in the exam.\n"
+            concept_block += f"- Key facts you can reference: {facts}\n"
 
+    weak_block = ""
     if weak_concepts:
-        weak_str = "\nSTUDENT'S WEAKEST CONCEPTS (proactively offer help here):\n"
+        weak_block = "\nSTUDENT'S WEAKEST AREAS (offer help here when appropriate):\n"
         for c in weak_concepts[:5]:
-            weak_str += f"- {c['name']}: {c['mastery_pct']}% mastery\n"
-    else:
-        weak_str = ""
+            weak_block += f"- {c['name']}: {c['mastery_pct']}% mastery\n"
 
     return SYSTEM_PROMPT_TEMPLATE.format(
         display_name=display_name or "Student",
-        exam_name=exam_name or "an AWS / Azure / GCP certification exam",
-        exam_code=code_str,
-        readiness_pct=int(readiness_pct),
+        study_target=study_target,
         plan=plan,
-        concept_focus=concept_focus,
-        weak_concepts=weak_str,
+        readiness_block=readiness_block,
+        path_block=path_block,
+        concept_block=concept_block,
+        weak_block=weak_block,
     )
 
 
 # ── Daily-quota helper ──────────────────────────────────────────────────
 
 
-# In-memory per-user counter — keyed by (user_id, date). Resets daily.
-# A future iteration could move this to Redis or a DB table for multi-instance
-# correctness, but it is fine for the single-instance EC2 deployment today.
 _TUTOR_USAGE: dict[tuple[str, str], int] = {}
 
 
@@ -166,13 +208,49 @@ def _get_usage(user_id: str) -> int:
 def _incr_usage(user_id: str) -> int:
     key = _today_key(user_id)
     _TUTOR_USAGE[key] = _TUTOR_USAGE.get(key, 0) + 1
-    # Light cleanup: drop entries older than 2 days
     if len(_TUTOR_USAGE) > 5000:
         cutoff = (datetime.now(timezone.utc).date() - timedelta(days=2)).isoformat()
         for k in list(_TUTOR_USAGE.keys()):
             if k[1] < cutoff:
                 _TUTOR_USAGE.pop(k, None)
     return _TUTOR_USAGE[key]
+
+
+# ── Path lookup (loads from seed JSON) ──────────────────────────────────
+
+
+_PATHS_CACHE: list[dict] | None = None
+
+
+def _load_all_paths() -> list[dict]:
+    global _PATHS_CACHE
+    if _PATHS_CACHE is None:
+        path_file = Path(__file__).parent.parent.parent / "data" / "seed" / "learning-paths.json"
+        if path_file.exists():
+            _PATHS_CACHE = json.loads(path_file.read_text())
+        else:
+            _PATHS_CACHE = []
+    return _PATHS_CACHE
+
+
+def get_path(path_id: str) -> dict | None:
+    for p in _load_all_paths():
+        if p["id"] == path_id:
+            return p
+    return None
+
+
+def get_step(path: dict, step_id: str) -> tuple[dict | None, dict | None]:
+    """Return (step, module) for a step_id within a path."""
+    for module in path.get("modules", []):
+        for step in module.get("steps", []):
+            if step["id"] == step_id:
+                return step, module
+    return None, None
+
+
+def total_steps_in_path(path: dict) -> int:
+    return sum(len(m.get("steps", [])) for m in path.get("modules", []))
 
 
 # ── Endpoints ───────────────────────────────────────────────────────────
@@ -192,9 +270,55 @@ async def tutor_quota(user: CurrentUser):
     }
 
 
+@router.get("/history")
+async def tutor_history(scope: str, user: CurrentUser, db: DB):
+    """Load the persisted Coach conversation for a given scope.
+
+    `scope` is "exam:<id>", "path:<id>", or "global".
+    Returns the message list (capped to the last HISTORY_TURN_CAP for display).
+    """
+    result = await db.execute(
+        select(TutorConversation).where(
+            and_(
+                TutorConversation.user_id == user.id,
+                TutorConversation.scope == scope,
+            )
+        )
+    )
+    conv = result.scalar_one_or_none()
+    messages = conv.messages if conv else []
+    return {
+        "scope": scope,
+        "messages": messages[-HISTORY_TURN_CAP:],
+        "total_messages": len(messages),
+        "updated_at": conv.updated_at.isoformat() if conv else None,
+    }
+
+
+@router.delete("/history")
+async def clear_tutor_history(scope: str, user: CurrentUser, db: DB):
+    """Clear the persisted Coach conversation for a scope."""
+    result = await db.execute(
+        select(TutorConversation).where(
+            and_(
+                TutorConversation.user_id == user.id,
+                TutorConversation.scope == scope,
+            )
+        )
+    )
+    conv = result.scalar_one_or_none()
+    if conv:
+        conv.messages = []
+        conv.last_concept_id = None
+        conv.last_path_id = None
+        conv.last_step_id = None
+        await db.commit()
+    return {"status": "cleared", "scope": scope}
+
+
 @router.post("/chat", response_model=TutorChatResponse)
 async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
-    """Send a message to the AI tutor; receive Coach's reply."""
+    """Send one user message; receive Coach's reply. History is persistent."""
     # ── Rate limit ────────────────────────────────────────
     daily_limit = PLAN_DAILY_TUTOR_LIMITS.get(user.plan, 10)
     used = _get_usage(str(user.id))
@@ -207,55 +331,93 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
             ),
         )
 
-    if request.messages[-1].role != "user":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="The last message in `messages` must be from the user.",
-        )
+    # ── Resolve scope ────────────────────────────────────
+    if request.path_id:
+        scope = f"path:{request.path_id}"
+    elif request.exam_id:
+        scope = f"exam:{request.exam_id}"
+    else:
+        scope = "global"
 
-    # ── Resolve student context ──────────────────────────
-    target_exam_id = request.exam_id
+    # ── Load or create conversation ──────────────────────
+    conv_result = await db.execute(
+        select(TutorConversation).where(
+            and_(
+                TutorConversation.user_id == user.id,
+                TutorConversation.scope == scope,
+            )
+        )
+    )
+    conv = conv_result.scalar_one_or_none()
+
+    if conv is None:
+        conv = TutorConversation(
+            user_id=user.id,
+            scope=scope,
+            messages=[],
+        )
+        db.add(conv)
+
+    if request.reset:
+        conv.messages = []
+
+    # ── Build the path/step context ──────────────────────
+    path = None
+    step = None
+    if request.path_id:
+        path = get_path(request.path_id)
+        if path:
+            # Pull progress
+            prog_result = await db.execute(
+                select(UserPathProgress).where(
+                    and_(
+                        UserPathProgress.user_id == user.id,
+                        UserPathProgress.path_id == request.path_id,
+                    )
+                )
+            )
+            prog = prog_result.scalar_one_or_none()
+            path = {
+                **path,
+                "completed_count": len(prog.completed_steps) if prog else 0,
+                "total_steps": total_steps_in_path(path),
+            }
+            if request.step_id:
+                step_data, module_data = get_step(path, request.step_id)
+                if step_data:
+                    step = {
+                        **step_data,
+                        "module_title": module_data["title"] if module_data else "",
+                    }
+
+    # ── Resolve exam + readiness ─────────────────────────
+    exam_id = request.exam_id
+    if not exam_id and path:
+        exam_id = path.get("exam_id")
+
+    exam = await db.get(Exam, exam_id) if exam_id else None
 
     enrollment = None
-    if target_exam_id:
+    if exam_id:
         enr_result = await db.execute(
             select(UserExamEnrollment).where(
                 and_(
                     UserExamEnrollment.user_id == user.id,
-                    UserExamEnrollment.exam_id == target_exam_id,
+                    UserExamEnrollment.exam_id == exam_id,
                     UserExamEnrollment.is_active,
                 )
             )
         )
         enrollment = enr_result.scalar_one_or_none()
-    else:
-        # Fall back to active exam
-        active_result = await db.execute(
-            select(UserExamEnrollment)
-            .where(
-                and_(
-                    UserExamEnrollment.user_id == user.id,
-                    UserExamEnrollment.is_active,
-                )
-            )
-            .order_by(UserExamEnrollment.enrolled_at.desc())
-            .limit(1)
-        )
-        enrollment = active_result.scalar_one_or_none()
-        if enrollment:
-            target_exam_id = enrollment.exam_id
-
-    exam = await db.get(Exam, target_exam_id) if target_exam_id else None
-
     readiness_pct = (
-        float(enrollment.overall_readiness_pct) if enrollment else 0.0
+        float(enrollment.overall_readiness_pct) if enrollment else None
     )
 
-    # ── Focused concept (if specified) ──────────────────
+    # ── Focused concept ──────────────────────────────────
     focused = None
     if request.concept_id:
         concept = await db.get(Concept, request.concept_id)
-        if concept and (not target_exam_id or concept.exam_id == target_exam_id):
+        if concept:
             mastery_result = await db.execute(
                 select(UserConceptMastery).where(
                     and_(
@@ -265,27 +427,23 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
                 )
             )
             mastery = mastery_result.scalar_one_or_none()
-            mastery_pct = (
-                int(float(mastery.mastery_probability) * 100) if mastery else 0
-            )
             focused = {
                 "name": concept.name,
                 "description": concept.description or "",
                 "key_facts": concept.key_facts or [],
-                "mastery_pct": mastery_pct,
-                "difficulty_tier": concept.difficulty_tier,
+                "mastery_pct": int(float(mastery.mastery_probability) * 100) if mastery else 0,
             }
 
-    # ── Weak concepts (top 5) ───────────────────────────
+    # ── Weakest concepts (only if exam has them seeded) ─
     weak_concepts: list[dict] = []
-    if target_exam_id:
+    if exam_id:
         weak_result = await db.execute(
             select(UserConceptMastery, Concept)
             .join(Concept, UserConceptMastery.concept_id == Concept.id)
             .where(
                 and_(
                     UserConceptMastery.user_id == user.id,
-                    Concept.exam_id == target_exam_id,
+                    Concept.exam_id == exam_id,
                     UserConceptMastery.total_attempts > 0,
                 )
             )
@@ -305,11 +463,21 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
         display_name=user.display_name or user.email.split("@")[0],
         exam_name=exam.name if exam else None,
         exam_code=exam.code if exam else None,
-        readiness_pct=readiness_pct,
         plan=user.plan,
+        readiness_pct=readiness_pct,
+        path=path,
+        step=step,
         focused_concept=focused,
         weak_concepts=weak_concepts,
     )
+
+    # ── Build the API messages list (history + new user msg) ──
+    history = list(conv.messages or [])
+    history.append({"role": "user", "content": request.message})
+
+    # Cap history sent to Claude
+    api_history = history[-HISTORY_TURN_CAP:]
+    api_messages = [{"role": m["role"], "content": m["content"]} for m in api_history]
 
     # ── Call Claude ─────────────────────────────────────
     if not settings.anthropic_api_key:
@@ -320,13 +488,10 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
 
     client = anthropic.AsyncAnthropic(api_key=settings.anthropic_api_key)
 
-    # Anthropic expects the conversation as alternating user/assistant turns.
-    api_messages = [{"role": m.role, "content": m.content} for m in request.messages]
-
     try:
         message = await client.messages.create(
             model=settings.ai_model,
-            max_tokens=600,
+            max_tokens=700,
             temperature=0.7,
             system=system_prompt,
             messages=api_messages,
@@ -338,7 +503,18 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
             detail=f"Tutor service error: {str(e)[:200]}",
         )
 
-    # ── Increment quota AFTER successful response ──
+    # ── Persist updated history ─────────────────────────
+    now_iso = datetime.now(timezone.utc).isoformat()
+    history.append({"role": "assistant", "content": reply, "ts": now_iso})
+    history[-2]["ts"] = now_iso  # also stamp the just-added user msg
+
+    # Cap stored history
+    conv.messages = history[-HISTORY_PERSIST_CAP:]
+    conv.last_concept_id = request.concept_id or conv.last_concept_id
+    conv.last_path_id = request.path_id or conv.last_path_id
+    conv.last_step_id = request.step_id or conv.last_step_id
+    await db.commit()
+
     new_used = _incr_usage(str(user.id))
     remaining = (
         max(0, daily_limit - new_used) if daily_limit is not None else None
@@ -346,6 +522,10 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
 
     return TutorChatResponse(
         content=reply,
+        history=[
+            TutorMessage(role=m["role"], content=m["content"])
+            for m in conv.messages[-HISTORY_TURN_CAP:]
+        ],
         daily_limit=daily_limit,
         used_today=new_used,
         remaining=remaining,

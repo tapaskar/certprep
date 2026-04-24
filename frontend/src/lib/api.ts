@@ -432,15 +432,19 @@ class ApiClient {
     });
   }
 
-  // ── Tutor (AI Coach) ─────────────────────────────────────────
+  // ── Tutor (AI Coach) — stateful per scope ───────────────────
 
   async tutorChat(data: {
-    messages: Array<{ role: "user" | "assistant"; content: string }>;
+    message: string;
     exam_id?: string;
     concept_id?: string;
+    path_id?: string;
+    step_id?: string;
+    reset?: boolean;
   }): Promise<{
     role: "assistant";
     content: string;
+    history: Array<{ role: "user" | "assistant"; content: string }>;
     daily_limit: number | null;
     used_today: number;
     remaining: number | null;
@@ -448,6 +452,21 @@ class ApiClient {
     return this.request("/tutor/chat", {
       method: "POST",
       body: JSON.stringify(data),
+    });
+  }
+
+  async getTutorHistory(scope: string): Promise<{
+    scope: string;
+    messages: Array<{ role: "user" | "assistant"; content: string; ts?: string }>;
+    total_messages: number;
+    updated_at: string | null;
+  }> {
+    return this.request(`/tutor/history?scope=${encodeURIComponent(scope)}`);
+  }
+
+  async clearTutorHistory(scope: string): Promise<{ status: string }> {
+    return this.request(`/tutor/history?scope=${encodeURIComponent(scope)}`, {
+      method: "DELETE",
     });
   }
 
@@ -459,6 +478,71 @@ class ApiClient {
     unlimited: boolean;
   }> {
     return this.request("/tutor/quota");
+  }
+
+  // ── Learning Paths ────────────────────────────────────────────
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async listLearningPaths(filters?: { provider?: string; exam_id?: string }): Promise<any[]> {
+    const qs = new URLSearchParams();
+    if (filters?.provider) qs.set("provider", filters.provider);
+    if (filters?.exam_id) qs.set("exam_id", filters.exam_id);
+    const suffix = qs.toString() ? `?${qs.toString()}` : "";
+    return this.request(`/learning-paths${suffix}`);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async getLearningPath(pathId: string): Promise<any> {
+    return this.request(`/learning-paths/${pathId}`);
+  }
+
+  async startLearningPath(pathId: string): Promise<{
+    path_id: string;
+    current_step_id: string | null;
+    completed_steps: string[];
+  }> {
+    return this.request(`/learning-paths/${pathId}/start`, { method: "POST" });
+  }
+
+  async completePathStep(
+    pathId: string,
+    stepId: string,
+    quizScorePct?: number
+  ): Promise<{
+    step_id: string;
+    completed: boolean;
+    next_step_id: string | null;
+    path_completed: boolean;
+    completed_steps: string[];
+  }> {
+    return this.request(`/learning-paths/${pathId}/step/${stepId}/complete`, {
+      method: "POST",
+      body: JSON.stringify({ quiz_score_pct: quizScorePct ?? null }),
+    });
+  }
+
+  async submitPathQuiz(
+    pathId: string,
+    stepId: string,
+    answers: Array<{ question_id: string; selected: string }>
+  ): Promise<{
+    step_id: string;
+    score_pct: number;
+    correct: number;
+    total: number;
+    passed: boolean;
+    results: Array<{
+      question_id: string;
+      selected: string | null;
+      correct: string;
+      is_correct: boolean;
+      explanation: string;
+    }>;
+  }> {
+    return this.request(`/learning-paths/${pathId}/step/${stepId}/quiz`, {
+      method: "POST",
+      body: JSON.stringify({ answers }),
+    });
   }
 }
 

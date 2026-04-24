@@ -6,7 +6,9 @@ import { Menu, X, LogIn, LayoutDashboard, Crown } from "lucide-react";
 import { readAuthCookie, type AuthCookiePayload } from "@/lib/auth-cookie";
 
 const navLinks = [
-  { href: "/exams", label: "🎓 All 55+ Certifications" },
+  { href: "/paths", label: "🗺️ Guided Learning Paths" },
+  { href: "/tutor", label: "🎓 Coach (1-on-1 AI Tutor)" },
+  { href: "/exams", label: "🏆 All 55+ Certifications" },
   { href: "/try-questions", label: "✨ Try 5 Free Questions" },
   { href: "/visualizer", label: "🌐 3D Visualizer" },
   { href: "/simulator", label: "⚡ Simulator" },

@@ -366,22 +366,40 @@ export default function LandingPage() {
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           <Link
-            href="/tutor"
+            href="/paths"
             className="group relative rounded-2xl border-2 border-violet-300 bg-gradient-to-br from-white to-violet-50 p-6 shadow-md hover:border-violet-500 hover:shadow-xl transition-all overflow-hidden"
           >
             <span className="absolute top-2 right-2 inline-block text-[10px] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-violet-500 to-amber-500 px-2 py-0.5 rounded-full">
               ✨ New
             </span>
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-amber-500 text-3xl text-white shadow-md">
+              🗺️
+            </div>
+            <h3 className="text-lg font-semibold text-stone-900">
+              Guided Learning Paths
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-stone-500">
+              Step-by-step curricula with hands-on labs, quizzes, and Coach by your side. EX188V4K, AWS SAA, more coming.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-violet-700 group-hover:gap-2 transition-all">
+              Browse paths →
+            </span>
+          </Link>
+
+          <Link
+            href="/tutor"
+            className="group rounded-2xl border border-stone-200 bg-white p-6 shadow-md shadow-stone-200/60 hover:border-amber-400 hover:shadow-xl transition-all"
+          >
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-violet-100 text-3xl">
               🎓
             </div>
             <h3 className="text-lg font-semibold text-stone-900">
               Coach: 1-on-1 AI Tutor
             </h3>
             <p className="mt-2 text-sm leading-6 text-stone-500">
-              A patient teacher that knows your progress and walks you through tough topics.
+              A stateful teacher that remembers your past chats and knows your weak topics.
             </p>
-            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-violet-700 group-hover:gap-2 transition-all">
+            <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-amber-600 group-hover:gap-2 transition-all">
               Chat with Coach →
             </span>
           </Link>

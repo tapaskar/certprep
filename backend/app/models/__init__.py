@@ -17,6 +17,7 @@ from app.models.progress import (
     UserConceptMastery,
     UserExamEnrollment,
 )
+from app.models.tutor import TutorConversation, UserPathProgress
 from app.models.user import Team, User
 
 __all__ = [
@@ -43,4 +44,6 @@ __all__ = [
     "UserChallenge",
     "AnalyticsEvent",
     "WeeklyReport",
+    "TutorConversation",
+    "UserPathProgress",
 ]

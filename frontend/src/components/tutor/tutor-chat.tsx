@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Send,
@@ -15,13 +15,13 @@ import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 
 export interface TutorChatProps {
-  /** Optional concept this conversation should focus on */
   conceptId?: string;
   conceptName?: string;
-  /** Optional exam scope (defaults to user's active exam) */
   examId?: string;
-  /** Initial seed messages — if omitted, Coach opens with a greeting */
-  initialMessages?: Array<{ role: "user" | "assistant"; content: string }>;
+  pathId?: string;
+  pathTitle?: string;
+  stepId?: string;
+  stepTitle?: string;
   className?: string;
 }
 
@@ -33,9 +33,8 @@ interface ChatMessage {
 
 const DEFAULT_SUGGESTIONS = [
   "Quiz me on a hard topic",
-  "Explain the difference between SSE-S3 and SSE-KMS",
-  "How do I decide between Multi-AZ and Multi-Region?",
-  "What's the trickiest exam question pattern I should expect?",
+  "Explain a concept I'm weak on",
+  "What's the trickiest exam pattern I should expect?",
 ];
 
 const FOCUSED_SUGGESTIONS = [
@@ -45,28 +44,37 @@ const FOCUSED_SUGGESTIONS = [
   "What's the most common exam trap here?",
 ];
 
+const PATH_STEP_SUGGESTIONS = [
+  "Walk me through this step",
+  "I'm stuck — what should I do?",
+  "Give me a concrete example for this step",
+  "Quiz me before I mark it complete",
+];
+
 export function TutorChat({
   conceptId,
   conceptName,
   examId,
-  initialMessages,
+  pathId,
+  pathTitle,
+  stepId,
+  stepTitle,
   className = "",
 }: TutorChatProps) {
   const userName = useAuthStore((s) => s.user?.display_name);
   const userPlan = useAuthStore((s) => s.user?.plan ?? "free");
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    if (initialMessages && initialMessages.length > 0) {
-      return initialMessages.map((m, i) => ({ ...m, id: i }));
-    }
-    const greeting = conceptName
-      ? `Hi ${userName?.split(" ")[0] || "there"} 👋 I'm Coach — your 1-on-1 tutor for **${conceptName}**. I can explain it, quiz you, walk through scenarios, or answer specific questions. Where would you like to start?`
-      : `Hi ${userName?.split(" ")[0] || "there"} 👋 I'm Coach — your 1-on-1 cert exam tutor. I know your study progress and can help you prep for any topic. What's giving you trouble today?`;
-    return [{ id: 0, role: "assistant", content: greeting }];
-  });
+  // Scope decides which conversation is loaded.
+  const scope = pathId
+    ? `path:${pathId}`
+    : examId
+    ? `exam:${examId}`
+    : "global";
 
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [quota, setQuota] = useState<{
     used: number;
@@ -76,6 +84,52 @@ export function TutorChat({
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  const greeting = useCallback((): string => {
+    const first = userName?.split(" ")[0] || "there";
+    if (pathId && stepTitle) {
+      return `Hi ${first} 👋 I'm Coach. Let's work through **${stepTitle}** together. Want me to walk through it, or do you have a question?`;
+    }
+    if (pathId && pathTitle) {
+      return `Hi ${first} 👋 Welcome to the **${pathTitle}** path. I'll guide you step by step. Want to start, or jump to a topic?`;
+    }
+    if (conceptName) {
+      return `Hi ${first} 👋 I'm Coach — your tutor for **${conceptName}**. I can explain it, quiz you, or answer specific questions. Where would you like to start?`;
+    }
+    return `Hi ${first} 👋 I'm Coach — your 1-on-1 cert exam tutor. I remember our past chats and know your study progress. What's giving you trouble today?`;
+  }, [userName, pathId, pathTitle, stepTitle, conceptName]);
+
+  // Load history + quota on mount / scope change
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingHistory(true);
+    Promise.all([
+      api.getTutorHistory(scope).catch(() => ({ messages: [] })),
+      api.getTutorQuota().catch(() => null),
+    ]).then(([hist, q]) => {
+      if (cancelled) return;
+      const histMsgs = (hist.messages ?? []).map((m, i) => ({
+        id: i,
+        role: m.role,
+        content: m.content,
+      }));
+      if (histMsgs.length === 0) {
+        setMessages([{ id: 0, role: "assistant", content: greeting() }]);
+      } else {
+        setMessages(histMsgs);
+      }
+      if (q)
+        setQuota({
+          used: q.used_today,
+          limit: q.daily_limit,
+          remaining: q.remaining,
+        });
+      setLoadingHistory(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [scope, greeting]);
+
   // Auto-scroll on new message
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -84,46 +138,33 @@ export function TutorChat({
     });
   }, [messages, sending]);
 
-  // Load initial quota
-  useEffect(() => {
-    api
-      .getTutorQuota()
-      .then((q) =>
-        setQuota({
-          used: q.used_today,
-          limit: q.daily_limit,
-          remaining: q.remaining,
-        })
-      )
-      .catch(() => {});
-  }, []);
-
-  const send = async (text?: string) => {
+  const send = async (text?: string, reset = false) => {
     const message = (text ?? input).trim();
     if (!message || sending) return;
 
     setError(null);
     setInput("");
 
-    // Optimistic append
     const userMsg: ChatMessage = {
       id: messages.length,
       role: "user",
       content: message,
     };
-    const newHistory = [...messages, userMsg];
-    setMessages(newHistory);
+    if (reset) {
+      setMessages([userMsg]);
+    } else {
+      setMessages((prev) => [...prev, userMsg]);
+    }
     setSending(true);
 
     try {
-      const apiMessages = newHistory.map((m) => ({
-        role: m.role,
-        content: m.content,
-      }));
       const reply = await api.tutorChat({
-        messages: apiMessages,
+        message,
         ...(conceptId ? { concept_id: conceptId } : {}),
         ...(examId ? { exam_id: examId } : {}),
+        ...(pathId ? { path_id: pathId } : {}),
+        ...(stepId ? { step_id: stepId } : {}),
+        ...(reset ? { reset: true } : {}),
       });
       setMessages((prev) => [
         ...prev,
@@ -140,7 +181,7 @@ export function TutorChat({
           ? err.message.replace(/^API \d+:\s*/, "")
           : "Coach is unavailable right now. Try again shortly.";
       setError(msg);
-      // Roll back the optimistic user message so they can retry
+      // Roll back
       setMessages((prev) => prev.slice(0, -1));
       setInput(message);
     } finally {
@@ -156,16 +197,34 @@ export function TutorChat({
     }
   };
 
-  const reset = () => {
-    setMessages((prev) => prev.slice(0, 1));
+  const reset = async () => {
+    try {
+      await api.clearTutorHistory(scope);
+    } catch {
+      // ignore
+    }
+    setMessages([{ id: 0, role: "assistant", content: greeting() }]);
     setError(null);
     setInput("");
   };
 
-  const suggestions = conceptId ? FOCUSED_SUGGESTIONS : DEFAULT_SUGGESTIONS;
-  const showSuggestions = messages.length <= 1 && !sending;
+  const suggestions = stepId
+    ? PATH_STEP_SUGGESTIONS
+    : conceptId
+    ? FOCUSED_SUGGESTIONS
+    : DEFAULT_SUGGESTIONS;
+  const showSuggestions = messages.length <= 1 && !sending && !loadingHistory;
   const limitReached = quota?.limit != null && (quota.remaining ?? 0) === 0;
   const isFreeTier = userPlan === "free";
+
+  // Subtitle reflects current scope
+  const subtitle = stepTitle
+    ? `Step: ${stepTitle}`
+    : pathTitle
+    ? `Path: ${pathTitle}`
+    : conceptName
+    ? `Focus: ${conceptName}`
+    : "Your 1-on-1 cert tutor";
 
   return (
     <div
@@ -181,10 +240,11 @@ export function TutorChat({
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-bold text-stone-900">Coach</span>
               <Sparkles className="h-3 w-3 text-amber-500" />
+              <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">
+                Remembers you
+              </span>
             </div>
-            <div className="text-[11px] text-stone-500 truncate">
-              {conceptName ? `Focus: ${conceptName}` : "Your 1-on-1 cert tutor"}
-            </div>
+            <div className="text-[11px] text-stone-500 truncate">{subtitle}</div>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -197,8 +257,8 @@ export function TutorChat({
           )}
           <button
             onClick={reset}
-            disabled={messages.length <= 1 || sending}
-            title="Reset conversation"
+            disabled={sending}
+            title="Clear this conversation"
             className="rounded-md p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-700 disabled:opacity-30"
           >
             <RotateCcw className="h-3.5 w-3.5" />
@@ -212,9 +272,14 @@ export function TutorChat({
         className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-stone-50/40"
         style={{ minHeight: 0 }}
       >
-        {messages.map((m) => (
-          <Bubble key={m.id} message={m} />
-        ))}
+        {loadingHistory && (
+          <div className="flex items-center gap-2 text-sm text-stone-500 px-3 py-2">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            Loading our past conversation...
+          </div>
+        )}
+        {!loadingHistory &&
+          messages.map((m) => <Bubble key={m.id} message={m} />)}
         {sending && (
           <div className="flex items-center gap-2 px-3 py-2 text-sm text-stone-500">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -279,11 +344,15 @@ export function TutorChat({
               onKeyDown={handleKeyDown}
               rows={1}
               placeholder={
-                conceptName
+                stepTitle
+                  ? `Ask Coach about "${stepTitle}"...`
+                  : pathTitle
+                  ? `Ask Coach about ${pathTitle}...`
+                  : conceptName
                   ? `Ask Coach about ${conceptName}...`
                   : "Ask Coach anything about your exam..."
               }
-              disabled={sending}
+              disabled={sending || loadingHistory}
               className="flex-1 resize-none rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 disabled:bg-stone-50 max-h-32"
               style={{ minHeight: 38 }}
               onInput={(e) => {
@@ -294,7 +363,7 @@ export function TutorChat({
             />
             <button
               onClick={() => send()}
-              disabled={!input.trim() || sending}
+              disabled={!input.trim() || sending || loadingHistory}
               className="shrink-0 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white p-2 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 transition-all"
               aria-label="Send"
             >
@@ -303,9 +372,11 @@ export function TutorChat({
           </div>
         )}
         <div className="mt-1.5 text-[10px] text-stone-400 flex items-center justify-between">
-          <span>Enter to send · Shift+Enter for new line</span>
+          <span>Enter to send · Shift+Enter for newline</span>
           {isFreeTier && quota?.limit != null && (
-            <span>{quota.remaining} of {quota.limit} free today</span>
+            <span>
+              {quota.remaining} of {quota.limit} free today
+            </span>
           )}
         </div>
       </div>
@@ -338,14 +409,14 @@ function Bubble({ message }: { message: ChatMessage }) {
 }
 
 /**
- * Tiny markdown-ish renderer for **bold**, `code`, paragraphs, and bullet lists.
- * Avoids pulling in a full markdown library.
+ * Tiny markdown-ish renderer for **bold**, `code`, ```code blocks```,
+ * paragraphs, and bullet lists. Avoids pulling in a full markdown library.
  */
 function RichText({ text, dark }: { text: string; dark: boolean }) {
   const codeColor = dark ? "bg-stone-700" : "bg-stone-100 text-stone-900";
+  const blockBg = dark ? "bg-stone-800" : "bg-stone-100";
 
   const renderInline = (str: string, key: number) => {
-    // Bold then code
     const parts: React.ReactNode[] = [];
     const regex = /(\*\*[^*]+\*\*|`[^`]+`)/g;
     const tokens = str.split(regex);
@@ -373,42 +444,76 @@ function RichText({ text, dark }: { text: string; dark: boolean }) {
     return parts;
   };
 
-  const lines = text.split("\n");
-  const blocks: React.ReactNode[] = [];
-  let listBuffer: string[] = [];
-  let listKey = 0;
-
-  const flushList = () => {
-    if (listBuffer.length === 0) return;
-    blocks.push(
-      <ul
-        key={`ul-${listKey++}`}
-        className="list-disc ml-5 my-1 space-y-0.5 text-sm leading-relaxed"
-      >
-        {listBuffer.map((item, i) => (
-          <li key={i}>{renderInline(item, i)}</li>
-        ))}
-      </ul>
-    );
-    listBuffer = [];
-  };
-
-  lines.forEach((line, i) => {
-    const stripped = line.trim();
-    if (/^[-*]\s+/.test(stripped)) {
-      listBuffer.push(stripped.replace(/^[-*]\s+/, ""));
-    } else {
-      flushList();
-      if (stripped) {
-        blocks.push(
-          <p key={`p-${i}`} className="text-sm leading-relaxed">
-            {renderInline(stripped, i)}
-          </p>
-        );
-      }
+  // Split out code fences first
+  const sections: Array<{ kind: "code" | "text"; content: string }> = [];
+  const fenceRegex = /```(?:[\w-]*)\n?([\s\S]*?)```/g;
+  let lastIdx = 0;
+  let m: RegExpExecArray | null;
+  while ((m = fenceRegex.exec(text)) !== null) {
+    if (m.index > lastIdx) {
+      sections.push({ kind: "text", content: text.slice(lastIdx, m.index) });
     }
+    sections.push({ kind: "code", content: m[1] });
+    lastIdx = m.index + m[0].length;
+  }
+  if (lastIdx < text.length) {
+    sections.push({ kind: "text", content: text.slice(lastIdx) });
+  }
+
+  const blocks: React.ReactNode[] = [];
+
+  sections.forEach((section, sIdx) => {
+    if (section.kind === "code") {
+      blocks.push(
+        <pre
+          key={`code-${sIdx}`}
+          className={`rounded-md p-2.5 overflow-x-auto text-[12px] font-mono ${blockBg} ${dark ? "text-stone-100" : "text-stone-900"} my-1.5`}
+        >
+          <code>{section.content}</code>
+        </pre>
+      );
+      return;
+    }
+
+    const lines = section.content.split("\n");
+    let listBuffer: string[] = [];
+    let listKey = 0;
+
+    const flushList = () => {
+      if (listBuffer.length === 0) return;
+      blocks.push(
+        <ul
+          key={`ul-${sIdx}-${listKey++}`}
+          className="list-disc ml-5 my-1 space-y-0.5 text-sm leading-relaxed"
+        >
+          {listBuffer.map((item, i) => (
+            <li key={i}>{renderInline(item, i)}</li>
+          ))}
+        </ul>
+      );
+      listBuffer = [];
+    };
+
+    lines.forEach((line, i) => {
+      const stripped = line.trim();
+      if (/^[-*]\s+/.test(stripped)) {
+        listBuffer.push(stripped.replace(/^[-*]\s+/, ""));
+      } else {
+        flushList();
+        if (stripped) {
+          blocks.push(
+            <p
+              key={`p-${sIdx}-${i}`}
+              className="text-sm leading-relaxed"
+            >
+              {renderInline(stripped, i)}
+            </p>
+          );
+        }
+      }
+    });
+    flushList();
   });
-  flushList();
 
   return <div className="space-y-1.5">{blocks}</div>;
 }
