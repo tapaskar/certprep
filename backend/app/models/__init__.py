@@ -18,7 +18,11 @@ from app.models.progress import (
     UserExamEnrollment,
 )
 from app.models.llm_usage import LLMUsageLog
-from app.models.tutor import TutorConversation, UserPathProgress
+from app.models.tutor import (
+    TutorConversation,
+    TutorMessageEmbedding,
+    UserPathProgress,
+)
 from app.models.user import Team, User
 
 __all__ = [
@@ -46,6 +50,7 @@ __all__ = [
     "AnalyticsEvent",
     "WeeklyReport",
     "TutorConversation",
+    "TutorMessageEmbedding",
     "UserPathProgress",
     "LLMUsageLog",
 ]

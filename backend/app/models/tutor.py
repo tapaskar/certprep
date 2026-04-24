@@ -12,6 +12,7 @@ from sqlalchemy import (
     Index,
     Integer,
     String,
+    Text,
     UniqueConstraint,
     func,
 )
@@ -19,6 +20,21 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, UUIDPrimaryKey
+
+# pgvector is an optional extension. We import lazily so the module still
+# loads if it's not installed yet (e.g. in a fresh dev box). The
+# TutorMessageEmbedding model below will use pgvector's Vector type if
+# available, otherwise it falls back to JSONB (slower retrieval, same
+# semantics — we compute cosine in Python).
+try:
+    from pgvector.sqlalchemy import Vector  # type: ignore
+    _HAS_PGVECTOR = True
+except ImportError:  # pragma: no cover
+    Vector = None  # type: ignore
+    _HAS_PGVECTOR = False
+
+# Must match services.ai.embeddings.EMBEDDING_DIMENSIONS
+EMBEDDING_DIM = 1024
 
 
 class TutorConversation(Base, UUIDPrimaryKey):
@@ -94,4 +110,61 @@ class UserPathProgress(Base, UUIDPrimaryKey):
     __table_args__ = (
         UniqueConstraint("user_id", "path_id"),
         Index("idx_path_progress_user", "user_id"),
+    )
+
+
+# ── RAG: Embeddings of past Coach messages ─────────────────────────────
+
+
+class TutorMessageEmbedding(Base, UUIDPrimaryKey):
+    """One row per (user, scope, message) — embedded for retrieval.
+
+    On every Coach turn we embed the new user message + the assistant's
+    reply and persist them here. On the next call we search this table
+    for messages whose embedding is most similar to the new user query
+    and inject the top-K back into Coach's system prompt as
+    "Relevant past discussions".
+
+    Searches across ALL of a given user's scopes by default, so Coach
+    can recall "we talked about VPC peering 3 weeks ago when you were
+    studying SAA" even if you're now in a Red Hat path.
+    """
+
+    __tablename__ = "tutor_message_embeddings"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
+    conversation_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("tutor_conversations.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    scope: Mapped[str] = mapped_column(String(80), nullable=False)
+    role: Mapped[str] = mapped_column(String(20), nullable=False)  # "user" | "assistant"
+    # Full message text (capped to ~30K chars by the embedder anyway)
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    # Truncated single-line summary used when injecting into prompts
+    summary: Mapped[str] = mapped_column(String(280), nullable=False)
+    # Embedding column type depends on whether pgvector is available
+    if _HAS_PGVECTOR:
+        embedding: Mapped[list[float]] = mapped_column(
+            Vector(EMBEDDING_DIM), nullable=False  # type: ignore[arg-type]
+        )
+    else:
+        embedding: Mapped[list[float]] = mapped_column(JSONB, nullable=False)
+
+    embedding_model: Mapped[str] = mapped_column(String(60), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    __table_args__ = (
+        # Recency lookups for skipping the user's own recent messages
+        Index("idx_tme_user_recent", "user_id", "created_at"),
+        # Per-scope lookups
+        Index("idx_tme_scope", "user_id", "scope", "created_at"),
+        # The HNSW vector index is created in app/cli.py create-tables
+        # (SQLAlchemy doesn't have a clean way to declare HNSW indexes
+        # with ops classes — done via raw SQL post-create).
     )

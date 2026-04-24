@@ -65,6 +65,19 @@ class Settings(BaseSettings):
     local_llm_model: str = "qwen2.5-7b-instruct-q4_k_m"
     local_llm_timeout_seconds: float = 120.0
 
+    # ── Embeddings (for Coach RAG over past conversations) ────
+    # "bedrock-titan" (default) | "openai"
+    embedding_provider: str = "bedrock-titan"
+    openai_api_key: str = ""
+    # Number of past messages to retrieve and inject into Coach's prompt
+    rag_top_k: int = 5
+    # Cosine similarity threshold (vectors are normalized, so cosine == dot product).
+    # 1.0 = identical, 0.6 ≈ "clearly related". Skip injection below this.
+    rag_min_similarity: float = 0.55
+    # Don't include messages from the last N seconds (avoid retrieving
+    # the user's own current turn or its immediate predecessors).
+    rag_recency_skip_seconds: int = 1800
+
     # CORS
     cors_origins: list[str] = [
         "http://localhost:3000",

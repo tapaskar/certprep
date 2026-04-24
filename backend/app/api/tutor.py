@@ -34,6 +34,11 @@ from app.services.ai.coach_agent import (
     llm_decide_intervention,
 )
 from app.services.ai.llm_provider import LLMUnavailable
+from app.services.ai.retrieval import (
+    format_for_prompt,
+    index_messages,
+    retrieve_relevant,
+)
 from app.services.ai.usage import chat_and_log
 
 router = APIRouter(prefix="/tutor", tags=["tutor"])
@@ -487,6 +492,22 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
     api_history = history[-HISTORY_TURN_CAP:]
     api_messages = [{"role": m["role"], "content": m["content"]} for m in api_history]
 
+    # ── RAG: retrieve relevant past discussions across all scopes ──
+    # Best-effort. If embeddings aren't configured / pgvector is missing,
+    # this returns [] and Coach falls back to behaviour without RAG.
+    try:
+        rag_matches = await retrieve_relevant(
+            db,
+            user_id=user.id,
+            query=request.message,
+            current_scope=scope,
+        )
+        rag_block = format_for_prompt(rag_matches)
+        if rag_block:
+            system_prompt = system_prompt + "\n" + rag_block
+    except Exception:  # noqa: BLE001 — never block chat on retrieval issues
+        pass
+
     # ── Call the configured LLM provider (with usage logging) ──
     try:
         result = await chat_and_log(
@@ -507,8 +528,10 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
 
     # ── Persist updated history ─────────────────────────
     now_iso = datetime.now(timezone.utc).isoformat()
-    history.append({"role": "assistant", "content": reply, "ts": now_iso})
-    history[-2]["ts"] = now_iso  # also stamp the just-added user msg
+    new_user_msg = {"role": "user", "content": request.message, "ts": now_iso}
+    new_asst_msg = {"role": "assistant", "content": reply, "ts": now_iso}
+    history[-1] = new_user_msg  # replace placeholder we appended above
+    history.append(new_asst_msg)
 
     # Cap stored history
     conv.messages = history[-HISTORY_PERSIST_CAP:]
@@ -516,6 +539,21 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
     conv.last_path_id = request.path_id or conv.last_path_id
     conv.last_step_id = request.step_id or conv.last_step_id
     await db.commit()
+    await db.refresh(conv)
+
+    # ── RAG: index the new turn for future retrieval ──
+    # Done after the conversation save so we always have conv.id.
+    # Best-effort — never raises.
+    try:
+        await index_messages(
+            db,
+            user_id=user.id,
+            conversation_id=conv.id,
+            scope=scope,
+            messages=[new_user_msg, new_asst_msg],
+        )
+    except Exception:  # noqa: BLE001
+        pass
 
     new_used = _incr_usage(str(user.id))
     remaining = (
