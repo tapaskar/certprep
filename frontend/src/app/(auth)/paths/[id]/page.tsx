@@ -13,6 +13,8 @@ import {
   Lightbulb,
   ChevronDown,
   ChevronUp,
+  PanelLeftOpen,
+  PanelLeftClose,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { TutorChat } from "@/components/tutor/tutor-chat";
@@ -35,6 +37,31 @@ export default function PathRunnerPage({
   const [loading, setLoading] = useState(true);
   const [activeStepId, setActiveStepId] = useState<string | null>(null);
   const [coachOpenMobile, setCoachOpenMobile] = useState(false);
+
+  // Topics sidebar collapse state — persisted across navigation so the
+  // user's preference survives reloads and step changes. Mirrors the same
+  // pattern as IntegratedCoachPanel's storageKey.
+  const TOPICS_COLLAPSED_KEY = "sparkupcloud_path_topics_collapsed";
+  const [topicsCollapsed, setTopicsCollapsed] = useState(false);
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(TOPICS_COLLAPSED_KEY);
+      if (stored === "1") setTopicsCollapsed(true);
+    } catch {
+      /* SSR / disabled storage — fall through */
+    }
+  }, []);
+  const toggleTopics = () => {
+    setTopicsCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(TOPICS_COLLAPSED_KEY, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  };
 
   const setCoachScope = useCoachStore((s) => s.setScope);
   const recordCoachEvent = useCoachStore((s) => s.recordEvent);
@@ -218,23 +245,61 @@ export default function PathRunnerPage({
         )}
       </button>
 
-      {/* 3-pane layout: modules | step content | Coach */}
-      <div className="grid gap-4 lg:grid-cols-[280px_1fr_360px] xl:grid-cols-[300px_1fr_400px]">
-        {/* Left: modules + steps */}
-        <aside className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto rounded-xl border border-stone-200 bg-white p-3">
-          <div className="text-xs font-bold uppercase tracking-wider text-stone-500 px-2 py-1.5 mb-2">
-            Topics
-          </div>
-          {(path.modules ?? []).map((mod: Module) => (
-            <ModuleSection
-              key={mod.id}
-              module={mod}
-              activeStepId={activeStepId}
-              completedSet={completedSet}
-              onStepClick={setActiveStepId}
-            />
-          ))}
-        </aside>
+      {/* 3-pane layout: modules | step content | Coach
+          Topics column collapses to a 40px rail to give the reader more
+          horizontal space. Toggle persists in localStorage. */}
+      <div
+        className={cn(
+          "grid gap-4",
+          topicsCollapsed
+            ? "lg:grid-cols-[40px_1fr_360px] xl:grid-cols-[40px_1fr_400px]"
+            : "lg:grid-cols-[280px_1fr_360px] xl:grid-cols-[300px_1fr_400px]",
+        )}
+      >
+        {/* Left: modules + steps (collapses to a thin rail with expand button) */}
+        {topicsCollapsed ? (
+          <aside className="hidden lg:flex lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] flex-col items-center gap-2 py-2">
+            <button
+              onClick={toggleTopics}
+              title="Show topics"
+              aria-label="Show topics"
+              className="flex h-8 w-8 items-center justify-center rounded-md border border-stone-200 bg-white text-stone-500 hover:text-stone-900 hover:bg-stone-50 shadow-sm"
+            >
+              <PanelLeftOpen className="h-4 w-4" />
+            </button>
+            <div
+              className="text-[10px] font-bold uppercase tracking-wider text-stone-400"
+              style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
+            >
+              Topics
+            </div>
+          </aside>
+        ) : (
+          <aside className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto rounded-xl border border-stone-200 bg-white p-3">
+            <div className="flex items-center justify-between px-2 py-1.5 mb-2">
+              <div className="text-xs font-bold uppercase tracking-wider text-stone-500">
+                Topics
+              </div>
+              <button
+                onClick={toggleTopics}
+                title="Hide topics"
+                aria-label="Hide topics"
+                className="hidden lg:inline-flex items-center justify-center h-6 w-6 rounded-md text-stone-400 hover:text-stone-900 hover:bg-stone-100"
+              >
+                <PanelLeftClose className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            {(path.modules ?? []).map((mod: Module) => (
+              <ModuleSection
+                key={mod.id}
+                module={mod}
+                activeStepId={activeStepId}
+                completedSet={completedSet}
+                onStepClick={setActiveStepId}
+              />
+            ))}
+          </aside>
+        )}
 
         {/* Center: active step */}
         <main className="rounded-xl border border-stone-200 bg-white p-6 min-w-0 space-y-4">

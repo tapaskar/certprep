@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   Send,
   Sparkles,
-  GraduationCap,
   RotateCcw,
   Loader2,
   Crown,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
+import { CoachAvatar } from "./coach-avatar";
 
 export interface TutorChatProps {
   conceptId?: string;
@@ -252,12 +252,10 @@ export function TutorChat({
       {/* Header */}
       <div className="flex items-center justify-between gap-2 px-4 py-3 border-b border-stone-200 bg-gradient-to-r from-violet-50 to-amber-50/40">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-amber-500 text-white shadow-sm">
-            <GraduationCap className="h-5 w-5" />
-          </div>
+          <CoachAvatar size={36} state={sending ? "thinking" : "idle"} />
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="text-sm font-bold text-stone-900">Coach</span>
+              <span className="text-sm font-bold text-stone-900">Sage</span>
               <Sparkles className="h-3 w-3 text-amber-500" />
               <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">
                 Remembers you
@@ -300,9 +298,9 @@ export function TutorChat({
         {!loadingHistory &&
           messages.map((m) => <Bubble key={m.id} message={m} />)}
         {sending && (
-          <div className="flex items-center gap-2 px-3 py-2 text-sm text-stone-500">
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            Coach is thinking...
+          <div className="flex items-center gap-2.5 px-3 py-2">
+            <CoachAvatar size={28} state="thinking" />
+            <span className="text-sm text-stone-500 italic">Sage is thinking…</span>
           </div>
         )}
         {error && (
@@ -407,8 +405,11 @@ function Bubble({ message }: { message: ChatMessage }) {
   const isCoach = message.role === "assistant";
   return (
     <div
-      className={`flex ${isCoach ? "justify-start" : "justify-end"} animate-in fade-in slide-in-from-bottom-2 duration-200`}
+      className={`flex items-end gap-2 ${isCoach ? "justify-start" : "justify-end"} animate-in fade-in slide-in-from-bottom-2 duration-200`}
     >
+      {isCoach && (
+        <CoachAvatar size={26} state="idle" className="mb-0.5" />
+      )}
       <div
         className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 ${
           isCoach
@@ -417,8 +418,8 @@ function Bubble({ message }: { message: ChatMessage }) {
         }`}
       >
         {isCoach && (
-          <div className="text-[10px] font-bold uppercase tracking-wider text-violet-600 mb-1">
-            Coach
+          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700 mb-1">
+            Sage
           </div>
         )}
         <RichText text={message.content} dark={!isCoach} />

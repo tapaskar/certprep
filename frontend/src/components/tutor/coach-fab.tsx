@@ -1,12 +1,17 @@
 "use client";
 
-import { GraduationCap, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useCoachStore } from "@/stores/coach-store";
+import { CoachAvatar } from "./coach-avatar";
 
 /**
  * Floating Action Button — always visible in the bottom-right of the auth
  * area. One click opens the Coach side panel. When an intervention is
  * pending, a glowing dot draws attention.
+ *
+ * Avatar = Sage (the Coach persona). When an intervention is pending,
+ * Sage shows the "thinking" state to telegraph "I want to tell you
+ * something."
  */
 export function CoachFAB() {
   const open = useCoachStore((s) => s.openPanel);
@@ -20,10 +25,9 @@ export function CoachFAB() {
       onClick={() => open()}
       title="Ask Coach"
       aria-label="Open Coach"
-      className="fixed bottom-5 right-5 z-30 flex h-13 w-13 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-amber-500 text-white shadow-xl hover:scale-110 transition-transform group"
-      style={{ height: 56, width: 56 }}
+      className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-amber-50 to-orange-100 ring-2 ring-amber-300/60 shadow-xl hover:scale-110 hover:ring-amber-400 transition-all group"
     >
-      <GraduationCap className="h-6 w-6" />
+      <CoachAvatar size={44} state={pending ? "thinking" : "idle"} />
       {pending && (
         <span className="absolute -top-1 -right-1 flex h-4 w-4">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />

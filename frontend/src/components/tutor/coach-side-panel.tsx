@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { X, GraduationCap } from "lucide-react";
+import { X } from "lucide-react";
 import { useCoachStore } from "@/stores/coach-store";
 import { TutorChat } from "./tutor-chat";
+import { CoachAvatar } from "./coach-avatar";
 
 /**
  * Slide-out Coach panel from the right edge.
@@ -63,14 +64,12 @@ export function CoachSidePanel() {
         <div className="h-full bg-white shadow-2xl flex flex-col border-l border-stone-200">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200 shrink-0">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-amber-500 text-white">
-                <GraduationCap className="h-4 w-4" />
-              </div>
+            <div className="flex items-center gap-2.5">
+              <CoachAvatar size={36} state="idle" />
               <div>
-                <div className="text-sm font-bold text-stone-900">Coach</div>
+                <div className="text-sm font-bold text-stone-900">Sage</div>
                 <div className="text-[10px] text-stone-500">
-                  Press ESC to close
+                  Your Coach · ESC to close
                 </div>
               </div>
             </div>
