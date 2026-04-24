@@ -58,7 +58,9 @@ class Settings(BaseSettings):
     # Amazon Bedrock (when llm_provider == "bedrock")
     bedrock_region: str = "ap-south-1"
     bedrock_model: str = "anthropic.claude-sonnet-4-20250514-v1:0"
-    bedrock_model_fast: str = "anthropic.claude-3-5-haiku-20241022-v1:0"
+    # 3.5 Haiku isn't available in ap-south-1 (Mumbai). Haiku 4.5 is the
+    # newest cheap variant and is region-available — use that instead.
+    bedrock_model_fast: str = "anthropic.claude-haiku-4-5-20251001-v1:0"
 
     # Local llama.cpp (when llm_provider == "local")
     local_llm_url: str = "http://127.0.0.1:8080"
