@@ -72,9 +72,10 @@ async def generate_explanation(
     )
 
     provider = get_chat_provider()
-    return await provider.chat(
+    result = await provider.chat(
         system="",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=settings.ai_max_tokens,
         temperature=settings.ai_temperature,
     )
+    return result.content

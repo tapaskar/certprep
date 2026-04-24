@@ -33,7 +33,8 @@ from app.services.ai.coach_agent import (
     decide_intervention,
     llm_decide_intervention,
 )
-from app.services.ai.llm_provider import LLMUnavailable, get_chat_provider
+from app.services.ai.llm_provider import LLMUnavailable
+from app.services.ai.usage import chat_and_log
 
 router = APIRouter(prefix="/tutor", tags=["tutor"])
 
@@ -486,15 +487,18 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
     api_history = history[-HISTORY_TURN_CAP:]
     api_messages = [{"role": m["role"], "content": m["content"]} for m in api_history]
 
-    # ── Call the configured LLM provider ─────────────────
-    provider = get_chat_provider()
+    # ── Call the configured LLM provider (with usage logging) ──
     try:
-        reply = await provider.chat(
+        result = await chat_and_log(
+            db=db,
+            endpoint="tutor.chat",
+            user_id=user.id,
             system=system_prompt,
             messages=api_messages,
             max_tokens=700,
             temperature=0.7,
         )
+        reply = result.content
     except LLMUnavailable as e:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

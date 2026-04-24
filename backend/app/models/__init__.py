@@ -17,6 +17,7 @@ from app.models.progress import (
     UserConceptMastery,
     UserExamEnrollment,
 )
+from app.models.llm_usage import LLMUsageLog
 from app.models.tutor import TutorConversation, UserPathProgress
 from app.models.user import Team, User
 
@@ -46,4 +47,5 @@ __all__ = [
     "WeeklyReport",
     "TutorConversation",
     "UserPathProgress",
+    "LLMUsageLog",
 ]

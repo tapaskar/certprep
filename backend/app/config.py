@@ -39,14 +39,15 @@ class Settings(BaseSettings):
     stripe_webhook_secret: str = ""
 
     # ── LLM provider selection ────────────────────────────────
-    # "anthropic" (default) routes to Claude via the Anthropic API.
-    # "local" routes to a llama.cpp server running on this host
-    # (or anywhere reachable via local_llm_url).
+    # "anthropic" (default), "bedrock" (Claude via AWS), or "local" (llama.cpp)
     llm_provider: str = "anthropic"
 
-    # Anthropic Claude API
+    # Anthropic Claude API direct
     anthropic_api_key: str = ""
     ai_model: str = "claude-sonnet-4-20250514"
+    # Cheaper "fast" variant — used by agentic /observe judgments
+    # where Sonnet is overkill. ~12x cheaper than Sonnet.
+    ai_model_fast: str = "claude-3-5-haiku-20241022"
     ai_max_tokens: int = 300
     ai_temperature: float = 0.3
     ai_timeout_seconds: int = 10
@@ -54,7 +55,12 @@ class Settings(BaseSettings):
     ai_per_user_per_day: int = 100
     ai_budget_monthly_usd: float = 500.0
 
-    # Local llama.cpp (only used when llm_provider == "local")
+    # Amazon Bedrock (when llm_provider == "bedrock")
+    bedrock_region: str = "ap-south-1"
+    bedrock_model: str = "anthropic.claude-sonnet-4-20250514-v1:0"
+    bedrock_model_fast: str = "anthropic.claude-3-5-haiku-20241022-v1:0"
+
+    # Local llama.cpp (when llm_provider == "local")
     local_llm_url: str = "http://127.0.0.1:8080"
     local_llm_model: str = "qwen2.5-7b-instruct-q4_k_m"
     local_llm_timeout_seconds: float = 120.0

@@ -287,14 +287,16 @@ async def llm_decide_intervention(
 
     provider = get_chat_provider()
     try:
-        text = (
-            await provider.chat(
-                system="",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=300,
-                temperature=0.3,
-            )
-        ).strip()
+        # Use the cheap "fast" model — this is a "should I intervene?"
+        # judgment, not a tutoring conversation. ~12x cheaper than Sonnet.
+        result = await provider.chat(
+            system="",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=300,
+            temperature=0.3,
+            fast=True,
+        )
+        text = result.content.strip()
     except LLMUnavailable:
         return None
     try:
