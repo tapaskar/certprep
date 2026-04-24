@@ -2,6 +2,7 @@ import Link from "next/link";
 import { BookOpen, Clock, Target, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import { CertBadge } from "@/components/cert-badge";
+import { HomeNav } from "@/components/landing/home-nav";
 
 export const metadata: Metadata = {
   title: "55+ Certification Practice Exams — Free Mock Tests",
@@ -57,31 +58,7 @@ export default async function ExamsListPage() {
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Navbar */}
-      <nav className="border-b border-stone-200 bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <img src="/logo.svg" alt="SparkUpCloud" className="h-8 w-auto" />
-            <span className="text-lg font-bold text-stone-900">
-              SparkUpCloud
-            </span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link
-              href="/login"
-              className="text-sm font-medium text-stone-600 hover:text-stone-900"
-            >
-              Log In
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600"
-            >
-              Start Free
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <HomeNav />
 
       <div className="mx-auto max-w-6xl px-4 py-12">
         {/* Hero */}

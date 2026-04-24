@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { scenarios, getScenario } from "@/lib/scenarios-data";
 import { heuristics } from "@/lib/heuristics-data";
-import { LandingNav } from "@/components/study/landing-nav";
+import { HomeNav } from "@/components/landing/home-nav";
 import Scenario3DLoader from "@/components/scenarios/scenario-3d-loader";
 
 export function generateStaticParams() {
@@ -54,7 +54,7 @@ export default async function ScenarioDetailPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50/40 via-white to-amber-50/30">
-      <LandingNav />
+      <HomeNav />
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         <Link

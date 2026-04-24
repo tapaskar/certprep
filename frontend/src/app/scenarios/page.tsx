@@ -1,6 +1,6 @@
 import { scenarios } from "@/lib/scenarios-data";
 import { ScenarioFilters } from "@/components/scenarios/scenario-filters";
-import { LandingNav } from "@/components/study/landing-nav";
+import { HomeNav } from "@/components/landing/home-nav";
 
 export const metadata = {
   title: "AWS Architecture Scenarios — Real Exam-Ready Designs | SparkUpCloud",
@@ -13,7 +13,7 @@ export const metadata = {
 export default function ScenariosPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50/40 via-white to-amber-50/30">
-      <LandingNav />
+      <HomeNav />
 
       <section className="px-6 pt-16 pb-10 text-center">
         <div className="max-w-3xl mx-auto">

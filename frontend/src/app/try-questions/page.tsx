@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { sampleQuestions } from "@/lib/sample-questions";
 import { TryQuestionsClient } from "@/components/landing/try-questions-client";
-import { LandingNav } from "@/components/study/landing-nav";
+import { HomeNav } from "@/components/landing/home-nav";
 
 export const metadata = {
   title: "Try 5 Free Practice Questions — No Signup | SparkUpCloud",
@@ -20,7 +20,7 @@ export const metadata = {
 export default function TryQuestionsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50/40 via-white to-violet-50/30">
-      <LandingNav />
+      <HomeNav />
 
       <section className="px-6 pt-12 pb-8 text-center">
         <div className="max-w-3xl mx-auto">

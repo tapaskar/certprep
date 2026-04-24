@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Award, Users, Star, ArrowRight } from "lucide-react";
 import PricingCards from "@/components/pricing/pricing-cards";
 import FAQSection from "@/components/pricing/faq-section";
-import { MobileNav } from "@/components/landing/mobile-nav";
+import { HomeNav } from "@/components/landing/home-nav";
 
 export const metadata = {
   title: "Pricing",
@@ -91,43 +91,7 @@ export default function PricingPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
-        {/* Nav */}
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <Link href="/" className="flex items-center gap-2 text-lg font-bold text-stone-900">
-            <img src="/logo.svg" alt="SparkUpCloud" className="h-10 w-auto" />
-            SparkUp<span className="text-amber-500">Cloud</span>
-          </Link>
-          {/* Desktop Nav */}
-          <div className="hidden sm:flex items-center gap-4">
-            <Link
-              href="/blog"
-              className="text-sm font-medium text-stone-500 hover:text-stone-700"
-            >
-              Blog
-            </Link>
-            <Link
-              href="/contact"
-              className="text-sm font-medium text-stone-500 hover:text-stone-700"
-            >
-              Contact
-            </Link>
-            <Link
-              href="/login"
-              className="text-sm font-medium text-stone-500 hover:text-stone-700"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex h-9 items-center rounded-lg bg-stone-900 px-4 text-sm font-medium text-white hover:bg-stone-800 transition-colors"
-            >
-              Get Started
-            </Link>
-          </div>
-
-          {/* Mobile Nav */}
-          <MobileNav />
-        </nav>
+        <HomeNav />
 
         {/* Hero */}
         <section className="flex flex-col items-center px-6 pt-12 pb-16 text-center">

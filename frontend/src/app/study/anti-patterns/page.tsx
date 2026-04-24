@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { XCircle, AlertTriangle } from "lucide-react";
 import { heuristics } from "@/lib/heuristics-data";
-import { LandingNav } from "@/components/study/landing-nav";
+import { HomeNav } from "@/components/landing/home-nav";
 
 export const metadata = {
   title: "AWS Exam Anti-Patterns — What NEVER to Choose | SparkUpCloud",
@@ -19,7 +19,7 @@ export default function AntiPatternsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30">
-      <LandingNav />
+      <HomeNav />
 
       <section className="px-6 pt-16 pb-12 text-center">
         <div className="max-w-3xl mx-auto">

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { CheckCircle2, AlertTriangle, XCircle, ThumbsUp } from "lucide-react";
 import { heuristics } from "@/lib/heuristics-data";
-import { LandingNav } from "@/components/study/landing-nav";
+import { HomeNav } from "@/components/landing/home-nav";
 
 export const metadata = {
   title: "AWS Certification Heuristics — 20+ Decision Rules | SparkUpCloud",
@@ -56,7 +56,7 @@ export default function HeuristicsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
-      <LandingNav />
+      <HomeNav />
 
       <section className="px-6 pt-16 pb-12 text-center">
         <div className="max-w-3xl mx-auto">

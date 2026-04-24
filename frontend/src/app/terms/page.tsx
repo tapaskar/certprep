@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HomeNav } from "@/components/landing/home-nav";
 
 export const metadata = {
   title: "Terms of Service — SparkUpCloud",
@@ -10,16 +11,7 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-stone-50">
-      <nav className="border-b border-stone-200 bg-white">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-          <Link href="/" className="text-lg font-bold text-stone-900">
-            Spark<span className="text-amber-500">Up</span>Cloud
-          </Link>
-          <Link href="/" className="text-sm text-stone-500 hover:text-stone-900">
-            ← Back to home
-          </Link>
-        </div>
-      </nav>
+      <HomeNav />
 
       <article className="mx-auto max-w-3xl px-6 py-12 prose prose-stone">
         <h1 className="text-3xl font-bold text-stone-900 mb-2">Terms of Service</h1>
