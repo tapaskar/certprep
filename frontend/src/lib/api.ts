@@ -480,6 +480,36 @@ class ApiClient {
     return this.request("/tutor/quota");
   }
 
+  // ── Agentic Coach: passive observation ──────────────────────
+  async coachObserve(payload: {
+    events: Array<{
+      kind: string;
+      concept_id?: string;
+      concept_name?: string;
+      is_correct?: boolean;
+      confidence?: number;
+      time_seconds?: number;
+    }>;
+    exam_id?: string;
+    path_id?: string;
+    step_id?: string;
+    use_llm?: boolean;
+  }): Promise<{
+    intervention: {
+      type: "nudge" | "intervene" | "celebrate" | "takeover_offer";
+      title: string;
+      message: string;
+      action_label: string | null;
+      seed_question: string | null;
+      concept_id: string | null;
+    } | null;
+  }> {
+    return this.request("/tutor/observe", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+  }
+
   // ── Learning Paths ────────────────────────────────────────────
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

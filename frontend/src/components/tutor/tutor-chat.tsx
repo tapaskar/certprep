@@ -22,6 +22,8 @@ export interface TutorChatProps {
   pathTitle?: string;
   stepId?: string;
   stepTitle?: string;
+  /** If set, auto-send this message once history loads (for intervention seeding) */
+  initialUserMessage?: string;
   className?: string;
 }
 
@@ -59,6 +61,7 @@ export function TutorChat({
   pathTitle,
   stepId,
   stepTitle,
+  initialUserMessage,
   className = "",
 }: TutorChatProps) {
   const userName = useAuthStore((s) => s.user?.display_name);
@@ -98,6 +101,9 @@ export function TutorChat({
     return `Hi ${first} 👋 I'm Coach — your 1-on-1 cert exam tutor. I remember our past chats and know your study progress. What's giving you trouble today?`;
   }, [userName, pathId, pathTitle, stepTitle, conceptName]);
 
+  // Track the last seed we auto-sent so re-renders don't spam it
+  const sentSeedRef = useRef<string | null>(null);
+
   // Load history + quota on mount / scope change
   useEffect(() => {
     let cancelled = false;
@@ -129,6 +135,19 @@ export function TutorChat({
       cancelled = true;
     };
   }, [scope, greeting]);
+
+  // Auto-send the intervention seed message ONCE per unique seed
+  useEffect(() => {
+    if (!initialUserMessage || loadingHistory) return;
+    if (sentSeedRef.current === initialUserMessage) return;
+    sentSeedRef.current = initialUserMessage;
+    // Send after a small delay so the user sees it appear
+    const t = setTimeout(() => {
+      send(initialUserMessage);
+    }, 250);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialUserMessage, loadingHistory]);
 
   // Auto-scroll on new message
   useEffect(() => {

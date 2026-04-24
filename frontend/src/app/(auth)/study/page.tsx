@@ -1,9 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useCallback } from "react";
+import { Suspense, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useStudyStore } from "@/stores/study-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { useCoachStore } from "@/stores/coach-store";
 import { SessionPlan } from "@/components/study/session-plan";
 import { ConceptLearn } from "@/components/study/concept-learn";
 import { QuestionCard } from "@/components/study/question-card";
@@ -11,6 +12,7 @@ import { ConfidenceSelector } from "@/components/study/confidence-selector";
 import { AnswerFeedback } from "@/components/study/answer-feedback";
 import { SessionSummary } from "@/components/study/session-summary";
 import { CheatSheet } from "@/components/study/cheat-sheet";
+import { CoachInterventionBanner } from "@/components/tutor/coach-intervention-banner";
 
 export default function StudyPage() {
   return (
@@ -82,6 +84,50 @@ function StudyPageInner() {
     return () => clearInterval(interval);
   }, [phase, tick]);
 
+  // ── Coach scope wiring ──
+  const setCoachScope = useCoachStore((s) => s.setScope);
+  const recordCoachEvent = useCoachStore((s) => s.recordEvent);
+  const resetCoach = useCoachStore((s) => s.reset);
+
+  useEffect(() => {
+    setCoachScope({
+      examId: examId ?? undefined,
+      conceptId: currentQuestionConceptId ?? undefined,
+      pathId: undefined,
+      stepId: undefined,
+    });
+  }, [examId, currentQuestionConceptId, setCoachScope]);
+
+  useEffect(() => {
+    // New session starts → wipe Coach event window
+    if (phase === "idle") resetCoach();
+  }, [phase, resetCoach]);
+
+  // Detect when an answer was just submitted: feedback phase fires once.
+  const lastFeedbackKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (phase !== "feedback" || !currentQuestion || !answerResult) return;
+    const key = `${currentQuestion.id}-${selectedOption}`;
+    if (lastFeedbackKeyRef.current === key) return;
+    lastFeedbackKeyRef.current = key;
+    recordCoachEvent({
+      kind: "answered",
+      concept_id: currentQuestionConceptId,
+      concept_name: currentQuestionConcept?.concept.name,
+      is_correct: !!answerResult.correct,
+      time_seconds: timerSeconds,
+    });
+  }, [
+    phase,
+    currentQuestion,
+    answerResult,
+    selectedOption,
+    currentQuestionConceptId,
+    currentQuestionConcept,
+    timerSeconds,
+    recordCoachEvent,
+  ]);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (phase !== "answering" || !currentQuestion) return;
@@ -150,6 +196,7 @@ function StudyPageInner() {
   if (phase === "answering" && currentQuestion) {
     return (
       <div className="space-y-4">
+        <CoachInterventionBanner />
         {urlMode === "review" && (
           <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700">
             Review Queue — Spaced Repetition

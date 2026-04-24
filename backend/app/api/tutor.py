@@ -27,6 +27,12 @@ from app.config import settings
 from app.models.exam import Concept, Exam
 from app.models.progress import UserConceptMastery, UserExamEnrollment
 from app.models.tutor import TutorConversation, UserPathProgress
+from app.services.ai.coach_agent import (
+    CoachIntervention,
+    StudyEvent,
+    decide_intervention,
+    llm_decide_intervention,
+)
 
 router = APIRouter(prefix="/tutor", tags=["tutor"])
 
@@ -529,4 +535,131 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
         daily_limit=daily_limit,
         used_today=new_used,
         remaining=remaining,
+    )
+
+
+# ── Agentic observation endpoint ────────────────────────────────────────
+
+
+class StudyEventIn(BaseModel):
+    kind: Literal[
+        "answered",
+        "viewed",
+        "idle",
+        "started_step",
+        "completed_step",
+        "submitted_quiz",
+        "fact_reviewed",
+    ]
+    concept_id: str | None = None
+    concept_name: str | None = None
+    is_correct: bool | None = None
+    confidence: int | None = None
+    time_seconds: float | None = None
+
+
+class ObserveRequest(BaseModel):
+    """Frontend reports a window of recent study events. Coach decides
+    whether to speak up.
+    """
+
+    events: list[StudyEventIn] = Field(..., max_length=30)
+    exam_id: str | None = None
+    path_id: str | None = None
+    step_id: str | None = None
+    use_llm: bool = False  # If True, fall back to Claude when rules indecisive
+
+
+class InterventionOut(BaseModel):
+    type: str
+    title: str
+    message: str
+    action_label: str | None = None
+    seed_question: str | None = None
+    concept_id: str | None = None
+
+
+class ObserveResponse(BaseModel):
+    intervention: InterventionOut | None = None
+
+
+@router.post("/observe", response_model=ObserveResponse)
+async def observe(request: ObserveRequest, user: CurrentUser, db: DB):
+    """Stream-of-events endpoint. Coach decides whether to intervene."""
+    events = [
+        StudyEvent(
+            kind=e.kind,
+            concept_id=e.concept_id,
+            concept_name=e.concept_name,
+            is_correct=e.is_correct,
+            confidence=e.confidence,
+            time_seconds=e.time_seconds,
+        )
+        for e in request.events
+    ]
+
+    # Pull current step context if path-aware
+    in_step = None
+    if request.path_id and request.step_id:
+        # Cheap lookup via the seed JSON cache used by /tutor/chat
+        from app.api.tutor import get_path, get_step  # noqa: WPS433
+
+        path = get_path(request.path_id)
+        if path:
+            step, mod = get_step(path, request.step_id)
+            if step:
+                in_step = {
+                    "title": step["title"],
+                    "type": step.get("type"),
+                    "module_title": mod["title"] if mod else "",
+                }
+
+    # Pull weak concepts for the active exam (lightweight query)
+    weak_concepts: list[dict] = []
+    if request.exam_id:
+        weak_result = await db.execute(
+            select(UserConceptMastery, Concept)
+            .join(Concept, UserConceptMastery.concept_id == Concept.id)
+            .where(
+                and_(
+                    UserConceptMastery.user_id == user.id,
+                    Concept.exam_id == request.exam_id,
+                    UserConceptMastery.total_attempts > 0,
+                )
+            )
+            .order_by(UserConceptMastery.mastery_probability.asc())
+            .limit(5)
+        )
+        for m, c in weak_result.all():
+            weak_concepts.append(
+                {
+                    "name": c.name,
+                    "mastery_pct": int(float(m.mastery_probability) * 100),
+                }
+            )
+
+    # Decide
+    intervention: CoachIntervention | None = await decide_intervention(
+        events=events,
+        weak_concepts=weak_concepts,
+        in_path_step=in_step,
+        student_name=user.display_name,
+    )
+
+    # Optional Claude pass for ambiguous cases
+    if intervention is None and request.use_llm:
+        intervention = await llm_decide_intervention(events, weak_concepts, in_step)
+
+    if intervention is None:
+        return ObserveResponse(intervention=None)
+
+    return ObserveResponse(
+        intervention=InterventionOut(
+            type=intervention.type,
+            title=intervention.title,
+            message=intervention.message,
+            action_label=intervention.action_label,
+            seed_question=intervention.seed_question,
+            concept_id=intervention.concept_id,
+        )
     )

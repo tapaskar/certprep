@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { TutorChat } from "@/components/tutor/tutor-chat";
+import { CoachInterventionBanner } from "@/components/tutor/coach-intervention-banner";
+import { useCoachStore } from "@/stores/coach-store";
 import { cn } from "@/lib/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -32,6 +34,34 @@ export default function PathRunnerPage({
   const [loading, setLoading] = useState(true);
   const [activeStepId, setActiveStepId] = useState<string | null>(null);
   const [coachOpenMobile, setCoachOpenMobile] = useState(false);
+
+  const setCoachScope = useCoachStore((s) => s.setScope);
+  const recordCoachEvent = useCoachStore((s) => s.recordEvent);
+
+  // Update Coach scope whenever path or step changes
+  useEffect(() => {
+    setCoachScope({
+      pathId,
+      stepId: activeStepId ?? undefined,
+      examId: path?.exam_id ?? undefined,
+    });
+  }, [pathId, activeStepId, path, setCoachScope]);
+
+  // Record "started_step" + "viewed" events on step changes
+  useEffect(() => {
+    if (!activeStepId || !path) return;
+    let stepTitle: string | undefined;
+    for (const m of path.modules ?? []) {
+      for (const s of m.steps ?? []) {
+        if (s.id === activeStepId) stepTitle = s.title;
+      }
+    }
+    recordCoachEvent({
+      kind: "started_step",
+      concept_id: activeStepId,
+      concept_name: stepTitle,
+    });
+  }, [activeStepId, path, recordCoachEvent]);
 
   useEffect(() => {
     let cancelled = false;
@@ -206,7 +236,8 @@ export default function PathRunnerPage({
         </aside>
 
         {/* Center: active step */}
-        <main className="rounded-xl border border-stone-200 bg-white p-6 min-w-0">
+        <main className="rounded-xl border border-stone-200 bg-white p-6 min-w-0 space-y-4">
+          <CoachInterventionBanner />
           {activeStep ? (
             <StepView
               step={activeStep.step}

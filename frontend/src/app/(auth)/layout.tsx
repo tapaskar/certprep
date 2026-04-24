@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, BookOpen, BarChart3, User, LogOut, Shield, GraduationCap, Map } from "lucide-react";
+import { CoachSidePanel } from "@/components/tutor/coach-side-panel";
+import { CoachFAB } from "@/components/tutor/coach-fab";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -138,6 +140,10 @@ export default function AuthLayout({
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+
+      {/* Agentic Coach — global side panel + floating action button */}
+      <CoachSidePanel />
+      <CoachFAB />
     </div>
   );
 }
