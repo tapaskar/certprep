@@ -12,6 +12,7 @@ import {
   Tag,
   Loader2,
   BookOpen,
+  GraduationCap,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
@@ -269,8 +270,15 @@ function ConceptDetailView({
                 ? "No questions available"
                 : "Start 15-min Practice"}
             </button>
+            <Link
+              href={`/tutor?concept=${encodeURIComponent(concept.id)}&name=${encodeURIComponent(name)}`}
+              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-br from-violet-600 to-violet-700 px-5 py-3 text-sm font-bold text-white shadow-md hover:scale-[1.02] transition-all"
+            >
+              <GraduationCap className="h-4 w-4" />
+              Ask Coach
+            </Link>
             <span className="text-xs text-stone-500 self-center">
-              Questions are filtered strictly to this concept.
+              Practice questions or chat 1-on-1 with the AI tutor.
             </span>
           </div>
           {practiceError && (

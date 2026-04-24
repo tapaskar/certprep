@@ -3,13 +3,14 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, BookOpen, BarChart3, User, LogOut, Shield } from "lucide-react";
+import { LayoutDashboard, BookOpen, BarChart3, User, LogOut, Shield, GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth-store";
 
 const baseNavItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Study", href: "/study", icon: BookOpen },
+  { label: "Coach", href: "/tutor", icon: GraduationCap },
   { label: "Progress", href: "/progress", icon: BarChart3 },
   { label: "Profile", href: "/profile", icon: User },
 ];

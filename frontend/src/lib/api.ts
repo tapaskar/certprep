@@ -431,6 +431,35 @@ class ApiClient {
       body: JSON.stringify(data),
     });
   }
+
+  // ── Tutor (AI Coach) ─────────────────────────────────────────
+
+  async tutorChat(data: {
+    messages: Array<{ role: "user" | "assistant"; content: string }>;
+    exam_id?: string;
+    concept_id?: string;
+  }): Promise<{
+    role: "assistant";
+    content: string;
+    daily_limit: number | null;
+    used_today: number;
+    remaining: number | null;
+  }> {
+    return this.request("/tutor/chat", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getTutorQuota(): Promise<{
+    plan: string;
+    daily_limit: number | null;
+    used_today: number;
+    remaining: number | null;
+    unlimited: boolean;
+  }> {
+    return this.request("/tutor/quota");
+  }
 }
 
 export const api = new ApiClient();
