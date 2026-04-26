@@ -301,9 +301,33 @@ export function MermaidDiagram({ source, className }: MermaidDiagramProps) {
     // Graceful fallback — show the parser error AND the source so we can
     // diagnose what went wrong, plus a button to open it in Mermaid's
     // online live editor for quick fixing.
-    const liveEditorUrl = `https://mermaid.live/edit#pako:${encodeURIComponent(
-      btoa(JSON.stringify({ code: source, mermaid: { theme: "default" } })),
-    )}`;
+    //
+    // The live-editor URL must be base64'd. Native `btoa` only accepts
+    // Latin1 — so any non-ASCII character (emoji, smart quote, accented
+    // char) inside a malformed mermaid block coming from Coach chat
+    // history would throw `InvalidCharacterError` and crash the entire
+    // page. Two layers of protection:
+    //   1) UTF-8 → bytes → btoa (safe encoder)
+    //   2) try/catch so the worst case is "no live-editor link" instead
+    //      of a blank "This page couldn't load" screen.
+    let liveEditorUrl: string | null = null;
+    try {
+      const json = JSON.stringify({
+        code: source,
+        mermaid: { theme: "default" },
+      });
+      // Encode as UTF-8 bytes then base64 — safe for any character.
+      const bytes = new TextEncoder().encode(json);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      liveEditorUrl = `https://mermaid.live/edit#pako:${encodeURIComponent(
+        btoa(binary),
+      )}`;
+    } catch {
+      liveEditorUrl = null;
+    }
     return (
       <div className={cn("my-2", className)}>
         <div className="rounded-t-md bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900">
@@ -314,14 +338,16 @@ export function MermaidDiagram({ source, className }: MermaidDiagramProps) {
           <div className="mt-1 font-mono text-[11px] text-amber-800 break-words">
             {error}
           </div>
-          <a
-            href={liveEditorUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-1.5 inline-block text-[11px] font-medium text-amber-700 underline hover:text-amber-900"
-          >
-            Open in Mermaid Live Editor →
-          </a>
+          {liveEditorUrl && (
+            <a
+              href={liveEditorUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1.5 inline-block text-[11px] font-medium text-amber-700 underline hover:text-amber-900"
+            >
+              Open in Mermaid Live Editor →
+            </a>
+          )}
         </div>
         <CodeBlock code={source} language="mermaid" />
       </div>
