@@ -10,14 +10,22 @@ export default function RegisterPage() {
   const router = useRouter();
   const register = useAuthStore((s) => s.register);
   const [plan, setPlan] = useState<string | null>(null);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
 
-  // Persist plan intent through auth flow
+  // Persist plan intent + post-auth redirect through the full flow.
+  // The redirect param survives register → verify-email → login so users
+  // who clicked a specific cert card land back on that exam after auth.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const p = params.get("plan");
     if (p) {
       setPlan(p);
       sessionStorage.setItem("sparkupcloud_selected_plan", p);
+    }
+    const r = params.get("redirect");
+    if (r) {
+      setRedirectTo(r);
+      sessionStorage.setItem("sparkupcloud_post_auth_redirect", r);
     }
   }, []);
 
@@ -214,7 +222,13 @@ export default function RegisterPage() {
       <div className="mt-6 border-t border-stone-200 pt-4 text-center text-sm text-stone-500">
         Already have an account?{" "}
         <Link
-          href={plan ? `/login?redirect=${encodeURIComponent("/onboarding?plan=" + plan)}` : "/login"}
+          href={(() => {
+            // Priority order for the post-login redirect target:
+            //   explicit ?redirect=  >  onboarding for a chosen plan  >  default
+            if (redirectTo) return `/login?redirect=${encodeURIComponent(redirectTo)}`;
+            if (plan) return `/login?redirect=${encodeURIComponent("/onboarding?plan=" + plan)}`;
+            return "/login";
+          })()}
           className="font-medium text-amber-600 hover:text-amber-700"
         >
           Sign in

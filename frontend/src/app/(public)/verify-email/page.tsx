@@ -73,11 +73,21 @@ export default function VerifyEmailPage() {
       const data = await api.verifyEmail(email, fullCode);
       setSuccess("Email verified successfully!");
       setAuthFromToken(data.access_token, { ...data.user, is_admin: false, plan: "free", active_exam_id: null, enrolled_exams: [] });
-      // Resume checkout if user came here from a pricing CTA
+      // Decide where to send the freshly-verified user.
+      // Priority order:
+      //   1. They came from a specific cert/page (?redirect= in register URL)
+      //   2. They started from a pricing CTA (resume checkout)
+      //   3. They picked a plan (onboarding for that plan)
+      //   4. Default onboarding
       const pendingPlan = readPendingPlan();
       const savedPlan = sessionStorage.getItem("sparkupcloud_selected_plan");
+      const savedRedirect = sessionStorage.getItem(
+        "sparkupcloud_post_auth_redirect",
+      );
       let destination: string;
-      if (pendingPlan) {
+      if (savedRedirect) {
+        destination = savedRedirect;
+      } else if (pendingPlan) {
         destination = "/pricing";
       } else if (savedPlan) {
         destination = `/onboarding?plan=${savedPlan}`;
@@ -85,6 +95,7 @@ export default function VerifyEmailPage() {
         destination = "/onboarding";
       }
       sessionStorage.removeItem("sparkupcloud_selected_plan");
+      sessionStorage.removeItem("sparkupcloud_post_auth_redirect");
       setTimeout(() => router.push(destination), 1000);
     } catch (err: unknown) {
       const message =

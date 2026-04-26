@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
@@ -12,8 +12,45 @@ import {
   redhatCertifications,
 } from "@/app/page";
 import type { CertCard } from "@/app/page";
+import { useAuthStore } from "@/stores/auth-store";
 
 type Provider = "aws" | "azure" | "gcp" | "comptia" | "nvidia" | "redhat";
+
+/**
+ * Map a (provider, code) pair to the exam_id used in the backend.
+ *
+ * Most providers follow a regular pattern (e.g. AWS "CLF-C02" →
+ * "aws-clf-c02"). Azure strips the dash; CompTIA uses friendly slugs
+ * because their seed dirs predate the cert-code convention — those
+ * get an explicit map.
+ *
+ * Kept in lock-step with /backend/data/seed/<dir>/exam.json IDs.
+ */
+const COMPTIA_CODE_TO_EXAM: Record<string, string> = {
+  "220-1201": "comptia-a-core1",
+  "220-1202": "comptia-a-core2",
+  "N10-009":  "comptia-net",
+  "SY0-701":  "comptia-sec",
+  "XK0-005":  "comptia-linux",
+  "CV0-004":  "comptia-cloud",
+  "CS0-003":  "comptia-cysa",
+  "PT0-003":  "comptia-pentest",
+  "CAS-005":  "comptia-casp",
+};
+
+function codeToExamId(provider: Provider, code: string): string {
+  const lower = code.toLowerCase();
+  switch (provider) {
+    case "comptia":
+      return COMPTIA_CODE_TO_EXAM[code] ?? `comptia-${lower}`;
+    case "azure":
+      // AZ-900 → azure-az900 (dashes removed)
+      return `azure-${lower.replace(/-/g, "")}`;
+    default:
+      // aws-saa-c03, gcp-ace, redhat-ex200, nvidia-ncp-aai (dashes kept)
+      return `${provider}-${lower}`;
+  }
+}
 
 const providers: { key: Provider; label: string; color: string; activeColor: string }[] = [
   { key: "aws", label: "AWS", color: "text-amber-600", activeColor: "bg-amber-500 text-white" },
@@ -66,6 +103,27 @@ const sectionSubtitles: Record<Provider, string> = {
 export function CertTabs() {
   const [active, setActive] = useState<Provider>("aws");
   const certs = certData[active];
+
+  // Auth state — used to route cert clicks correctly. Auth is only
+  // known on the client (after Zustand hydrates from localStorage),
+  // so we track a `mounted` flag to avoid SSR/CSR markup mismatch.
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const hasHydrated = useAuthStore((s) => s._hasHydrated);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isLoggedIn = mounted && hasHydrated && isAuthenticated;
+
+  const cardHref = (code: string) => {
+    const examId = codeToExamId(active, code);
+    if (isLoggedIn) {
+      // Logged in: jump straight to the exam detail page
+      return `/exam/${examId}`;
+    }
+    // Logged out: capture the lead, but remember where they wanted to go
+    // so /register and /login can redirect them after auth completes.
+    // Param name "redirect" matches the existing convention used by /login.
+    return `/register?redirect=${encodeURIComponent(`/exam/${examId}`)}`;
+  };
 
   return (
     <section className="mx-auto max-w-6xl px-6 pb-20">
@@ -123,7 +181,7 @@ export function CertTabs() {
             {items.map((cert) => (
               <Link
                 key={cert.code}
-                href="/register"
+                href={cardHref(cert.code)}
                 className={cn(
                   "group rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md hover:scale-[1.02]",
                   cert.borderColor
