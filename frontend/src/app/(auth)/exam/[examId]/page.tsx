@@ -16,6 +16,9 @@ import {
   Trophy,
   AlertTriangle,
   Rocket,
+  Terminal,
+  CalendarClock,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CertBadge } from "@/components/cert-badge";
@@ -138,37 +141,69 @@ export default function ExamDetailPage() {
           )}
         </div>
 
-        {/* Quick stats */}
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-lg bg-stone-50 p-4 text-center">
-            <BookOpen className="mx-auto h-5 w-5 text-stone-400" />
-            <p className="mt-1 text-2xl font-bold text-stone-900">
-              {exam.total_questions}
-            </p>
-            <p className="text-xs text-stone-500">Questions</p>
-          </div>
-          <div className="rounded-lg bg-stone-50 p-4 text-center">
-            <Clock className="mx-auto h-5 w-5 text-stone-400" />
-            <p className="mt-1 text-2xl font-bold text-stone-900">
-              {exam.time_limit_minutes}
-            </p>
-            <p className="text-xs text-stone-500">Minutes</p>
-          </div>
-          <div className="rounded-lg bg-stone-50 p-4 text-center">
-            <Target className="mx-auto h-5 w-5 text-stone-400" />
-            <p className="mt-1 text-2xl font-bold text-stone-900">
-              {exam.passing_score_pct}%
-            </p>
-            <p className="text-xs text-stone-500">Passing Score</p>
-          </div>
-          <div className="rounded-lg bg-stone-50 p-4 text-center">
-            <Trophy className="mx-auto h-5 w-5 text-stone-400" />
-            <p className="mt-1 text-2xl font-bold text-stone-900">
-              {exam.questions_in_bank}
-            </p>
-            <p className="text-xs text-stone-500">Question Bank</p>
-          </div>
-        </div>
+        {/* Quick stats — adapt to performance-based exams (Red Hat etc).
+            For MCQ exams we show: Questions / Minutes / Passing / Bank size.
+            For performance-based we show: Hands-on / Minutes / Passing / Validity
+            because "0 questions" is misleading — there are no MCQs at all,
+            you're graded on tasks performed against a live system. */}
+        {(() => {
+          const isPerformanceBased = (exam.total_questions ?? 0) === 0;
+          return (
+            <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              {isPerformanceBased ? (
+                <div className="rounded-lg bg-red-50 p-4 text-center ring-1 ring-red-200">
+                  <Terminal className="mx-auto h-5 w-5 text-red-500" />
+                  <p className="mt-1 text-base font-bold text-red-700 leading-tight">
+                    Hands-on
+                  </p>
+                  <p className="text-xs text-red-600">Performance exam</p>
+                </div>
+              ) : (
+                <div className="rounded-lg bg-stone-50 p-4 text-center">
+                  <BookOpen className="mx-auto h-5 w-5 text-stone-400" />
+                  <p className="mt-1 text-2xl font-bold text-stone-900">
+                    {exam.total_questions}
+                  </p>
+                  <p className="text-xs text-stone-500">Questions</p>
+                </div>
+              )}
+
+              <div className="rounded-lg bg-stone-50 p-4 text-center">
+                <Clock className="mx-auto h-5 w-5 text-stone-400" />
+                <p className="mt-1 text-2xl font-bold text-stone-900">
+                  {exam.time_limit_minutes}
+                </p>
+                <p className="text-xs text-stone-500">Minutes</p>
+              </div>
+
+              <div className="rounded-lg bg-stone-50 p-4 text-center">
+                <Target className="mx-auto h-5 w-5 text-stone-400" />
+                <p className="mt-1 text-2xl font-bold text-stone-900">
+                  {exam.passing_score_pct}%
+                </p>
+                <p className="text-xs text-stone-500">Passing Score</p>
+              </div>
+
+              {isPerformanceBased ? (
+                <div className="rounded-lg bg-stone-50 p-4 text-center">
+                  <CalendarClock className="mx-auto h-5 w-5 text-stone-400" />
+                  <p className="mt-1 text-2xl font-bold text-stone-900">
+                    {info?.validity_years ?? 3}y
+                  </p>
+                  <p className="text-xs text-stone-500">Cert validity</p>
+                </div>
+              ) : (
+                <div className="rounded-lg bg-stone-50 p-4 text-center">
+                  <Trophy className="mx-auto h-5 w-5 text-stone-400" />
+                  <p className="mt-1 text-2xl font-bold text-stone-900">
+                    {exam.questions_in_bank}
+                  </p>
+                  <p className="text-xs text-stone-500">Question Bank</p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* Overview */}
         {info?.overview && (
@@ -254,7 +289,10 @@ export default function ExamDetailPage() {
                     style={{ width: `${d.weight_pct}%` }}
                   />
                 </div>
-                {d.question_count !== undefined && (
+                {/* Hide the per-domain question count for performance-based
+                    exams — "0 questions in bank" is misleading when there
+                    are no MCQs at all on the exam. */}
+                {d.question_count !== undefined && (exam.total_questions ?? 0) > 0 && (
                   <p className="mt-1 text-xs text-stone-400">
                     {d.question_count} questions in bank
                   </p>
