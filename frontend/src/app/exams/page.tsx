@@ -5,12 +5,12 @@ import { CertBadge } from "@/components/cert-badge";
 import { HomeNav } from "@/components/landing/home-nav";
 
 export const metadata: Metadata = {
-  title: "55+ Certification Practice Exams — Free Mock Tests",
+  title: "76+ Certification Practice Exams — Free Mock Tests",
   description:
     "Free practice exams for AWS, Azure, GCP, CompTIA, and NVIDIA certifications. 8,800+ questions, timed mock exams, and AI-powered adaptive study.",
   alternates: { canonical: "https://www.sparkupcloud.com/exams" },
   openGraph: {
-    title: "55+ Cloud Certification Practice Exams | SparkUpCloud",
+    title: "76+ Cloud Certification Practice Exams | SparkUpCloud",
     description:
       "Free practice questions and mock exams for AWS, Azure, GCP, CompTIA, and NVIDIA certifications.",
     url: "https://www.sparkupcloud.com/exams",
@@ -65,7 +65,7 @@ export default async function ExamsListPage() {
         <div className="text-center">
           <h1 className="text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl">
             Practice Exams for{" "}
-            <span className="text-amber-500">55+ Certifications</span>
+            <span className="text-amber-500">76+ Certifications</span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-stone-600">
             8,800+ scenario-based questions across AWS, Azure, Google Cloud,

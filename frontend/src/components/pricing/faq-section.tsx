@@ -27,7 +27,7 @@ const faqs = [
   },
   {
     q: "Can I change my exam after subscribing?",
-    a: "On the Pro plan, you have access to all 55+ certifications across AWS, Azure, Google Cloud, CompTIA, and NVIDIA and can switch freely. On the Single Exam plan, you can change your selected exam once within the first 7 days of purchase.",
+    a: "On the Pro plan, you have access to all 76+ certifications across AWS, Azure, Google Cloud, CompTIA, and NVIDIA and can switch freely. On the Single Exam plan, you can change your selected exam once within the first 7 days of purchase.",
   },
   {
     q: "What payment methods do you accept?",

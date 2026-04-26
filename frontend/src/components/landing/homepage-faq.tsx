@@ -11,7 +11,7 @@ const faqs = [
   },
   {
     q: "What certifications are available?",
-    a: "We currently cover 55+ certifications across AWS (14 certs), Microsoft Azure (12 certs), Google Cloud (10 certs), CompTIA (9 certs including Security+, Network+, A+), and NVIDIA AI (10 certs including Agentic AI, GenAI LLMs, and AI Infrastructure). New certifications are added regularly.",
+    a: "We currently cover 76+ certifications across AWS (14 certs), Microsoft Azure (12 certs), Google Cloud (10 certs), CompTIA (9 certs including Security+, Network+, A+), NVIDIA AI (10 certs including Agentic AI, GenAI LLMs, and AI Infrastructure), and Red Hat (21 certs including RHCSA, RHCE, OpenShift, Ansible). New certifications are added regularly.",
   },
   {
     q: "How many practice questions are included?",

@@ -669,7 +669,7 @@ export function FeatureSections() {
         }
         description="Bayesian Knowledge Tracing + a multi-armed bandit pick the next question to maximize your readiness gain. Spaced repetition (SM-2) brings shaky concepts back at exactly the right interval. Plus a free diagnostic quiz to anchor your starting point."
         bullets={[
-          "Hand-curated, scenario-style questions across 55+ certifications",
+          "Hand-curated, scenario-style questions across 76+ certifications",
           "Adaptive engine prioritizes your weak concepts and recent misses",
           "SM-2 spaced repetition resurfaces concepts at the right cadence",
           "Per-question explanation + 'why other options are wrong'",

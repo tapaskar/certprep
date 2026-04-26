@@ -43,7 +43,7 @@ const jsonLd = {
         "@type": "UnitPriceSpecification",
         billingDuration: "P1M",
       },
-      description: "All 55+ certifications (AWS, Azure, GCP), completely unlocked",
+      description: "All 76+ certifications (AWS, Azure, GCP), completely unlocked",
     },
     {
       "@type": "Offer",
@@ -54,7 +54,7 @@ const jsonLd = {
         "@type": "UnitPriceSpecification",
         billingDuration: "P1Y",
       },
-      description: "All 55+ certifications (AWS, Azure, GCP), completely unlocked, billed annually",
+      description: "All 76+ certifications (AWS, Azure, GCP), completely unlocked, billed annually",
     },
   ],
 };
@@ -68,7 +68,7 @@ const stats = [
     iconColor: "text-green-600",
   },
   {
-    value: "55+",
+    value: "76+",
     label: "Cloud certifications covered",
     icon: Star,
     iconBg: "bg-amber-100",

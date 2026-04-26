@@ -51,7 +51,7 @@ export default function TryQuestionsPage() {
             Ready for the full experience?
           </h2>
           <p className="text-stone-600 mb-6 max-w-xl mx-auto">
-            8,800+ questions across 55+ certifications with adaptive learning,
+            8,800+ questions across 76+ certifications with adaptive learning,
             mock exams, and AI explanations. Free plan: 10 questions/day. No
             credit card required.
           </p>
@@ -66,7 +66,7 @@ export default function TryQuestionsPage() {
               href="/exams"
               className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-stone-300 bg-white text-stone-700 hover:border-stone-900 px-6 py-3 font-bold"
             >
-              See All 55 Certifications
+              See All 76 Certifications
             </Link>
           </div>
         </div>

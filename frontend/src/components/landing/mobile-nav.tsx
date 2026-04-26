@@ -8,7 +8,7 @@ import { readAuthCookie, type AuthCookiePayload } from "@/lib/auth-cookie";
 const navLinks = [
   { href: "/paths", label: "🗺️ Guided Learning Paths" },
   { href: "/tutor", label: "🎓 Coach (1-on-1 AI Tutor)" },
-  { href: "/exams", label: "🏆 All 55+ Certifications" },
+  { href: "/exams", label: "🏆 All 76+ Certifications" },
   { href: "/try-questions", label: "✨ Try 5 Free Questions" },
   { href: "/visualizer", label: "🌐 3D Visualizer" },
   { href: "/simulator", label: "⚡ Simulator" },

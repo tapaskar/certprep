@@ -178,6 +178,36 @@ export const comptiaCertifications: Record<string, CertCard[]> = {
   ],
 };
 
+export const redhatCertifications: Record<string, CertCard[]> = {
+  Foundational: [
+    { code: "EX180", name: "Red Hat Certified Specialist in Containers (Foundations)", shortName: "Containers Foundations", icon: Container, questions: 0, time: 180, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX188", name: "Red Hat Certified Specialist in Containers", shortName: "Containers (Podman)", icon: Container, questions: 0, time: 180, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+  ],
+  Associate: [
+    { code: "EX200", name: "Red Hat Certified System Administrator (RHCSA)", shortName: "RHCSA", icon: Server, questions: 0, time: 180, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+  ],
+  Professional: [
+    { code: "EX294", name: "Red Hat Certified Engineer (RHCE) — Ansible Automation", shortName: "RHCE (Ansible)", icon: Workflow, questions: 0, time: 240, passingPct: 70, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX280", name: "Red Hat Certified OpenShift Administrator", shortName: "OpenShift Admin", icon: Container, questions: 0, time: 180, passingPct: 60, color: "bg-orange-50 text-orange-700", borderColor: "hover:border-orange-400" },
+    { code: "EX288", name: "Red Hat Certified Specialist in OpenShift Application Development", shortName: "OpenShift App Dev", icon: Code, questions: 0, time: 180, passingPct: 60, color: "bg-orange-50 text-orange-700", borderColor: "hover:border-orange-400" },
+    { code: "EX316", name: "Red Hat Certified Specialist in Containerized Application Development", shortName: "Containerized App Dev", icon: Code, questions: 0, time: 180, passingPct: 60, color: "bg-orange-50 text-orange-700", borderColor: "hover:border-orange-400" },
+    { code: "EX318", name: "Red Hat Certified Specialist in OpenShift Virtualization", shortName: "OpenShift Virt", icon: Server, questions: 0, time: 240, passingPct: 60, color: "bg-amber-50 text-amber-700", borderColor: "hover:border-amber-400" },
+    { code: "EX328", name: "Red Hat Certified Specialist in Building Resilient Microservices", shortName: "Resilient Microservices", icon: Network, questions: 0, time: 180, passingPct: 60, color: "bg-orange-50 text-orange-700", borderColor: "hover:border-orange-400" },
+    { code: "EX358", name: "Red Hat Certified Specialist in Services Management & Automation", shortName: "Services & Automation", icon: Activity, questions: 0, time: 240, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX362", name: "Red Hat Certified Specialist in Identity Management", shortName: "Identity Mgmt", icon: Lock, questions: 0, time: 240, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX370", name: "Red Hat Certified Specialist in OpenShift Data Foundation", shortName: "Data Foundation", icon: HardDrive, questions: 0, time: 180, passingPct: 60, color: "bg-emerald-50 text-emerald-700", borderColor: "hover:border-emerald-400" },
+    { code: "EX374", name: "Red Hat Certified Specialist in Ansible Automation Platform Development", shortName: "AAP Development", icon: Workflow, questions: 0, time: 240, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX380", name: "Red Hat Certified Specialist in Multicluster Management", shortName: "Multicluster Mgmt", icon: Network, questions: 0, time: 180, passingPct: 60, color: "bg-violet-50 text-violet-700", borderColor: "hover:border-violet-400" },
+    { code: "EX415", name: "Red Hat Certified Specialist in Security: Linux", shortName: "Linux Security", icon: Shield, questions: 0, time: 240, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX436", name: "Red Hat Certified Specialist in High Availability Clustering", shortName: "HA Clustering", icon: Activity, questions: 0, time: 240, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX440", name: "Red Hat Certified Specialist in Messaging Administration", shortName: "Messaging (AMQ)", icon: Workflow, questions: 0, time: 180, passingPct: 60, color: "bg-amber-50 text-amber-700", borderColor: "hover:border-amber-400" },
+    { code: "EX442", name: "Red Hat Certified Specialist in Linux Performance Tuning", shortName: "Performance Tuning", icon: BarChart3, questions: 0, time: 240, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX447", name: "Red Hat Certified Specialist in Advanced Automation: Ansible Best Practices", shortName: "Advanced Ansible", icon: Workflow, questions: 0, time: 240, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX457", name: "Red Hat Certified Specialist in Ansible Network Automation", shortName: "Ansible Network", icon: Network, questions: 0, time: 240, passingPct: 60, color: "bg-red-50 text-red-700", borderColor: "hover:border-red-400" },
+    { code: "EX467", name: "Red Hat Certified Specialist in Managing API Traffic with 3scale", shortName: "API Traffic (3scale)", icon: Globe, questions: 0, time: 180, passingPct: 60, color: "bg-amber-50 text-amber-700", borderColor: "hover:border-amber-400" },
+  ],
+};
+
 export const nvidiaCertifications: Record<string, CertCard[]> = {
   Associate: [
     { code: "NCA-GENL", name: "NVIDIA Certified Associate: GenAI LLMs", shortName: "GenAI LLMs", icon: Bot, questions: 50, time: 60, passingPct: 70, color: "bg-green-50 text-green-700", borderColor: "hover:border-green-400" },
@@ -234,7 +264,7 @@ const faqJsonLd = {
       name: "What certifications are available on SparkUpCloud?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "SparkUpCloud covers 55+ certifications across AWS (14 certs), Microsoft Azure (12 certs), Google Cloud (10 certs), CompTIA (9 certs including Security+, Network+, A+), and NVIDIA AI (10 certs including Agentic AI, GenAI LLMs, and AI Infrastructure).",
+        text: "SparkUpCloud covers 76+ certifications across AWS (14 certs), Microsoft Azure (12 certs), Google Cloud (10 certs), CompTIA (9 certs including Security+, Network+, A+), NVIDIA AI (10 certs including Agentic AI, GenAI LLMs, and AI Infrastructure), and Red Hat (21 certs including RHCSA, RHCE, OpenShift, Ansible).",
       },
     },
     {
@@ -302,7 +332,7 @@ export default function LandingPage() {
                 AI-powered adaptive practice + a stateful 1-on-1 tutor that
                 knows your weak topics, watches your progress, and steps in
                 when you start to struggle. AWS, Azure, GCP, CompTIA, NVIDIA,
-                Red Hat — all 55+ certs in one place.
+                Red Hat — all 76+ certs in one place.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
                 <AuthCTA variant="hero" />

@@ -86,7 +86,7 @@ export default function Image() {
               marginBottom: "32px",
             }}
           >
-            AI-powered adaptive learning for 55+ AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications
+            AI-powered adaptive learning for 76+ AWS, Azure, Google Cloud, CompTIA, NVIDIA, and Red Hat certifications
           </div>
           <div
             style={{
@@ -97,7 +97,7 @@ export default function Image() {
               color: "#a8a29e",
             }}
           >
-            <span>55+ Certifications</span>
+            <span>76+ Certifications</span>
             <span>500+ Questions</span>
             <span>85% Pass Rate</span>
           </div>

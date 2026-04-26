@@ -9,10 +9,11 @@ import {
   gcpCertifications,
   comptiaCertifications,
   nvidiaCertifications,
+  redhatCertifications,
 } from "@/app/page";
 import type { CertCard } from "@/app/page";
 
-type Provider = "aws" | "azure" | "gcp" | "comptia" | "nvidia";
+type Provider = "aws" | "azure" | "gcp" | "comptia" | "nvidia" | "redhat";
 
 const providers: { key: Provider; label: string; color: string; activeColor: string }[] = [
   { key: "aws", label: "AWS", color: "text-amber-600", activeColor: "bg-amber-500 text-white" },
@@ -20,6 +21,7 @@ const providers: { key: Provider; label: string; color: string; activeColor: str
   { key: "gcp", label: "Google Cloud", color: "text-green-600", activeColor: "bg-green-500 text-white" },
   { key: "comptia", label: "CompTIA", color: "text-teal-600", activeColor: "bg-teal-500 text-white" },
   { key: "nvidia", label: "NVIDIA", color: "text-green-600", activeColor: "bg-green-600 text-white" },
+  { key: "redhat", label: "Red Hat", color: "text-red-600", activeColor: "bg-red-600 text-white" },
 ];
 
 const certData: Record<Provider, Record<string, CertCard[]>> = {
@@ -28,6 +30,7 @@ const certData: Record<Provider, Record<string, CertCard[]>> = {
   gcp: gcpCertifications,
   comptia: comptiaCertifications,
   nvidia: nvidiaCertifications,
+  redhat: redhatCertifications,
 };
 
 const levelColors: Record<string, string> = {
@@ -48,6 +51,7 @@ const sectionTitles: Record<Provider, string> = {
   gcp: "Google Cloud Certifications",
   comptia: "CompTIA Certifications",
   nvidia: "NVIDIA AI Certifications",
+  redhat: "Red Hat Certifications",
 };
 
 const sectionSubtitles: Record<Provider, string> = {
@@ -56,6 +60,7 @@ const sectionSubtitles: Record<Provider, string> = {
   gcp: "From Cloud Digital Leader to Professional — 10 certifications.",
   comptia: "From A+ to SecurityX — 9 certifications covering IT fundamentals, networking, security, and more.",
   nvidia: "From Associate to Professional — 10 AI certifications covering GenAI, infrastructure, and operations.",
+  redhat: "RHCSA, RHCE, OpenShift, Ansible, IdM, Security, HA — 21 performance-based exams across the full Red Hat catalog.",
 };
 
 export function CertTabs() {
@@ -69,7 +74,7 @@ export function CertTabs() {
           All Certifications
         </h2>
         <p className="mt-3 text-base text-stone-500">
-          AWS, Azure, Google Cloud, CompTIA, and NVIDIA — 55+ certifications in one platform.
+          AWS, Azure, Google Cloud, CompTIA, NVIDIA, and Red Hat — 76+ certifications in one platform.
         </p>
       </div>
 

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     template: "%s | SparkUpCloud",
   },
   description:
-    "Master 55+ AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications with AI-powered adaptive learning, spaced repetition, concept tutorials, practice questions, video lessons, and hands-on labs. 85% pass rate.",
+    "Master 76+ AWS, Azure, Google Cloud, CompTIA, NVIDIA, and Red Hat certifications with AI-powered adaptive learning, spaced repetition, concept tutorials, practice questions, video lessons, and hands-on labs. 85% pass rate.",
   keywords: [
     "AWS certification",
     "Azure certification",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "SparkUpCloud — Master Your Cloud Certification",
     description:
-      "AI-powered exam prep for 55+ AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications. Adaptive learning, practice questions, flashcards, and hands-on labs.",
+      "AI-powered exam prep for 76+ AWS, Azure, Google Cloud, CompTIA, NVIDIA, and Red Hat certifications. Adaptive learning, practice questions, flashcards, and hands-on labs.",
     url: "https://www.sparkupcloud.com",
     siteName: "SparkUpCloud",
     type: "website",
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "SparkUpCloud — AI-Powered Cloud Certification Prep",
     description:
-      "Master 55+ AWS, Azure, Google Cloud, CompTIA, and NVIDIA certifications with adaptive learning and practice questions.",
+      "Master 76+ AWS, Azure, Google Cloud, CompTIA, NVIDIA, and Red Hat certifications with adaptive learning and practice questions.",
   },
   robots: {
     index: true,

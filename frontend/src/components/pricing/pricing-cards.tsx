@@ -96,7 +96,7 @@ const tiers: Tier[] = [
     badge: "Most Popular",
     showToggle: true,
     features: [
-      { text: "All 55+ certifications (AWS, Azure, GCP, CompTIA, NVIDIA)", included: true },
+      { text: "All 76+ certifications (AWS, Azure, GCP, CompTIA, NVIDIA)", included: true },
       { text: "Unlimited practice questions", included: true },
       { text: "AI-powered explanations", included: true },
       { text: "Smart spaced repetition (SM-2)", included: true },
