@@ -71,6 +71,14 @@ export default function OnboardingPage() {
   }) => {
     if (!selectedExam) return;
     setError(null);
+
+    // Performance-based exams (Red Hat EX-series, etc.) ship with zero MCQ
+    // questions in the bank — there's nothing to drive a diagnostic quiz from.
+    // Skip the diagnostic step entirely and drop the user on the dashboard
+    // once enrollment is created. Without this guard the user lands on a
+    // blank "Diagnostic" step (questions array is empty) and the flow dies.
+    const skipDiagnostic = (selectedExam.total_questions ?? 0) === 0;
+
     try {
       await api.startOnboarding({
         exam_id: selectedExam.id,
@@ -79,9 +87,13 @@ export default function OnboardingPage() {
         daily_study_minutes: prefs.dailyStudyMinutes,
       });
     } catch (err) {
-      // 409 = already enrolled — skip to diagnostic or dashboard
+      // 409 = already enrolled. For perf-based exams there's no diagnostic
+      // to fall back to — just route to the dashboard.
       if (err instanceof Error && err.message.includes("409")) {
-        // Already enrolled, try starting diagnostic directly
+        if (skipDiagnostic) {
+          window.location.href = "/dashboard";
+          return;
+        }
         try {
           const data = await api.startDiagnostic();
           setDiagnosticId(data.diagnostic_id);
@@ -89,7 +101,6 @@ export default function OnboardingPage() {
           setCurrentStep("diagnostic");
           return;
         } catch {
-          // Diagnostic already done too — go to dashboard
           window.location.href = "/dashboard";
           return;
         }
@@ -97,10 +108,27 @@ export default function OnboardingPage() {
       setError(err instanceof Error ? err.message : "Something went wrong");
       return;
     }
-    const data = await api.startDiagnostic();
-    setDiagnosticId(data.diagnostic_id);
-    setDiagnosticQuestions(data.questions);
-    setCurrentStep("diagnostic");
+
+    if (skipDiagnostic) {
+      window.location.href = "/dashboard";
+      return;
+    }
+
+    // Standard MCQ exam: kick off the 15-question diagnostic.
+    try {
+      const data = await api.startDiagnostic();
+      if (!data.questions?.length) {
+        // Backend returned an empty set (e.g. exam has questions in some
+        // domains but not others) — don't strand the user on a blank step.
+        window.location.href = "/dashboard";
+        return;
+      }
+      setDiagnosticId(data.diagnostic_id);
+      setDiagnosticQuestions(data.questions);
+      setCurrentStep("diagnostic");
+    } catch {
+      window.location.href = "/dashboard";
+    }
   };
 
   const handleDiagnosticComplete = async (
