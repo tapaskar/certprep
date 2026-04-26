@@ -112,17 +112,38 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           });
-        } catch {
-          // Token is invalid or expired
-          localStorage.removeItem("sparkupcloud_token");
-          api.setToken(null);
-          clearAuthCookie();
-          set({
-            token: null,
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-          });
+        } catch (err: unknown) {
+          // CRITICAL: only clear auth on a real 401 (token actually invalid).
+          // Transient errors — 500, 502, 504, CORS preflight, network blip,
+          // backend cold start — must NOT log the user out. Otherwise one
+          // unlucky request after pressing browser-back kicks them to /login
+          // even though their token is still good.
+          //
+          // The api client throws Error("API <status>: <body>") so we parse
+          // the status from the message. Anything that isn't 401 is treated
+          // as transient — we keep the cached auth state and let a later
+          // request retry naturally.
+          const msg = err instanceof Error ? err.message : "";
+          const isAuthFailure = /^API 401\b/.test(msg) || /^API 403\b/.test(msg);
+
+          if (isAuthFailure) {
+            // True invalid/expired token — wipe and force re-login
+            localStorage.removeItem("sparkupcloud_token");
+            api.setToken(null);
+            clearAuthCookie();
+            set({
+              token: null,
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+            });
+          } else {
+            // Transient error (network/5xx). Keep the cached user visible —
+            // they were authenticated when the page loaded; a flaky backend
+            // shouldn't punish them. Just stop the loading spinner.
+            console.warn("loadUser transient failure, keeping cached auth:", msg);
+            set({ isLoading: false });
+          }
         }
       },
 
