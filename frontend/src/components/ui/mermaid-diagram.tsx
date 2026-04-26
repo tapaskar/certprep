@@ -55,13 +55,35 @@ function loadMermaid() {
           fontSize: "13px",
           fontFamily: "ui-sans-serif, system-ui, -apple-system, sans-serif",
         },
-        securityLevel: "strict",  // sanitises any HTML in node labels
+        // "loose" lets the model use parentheses, quotes, HTML in node
+        // labels without choking. Coach output is trusted (server-rendered
+        // by us via the LLM, not user-submitted HTML).
+        securityLevel: "loose",
         flowchart: { curve: "basis", htmlLabels: true },
+        // Don't blow up on minor parse errors — log to console instead.
+        suppressErrorRendering: true,
       });
       return m;
     });
   }
   return mermaidInitPromise;
+}
+
+/**
+ * Massage common LLM quirks into syntactically clean Mermaid before
+ * we hand it to the parser. The model often:
+ *   - prefixes the source with stray whitespace or a BOM
+ *   - wraps the diagram in backticks even though we already stripped them
+ *   - uses smart-quotes that the parser doesn't recognise
+ */
+function normaliseSource(s: string): string {
+  return s
+    .replace(/^\uFEFF/, "")       // BOM
+    .replace(/^\s*```(?:mermaid)?\s*/i, "")  // accidental inner fence
+    .replace(/```\s*$/i, "")      // accidental trailing fence
+    .replace(/[\u2018\u2019]/g, "'")  // smart single quotes → straight
+    .replace(/[\u201C\u201D]/g, '"')  // smart double quotes → straight
+    .trim();
 }
 
 export function MermaidDiagram({ source, className }: MermaidDiagramProps) {
@@ -77,18 +99,22 @@ export function MermaidDiagram({ source, className }: MermaidDiagramProps) {
     loadMermaid()
       .then(async (mermaid) => {
         if (cancelled || !containerRef.current) return;
+        const cleaned = normaliseSource(source);
         try {
           // mermaid.render needs a unique id per call to avoid SVG id collisions.
           const id = `mmd-${Math.random().toString(36).slice(2, 10)}`;
-          const { svg } = await mermaid.render(id, source);
+          const { svg } = await mermaid.render(id, cleaned);
           if (cancelled || !containerRef.current) return;
           containerRef.current.innerHTML = svg;
           setRendered(true);
         } catch (e) {
           if (cancelled) return;
           const msg = e instanceof Error ? e.message : "Diagram failed to render";
+          // Log full error in dev console so we can see what Coach produced.
+          // eslint-disable-next-line no-console
+          console.warn("[MermaidDiagram] render failed:", msg, "\n--- source ---\n", cleaned);
           // Strip Mermaid's verbose internal stack noise — first line is enough
-          setError(msg.split("\n")[0].slice(0, 160));
+          setError(msg.split("\n")[0].slice(0, 200));
         }
       })
       .catch((e) => {
@@ -102,12 +128,30 @@ export function MermaidDiagram({ source, className }: MermaidDiagramProps) {
   }, [source]);
 
   if (error) {
-    // Graceful fallback — show the source so the explanation isn't lost.
+    // Graceful fallback — show the parser error AND the source so we can
+    // diagnose what went wrong, plus a button to open it in Mermaid's
+    // online live editor for quick fixing.
+    const liveEditorUrl = `https://mermaid.live/edit#pako:${encodeURIComponent(
+      btoa(JSON.stringify({ code: source, mermaid: { theme: "default" } })),
+    )}`;
     return (
       <div className={cn("my-2", className)}>
-        <div className="flex items-center gap-2 rounded-t-md bg-amber-50 border border-amber-200 px-3 py-1.5 text-xs text-amber-800">
-          <AlertTriangle className="h-3.5 w-3.5" />
-          Diagram couldn&apos;t render — showing the source instead
+        <div className="rounded-t-md bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-900">
+          <div className="flex items-center gap-2 font-semibold">
+            <AlertTriangle className="h-3.5 w-3.5" />
+            Diagram couldn&apos;t render
+          </div>
+          <div className="mt-1 font-mono text-[11px] text-amber-800 break-words">
+            {error}
+          </div>
+          <a
+            href={liveEditorUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1.5 inline-block text-[11px] font-medium text-amber-700 underline hover:text-amber-900"
+          >
+            Open in Mermaid Live Editor →
+          </a>
         </div>
         <CodeBlock code={source} language="mermaid" />
       </div>
