@@ -44,14 +44,40 @@ export default function PathRunnerPage({
   // user's preference survives reloads and step changes. Mirrors the same
   // pattern as IntegratedCoachPanel's storageKey.
   const TOPICS_COLLAPSED_KEY = "sparkupcloud_path_topics_collapsed";
+  const COACH_COLLAPSED_KEY = "sparkupcloud_path_coach_collapsed";
   const [topicsCollapsed, setTopicsCollapsed] = useState(false);
+  // Coach owns its own collapse state (inside IntegratedCoachPanel) and
+  // writes to localStorage. We mirror it here so the parent grid template
+  // can give the freed space back to the middle column. Without this
+  // mirror the grid kept reserving 360-400px for Coach even when it had
+  // collapsed itself to a 44px sliver — the middle column never grew.
+  const [coachCollapsed, setCoachCollapsed] = useState(false);
   useEffect(() => {
     try {
       const stored = localStorage.getItem(TOPICS_COLLAPSED_KEY);
       if (stored === "1") setTopicsCollapsed(true);
+      const storedCoach = localStorage.getItem(COACH_COLLAPSED_KEY);
+      if (storedCoach === "1") setCoachCollapsed(true);
     } catch {
       /* SSR / disabled storage — fall through */
     }
+
+    // Poll for Coach collapse changes — IntegratedCoachPanel writes to
+    // localStorage but doesn't fire an in-tab event we can listen for.
+    // Cheap and good enough; same pattern as /study/page.tsx.
+    const onStorage = () => {
+      try {
+        setCoachCollapsed(localStorage.getItem(COACH_COLLAPSED_KEY) === "1");
+      } catch {
+        /* ignore */
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    const id = setInterval(onStorage, 600);
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      clearInterval(id);
+    };
   }, []);
   const toggleTopics = () => {
     setTopicsCollapsed((prev) => {
@@ -248,14 +274,21 @@ export default function PathRunnerPage({
       </button>
 
       {/* 3-pane layout: modules | step content | Coach
-          Topics column collapses to a 40px rail to give the reader more
-          horizontal space. Toggle persists in localStorage. */}
+          Both side panels independently collapse to a slim rail (~40-44px)
+          so the middle reader column reclaims the freed horizontal space.
+          Toggle states persist in localStorage. */}
       <div
         className={cn(
-          "grid gap-4",
-          topicsCollapsed
-            ? "lg:grid-cols-[40px_1fr_360px] xl:grid-cols-[40px_1fr_400px]"
-            : "lg:grid-cols-[280px_1fr_360px] xl:grid-cols-[300px_1fr_400px]",
+          "grid gap-4 transition-[grid-template-columns] duration-300",
+          // Each side: full when open, slim sliver when collapsed.
+          // Middle column is always 1fr → it absorbs whatever's freed up.
+          topicsCollapsed && coachCollapsed
+            ? "lg:grid-cols-[40px_1fr_44px]"
+            : topicsCollapsed
+              ? "lg:grid-cols-[40px_1fr_360px] xl:grid-cols-[40px_1fr_400px]"
+              : coachCollapsed
+                ? "lg:grid-cols-[280px_1fr_44px] xl:grid-cols-[300px_1fr_44px]"
+                : "lg:grid-cols-[280px_1fr_360px] xl:grid-cols-[300px_1fr_400px]",
         )}
       >
         {/* Left: modules + steps (collapses to a thin rail with expand button) */}
