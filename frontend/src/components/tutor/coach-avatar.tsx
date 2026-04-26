@@ -3,20 +3,19 @@
 /**
  * Coach Avatar — "Sage"
  *
- * The visual persona for the AI tutor. Designed in Anthropic's warm
- * minimalist palette (clay/cream/charcoal) — NOT a generic graduation
- * cap, NOT a stock photo. A real character with calm watchful eyes
- * that subtly react to chat state:
+ * The visual persona for the AI tutor: a friendly, approachable HUMAN
+ * tutor (not an animal, not an abstract creature). Designed in
+ * Anthropic's warm-clay/cream palette with stylized but recognizably
+ * human features — round glasses, calm eyes, warm sweater. Reads as
+ * "trusted teacher" at a glance.
  *
+ * Three reactive states:
  *   • idle      — open eyes, gentle blink every ~6s
- *   • thinking  — eyes look up + soft sparkle pulse on the temple
- *   • speaking  — slight head bob (handled by parent's animate class)
+ *   • thinking  — eyes drift up, soft sparkle on the temple
+ *   • speaking  — slight head bob (parent applies the class)
  *
- * Pure SVG — no images to load, scales to any size, themeable.
- *
- * Designed to read at every size from 24px (chat bubble) to 96px
- * (welcome screen). Critical features (eyes, body silhouette) stay
- * legible even at FAB size.
+ * Pure SVG — no images to load, scales from 24px (chat bubble) to
+ * 96px (welcome screen) without pixelation.
  */
 
 import { cn } from "@/lib/utils";
@@ -60,87 +59,195 @@ export function CoachAvatar({
         )}
       >
         <defs>
-          {/* Body gradient — Anthropic clay → warm amber */}
-          <radialGradient id="sage-body" cx="50%" cy="35%" r="75%">
-            <stop offset="0%" stopColor="#E89A78" />
-            <stop offset="60%" stopColor="#DA7756" />
+          {/* Skin gradient — warm tan, slightly lifted on the cheeks */}
+          <radialGradient id="sage-skin" cx="50%" cy="40%" r="65%">
+            <stop offset="0%" stopColor="#F2C9A1" />
+            <stop offset="70%" stopColor="#E5A878" />
+            <stop offset="100%" stopColor="#C68859" />
+          </radialGradient>
+
+          {/* Hair — warm dark brown */}
+          <linearGradient id="sage-hair" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#3C2418" />
+            <stop offset="100%" stopColor="#2A1810" />
+          </linearGradient>
+
+          {/* Sweater — warm clay turtleneck */}
+          <linearGradient id="sage-sweater" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#DA7756" />
             <stop offset="100%" stopColor="#B85A3D" />
-          </radialGradient>
+          </linearGradient>
 
-          {/* Face panel */}
-          <radialGradient id="sage-face" cx="50%" cy="50%" r="60%">
-            <stop offset="0%" stopColor="#FBF3E5" />
-            <stop offset="100%" stopColor="#F2E2C9" />
+          {/* Subtle highlight on the face */}
+          <radialGradient id="sage-cheek" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#F2A382" stopOpacity="0.55" />
+            <stop offset="100%" stopColor="#F2A382" stopOpacity="0" />
           </radialGradient>
-
-          {/* Subtle inner shadow for face depth */}
-          <filter id="sage-inner" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="0.5" />
-          </filter>
         </defs>
 
-        {/* Body — round, soft shoulders peeking up */}
-        <ellipse cx="32" cy="58" rx="22" ry="6" fill="#B85A3D" opacity="0.25" />
-
-        {/* Head — warm clay rounded square */}
+        {/* ─── Sweater / shoulders (peeks up from below) ─── */}
         <path
-          d="M 14 26
-             C 14 16, 22 10, 32 10
-             C 42 10, 50 16, 50 26
-             L 50 38
-             C 50 46, 43 52, 32 52
-             C 21 52, 14 46, 14 38
+          d="M 6 64
+             C 6 52, 14 46, 22 46
+             L 42 46
+             C 50 46, 58 52, 58 64
              Z"
-          fill="url(#sage-body)"
+          fill="url(#sage-sweater)"
         />
-
-        {/* Tiny ear-like nubs — gives character */}
-        <circle cx="14" cy="22" r="3" fill="#B85A3D" />
-        <circle cx="50" cy="22" r="3" fill="#B85A3D" />
-
-        {/* Face panel — cream */}
-        <ellipse
-          cx="32"
-          cy="32"
-          rx="14"
-          ry="13"
-          fill="url(#sage-face)"
-          filter="url(#sage-inner)"
-        />
-
-        {/* Eyes — calm, watchful */}
-        <g className={isThinking ? "animate-coach-look-up" : ""}>
-          {/* Eye whites */}
-          <ellipse cx="26" cy="32" rx="3.2" ry="3.6" fill="#FFFFFF" />
-          <ellipse cx="38" cy="32" rx="3.2" ry="3.6" fill="#FFFFFF" />
-          {/* Pupils */}
-          <circle cx="26" cy="32.5" r="1.9" fill="#2A1F1A" />
-          <circle cx="38" cy="32.5" r="1.9" fill="#2A1F1A" />
-          {/* Highlights — alive, not creepy */}
-          <circle cx="26.7" cy="31.5" r="0.7" fill="#FFFFFF" />
-          <circle cx="38.7" cy="31.5" r="0.7" fill="#FFFFFF" />
-        </g>
-
-        {/* Blink overlay — covers eyes when animating */}
-        <g className="animate-coach-blink origin-center">
-          <rect x="22" y="32" width="20" height="0" fill="url(#sage-face)" />
-        </g>
-
-        {/* Mouth — gentle, faint smile (a soft arc) */}
+        {/* Turtleneck collar */}
         <path
-          d="M 28 41 Q 32 43.5 36 41"
-          stroke="#7A4A2E"
-          strokeWidth="1.2"
+          d="M 22 46
+             C 22 49, 26 51, 32 51
+             C 38 51, 42 49, 42 46
+             L 42 43
+             L 22 43 Z"
+          fill="#9C4A30"
+        />
+        {/* Collar highlight */}
+        <path
+          d="M 24 46 C 24 47.5, 28 48.5, 32 48.5 C 36 48.5, 40 47.5, 40 46"
+          stroke="#7A3520"
+          strokeWidth="0.6"
+          fill="none"
+          opacity="0.6"
+        />
+
+        {/* ─── Neck ─── */}
+        <path
+          d="M 27 40 L 27 46 L 37 46 L 37 40 Z"
+          fill="url(#sage-skin)"
+        />
+        {/* Neck shadow under the chin */}
+        <ellipse cx="32" cy="42" rx="6" ry="1.5" fill="#A86E45" opacity="0.4" />
+
+        {/* ─── Head shape — a soft rounded oval, not a ball ─── */}
+        <path
+          d="M 18 28
+             C 18 19, 24 13, 32 13
+             C 40 13, 46 19, 46 28
+             L 46 35
+             C 46 41, 40 44, 32 44
+             C 24 44, 18 41, 18 35
+             Z"
+          fill="url(#sage-skin)"
+        />
+
+        {/* ─── Hair — short, swept, modern undercut feel ─── */}
+        {/* Top hair */}
+        <path
+          d="M 18 26
+             C 18 17, 24 11, 32 11
+             C 40 11, 46 17, 46 26
+             L 46 22
+             C 44 19, 40 17, 32 17
+             C 26 17, 22 18, 19 22
+             Z"
+          fill="url(#sage-hair)"
+        />
+        {/* Side fade — left */}
+        <path d="M 18 26 L 18 32 C 18 30, 19 28, 19 26 Z" fill="url(#sage-hair)" />
+        {/* Side fade — right */}
+        <path d="M 46 26 L 46 32 C 46 30, 45 28, 45 26 Z" fill="url(#sage-hair)" />
+        {/* Front fringe — gentle wisp */}
+        <path
+          d="M 22 19 Q 28 14, 36 17 Q 32 19, 25 21 Z"
+          fill="url(#sage-hair)"
+          opacity="0.95"
+        />
+
+        {/* ─── Cheek warmth ─── */}
+        <ellipse cx="22" cy="34" rx="3" ry="2" fill="url(#sage-cheek)" />
+        <ellipse cx="42" cy="34" rx="3" ry="2" fill="url(#sage-cheek)" />
+
+        {/* ─── Glasses — round, thin, modern intellectual ─── */}
+        {/* Left lens */}
+        <circle
+          cx="25"
+          cy="29"
+          r="4.5"
+          fill="rgba(255,255,255,0.18)"
+          stroke="#2A1810"
+          strokeWidth="1.1"
+        />
+        {/* Right lens */}
+        <circle
+          cx="39"
+          cy="29"
+          r="4.5"
+          fill="rgba(255,255,255,0.18)"
+          stroke="#2A1810"
+          strokeWidth="1.1"
+        />
+        {/* Bridge */}
+        <line
+          x1="29.5"
+          y1="29"
+          x2="34.5"
+          y2="29"
+          stroke="#2A1810"
+          strokeWidth="1.1"
+        />
+        {/* Tiny lens highlight (catches the eye, not creepy) */}
+        <path
+          d="M 22 27 Q 23 26, 24 27"
+          stroke="#FFFFFF"
+          strokeWidth="0.8"
+          fill="none"
+          opacity="0.7"
+        />
+        <path
+          d="M 36 27 Q 37 26, 38 27"
+          stroke="#FFFFFF"
+          strokeWidth="0.8"
+          fill="none"
+          opacity="0.7"
+        />
+
+        {/* ─── Eyes (behind glasses) ─── */}
+        <g className={isThinking ? "animate-coach-look-up" : ""}>
+          {/* Iris */}
+          <circle cx="25" cy="29.5" r="1.6" fill="#3C2418" />
+          <circle cx="39" cy="29.5" r="1.6" fill="#3C2418" />
+          {/* Pupil highlight */}
+          <circle cx="25.5" cy="29" r="0.5" fill="#FFFFFF" />
+          <circle cx="39.5" cy="29" r="0.5" fill="#FFFFFF" />
+        </g>
+
+        {/* ─── Blink overlay ─── */}
+        <g className="animate-coach-blink">
+          <ellipse cx="25" cy="29.5" rx="3.8" ry="0" fill="url(#sage-skin)" />
+          <ellipse cx="39" cy="29.5" rx="3.8" ry="0" fill="url(#sage-skin)" />
+        </g>
+
+        {/* ─── Nose — minimal hint, just two soft shadows ─── */}
+        <path
+          d="M 31 33 Q 32 35, 33 33"
+          stroke="#A86E45"
+          strokeWidth="0.6"
+          fill="none"
+          opacity="0.55"
+          strokeLinecap="round"
+        />
+
+        {/* ─── Mouth — gentle warm closed-mouth smile ─── */}
+        <path
+          d="M 28 38.5 Q 32 40.5, 36 38.5"
+          stroke="#7A3A20"
+          strokeWidth="1"
           strokeLinecap="round"
           fill="none"
-          opacity="0.75"
+        />
+        {/* Lower lip highlight */}
+        <path
+          d="M 30 39.5 Q 32 40.4, 34 39.5"
+          stroke="#C9785A"
+          strokeWidth="0.5"
+          strokeLinecap="round"
+          fill="none"
+          opacity="0.6"
         />
 
-        {/* Cheek warmth */}
-        <circle cx="22" cy="38" r="2" fill="#E89A78" opacity="0.35" />
-        <circle cx="42" cy="38" r="2" fill="#E89A78" opacity="0.35" />
-
-        {/* Thinking sparkle — only when state="thinking" */}
+        {/* ─── Thinking sparkle (only when state === "thinking") ─── */}
         {isThinking && (
           <g className="animate-coach-think">
             <path
