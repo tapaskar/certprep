@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Clock } from "lucide-react";
 import { blogPosts, getBlogPost } from "@/lib/blog-data";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
 
 export function generateStaticParams() {
   return blogPosts.map((post) => ({ slug: post.slug }));
@@ -152,41 +153,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </div>
         </article>
 
-        {/* Footer */}
-        <footer className="border-t border-stone-200 bg-white/60">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-            <div className="flex items-center gap-2">
-              <img
-                src="/logo.svg"
-                alt="SparkUpCloud"
-                className="h-6 w-auto"
-              />
-              <span className="text-sm font-semibold text-stone-700">
-                Spark<span className="text-amber-500">Up</span>Cloud
-              </span>
-            </div>
-            <div className="flex items-center gap-6 text-sm font-medium">
-              <Link
-                href="/blog"
-                className="text-stone-500 transition-colors hover:text-amber-600"
-              >
-                Blog
-              </Link>
-              <Link
-                href="/pricing"
-                className="text-stone-500 transition-colors hover:text-amber-600"
-              >
-                Pricing
-              </Link>
-              <Link
-                href="/contact"
-                className="text-stone-500 transition-colors hover:text-amber-600"
-              >
-                Contact
-              </Link>
-            </div>
-          </div>
-        </footer>
+        <SiteFooter />
       </div>
     </>
   );

@@ -1,4 +1,6 @@
 import { SimulatorClient } from "@/components/simulator/simulator-client";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { UpgradeBanner } from "@/components/landing/upgrade-banner";
 
 export const metadata = {
   title: "AWS Architecture Simulator — Drag & Drop Cost Calculator",
@@ -15,5 +17,14 @@ export const metadata = {
 };
 
 export default function SimulatorPage() {
-  return <SimulatorClient />;
+  return (
+    <>
+      <UpgradeBanner
+        toolId="simulator"
+        message="Architecture simulator showed you what's possible. Get full exam prep with practice questions and AI tutor."
+      />
+      <SimulatorClient />
+      <SiteFooter />
+    </>
+  );
 }

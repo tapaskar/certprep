@@ -154,39 +154,8 @@ export default function PricingCards() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-6xl px-6 pb-20">
-      {/* Billing toggle */}
-      <div className="mb-12 flex items-center justify-center gap-3">
-        <div className="inline-flex items-center rounded-xl bg-stone-100 p-1">
-          <button
-            onClick={() => setBilling("monthly")}
-            className={cn(
-              "rounded-lg px-5 py-2.5 text-sm font-medium transition-all",
-              billing === "monthly"
-                ? "bg-white text-stone-900 shadow-sm"
-                : "text-stone-500 hover:text-stone-700"
-            )}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => setBilling("annual")}
-            className={cn(
-              "flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-all",
-              billing === "annual"
-                ? "bg-white text-stone-900 shadow-sm"
-                : "text-stone-500 hover:text-stone-700"
-            )}
-          >
-            Annual
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-700">
-              Save 37%
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* Pricing cards */}
+    <section className="mx-auto max-w-6xl px-6 pb-20 pt-6">
+      {/* Pricing cards (Pro tier has inline annual/monthly selector) */}
       <div className="grid gap-8 lg:grid-cols-3">
         {tiers.map((tier) => {
           const price =
@@ -238,21 +207,80 @@ export default function PricingCards() {
                 </div>
 
                 {/* Price */}
-                <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold tracking-tight text-stone-900">
-                    {price}
-                  </span>
-                  {tier.name !== "Single Exam" && (
-                    <span className="text-sm text-stone-400">/mo</span>
-                  )}
-                </div>
-                <p className="mt-1 text-sm text-stone-400">{priceNote}</p>
-                {tier.showToggle && billing === "annual" && (
-                  <p className="mt-1 text-xs text-amber-600 font-medium">
-                    <span className="line-through text-stone-400">$19.99/mo</span>
-                    {" "}
-                    Save $89.89/year
-                  </p>
+                {tier.showToggle ? (
+                  <div className="space-y-2">
+                    {/* Both prices visible side-by-side */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setBilling("annual")}
+                        className={cn(
+                          "rounded-lg border-2 p-3 text-left transition-all",
+                          billing === "annual"
+                            ? "border-amber-400 bg-amber-50 ring-2 ring-amber-200"
+                            : "border-stone-200 bg-white hover:border-stone-300"
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
+                            Annual
+                          </span>
+                          <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-700">
+                            Save 37%
+                          </span>
+                        </div>
+                        <div className="mt-1 flex items-baseline gap-0.5">
+                          <span className="text-2xl font-bold tracking-tight text-stone-900">
+                            $12.50
+                          </span>
+                          <span className="text-xs text-stone-400">/mo</span>
+                        </div>
+                        <p className="text-[10px] text-stone-500">
+                          $149.99/yr billed once
+                        </p>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setBilling("monthly")}
+                        className={cn(
+                          "rounded-lg border-2 p-3 text-left transition-all",
+                          billing === "monthly"
+                            ? "border-stone-900 bg-stone-50 ring-2 ring-stone-200"
+                            : "border-stone-200 bg-white hover:border-stone-300"
+                        )}
+                      >
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-stone-600">
+                            Monthly
+                        </span>
+                        <div className="mt-1 flex items-baseline gap-0.5">
+                          <span className="text-2xl font-bold tracking-tight text-stone-900">
+                            $19.99
+                          </span>
+                          <span className="text-xs text-stone-400">/mo</span>
+                        </div>
+                        <p className="text-[10px] text-stone-500">
+                          Billed monthly
+                        </p>
+                      </button>
+                    </div>
+                    <p className="text-xs text-stone-500">
+                      {billing === "annual"
+                        ? "✓ Selected: Annual — save $89.89/year"
+                        : "Switch to annual to save $89.89/year"}
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-bold tracking-tight text-stone-900">
+                        {price}
+                      </span>
+                      {tier.name !== "Single Exam" && (
+                        <span className="text-sm text-stone-400">/mo</span>
+                      )}
+                    </div>
+                    <p className="mt-1 text-sm text-stone-400">{priceNote}</p>
+                  </>
                 )}
               </div>
 

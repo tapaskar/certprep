@@ -1,4 +1,6 @@
 import VisualizerLoader from "@/components/visualizer/visualizer-loader";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { UpgradeBanner } from "@/components/landing/upgrade-banner";
 
 export const metadata = {
   title: "3D AWS Network Visualizer — SparkUpCloud",
@@ -10,5 +12,14 @@ export const metadata = {
 };
 
 export default function VisualizerPage() {
-  return <VisualizerLoader />;
+  return (
+    <>
+      <UpgradeBanner
+        toolId="visualizer"
+        message="Loving the 3D visualizer? Get the full prep platform — practice questions, AI tutor, mock exams."
+      />
+      <VisualizerLoader />
+      <SiteFooter />
+    </>
+  );
 }

@@ -11,6 +11,7 @@ import { FeatureSections } from "@/components/landing/feature-sections";
 import { ComparisonTable } from "@/components/landing/comparison-table";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
 
 const features = [
   {
@@ -553,55 +554,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-stone-200 bg-white/60">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="SparkUpCloud" className="h-6 w-auto" />
-            <span className="text-sm font-semibold text-stone-700">
-              Spark<span className="text-amber-500">Up</span>Cloud
-            </span>
-          </div>
-          <p className="text-xs text-stone-400">
-            Trusted by professionals preparing for cloud certifications worldwide
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm font-medium">
-            <Link href="/visualizer" className="text-stone-500 transition-colors hover:text-amber-600">
-              3D Visualizer
-            </Link>
-            <Link href="/simulator" className="text-stone-500 transition-colors hover:text-amber-600">
-              Simulator
-            </Link>
-            <Link href="/scenarios" className="text-stone-500 transition-colors hover:text-amber-600">
-              Scenarios
-            </Link>
-            <Link href="/study/heuristics" className="text-stone-500 transition-colors hover:text-amber-600">
-              Heuristics
-            </Link>
-            <Link href="/blog" className="text-stone-500 transition-colors hover:text-amber-600">
-              Blog
-            </Link>
-            <Link href="/pricing" className="text-stone-500 transition-colors hover:text-amber-600">
-              Pricing
-            </Link>
-            <Link href="/contact" className="text-stone-500 transition-colors hover:text-amber-600">
-              Contact
-            </Link>
-            <Link href="/exams" className="text-stone-500 transition-colors hover:text-amber-600">
-              All Exams
-            </Link>
-            <Link href="/try-questions" className="text-stone-500 transition-colors hover:text-amber-600">
-              Try Questions
-            </Link>
-            <Link href="/terms" className="text-stone-400 transition-colors hover:text-amber-600">
-              Terms
-            </Link>
-            <Link href="/privacy" className="text-stone-400 transition-colors hover:text-amber-600">
-              Privacy
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
     </>
   );

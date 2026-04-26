@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
 
 export const metadata = {
   title: "Privacy Policy — SparkUpCloud",
@@ -109,6 +110,8 @@ export default function PrivacyPage() {
           .
         </Section>
       </article>
+
+      <SiteFooter />
     </div>
   );
 }

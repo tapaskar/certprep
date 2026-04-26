@@ -2,6 +2,8 @@ import Link from "next/link";
 import { CheckCircle2, AlertTriangle, XCircle, ThumbsUp } from "lucide-react";
 import { heuristics } from "@/lib/heuristics-data";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { UpgradeBanner } from "@/components/landing/upgrade-banner";
 
 export const metadata = {
   title: "AWS Certification Heuristics — 20+ Decision Rules | SparkUpCloud",
@@ -56,6 +58,10 @@ export default function HeuristicsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
+      <UpgradeBanner
+        toolId="heuristics"
+        message="Heuristics get you started. Get the full prep platform — practice questions, AI tutor, mock exams."
+      />
       <HomeNav />
 
       <section className="px-6 pt-16 pb-12 text-center">
@@ -185,6 +191,8 @@ export default function HeuristicsPage() {
           </div>
         </div>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }

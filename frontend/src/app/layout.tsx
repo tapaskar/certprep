@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { SiteAnalytics } from "@/components/analytics/site-analytics";
+import { ExitIntentPopup } from "@/components/landing/exit-intent-popup";
+import {
+  JsonLd,
+  organizationSchema,
+  websiteSchema,
+} from "@/components/seo/json-ld";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -80,7 +87,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable}`}>
-      <body className="min-h-screen bg-stone-100 text-stone-900 antialiased">{children}</body>
+      <head>
+        {/* Site-wide structured data — emitted on every page so crawlers
+            always see the Organization + WebSite identity. */}
+        <JsonLd data={[organizationSchema(), websiteSchema()]} />
+      </head>
+      <body className="min-h-screen bg-stone-100 text-stone-900 antialiased">
+        {children}
+        <ExitIntentPopup />
+        <SiteAnalytics />
+      </body>
     </html>
   );
 }

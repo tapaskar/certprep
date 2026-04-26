@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ContactForm } from "@/components/contact/contact-form";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
 
 export const metadata = {
   title: "Contact Us",
@@ -59,6 +60,8 @@ export default function ContactPage() {
           Trusted by professionals preparing for cloud certifications worldwide
         </p>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { sampleQuestions } from "@/lib/sample-questions";
 import { TryQuestionsClient } from "@/components/landing/try-questions-client";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { UpgradeBanner } from "@/components/landing/upgrade-banner";
 
 export const metadata = {
   title: "Try 5 Free Practice Questions — No Signup | SparkUpCloud",
@@ -20,6 +22,10 @@ export const metadata = {
 export default function TryQuestionsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50/40 via-white to-violet-50/30">
+      <UpgradeBanner
+        toolId="try-questions"
+        message="These 5 are a sample. Get 8,800+ exam-quality questions across 76 certifications."
+      />
       <HomeNav />
 
       <section className="px-6 pt-12 pb-8 text-center">
@@ -71,6 +77,8 @@ export default function TryQuestionsPage() {
           </div>
         </div>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }

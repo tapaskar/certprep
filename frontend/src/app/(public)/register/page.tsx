@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Check } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 
 export default function RegisterPage() {
@@ -29,10 +29,13 @@ export default function RegisterPage() {
     }
   }, []);
 
+  // Friction-reduction: drop the Confirm Password field (industry best
+  // practice when the password input has a visibility toggle) and make
+  // Display Name optional — auto-derive from the email local-part if
+  // empty so the backend always receives a value.
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
@@ -47,19 +50,18 @@ export default function RegisterPage() {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
     }
 
+    // Fall back to the email local-part when the user skips Display Name
+    const finalName =
+      displayName.trim() || email.split("@")[0]?.trim() || "Learner";
+
     setLoading(true);
     try {
-      await register(displayName, email, password);
+      await register(finalName, email, password);
       sessionStorage.setItem("sparkupcloud_verify_email", email);
       router.push("/verify-email");
     } catch (err: unknown) {
@@ -81,28 +83,10 @@ export default function RegisterPage() {
         Create your account
       </h1>
       <p className="mb-6 text-center text-sm text-stone-500">
-        Start mastering your certification exam today
+        Just an email and a password — under 30 seconds.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="displayName"
-            className="mb-1 block text-sm font-medium text-stone-700"
-          >
-            Display Name
-          </label>
-          <input
-            id="displayName"
-            type="text"
-            required
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-            className="w-full rounded-lg border border-stone-300 p-3 text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
-            placeholder="Your name"
-          />
-        </div>
-
         <div>
           <label
             htmlFor="email"
@@ -114,6 +98,7 @@ export default function RegisterPage() {
             id="email"
             type="email"
             required
+            autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="w-full rounded-lg border border-stone-300 p-3 text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
@@ -138,6 +123,8 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-lg border border-stone-300 p-3 pr-11 text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
               placeholder="At least 8 characters"
+              minLength={8}
+              aria-describedby="password-status"
             />
             <button
               type="button"
@@ -153,31 +140,47 @@ export default function RegisterPage() {
               )}
             </button>
           </div>
-          <p className="mt-1 text-xs text-stone-400">
-            Must be at least 8 characters
-          </p>
+          {/* Live length validation — replaces the dropped "Confirm Password"
+              field. Click the eye icon to verify what you typed. */}
+          {password.length > 0 ? (
+            <p
+              id="password-status"
+              className={`mt-1 flex items-center gap-1 text-xs ${
+                password.length >= 8 ? "text-emerald-600" : "text-stone-500"
+              }`}
+            >
+              {password.length >= 8 ? (
+                <>
+                  <Check className="h-3 w-3" /> Looks good
+                </>
+              ) : (
+                <>{8 - password.length} more character{8 - password.length === 1 ? "" : "s"} to go</>
+              )}
+            </p>
+          ) : (
+            <p id="password-status" className="mt-1 text-xs text-stone-400">
+              Tip: click the eye icon to check what you typed.
+            </p>
+          )}
         </div>
 
-        <div>
-          <label
-            htmlFor="confirmPassword"
-            className="mb-1 block text-sm font-medium text-stone-700"
-          >
-            Confirm Password
-          </label>
-          <div className="relative">
+        {/* Display Name is optional — collapsed under a disclosure to keep
+            the form short. We default to the email local-part if blank. */}
+        <details className="group">
+          <summary className="cursor-pointer text-xs font-medium text-stone-500 hover:text-stone-700 select-none">
+            + Add a display name (optional)
+          </summary>
+          <div className="mt-2">
             <input
-              id="confirmPassword"
-              type={showPassword ? "text" : "password"}
-              required
-              autoComplete="new-password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full rounded-lg border border-stone-300 p-3 pr-11 text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
-              placeholder="Confirm your password"
+              id="displayName"
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full rounded-lg border border-stone-300 p-3 text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              placeholder="What should we call you? (default: from your email)"
             />
           </div>
-        </div>
+        </details>
 
         {/* Terms of Service */}
         <label className="flex items-start gap-2 cursor-pointer pt-2">

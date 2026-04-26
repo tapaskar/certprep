@@ -2,6 +2,8 @@ import Link from "next/link";
 import { XCircle, AlertTriangle } from "lucide-react";
 import { heuristics } from "@/lib/heuristics-data";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { UpgradeBanner } from "@/components/landing/upgrade-banner";
 
 export const metadata = {
   title: "AWS Exam Anti-Patterns — What NEVER to Choose | SparkUpCloud",
@@ -19,6 +21,10 @@ export default function AntiPatternsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50/50 via-white to-amber-50/30">
+      <UpgradeBanner
+        toolId="anti-patterns"
+        message="Anti-patterns are just the start. Get 8,800+ practice questions with explanations on every wrong choice."
+      />
       <HomeNav />
 
       <section className="px-6 pt-16 pb-12 text-center">
@@ -118,6 +124,8 @@ export default function AntiPatternsPage() {
           </div>
         </div>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }

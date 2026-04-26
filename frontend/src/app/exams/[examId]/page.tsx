@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { JsonLd, courseSchema, faqSchema } from "@/components/seo/json-ld";
 import {
   BookOpen,
   Clock,
@@ -87,32 +89,51 @@ export default async function PublicExamPage({
     nvidia: "NVIDIA",
   };
 
-  // JSON-LD structured data for SEO
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Course",
+  // Course + FAQ structured data. The FAQ items piggy-back on real exam
+  // metadata so we never have to invent answers — Google penalises faked FAQs.
+  const courseLd = courseSchema({
     name: `${exam.code} ${exam.name} Practice Exam`,
-    description: `Practice questions and mock exam for ${exam.name}`,
-    provider: {
-      "@type": "Organization",
-      name: "SparkUpCloud",
-      url: "https://www.sparkupcloud.com",
-    },
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-    },
-  };
+    description: `Free practice questions and mock exam for ${exam.code} ${exam.name}. ${exam.questions_in_bank}+ questions across ${exam.domains?.length ?? 0} domains.`,
+    url: `https://www.sparkupcloud.com/exams/${examId}`,
+    certCode: exam.code,
+  });
+
+  const faqItems: { question: string; answer: string }[] = [];
+  if (exam.passing_score_pct) {
+    faqItems.push({
+      question: `What is the passing score for the ${exam.code} exam?`,
+      answer: `The ${exam.code} ${exam.name} exam requires a passing score of ${exam.passing_score_pct}%.`,
+    });
+  }
+  if (exam.time_limit_minutes && exam.total_questions) {
+    faqItems.push({
+      question: `How many questions and how much time does the ${exam.code} exam have?`,
+      answer: `${exam.total_questions} questions to be answered in ${exam.time_limit_minutes} minutes.`,
+    });
+  }
+  if (info?.cost_usd) {
+    faqItems.push({
+      question: `How much does the ${exam.code} exam cost?`,
+      answer: `The official ${exam.code} exam costs $${info.cost_usd} USD.`,
+    });
+  }
+  if (info?.average_study_weeks) {
+    faqItems.push({
+      question: `How long does it take to prepare for ${exam.code}?`,
+      answer: `Most candidates need around ${info.average_study_weeks} weeks of focused study to be ready for the ${exam.code} exam.`,
+    });
+  }
+  if (info?.validity_years) {
+    faqItems.push({
+      question: `How long is the ${exam.code} certification valid?`,
+      answer: `The ${exam.code} certification is valid for ${info.validity_years} years from the date of passing.`,
+    });
+  }
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* JSON-LD */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={courseLd} />
+      {faqItems.length > 0 && <JsonLd data={faqSchema(faqItems)} />}
 
       <HomeNav />
 
@@ -385,16 +406,7 @@ export default async function PublicExamPage({
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-12 border-t border-stone-200 bg-white py-8 text-center text-sm text-stone-400">
-        <p>&copy; 2026 SparkUpCloud. AI-powered certification exam prep.</p>
-        <div className="mt-2 flex justify-center gap-4">
-          <Link href="/exams" className="hover:text-stone-600">All Exams</Link>
-          <Link href="/pricing" className="hover:text-stone-600">Pricing</Link>
-          <Link href="/blog" className="hover:text-stone-600">Blog</Link>
-          <Link href="/contact" className="hover:text-stone-600">Contact</Link>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

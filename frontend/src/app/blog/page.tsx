@@ -2,6 +2,7 @@ import Link from "next/link";
 import { } from "lucide-react";
 import { BlogFilters } from "@/components/blog/blog-filters";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
 
 export const metadata = {
   title: "Blog — Study Guides, Exam Tips & Certification Articles",
@@ -33,41 +34,7 @@ export default function BlogPage() {
         <BlogFilters />
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-stone-200 bg-white/60">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="SparkUpCloud" className="h-6 w-auto" />
-            <span className="text-sm font-semibold text-stone-700">
-              Spark<span className="text-amber-500">Up</span>Cloud
-            </span>
-          </div>
-          <p className="text-xs text-stone-400">
-            Trusted by professionals preparing for cloud certifications
-            worldwide
-          </p>
-          <div className="flex items-center gap-6 text-sm font-medium">
-            <Link
-              href="/blog"
-              className="text-stone-500 transition-colors hover:text-amber-600"
-            >
-              Blog
-            </Link>
-            <Link
-              href="/pricing"
-              className="text-stone-500 transition-colors hover:text-amber-600"
-            >
-              Pricing
-            </Link>
-            <Link
-              href="/contact"
-              className="text-stone-500 transition-colors hover:text-amber-600"
-            >
-              Contact
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

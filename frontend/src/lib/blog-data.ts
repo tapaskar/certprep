@@ -15,7 +15,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Everything you need to know to pass the AWS Cloud Practitioner exam. Covers all four domains, study timeline, and preparation strategies.",
     category: "AWS",
-    date: "2026-04-17",
+    date: "2026-04-26",
     readTime: "12 min read",
     sections: [
       {
@@ -51,7 +51,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Practical tips and strategies for passing the AWS Solutions Architect Associate exam. Domain breakdown, common pitfalls, and what to focus on.",
     category: "AWS",
-    date: "2026-04-13",
+    date: "2026-04-22",
     readTime: "10 min read",
     sections: [
       {
@@ -87,7 +87,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "A complete study guide for the Microsoft Azure Fundamentals AZ-900 exam. Covers cloud concepts, Azure services, security, and pricing.",
     category: "Azure",
-    date: "2026-04-09",
+    date: "2026-04-18",
     readTime: "11 min read",
     sections: [
       {
@@ -123,7 +123,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Strategic preparation guide for the Microsoft Azure Administrator AZ-104 exam. Learn the domains, hands-on labs, and study timeline.",
     category: "Azure",
-    date: "2026-04-05",
+    date: "2026-04-14",
     readTime: "10 min read",
     sections: [
       {
@@ -159,7 +159,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Complete guide to the Google Cloud Digital Leader certification. Understand cloud concepts, GCP services, and preparation strategies.",
     category: "Google Cloud",
-    date: "2026-04-01",
+    date: "2026-04-10",
     readTime: "9 min read",
     sections: [
       {
@@ -195,7 +195,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Preparation tips for the Google Associate Cloud Engineer exam. Covers key topics, hands-on practice, and study resources.",
     category: "Google Cloud",
-    date: "2026-03-28",
+    date: "2026-04-06",
     readTime: "10 min read",
     sections: [
       {
@@ -231,7 +231,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Guidance on selecting the right cloud certification for your career goals. Compare AWS, Azure, and Google Cloud entry-level certifications.",
     category: "Study Tips",
-    date: "2026-03-24",
+    date: "2026-04-02",
     readTime: "8 min read",
     sections: [
       {
@@ -267,7 +267,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Evidence-based study techniques that help you pass cloud certification exams. From active recall to hands-on labs.",
     category: "Study Tips",
-    date: "2026-03-20",
+    date: "2026-03-29",
     readTime: "7 min read",
     sections: [
       {
@@ -303,7 +303,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Compare AWS, Azure, and Google Cloud certification paths. Understand the differences in focus, job market demand, and career trajectories.",
     category: "Career",
-    date: "2026-03-16",
+    date: "2026-03-25",
     readTime: "9 min read",
     sections: [
       {
@@ -339,7 +339,7 @@ export const blogPosts: BlogPost[] = [
     description:
       "Learn how spaced repetition works and why it is the most effective method for retaining exam content. Based on cognitive science research.",
     category: "Study Tips",
-    date: "2026-03-12",
+    date: "2026-03-21",
     readTime: "8 min read",
     sections: [
       {

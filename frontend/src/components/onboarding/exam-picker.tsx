@@ -11,7 +11,7 @@ interface ExamPickerProps {
 }
 
 type Level = "Foundational" | "Fundamentals" | "Associate" | "Professional" | "Specialty" | "Expert";
-type Provider = "all" | "aws" | "azure" | "gcp" | "comptia" | "nvidia";
+type Provider = "all" | "aws" | "azure" | "gcp" | "comptia" | "nvidia" | "redhat";
 
 const levelByCode: Record<string, Level> = {
   // AWS
@@ -74,6 +74,29 @@ const levelByCode: Record<string, Level> = {
   "NCP-ADS": "Professional",
   "NCP-GENL": "Professional",
   "NCP-OUSD": "Professional",
+  // Red Hat — RHCSA is Associate, RHCE is Professional, everything else
+  // ("Certified Specialist in …") is a Specialty cert.
+  "EX180": "Foundational",
+  "EX200": "Associate", // RHCSA
+  "EX294": "Professional", // RHCE
+  "EX188": "Specialty",
+  "EX280": "Specialty",
+  "EX288": "Specialty",
+  "EX316": "Specialty",
+  "EX318": "Specialty",
+  "EX328": "Specialty",
+  "EX358": "Specialty",
+  "EX362": "Specialty",
+  "EX370": "Specialty",
+  "EX374": "Specialty",
+  "EX380": "Specialty",
+  "EX415": "Specialty",
+  "EX436": "Specialty",
+  "EX440": "Specialty",
+  "EX442": "Specialty",
+  "EX447": "Specialty",
+  "EX457": "Specialty",
+  "EX467": "Specialty",
 };
 
 const levelOrder: Level[] = ["Foundational", "Fundamentals", "Associate", "Professional", "Expert", "Specialty"];
@@ -103,6 +126,7 @@ const providerTabs: { key: Provider; label: string }[] = [
   { key: "gcp", label: "GCP" },
   { key: "comptia", label: "CompTIA" },
   { key: "nvidia", label: "NVIDIA" },
+  { key: "redhat", label: "Red Hat" },
 ];
 
 function getLevel(code: string | null): Level {

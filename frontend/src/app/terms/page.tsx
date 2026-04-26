@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
 
 export const metadata = {
   title: "Terms of Service — SparkUpCloud",
@@ -108,6 +109,8 @@ export default function TermsPage() {
           .
         </Section>
       </article>
+
+      <SiteFooter />
     </div>
   );
 }

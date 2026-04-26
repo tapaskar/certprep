@@ -1,6 +1,8 @@
 import { scenarios } from "@/lib/scenarios-data";
 import { ScenarioFilters } from "@/components/scenarios/scenario-filters";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { UpgradeBanner } from "@/components/landing/upgrade-banner";
 
 export const metadata = {
   title: "AWS Architecture Scenarios — Real Exam-Ready Designs | SparkUpCloud",
@@ -13,6 +15,10 @@ export const metadata = {
 export default function ScenariosPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50/40 via-white to-amber-50/30">
+      <UpgradeBanner
+        toolId="scenarios"
+        message="Scenarios are a fraction of what's inside. Get 8,800+ practice questions and AI-powered exam prep."
+      />
       <HomeNav />
 
       <section className="px-6 pt-16 pb-10 text-center">
@@ -38,6 +44,8 @@ export default function ScenariosPage() {
       <section className="px-6 pb-24 max-w-5xl mx-auto">
         <ScenarioFilters />
       </section>
+
+      <SiteFooter />
     </div>
   );
 }

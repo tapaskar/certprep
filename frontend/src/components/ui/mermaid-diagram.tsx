@@ -81,15 +81,85 @@ function cleanupOrphans(thisId: string) {
   if (typeof document === "undefined") return;
   // The measurement container mermaid creates per render is `d<id>`.
   document.getElementById(`d${thisId}`)?.remove();
+  sweepErrorSvgs();
+}
 
-  // Phantom error SVGs that mermaid sometimes attaches as direct
-  // <body> children. They have a `<text>Syntax error in text</text>`
-  // node — much more reliable than checking ids that vary by version.
-  document.querySelectorAll<SVGElement>("body > svg").forEach((svg) => {
-    if (svg.textContent?.includes("Syntax error in text")) {
+/**
+ * Strip every "Syntax error in text" SVG mermaid has attached to
+ * <body> (or anywhere else outside our component). Used both by
+ * cleanupOrphans (immediate, post-render) and the global observer
+ * below (catches late-arriving SVGs that mermaid attaches via
+ * microtasks / next-tick after render() resolves).
+ */
+function sweepErrorSvgs() {
+  if (typeof document === "undefined") return;
+  // Cast to Element so this also catches mermaid's wrapping <div>
+  // around the SVG — some versions wrap, others don't.
+  const candidates = document.querySelectorAll<HTMLElement>(
+    "body > svg, body > div > svg",
+  );
+  candidates.forEach((svg) => {
+    const t = svg.textContent || "";
+    if (
+      t.includes("Syntax error in text") ||
+      t.includes("mermaid version") ||
+      svg.getAttribute("aria-roledescription") === "error"
+    ) {
+      // If mermaid wrapped in a div with no other children, kill the wrapper
+      const parent = svg.parentElement;
       svg.remove();
+      if (
+        parent &&
+        parent !== document.body &&
+        parent.childElementCount === 0 &&
+        parent.tagName === "DIV"
+      ) {
+        parent.remove();
+      }
     }
   });
+}
+
+/**
+ * One-shot global guard. Mermaid sometimes appends the error SVG
+ * AFTER our per-render cleanup runs (microtask / requestAnimationFrame
+ * inside its render pipeline), so a single cleanup call doesn't catch
+ * everything. This MutationObserver lives for the page lifetime and
+ * removes any orphan as soon as it's added.
+ *
+ * Idempotent: only installs once per page. Cheap: filters by tag name
+ * before reading textContent, so it's a no-op for ~all DOM mutations.
+ */
+let observerInstalled = false;
+function installGlobalErrorSvgObserver() {
+  if (observerInstalled || typeof window === "undefined") return;
+  observerInstalled = true;
+  const isErrorSvgNode = (node: Node): node is HTMLElement => {
+    if (!(node instanceof HTMLElement) && !(node instanceof SVGElement)) return false;
+    const el = node as HTMLElement;
+    if (el.tagName !== "SVG" && el.tagName !== "DIV") return false;
+    // Walk into div wrappers — mermaid may wrap the error SVG.
+    const svg = el.tagName === "SVG" ? el : el.querySelector("svg");
+    if (!svg) return false;
+    const txt = svg.textContent || "";
+    return (
+      txt.includes("Syntax error in text") ||
+      svg.getAttribute("aria-roledescription") === "error"
+    );
+  };
+  const obs = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      m.addedNodes.forEach((node) => {
+        if (isErrorSvgNode(node)) {
+          (node as HTMLElement).remove();
+        }
+      });
+    }
+  });
+  obs.observe(document.body, { childList: true, subtree: false });
+  // Also sweep once on install — handles SVGs that landed before the
+  // first MermaidDiagram mounted (rare, but cheap insurance).
+  sweepErrorSvgs();
 }
 
 /**
@@ -109,72 +179,121 @@ function normaliseSource(s: string): string {
     .trim();
 }
 
+/**
+ * Sniff for "this looks like Coach is still streaming a partial diagram".
+ * Skipping render on these saves a parse failure (and the inevitable
+ * orphan SVG) on every chunk during a streamed response. Once the
+ * stream completes we'll have a real diagram and render normally.
+ *
+ * Heuristic: must start with a known mermaid diagram-type keyword AND
+ * contain at least one node/edge/arrow that suggests the body has begun.
+ */
+const DIAGRAM_TYPE_RE = /^\s*(graph|flowchart|sequenceDiagram|classDiagram|stateDiagram|stateDiagram-v2|erDiagram|gantt|journey|pie|gitGraph|mindmap|timeline|quadrantChart|xychart-beta|sankey-beta|requirementDiagram)\b/;
+
+function looksLikeStreamingPartial(src: string): boolean {
+  if (!src || src.length < 12) return true;
+  if (!DIAGRAM_TYPE_RE.test(src)) return true;
+  // Must contain at least an arrow, colon, or square bracket — i.e.
+  // some body content beyond the type declaration.
+  return !/(-->|---|==>|::|\[|\(|\{|:)/.test(src);
+}
+
 export function MermaidDiagram({ source, className }: MermaidDiagramProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [rendered, setRendered] = useState(false);
 
   useEffect(() => {
+    // Make sure the global janitor is running before we touch mermaid.
+    installGlobalErrorSvgObserver();
+
     let cancelled = false;
     setError(null);
     setRendered(false);
 
-    loadMermaid()
-      .then(async (mermaid) => {
-        if (cancelled || !containerRef.current) return;
-        const cleaned = normaliseSource(source);
-        const id = `mmd-${Math.random().toString(36).slice(2, 10)}`;
+    // Coach streams its replies token-by-token. While the stream is in
+    // flight, `source` will keep being a partial mermaid block — render
+    // will fail every time and leak an SVG. Debounce render until the
+    // source stops changing for ~250ms (i.e. the chunk has settled).
+    const timer = window.setTimeout(() => {
+      void runRender();
+    }, 250);
 
-        // Validate with parse() first — never call render() on bad input,
-        // because render() leaks a "Syntax error in text" SVG to <body>
-        // even when suppressErrorRendering is true.
-        try {
-          const parsed = await mermaid.parse(cleaned, { suppressErrors: true });
-          if (parsed === false) {
-            // Re-run without suppression to capture the real message
-            try {
-              await mermaid.parse(cleaned);
-            } catch (perr) {
-              const pmsg = perr instanceof Error ? perr.message : "Invalid diagram syntax";
-              if (cancelled) return;
-              // eslint-disable-next-line no-console
-              console.warn("[MermaidDiagram] parse failed:", pmsg, "\n--- source ---\n", cleaned);
-              setError(pmsg.split("\n")[0].slice(0, 200));
-              cleanupOrphans(id);
-              return;
-            }
-          }
-        } catch {
-          // older mermaid versions throw synchronously — fall through to render
-        }
+    async function runRender() {
+      if (cancelled) return;
+      const cleaned = normaliseSource(source);
 
-        try {
-          const { svg } = await mermaid.render(id, cleaned);
-          if (cancelled || !containerRef.current) {
-            cleanupOrphans(id);
-            return;
-          }
-          containerRef.current.innerHTML = svg;
-          setRendered(true);
-        } catch (e) {
-          if (cancelled) return;
-          const msg = e instanceof Error ? e.message : "Diagram failed to render";
-          // eslint-disable-next-line no-console
-          console.warn("[MermaidDiagram] render failed:", msg, "\n--- source ---\n", cleaned);
-          setError(msg.split("\n")[0].slice(0, 200));
-        } finally {
-          // Always sweep up any temporary measurement / error nodes that
-          // mermaid leaves attached to <body>. Cheap, safe, idempotent.
-          cleanupOrphans(id);
-        }
-      })
-      .catch((e) => {
-        if (cancelled) return;
-        setError(e instanceof Error ? e.message : "Mermaid failed to load");
+      // Skip obvious in-progress partials silently. Show the loader
+      // (rendered=false, error=null) while we wait for the rest.
+      if (looksLikeStreamingPartial(cleaned)) {
+        sweepErrorSvgs();
+        return;
+      }
+
+      const mermaid = await loadMermaid().catch((e) => {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Mermaid failed to load");
+        return null;
       });
+      if (!mermaid || cancelled || !containerRef.current) return;
+
+      const id = `mmd-${Math.random().toString(36).slice(2, 10)}`;
+
+      // Validate with parse() first — never call render() on bad input,
+      // because render() leaks a "Syntax error in text" SVG to <body>
+      // even when suppressErrorRendering is true.
+      //
+      // We only call parse() with suppressErrors:true. Calling it again
+      // without suppression to "get a better error message" is what was
+      // ALSO leaking SVGs — the unsuppressed call can side-effect even
+      // when wrapped in try/catch. Generic message is fine; full source
+      // is in the fallback display anyway.
+      try {
+        const parsed = await mermaid.parse(cleaned, { suppressErrors: true });
+        if (parsed === false) {
+          if (cancelled) return;
+          // eslint-disable-next-line no-console
+          console.warn(
+            "[MermaidDiagram] parse failed — showing source fallback.\n--- source ---\n",
+            cleaned,
+          );
+          setError("Invalid diagram syntax");
+          sweepErrorSvgs();
+          return;
+        }
+      } catch {
+        // older mermaid versions throw synchronously — fall through to render
+      }
+
+      try {
+        const { svg } = await mermaid.render(id, cleaned);
+        if (cancelled || !containerRef.current) {
+          cleanupOrphans(id);
+          return;
+        }
+        containerRef.current.innerHTML = svg;
+        setRendered(true);
+      } catch (e) {
+        if (cancelled) return;
+        const msg = e instanceof Error ? e.message : "Diagram failed to render";
+        // eslint-disable-next-line no-console
+        console.warn("[MermaidDiagram] render failed:", msg, "\n--- source ---\n", cleaned);
+        setError(msg.split("\n")[0].slice(0, 200));
+      } finally {
+        // Always sweep up any temporary measurement / error nodes that
+        // mermaid leaves attached to <body>. Cheap, safe, idempotent.
+        cleanupOrphans(id);
+        // And again on the next tick — mermaid sometimes appends the
+        // error SVG via microtask AFTER render() resolves.
+        window.setTimeout(sweepErrorSvgs, 0);
+      }
+    }
 
     return () => {
       cancelled = true;
+      window.clearTimeout(timer);
+      // One last sweep on unmount/source-change so errors that arrived
+      // while we were already mid-render don't survive.
+      sweepErrorSvgs();
     };
   }, [source]);
 

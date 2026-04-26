@@ -2,7 +2,10 @@ import Link from "next/link";
 import { Award, Users, Star, ArrowRight } from "lucide-react";
 import PricingCards from "@/components/pricing/pricing-cards";
 import FAQSection from "@/components/pricing/faq-section";
+import { pricingFaqs } from "@/components/pricing/faq-data";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
+import { JsonLd, faqSchema } from "@/components/seo/json-ld";
 
 export const metadata = {
   title: "Pricing",
@@ -89,6 +92,14 @@ export default function PricingPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {/* Pricing-page FAQ schema — uses the same source the visible FAQ
+          renders from, so what users see and what Google indexes can never
+          drift apart. */}
+      <JsonLd
+        data={faqSchema(
+          pricingFaqs.map((f) => ({ question: f.q, answer: f.a }))
+        )}
       />
       <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-white to-violet-50/30">
         <HomeNav />
@@ -182,6 +193,8 @@ export default function PricingPage() {
             Trusted by professionals preparing for cloud certifications worldwide
           </p>
         </section>
+
+        <SiteFooter />
       </div>
     </>
   );

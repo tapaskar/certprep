@@ -3,6 +3,7 @@ import { BookOpen, Clock, Target, ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import { CertBadge } from "@/components/cert-badge";
 import { HomeNav } from "@/components/landing/home-nav";
+import { SiteFooter } from "@/components/landing/site-footer";
 
 export const metadata: Metadata = {
   title: "76+ Certification Practice Exams — Free Mock Tests",
@@ -50,6 +51,7 @@ const providerMeta: Record<
   gcp: { label: "Google Cloud", color: "text-green-700", bg: "bg-green-50" },
   comptia: { label: "CompTIA", color: "text-red-700", bg: "bg-red-50" },
   nvidia: { label: "NVIDIA", color: "text-lime-700", bg: "bg-lime-50" },
+  redhat: { label: "Red Hat", color: "text-rose-700", bg: "bg-rose-50" },
 };
 
 export default async function ExamsListPage() {
@@ -203,10 +205,7 @@ export default async function ExamsListPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="mt-12 border-t border-stone-200 bg-white py-8 text-center text-sm text-stone-400">
-        <p>&copy; 2026 SparkUpCloud. AI-powered certification exam prep.</p>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
