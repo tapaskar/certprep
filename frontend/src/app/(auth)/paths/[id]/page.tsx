@@ -23,6 +23,7 @@ import { CoachInterventionBanner } from "@/components/tutor/coach-intervention-b
 import { useCoachStore } from "@/stores/coach-store";
 import { cn } from "@/lib/utils";
 import { CodeBlock } from "@/components/ui/code-block";
+import { MermaidDiagram } from "@/components/ui/mermaid-diagram";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Path = any;
@@ -838,10 +839,16 @@ function Markdown({ text }: { text: string }) {
   sections.forEach((section, sIdx) => {
     if (section.kind === "code") {
       const lang = langs[codeIdx++];
+      const code = section.content.replace(/\n$/, "");
+      // Mermaid fences render as actual diagrams instead of code blocks.
+      if (lang === "mermaid") {
+        blocks.push(<MermaidDiagram key={`mmd-${sIdx}`} source={code} />);
+        return;
+      }
       blocks.push(
         <CodeBlock
           key={`code-${sIdx}`}
-          code={section.content.replace(/\n$/, "")}
+          code={code}
           language={lang}
         />
       );

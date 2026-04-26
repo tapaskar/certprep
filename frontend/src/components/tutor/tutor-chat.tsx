@@ -14,6 +14,7 @@ import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { CoachAvatar } from "./coach-avatar";
 import { CodeBlock } from "@/components/ui/code-block";
+import { MermaidDiagram } from "@/components/ui/mermaid-diagram";
 
 export interface TutorChatProps {
   conceptId?: string;
@@ -354,40 +355,50 @@ export function TutorChat({
             )}
           </div>
         ) : (
-          <div className="flex items-end gap-2">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              rows={1}
-              placeholder={
-                stepTitle
-                  ? `Ask Coach about "${stepTitle}"...`
-                  : pathTitle
-                  ? `Ask Coach about ${pathTitle}...`
-                  : conceptName
-                  ? `Ask Coach about ${conceptName}...`
-                  : "Ask Coach anything about your exam..."
-              }
+          <>
+            {/* Quick-reply buttons — one tap sends a templated request to
+                Coach. The model knows from its system prompt that it can
+                emit ```mermaid blocks for diagrams. */}
+            <QuickReplies
               disabled={sending || loadingHistory}
-              className="flex-1 resize-none rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 disabled:bg-stone-50 max-h-32"
-              style={{ minHeight: 38 }}
-              onInput={(e) => {
-                const el = e.target as HTMLTextAreaElement;
-                el.style.height = "auto";
-                el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
-              }}
+              onPick={(text) => send(text)}
+              context={stepTitle || conceptName || pathTitle}
             />
-            <button
-              onClick={() => send()}
-              disabled={!input.trim() || sending || loadingHistory}
-              className="shrink-0 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white p-2 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 transition-all"
-              aria-label="Send"
-            >
-              <Send className="h-4 w-4" />
-            </button>
-          </div>
+            <div className="flex items-end gap-2">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={1}
+                placeholder={
+                  stepTitle
+                    ? `Ask Coach about "${stepTitle}"...`
+                    : pathTitle
+                    ? `Ask Coach about ${pathTitle}...`
+                    : conceptName
+                    ? `Ask Coach about ${conceptName}...`
+                    : "Ask Coach anything about your exam..."
+                }
+                disabled={sending || loadingHistory}
+                className="flex-1 resize-none rounded-lg border border-stone-300 px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400 disabled:bg-stone-50 max-h-32"
+                style={{ minHeight: 38 }}
+                onInput={(e) => {
+                  const el = e.target as HTMLTextAreaElement;
+                  el.style.height = "auto";
+                  el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+                }}
+              />
+              <button
+                onClick={() => send()}
+                disabled={!input.trim() || sending || loadingHistory}
+                className="shrink-0 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 text-white p-2 hover:scale-105 disabled:opacity-40 disabled:hover:scale-100 transition-all"
+                aria-label="Send"
+              >
+                <Send className="h-4 w-4" />
+              </button>
+            </div>
+          </>
         )}
         <div className="mt-1.5 text-[10px] text-stone-400 flex items-center justify-between">
           <span>Enter to send · Shift+Enter for newline</span>
@@ -485,12 +496,16 @@ function RichText({ text, dark }: { text: string; dark: boolean }) {
 
   sections.forEach((section, sIdx) => {
     if (section.kind === "code") {
-      // CodeBlock handles its own theming + adds the copy button.
-      // In a "dark" bubble (user message), tell it to render light.
+      const code = section.content.replace(/\n$/, "");
+      // Mermaid fence → real diagram; otherwise → code block with copy.
+      if (section.lang === "mermaid") {
+        blocks.push(<MermaidDiagram key={`mmd-${sIdx}`} source={code} />);
+        return;
+      }
       blocks.push(
         <CodeBlock
           key={`code-${sIdx}`}
-          code={section.content.replace(/\n$/, "")}
+          code={code}
           language={section.lang}
           light={dark}
         />
@@ -539,4 +554,73 @@ function RichText({ text, dark }: { text: string; dark: boolean }) {
   });
 
   return <div className="space-y-1.5">{blocks}</div>;
+}
+
+
+/**
+ * QuickReplies — preset prompt buttons under the chat composer.
+ *
+ * One tap sends a templated message to Coach. The template is
+ * deliberately verbose so we steer the model toward the right format
+ * (Mermaid diagram, analogy, runnable commands, mini-quiz, etc).
+ *
+ * `context` is the current step / concept / path title; we splice it
+ * into the templates so Coach knows what "this" refers to without
+ * relying on the conversation history.
+ */
+function QuickReplies({
+  disabled,
+  onPick,
+  context,
+}: {
+  disabled?: boolean;
+  onPick: (text: string) => void;
+  context?: string;
+}) {
+  const subj = context ? `“${context}”` : "what we're studying";
+  const presets: { emoji: string; label: string; prompt: string }[] = [
+    {
+      emoji: "🎨",
+      label: "Diagram",
+      prompt: `Draw me a Mermaid diagram that explains ${subj} visually. Use a flowchart or sequence diagram, label every node clearly, and keep it small enough to read at a glance. After the diagram, give me a 2-sentence summary of what it shows.`,
+    },
+    {
+      emoji: "📖",
+      label: "Analogy",
+      prompt: `Explain ${subj} using a simple everyday analogy I can relate to. Pick something non-technical (cooking, traffic, a coffee shop) and map each part of the analogy back to the actual concept.`,
+    },
+    {
+      emoji: "💡",
+      label: "Real example",
+      prompt: `Walk me through a concrete real-world example of ${subj}. Use real service / company / scenario names, not "Foo Inc". Show how it actually plays out in production.`,
+    },
+    {
+      emoji: "🧪",
+      label: "Commands",
+      prompt: `Give me the actual commands or code I should run to learn ${subj} hands-on. Use copy-pasteable code blocks. Tell me what each command does and what output to expect.`,
+    },
+    {
+      emoji: "🎯",
+      label: "Quiz me",
+      prompt: `Ask me 3 quick check-your-understanding questions about ${subj}. Don't give the answers up front — wait for my response, then tell me if I got it right and why.`,
+    },
+  ];
+
+  return (
+    <div className="mb-2 flex flex-wrap gap-1.5">
+      {presets.map((p) => (
+        <button
+          key={p.label}
+          type="button"
+          disabled={disabled}
+          onClick={() => onPick(p.prompt)}
+          title={p.label}
+          className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[11px] font-medium text-stone-700 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <span aria-hidden="true">{p.emoji}</span>
+          <span>{p.label}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
