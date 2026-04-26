@@ -15,9 +15,11 @@ import {
   Star,
   Trophy,
   AlertTriangle,
+  Rocket,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CertBadge } from "@/components/cert-badge";
+import { useAuthStore } from "@/stores/auth-store";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ExamDetails = any;
@@ -28,6 +30,12 @@ export default function ExamDetailPage() {
   const examId = params.examId as string;
   const [exam, setExam] = useState<ExamDetails | null>(null);
   const [loading, setLoading] = useState(true);
+  const [enrolling, setEnrolling] = useState(false);
+
+  // Enrollment state — am I already studying this exam?
+  const user = useAuthStore((s) => s.user);
+  const enrolledExamIds = (user?.enrolled_exams ?? []).map((e) => e.exam_id);
+  const isEnrolled = enrolledExamIds.includes(examId);
 
   useEffect(() => {
     api
@@ -36,6 +44,22 @@ export default function ExamDetailPage() {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [examId]);
+
+  /**
+   * Primary CTA action.
+   *  - Already enrolled → jump straight to /study (existing study session)
+   *  - Not enrolled    → route to /onboarding?exam=<id> for the proper
+   *    onboarding flow that captures exam date + study prefs. We don't
+   *    silent-enroll here so the user gets to set their pace.
+   */
+  const handleStartPreparing = () => {
+    if (isEnrolled) {
+      router.push("/study");
+      return;
+    }
+    setEnrolling(true);
+    router.push(`/onboarding?exam=${encodeURIComponent(examId)}`);
+  };
 
   if (loading) {
     return (
@@ -47,7 +71,28 @@ export default function ExamDetailPage() {
 
   if (!exam) {
     return (
-      <div className="py-20 text-center text-stone-500">Exam not found</div>
+      <div className="mx-auto max-w-2xl px-4 py-20 text-center">
+        <div className="rounded-2xl border border-stone-200 bg-white p-8 shadow-sm">
+          <AlertTriangle className="mx-auto h-10 w-10 text-amber-500" />
+          <h2 className="mt-4 text-xl font-bold text-stone-900">
+            Exam not found
+          </h2>
+          <p className="mt-2 text-sm text-stone-500">
+            We couldn&apos;t find &quot;{examId}&quot; in our catalog. It may
+            not be loaded yet — if you&apos;re an admin, run{" "}
+            <code className="rounded bg-stone-100 px-1.5 py-0.5 text-xs font-mono">
+              python -m app.cli seed-all
+            </code>{" "}
+            on the backend.
+          </p>
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="mt-6 rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-amber-600"
+          >
+            Back to dashboard
+          </button>
+        </div>
+      </div>
     );
   }
 
@@ -140,6 +185,39 @@ export default function ExamDetailPage() {
           )}
           {info?.average_study_weeks && (
             <span>Avg study: {info.average_study_weeks} weeks</span>
+          )}
+        </div>
+
+        {/* ── Primary CTA — visible on every exam page ──
+            "Start preparing" enrolls the user (via /onboarding) and routes
+            them into the study flow. Already-enrolled users see "Continue
+            studying" instead and skip straight to /study. */}
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <button
+            onClick={handleStartPreparing}
+            disabled={enrolling}
+            className={cn(
+              "inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-bold shadow-lg transition-all",
+              "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 hover:scale-[1.02]",
+              "disabled:opacity-60 disabled:cursor-wait disabled:hover:scale-100",
+            )}
+          >
+            {isEnrolled ? (
+              <>
+                <ArrowRight className="h-5 w-5" />
+                Continue studying {exam.code ?? exam.name}
+              </>
+            ) : (
+              <>
+                <Rocket className="h-5 w-5" />
+                Start preparing for {exam.code ?? exam.name}
+              </>
+            )}
+          </button>
+          {!isEnrolled && (
+            <p className="text-xs text-stone-500 sm:max-w-xs">
+              Free to start. Set your exam date and study pace in 60 seconds.
+            </p>
           )}
         </div>
       </div>

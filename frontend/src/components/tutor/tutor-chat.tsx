@@ -13,6 +13,7 @@ import {
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
 import { CoachAvatar } from "./coach-avatar";
+import { CodeBlock } from "@/components/ui/code-block";
 
 export interface TutorChatProps {
   conceptId?: string;
@@ -464,16 +465,16 @@ function RichText({ text, dark }: { text: string; dark: boolean }) {
     return parts;
   };
 
-  // Split out code fences first
-  const sections: Array<{ kind: "code" | "text"; content: string }> = [];
-  const fenceRegex = /```(?:[\w-]*)\n?([\s\S]*?)```/g;
+  // Split out code fences first, capturing language tag (```bash etc)
+  const sections: Array<{ kind: "code" | "text"; content: string; lang?: string }> = [];
+  const fenceRegex = /```([\w-]*)\n?([\s\S]*?)```/g;
   let lastIdx = 0;
   let m: RegExpExecArray | null;
   while ((m = fenceRegex.exec(text)) !== null) {
     if (m.index > lastIdx) {
       sections.push({ kind: "text", content: text.slice(lastIdx, m.index) });
     }
-    sections.push({ kind: "code", content: m[1] });
+    sections.push({ kind: "code", content: m[2], lang: m[1] || undefined });
     lastIdx = m.index + m[0].length;
   }
   if (lastIdx < text.length) {
@@ -484,13 +485,15 @@ function RichText({ text, dark }: { text: string; dark: boolean }) {
 
   sections.forEach((section, sIdx) => {
     if (section.kind === "code") {
+      // CodeBlock handles its own theming + adds the copy button.
+      // In a "dark" bubble (user message), tell it to render light.
       blocks.push(
-        <pre
+        <CodeBlock
           key={`code-${sIdx}`}
-          className={`rounded-md p-2.5 overflow-x-auto text-[12px] font-mono ${blockBg} ${dark ? "text-stone-100" : "text-stone-900"} my-1.5`}
-        >
-          <code>{section.content}</code>
-        </pre>
+          code={section.content.replace(/\n$/, "")}
+          language={section.lang}
+          light={dark}
+        />
       );
       return;
     }

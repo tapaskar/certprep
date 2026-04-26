@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { api } from "@/lib/api";
 import type {
@@ -25,6 +25,26 @@ const stepLabels: { key: Step; label: string }[] = [
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState<Step>("exam");
   const [selectedExam, setSelectedExam] = useState<Exam | null>(null);
+
+  // ?exam=<id> in the URL — pre-fill the selection and jump straight to
+  // preferences. Used by the "Start preparing" CTA on /exam/[examId].
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const examId = params.get("exam");
+    if (!examId) return;
+    api
+      .getExams()
+      .then((exams) => {
+        const match = exams.find((e) => e.id === examId);
+        if (match) {
+          setSelectedExam(match);
+          setCurrentStep("preferences");
+        }
+      })
+      .catch(() => {
+        /* fall through — user can still pick manually */
+      });
+  }, []);
   const [diagnosticQuestions, setDiagnosticQuestions] = useState<
     DiagnosticQuestion[]
   >([]);

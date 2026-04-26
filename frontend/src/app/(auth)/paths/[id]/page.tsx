@@ -22,6 +22,7 @@ import { IntegratedCoachPanel } from "@/components/tutor/integrated-coach-panel"
 import { CoachInterventionBanner } from "@/components/tutor/coach-intervention-banner";
 import { useCoachStore } from "@/stores/coach-store";
 import { cn } from "@/lib/utils";
+import { CodeBlock } from "@/components/ui/code-block";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Path = any;
@@ -827,15 +828,22 @@ function Markdown({ text }: { text: string }) {
   if (last < text.length)
     sections.push({ kind: "text", content: text.slice(last) });
 
+  // Capture optional language tag from the fence (```bash\n...```).
+  // We re-scan because the section captures don't preserve it.
+  const langs = Array.from(text.matchAll(/```([\w-]*)\n?[\s\S]*?```/g)).map(
+    (m) => m[1] || undefined,
+  );
+  let codeIdx = 0;
+
   sections.forEach((section, sIdx) => {
     if (section.kind === "code") {
+      const lang = langs[codeIdx++];
       blocks.push(
-        <pre
+        <CodeBlock
           key={`code-${sIdx}`}
-          className="rounded-md bg-stone-900 text-stone-100 p-3 overflow-x-auto text-xs font-mono my-2"
-        >
-          <code>{section.content}</code>
-        </pre>
+          code={section.content.replace(/\n$/, "")}
+          language={lang}
+        />
       );
       return;
     }
