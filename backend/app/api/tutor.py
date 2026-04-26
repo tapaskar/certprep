@@ -517,6 +517,13 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
         pass
 
     # ── Call the configured LLM provider (with usage logging) ──
+    #
+    # Output cap: 4000 tokens (~3000 words). Tutor replies routinely need
+    # to walk through a concept, embed a code example, and lay out
+    # follow-up steps — the previous 700-token cap (~525 words) cut
+    # answers off mid-sentence, especially for hands-on Linux/Podman
+    # questions. 4000 leaves comfortable headroom against the model's
+    # 8k+ output ceiling without exposing us to runaway responses.
     try:
         result = await chat_and_log(
             db=db,
@@ -524,7 +531,7 @@ async def tutor_chat(request: TutorChatRequest, user: CurrentUser, db: DB):
             user_id=user.id,
             system=system_prompt,
             messages=api_messages,
-            max_tokens=700,
+            max_tokens=4000,
             temperature=0.7,
         )
         reply = result.content
