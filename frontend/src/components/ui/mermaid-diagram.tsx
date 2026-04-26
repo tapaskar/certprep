@@ -70,6 +70,29 @@ function loadMermaid() {
 }
 
 /**
+ * Mermaid v11 leaks DOM nodes when render fails — most visibly a
+ * "Syntax error in text / mermaid version 11.14.0" SVG appended to
+ * <body>. It also leaves behind temporary measurement <div id="dXXX">
+ * containers it uses to size labels. Sweep them up after every render.
+ *
+ * Idempotent and cheap; safe to call from the success path too.
+ */
+function cleanupOrphans(thisId: string) {
+  if (typeof document === "undefined") return;
+  // The measurement container mermaid creates per render is `d<id>`.
+  document.getElementById(`d${thisId}`)?.remove();
+
+  // Phantom error SVGs that mermaid sometimes attaches as direct
+  // <body> children. They have a `<text>Syntax error in text</text>`
+  // node — much more reliable than checking ids that vary by version.
+  document.querySelectorAll<SVGElement>("body > svg").forEach((svg) => {
+    if (svg.textContent?.includes("Syntax error in text")) {
+      svg.remove();
+    }
+  });
+}
+
+/**
  * Massage common LLM quirks into syntactically clean Mermaid before
  * we hand it to the parser. The model often:
  *   - prefixes the source with stray whitespace or a BOM
@@ -100,21 +123,49 @@ export function MermaidDiagram({ source, className }: MermaidDiagramProps) {
       .then(async (mermaid) => {
         if (cancelled || !containerRef.current) return;
         const cleaned = normaliseSource(source);
+        const id = `mmd-${Math.random().toString(36).slice(2, 10)}`;
+
+        // Validate with parse() first — never call render() on bad input,
+        // because render() leaks a "Syntax error in text" SVG to <body>
+        // even when suppressErrorRendering is true.
         try {
-          // mermaid.render needs a unique id per call to avoid SVG id collisions.
-          const id = `mmd-${Math.random().toString(36).slice(2, 10)}`;
+          const parsed = await mermaid.parse(cleaned, { suppressErrors: true });
+          if (parsed === false) {
+            // Re-run without suppression to capture the real message
+            try {
+              await mermaid.parse(cleaned);
+            } catch (perr) {
+              const pmsg = perr instanceof Error ? perr.message : "Invalid diagram syntax";
+              if (cancelled) return;
+              // eslint-disable-next-line no-console
+              console.warn("[MermaidDiagram] parse failed:", pmsg, "\n--- source ---\n", cleaned);
+              setError(pmsg.split("\n")[0].slice(0, 200));
+              cleanupOrphans(id);
+              return;
+            }
+          }
+        } catch {
+          // older mermaid versions throw synchronously — fall through to render
+        }
+
+        try {
           const { svg } = await mermaid.render(id, cleaned);
-          if (cancelled || !containerRef.current) return;
+          if (cancelled || !containerRef.current) {
+            cleanupOrphans(id);
+            return;
+          }
           containerRef.current.innerHTML = svg;
           setRendered(true);
         } catch (e) {
           if (cancelled) return;
           const msg = e instanceof Error ? e.message : "Diagram failed to render";
-          // Log full error in dev console so we can see what Coach produced.
           // eslint-disable-next-line no-console
           console.warn("[MermaidDiagram] render failed:", msg, "\n--- source ---\n", cleaned);
-          // Strip Mermaid's verbose internal stack noise — first line is enough
           setError(msg.split("\n")[0].slice(0, 200));
+        } finally {
+          // Always sweep up any temporary measurement / error nodes that
+          // mermaid leaves attached to <body>. Cheap, safe, idempotent.
+          cleanupOrphans(id);
         }
       })
       .catch((e) => {
