@@ -420,21 +420,26 @@ function Bubble({ message }: { message: ChatMessage }) {
       className={`flex items-end gap-2 ${isCoach ? "justify-start" : "justify-end"} animate-in fade-in slide-in-from-bottom-2 duration-200`}
     >
       {isCoach && (
-        <CoachAvatar size={26} state="idle" className="mb-0.5" />
+        <CoachAvatar size={28} state="idle" className="mb-1 shrink-0" />
       )}
+      {/* Wider on mobile (92%) so long lines aren't squeezed into a thin
+          column. The bubble itself is more breathable: bigger body text
+          (15px/14.5px), looser leading, more vertical padding. */}
       <div
-        className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 ${
+        className={`max-w-[92%] sm:max-w-[88%] rounded-2xl px-4 py-3 ${
           isCoach
             ? "bg-white border border-stone-200 text-stone-800 shadow-sm"
             : "bg-stone-900 text-white"
         }`}
       >
         {isCoach && (
-          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700 mb-1">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700 mb-1.5">
             Sage
           </div>
         )}
-        <RichText text={message.content} dark={!isCoach} />
+        <div className="text-[15px] leading-relaxed">
+          <RichText text={message.content} dark={!isCoach} />
+        </div>
       </div>
     </div>
   );
