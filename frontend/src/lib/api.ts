@@ -533,6 +533,35 @@ class ApiClient {
 
   // ── Learning Paths ────────────────────────────────────────────
 
+  /**
+   * Paths the current user has started (or completed). Used by the
+   * dashboard "Resume" surface so an in-progress path like
+   * `redhat-ex188-v4k` is never invisible.
+   */
+  async myInProgressPaths(): Promise<
+    Array<{
+      path_id: string;
+      title: string;
+      description: string | null;
+      exam_code: string | null;
+      exam_id: string | null;
+      provider: string;
+      color: string;
+      difficulty: string;
+      estimated_hours: number;
+      total_steps: number;
+      completed_steps: number;
+      completion_pct: number;
+      current_step_id: string | null;
+      completed: boolean;
+      started_at: string | null;
+      completed_at: string | null;
+      updated_at: string | null;
+    }>
+  > {
+    return this.request(`/learning-paths/me/in-progress`);
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async listLearningPaths(filters?: { provider?: string; exam_id?: string }): Promise<any[]> {
     const qs = new URLSearchParams();

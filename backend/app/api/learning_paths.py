@@ -119,6 +119,53 @@ async def list_paths(provider: str | None = None, exam_id: str | None = None):
     ]
 
 
+@router.get("/me/in-progress")
+async def my_in_progress_paths(user: CurrentUser, db: DB):
+    """List the paths the current user has started (incomplete + completed).
+
+    Surfaces a "Resume" affordance on the dashboard / paths page so users
+    don't lose track of paths they've begun. Sorted by most-recently
+    updated first.
+    """
+    result = await db.execute(
+        select(UserPathProgress)
+        .where(UserPathProgress.user_id == user.id)
+        .order_by(UserPathProgress.updated_at.desc())
+    )
+    rows = result.scalars().all()
+
+    out: list[dict] = []
+    for prog in rows:
+        path = _get_path(prog.path_id)
+        if not path:
+            # Path was removed from seed JSON — skip rather than 500.
+            continue
+        total = _total_steps(path)
+        done = len(prog.completed_steps or [])
+        out.append(
+            {
+                "path_id": prog.path_id,
+                "title": path["title"],
+                "description": path.get("description"),
+                "exam_code": path.get("exam_code"),
+                "exam_id": path.get("exam_id"),
+                "provider": path.get("provider"),
+                "color": path.get("color"),
+                "difficulty": path.get("difficulty"),
+                "estimated_hours": path.get("estimated_hours"),
+                "total_steps": total,
+                "completed_steps": done,
+                "completion_pct": round((done / total) * 100) if total else 0,
+                "current_step_id": prog.current_step_id,
+                "completed": prog.completed,
+                "started_at": prog.started_at.isoformat() if prog.started_at else None,
+                "completed_at": prog.completed_at.isoformat() if prog.completed_at else None,
+                "updated_at": prog.updated_at.isoformat() if prog.updated_at else None,
+            }
+        )
+    return out
+
+
 @router.get("/{path_id}")
 async def get_path(path_id: str, user: CurrentUser, db: DB):
     """Get the full path (all modules + steps) plus the user's progress."""

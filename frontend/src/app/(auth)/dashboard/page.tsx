@@ -11,6 +11,7 @@ import { BadgesCard } from "@/components/dashboard/badges-card";
 import { LeagueCard } from "@/components/dashboard/league-card";
 import { ChallengeCard } from "@/components/dashboard/challenge-card";
 import { RecentMockExams } from "@/components/dashboard/recent-mock-exams";
+import { InProgressPaths } from "@/components/dashboard/in-progress-paths";
 import { BookOpen, Plus, Crown, Zap } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -27,13 +28,19 @@ export default function DashboardPage() {
   }, [examId, fetchProgress]);
 
   if (!examId && enrolledExams.length === 0) {
+    // Even without an MCQ exam enrolled, the user may have a learning path
+    // in progress (e.g. Red Hat EX188). Render the resume surface above the
+    // welcome CTA so they can find their way back.
     return (
-      <div className="flex h-64 flex-col items-center justify-center gap-4">
-        <h2 className="text-xl font-bold text-stone-900">Welcome to SparkUpCloud!</h2>
-        <p className="text-stone-500">Pick an exam to get started.</p>
-        <a href="/onboarding" className="rounded-lg bg-amber-500 px-6 py-3 font-semibold text-white hover:bg-amber-600">
-          Start Onboarding
-        </a>
+      <div className="space-y-6">
+        <InProgressPaths />
+        <div className="flex h-64 flex-col items-center justify-center gap-4">
+          <h2 className="text-xl font-bold text-stone-900">Welcome to SparkUpCloud!</h2>
+          <p className="text-stone-500">Pick an exam to get started.</p>
+          <a href="/onboarding" className="rounded-lg bg-amber-500 px-6 py-3 font-semibold text-white hover:bg-amber-600">
+            Start Onboarding
+          </a>
+        </div>
       </div>
     );
   }
@@ -152,6 +159,9 @@ export default function DashboardPage() {
           Studying: <span className="font-semibold text-stone-700">{activeExam.exam_name}</span>
         </p>
       )}
+
+      {/* Learning paths in progress (e.g. Red Hat EX188 guided path) */}
+      <InProgressPaths />
 
       {isLoading && (
         <div className="flex h-48 items-center justify-center">
