@@ -1,9 +1,13 @@
 """CLI commands for database management and seeding."""
 
 import asyncio
+import random
 import sys
+from datetime import date, datetime, timedelta, timezone
+from decimal import Decimal
 from pathlib import Path
 
+from passlib.hash import bcrypt
 from sqlalchemy import select, text
 
 from app.database import get_engine, get_session_factory
@@ -131,6 +135,223 @@ async def backfill_embeddings(batch_size: int = 32) -> None:
         print(f"\n✓ Backfill complete. {total_embedded} messages embedded.")
 
 
+async def seed_demo_account(
+    email: str = "demo@sparkupcloud.com",
+    password: str = "Demo2026!",
+    exam_id: str = "aws-saa-c03",
+) -> None:
+    """Create or refresh a marketing/demo account with realistic progress.
+
+    Used for ad screen recordings — the dashboard shouldn't look empty
+    when the camera rolls. Idempotent: re-running refreshes the same
+    user's data instead of creating duplicates.
+
+    What it populates:
+      - User row (email-verified, password set)
+      - UserExamEnrollment with believable readiness, streak, XP
+      - UserConceptMastery rows for every concept in the exam, with a
+        weighted distribution so most are mastered, a few are weak
+        (those weak ones drive the WeakConcepts dashboard card we want
+        to film)
+      - A passing mock exam attempt so RecentMockExams isn't empty
+      - UserPathProgress on the matching learning path, half-completed
+    """
+    from app.models.user import User
+    from app.models.exam import Concept
+    from app.models.progress import (
+        UserExamEnrollment,
+        UserConceptMastery,
+        MockExamSession,
+    )
+    from app.models.tutor import UserPathProgress
+
+    rnd = random.Random(42)  # deterministic — re-runs produce the same look
+
+    async with get_session_factory()() as db:
+        # ── 1. User ──
+        result = await db.execute(select(User).where(User.email == email))
+        user = result.scalar_one_or_none()
+        if user is None:
+            user = User(
+                email=email,
+                display_name="Demo Learner",
+                password_hash=bcrypt.hash(password),
+                is_email_verified=True,
+                plan="pro",
+                timezone="UTC",
+            )
+            db.add(user)
+            await db.flush()
+            print(f"✓ Created user {email}")
+        else:
+            user.password_hash = bcrypt.hash(password)
+            user.is_email_verified = True
+            user.plan = "pro"
+            user.display_name = user.display_name or "Demo Learner"
+            print(f"✓ Refreshed user {email}")
+
+        # ── 2. Concepts for the exam ──
+        c_result = await db.execute(
+            select(Concept).where(Concept.exam_id == exam_id)
+        )
+        concepts = list(c_result.scalars())
+        if not concepts:
+            print(
+                f"✗ No concepts seeded for exam {exam_id}. Run "
+                f"`python -m app.cli seed --exam {exam_id} --data-dir "
+                f"data/seed/<dir>` first."
+            )
+            return
+        total_concepts = len(concepts)
+
+        # Mastery distribution — tuned so the WeakConcepts card has 3-5
+        # weak items to display (drives the "we drill what you don't know"
+        # narrative beat in the ad).
+        # 50% expert (80-95%), 25% proficient (60-79%), 15% novice (35-59%),
+        # 10% learning (15-34%) → ~10% feed the weakest_concepts list.
+        rnd.shuffle(concepts)
+        n_expert = int(total_concepts * 0.50)
+        n_proficient = int(total_concepts * 0.25)
+        n_novice = int(total_concepts * 0.15)
+        # Remainder = learning (the weak ones)
+
+        bands: list[tuple[float, float, str]] = []
+        for i in range(total_concepts):
+            if i < n_expert:
+                bands.append((0.80, 0.95, "expert"))
+            elif i < n_expert + n_proficient:
+                bands.append((0.60, 0.79, "proficient"))
+            elif i < n_expert + n_proficient + n_novice:
+                bands.append((0.35, 0.59, "novice"))
+            else:
+                bands.append((0.15, 0.34, "learning"))
+
+        # Wipe existing mastery for a clean slate, then re-insert.
+        await db.execute(
+            text("DELETE FROM user_concept_mastery WHERE user_id = :uid").bindparams(
+                uid=user.id
+            )
+        )
+        today = date.today()
+        for concept, (lo, hi, level) in zip(concepts, bands):
+            p = rnd.uniform(lo, hi)
+            attempts = rnd.randint(8, 24)
+            correct = int(attempts * (0.55 + p * 0.4))  # roughly tracks mastery
+            db.add(
+                UserConceptMastery(
+                    user_id=user.id,
+                    concept_id=concept.id,
+                    mastery_probability=Decimal(f"{p:.4f}"),
+                    mastery_level=level,
+                    total_attempts=attempts,
+                    correct_attempts=correct,
+                    next_review_date=today + timedelta(days=rnd.randint(1, 7)),
+                    last_review_date=today - timedelta(days=rnd.randint(0, 3)),
+                )
+            )
+
+        concepts_mastered = n_expert + n_proficient
+
+        # ── 3. Enrollment ──
+        e_result = await db.execute(
+            select(UserExamEnrollment).where(
+                UserExamEnrollment.user_id == user.id,
+                UserExamEnrollment.exam_id == exam_id,
+            )
+        )
+        enrollment = e_result.scalar_one_or_none()
+        if enrollment is None:
+            enrollment = UserExamEnrollment(
+                user_id=user.id,
+                exam_id=exam_id,
+            )
+            db.add(enrollment)
+        enrollment.exam_date = today + timedelta(days=28)
+        enrollment.diagnostic_completed = True
+        enrollment.diagnostic_completed_at = datetime.now(timezone.utc) - timedelta(
+            days=21
+        )
+        enrollment.diagnostic_score = Decimal("64.00")
+        enrollment.overall_readiness_pct = Decimal("89.00")
+        enrollment.pass_probability_pct = Decimal("87.00")
+        enrollment.concepts_mastered = concepts_mastered
+        enrollment.concepts_total = total_concepts
+        enrollment.total_xp = 4250
+        enrollment.weekly_xp = 580
+        enrollment.current_streak_days = 12
+        enrollment.longest_streak_days = 23
+        enrollment.streak_freezes_remaining = 1
+        enrollment.last_active_date = today
+        enrollment.is_active = True
+
+        # ── 4. Mock exam history (one passing attempt 4 days ago) ──
+        await db.execute(
+            text(
+                "DELETE FROM mock_exam_sessions WHERE user_id = :uid AND exam_id = :eid"
+            ).bindparams(uid=user.id, eid=exam_id)
+        )
+        started = datetime.now(timezone.utc) - timedelta(days=4, hours=2)
+        ended = started + timedelta(minutes=118)
+        db.add(
+            MockExamSession(
+                user_id=user.id,
+                exam_id=exam_id,
+                mock_number=1,
+                started_at=started,
+                ended_at=ended,
+                time_limit_minutes=130,
+                question_ids=[],
+                answers={},
+                total_questions=65,
+                questions_answered=65,
+                questions_correct=56,
+                score_pct=Decimal("86.15"),
+                passed=True,
+                completed=True,
+            )
+        )
+
+        # ── 5. Path progress (half-done) ──
+        # If a path covers this exam, drop the user mid-path so the
+        # "Your Learning Paths" card on the dashboard isn't empty.
+        # Hard-coded to the AWS SAA path we ship with — generalise if
+        # we add more paths per exam.
+        path_id = "aws-saa-foundations"
+        p_result = await db.execute(
+            select(UserPathProgress).where(
+                UserPathProgress.user_id == user.id,
+                UserPathProgress.path_id == path_id,
+            )
+        )
+        prog = p_result.scalar_one_or_none()
+        if prog is None:
+            prog = UserPathProgress(
+                user_id=user.id,
+                path_id=path_id,
+                current_step_id="m1-s2",
+                completed_steps=["m1-s1"],
+                quiz_results={},
+            )
+            db.add(prog)
+        else:
+            prog.current_step_id = "m1-s2"
+            prog.completed_steps = ["m1-s1"]
+            prog.completed = False
+
+        await db.commit()
+
+        print()
+        print("─" * 60)
+        print("Demo account ready. Use these to log in:")
+        print(f"  Email:    {email}")
+        print(f"  Password: {password}")
+        print(f"  Exam:     {exam_id}")
+        print(f"  Mastery:  {concepts_mastered}/{total_concepts} concepts")
+        print(f"  Streak:   12 days")
+        print(f"  Readiness: 89%")
+        print("─" * 60)
+
+
 def main() -> None:
     if len(sys.argv) < 2:
         print("Usage:")
@@ -139,6 +360,7 @@ def main() -> None:
         print("  python -m app.cli seed [--exam <id>] [--data-dir <path>]")
         print("  python -m app.cli seed-all")
         print("  python -m app.cli backfill-embeddings    # embed existing Coach history for RAG")
+        print("  python -m app.cli seed-demo-account [--email <e>] [--password <p>] [--exam <id>]")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -170,6 +392,17 @@ def main() -> None:
         asyncio.run(seed_all())
     elif command == "backfill-embeddings":
         asyncio.run(backfill_embeddings())
+    elif command == "seed-demo-account":
+        kwargs: dict[str, str] = {}
+        args = sys.argv[2:]
+        for i, arg in enumerate(args):
+            if arg == "--email" and i + 1 < len(args):
+                kwargs["email"] = args[i + 1]
+            elif arg == "--password" and i + 1 < len(args):
+                kwargs["password"] = args[i + 1]
+            elif arg == "--exam" and i + 1 < len(args):
+                kwargs["exam_id"] = args[i + 1]
+        asyncio.run(seed_demo_account(**kwargs))
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)
