@@ -185,7 +185,7 @@ async def seed_demo_account(
                     " notification_preferences, nudge_time, "
                     " referral_credits_usd, subscription_status) "
                     "VALUES (gen_random_uuid(), :cid, :email, :name, :pw, "
-                    " true, false, 'pro', 'UTC', 30, 30, "
+                    " true, false, 'pro_annual', 'UTC', 30, 30, "
                     " '{\"push\": true, \"email\": true, \"sms\": false}'::jsonb, "
                     " '08:00:00', 0.00, 'none') "
                     "RETURNING id"
@@ -206,7 +206,7 @@ async def seed_demo_account(
         else:
             user.password_hash = bcrypt.hash(password)
             user.is_email_verified = True
-            user.plan = "pro"
+            user.plan = "pro_annual"
             user.display_name = user.display_name or "Demo Learner"
             print(f"✓ Refreshed user {email}")
 
