@@ -27,6 +27,38 @@ export default function DashboardPage() {
     if (examId) fetchProgress(examId);
   }, [examId, fetchProgress]);
 
+  // If a Learning Path covers the user's active exam, suggest it from the
+  // WeakConcepts card so a struggling user can switch from MCQ drilling
+  // to a guided lesson on the same material. Empty when no path matches.
+  const [pathSuggestion, setPathSuggestion] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+  useEffect(() => {
+    if (!examId) {
+      setPathSuggestion(null);
+      return;
+    }
+    let cancelled = false;
+    api
+      .listLearningPaths({ exam_id: examId })
+      .then((paths) => {
+        if (cancelled) return;
+        const first = paths?.[0];
+        if (first?.id && first?.title) {
+          setPathSuggestion({ id: first.id, title: first.title });
+        } else {
+          setPathSuggestion(null);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setPathSuggestion(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [examId]);
+
   if (!examId && enrolledExams.length === 0) {
     // Even without an MCQ exam enrolled, the user may have a learning path
     // in progress (e.g. Red Hat EX188). Render the resume surface above the
@@ -217,7 +249,10 @@ export default function DashboardPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <RecentMockExams />
             {progress.weakest_concepts.length > 0 ? (
-              <WeakConcepts concepts={progress.weakest_concepts} />
+              <WeakConcepts
+                concepts={progress.weakest_concepts}
+                pathSuggestion={pathSuggestion ?? undefined}
+              />
             ) : (
               <div className="rounded-xl border border-stone-200 bg-stone-50 p-5 flex items-center justify-center text-sm text-stone-500">
                 Answer a few questions to surface your weak concepts.

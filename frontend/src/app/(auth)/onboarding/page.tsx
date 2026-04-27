@@ -73,11 +73,34 @@ export default function OnboardingPage() {
     setError(null);
 
     // Performance-based exams (Red Hat EX-series, etc.) ship with zero MCQ
-    // questions in the bank — there's nothing to drive a diagnostic quiz from.
-    // Skip the diagnostic step entirely and drop the user on the dashboard
-    // once enrollment is created. Without this guard the user lands on a
-    // blank "Diagnostic" step (questions array is empty) and the flow dies.
+    // questions in the bank — there's nothing to drive a diagnostic quiz
+    // from. Skip the diagnostic step entirely.
+    //
+    // Where to send them next:
+    //   1) If a Learning Path exists for this exam → /paths/<id> (the right
+    //      product for performance-based certs — guided lectures, hands-on
+    //      labs, and short quizzes per module).
+    //   2) Otherwise → /dashboard (the catch-all).
+    //
+    // Without (1), an EX188 learner lands on a Study dashboard that has
+    // nothing to show (no MCQs to track mastery on) and never discovers
+    // the path. Routing here closes that gap.
     const skipDiagnostic = (selectedExam.total_questions ?? 0) === 0;
+    const postEnrollDestination = async (): Promise<string> => {
+      if (!skipDiagnostic) return "/dashboard";
+      try {
+        const matching = await api.listLearningPaths({
+          exam_id: selectedExam.id,
+        });
+        const first = matching?.[0];
+        if (first?.id) {
+          return `/paths/${first.id}?utm_source=onboarding`;
+        }
+      } catch {
+        /* fall through — listing paths is non-essential */
+      }
+      return "/dashboard";
+    };
 
     try {
       await api.startOnboarding({
@@ -88,10 +111,10 @@ export default function OnboardingPage() {
       });
     } catch (err) {
       // 409 = already enrolled. For perf-based exams there's no diagnostic
-      // to fall back to — just route to the dashboard.
+      // to fall back to — route to the matching path or dashboard.
       if (err instanceof Error && err.message.includes("409")) {
         if (skipDiagnostic) {
-          window.location.href = "/dashboard";
+          window.location.href = await postEnrollDestination();
           return;
         }
         try {
@@ -110,7 +133,7 @@ export default function OnboardingPage() {
     }
 
     if (skipDiagnostic) {
-      window.location.href = "/dashboard";
+      window.location.href = await postEnrollDestination();
       return;
     }
 

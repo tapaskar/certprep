@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 from typing import Literal
 
@@ -11,8 +12,22 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import and_, select
 
+
+def _mastery_level_from_pct(pct: float) -> str:
+    """Map mastery_probability (0-100) → categorical level used in dashboards."""
+    if pct >= 80:
+        return "expert"
+    if pct >= 60:
+        return "proficient"
+    if pct >= 30:
+        return "novice"
+    if pct > 0:
+        return "learning"
+    return "not_started"
+
 from app.api.deps import DB, CurrentUser
 from app.models.tutor import UserPathProgress
+from app.models.progress import UserConceptMastery
 
 router = APIRouter(prefix="/learning-paths", tags=["learning-paths"])
 
@@ -380,6 +395,58 @@ async def submit_quiz(
         "answered_at": datetime.now(timezone.utc).isoformat(),
     }
     prog.quiz_results = quiz_results
+
+    # ── Cross-feature integration: Path quiz pass → Study mastery boost ──
+    # If the step is tagged with concept_ids and the user passed (≥70%),
+    # bump those concepts in UserConceptMastery so the Study side of the
+    # app sees them as practiced. Without this, the same person could be
+    # 80% mastered in Study and 0% in Paths for the same concept — two
+    # progress universes for one brain.
+    #
+    # No-op when:
+    #   - step has no `concept_ids` (most current paths) — degrades silently
+    #   - the concept_id doesn't exist in the concepts table — FK fails,
+    #     we swallow and continue (path content can outpace concept seed)
+    #   - user didn't pass — no mastery boost from a failed attempt
+    boosted_concepts: list[str] = []
+    if passed:
+        concept_ids = step.get("concept_ids") or []
+        # Boost amount scales with quiz score: 70% → +0.10, 100% → +0.25
+        boost = 0.10 + ((score_pct - 70) / 30.0) * 0.15
+        boost = max(0.05, min(0.25, boost))
+        for cid in concept_ids:
+            try:
+                m_result = await db.execute(
+                    select(UserConceptMastery).where(
+                        and_(
+                            UserConceptMastery.user_id == user.id,
+                            UserConceptMastery.concept_id == cid,
+                        )
+                    )
+                )
+                mastery = m_result.scalar_one_or_none()
+                if mastery is None:
+                    # First touch — start at the boost level so it shows up
+                    # in weak-concepts surfaces immediately.
+                    mastery = UserConceptMastery(
+                        user_id=user.id,
+                        concept_id=cid,
+                        mastery_probability=Decimal(str(round(boost, 4))),
+                        mastery_level=_mastery_level_from_pct(boost * 100),
+                        total_attempts=total,
+                        correct_attempts=correct,
+                    )
+                    db.add(mastery)
+                else:
+                    new_p = min(0.99, float(mastery.mastery_probability) + boost)
+                    mastery.mastery_probability = Decimal(str(round(new_p, 4)))
+                    mastery.mastery_level = _mastery_level_from_pct(new_p * 100)
+                    mastery.total_attempts = (mastery.total_attempts or 0) + total
+                    mastery.correct_attempts = (mastery.correct_attempts or 0) + correct
+                boosted_concepts.append(cid)
+            except Exception:  # noqa: BLE001 — content drift mustn't break quiz submit
+                continue
+
     await db.commit()
 
     return {
@@ -389,4 +456,5 @@ async def submit_quiz(
         "total": total,
         "passed": passed,
         "results": results,
+        "concepts_boosted": boosted_concepts,
     }
