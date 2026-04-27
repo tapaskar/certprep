@@ -172,16 +172,36 @@ async def seed_demo_account(
         result = await db.execute(select(User).where(User.email == email))
         user = result.scalar_one_or_none()
         if user is None:
-            user = User(
-                email=email,
-                display_name="Demo Learner",
-                password_hash=bcrypt.hash(password),
-                is_email_verified=True,
-                plan="pro",
-                timezone="UTC",
+            # Prod schema retains a legacy `clerk_id NOT NULL` column from
+            # the Clerk auth era. Current model doesn't expose it, so set it
+            # via raw SQL on insert. Value is a stable synthetic ID derived
+            # from the email so re-runs of this script are idempotent.
+            new_user_id = await db.execute(
+                text(
+                    "INSERT INTO users "
+                    "(id, clerk_id, email, display_name, password_hash, "
+                    " is_email_verified, plan, timezone, "
+                    " daily_study_target_minutes, preferred_session_length, "
+                    " notification_preferences, nudge_time, "
+                    " referral_credits_usd, subscription_status) "
+                    "VALUES (gen_random_uuid(), :cid, :email, :name, :pw, "
+                    " true, 'pro', 'UTC', 30, 30, "
+                    " '{\"push\": true, \"email\": true, \"sms\": false}'::jsonb, "
+                    " '08:00:00', 0.00, 'none') "
+                    "RETURNING id"
+                ).bindparams(
+                    cid=f"demo-{email}",
+                    email=email,
+                    name="Demo Learner",
+                    pw=bcrypt.hash(password),
+                )
             )
-            db.add(user)
+            uid = new_user_id.scalar_one()
             await db.flush()
+            # Reload the row through the ORM so the rest of the seeder
+            # has a managed object to attach relationships to.
+            result2 = await db.execute(select(User).where(User.id == uid))
+            user = result2.scalar_one()
             print(f"✓ Created user {email}")
         else:
             user.password_hash = bcrypt.hash(password)
