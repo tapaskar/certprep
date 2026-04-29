@@ -4,19 +4,21 @@
 
 set -euo pipefail
 
-EC2_IP="${1:-}"
+EC2_IP="${1:-15.207.15.106}"
 EC2_USER="ec2-user"
 APP_DIR="/opt/certprep"
+# Default to the SparkUpCloud key in ~/.ssh; override with EC2_KEY=... if needed.
+EC2_KEY="${EC2_KEY:-$HOME/.ssh/farzi-ec2-key.pem}"
 
-if [ -z "$EC2_IP" ]; then
-    echo "Usage: bash deploy.sh <ec2-elastic-ip>"
-    echo "Example: bash deploy.sh 54.123.45.67"
+if [ ! -f "$EC2_KEY" ]; then
+    echo "SSH key not found: $EC2_KEY"
+    echo "Set EC2_KEY=/path/to/key.pem and retry."
     exit 1
 fi
 
-echo "Deploying to $EC2_USER@$EC2_IP..."
+echo "Deploying to $EC2_USER@$EC2_IP (key: $EC2_KEY)..."
 
-ssh -o StrictHostKeyChecking=no "$EC2_USER@$EC2_IP" << 'REMOTE'
+ssh -i "$EC2_KEY" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_IP" << 'REMOTE'
 set -e
 cd /opt/certprep
 
