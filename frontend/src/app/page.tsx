@@ -8,6 +8,7 @@ import { HeroMockup } from "@/components/landing/hero-mockup";
 import { ProviderTrustStrip } from "@/components/landing/provider-trust-strip";
 import { StatsBanner } from "@/components/landing/stats-banner";
 import { FeatureSections } from "@/components/landing/feature-sections";
+import { ArchitectureFlowBanner } from "@/components/landing/architecture-flow-banner";
 import { ComparisonTable } from "@/components/landing/comparison-table";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { HomeNav } from "@/components/landing/home-nav";
@@ -370,6 +371,12 @@ export default function LandingPage() {
 
       {/* Feature deep-dive sections — Coach, Paths, Simulator, Adaptive, Mocks */}
       <FeatureSections />
+
+      {/* Animated cloud architecture flow — narrates a real request
+          lifecycle (edge → DNS → ALB → compute → data → messaging) so
+          visitors can see in 15 seconds what we mean by "architecture
+          mastery". Pure SVG, ~5KB, 60fps on mobile. */}
+      <ArchitectureFlowBanner />
 
       {/* OLD Free Interactive Tools — kept as a quick "Free tools" mini-grid further down
           (the deep-dives above are the primary feature story) */}
