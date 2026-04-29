@@ -1,23 +1,28 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Activity } from "lucide-react";
-import { ArchitectureFlowSvg } from "./architecture-flow-svg";
+import { ArchitectureFlowSvg, type Provider } from "./architecture-flow-svg";
 
 /**
- * Marketing banner: animated cloud architecture flow + CTA to the
- * full interactive visualizer.
+ * Marketing banner: animated cloud architecture flow + provider toggle
+ * + click-to-learn popover on each box + CTA to the full visualizer.
  *
- * The animation itself is pure SVG (see architecture-flow-svg.tsx) so
- * it ships ~5KB instead of ~600KB three.js, runs at 60fps on phones
- * with no JS animation loop, and renders identically across browsers.
- *
- * Loaded synchronously (no dynamic import gymnastics) because the
- * SVG bundle is small enough to live in the main payload without
- * affecting LCP. The IntersectionObserver / mobile-fallback dance the
- * 3D version needed isn't required here.
+ * Provider state lives here (not in the SVG) so the toggle UI sits
+ * cleanly above the diagram and the SVG stays a pure presentation
+ * component.
  */
+
+const providers: { id: Provider; label: string; accent: string }[] = [
+  { id: "aws", label: "AWS", accent: "text-amber-700 ring-amber-300 bg-amber-50" },
+  { id: "azure", label: "Azure", accent: "text-blue-700 ring-blue-300 bg-blue-50" },
+  { id: "gcp", label: "Google Cloud", accent: "text-green-700 ring-green-300 bg-green-50" },
+];
+
 export function ArchitectureFlowBanner() {
+  const [provider, setProvider] = useState<Provider>("aws");
+
   return (
     <section className="relative mx-auto max-w-7xl px-6 pt-16 pb-20">
       {/* Header band */}
@@ -39,12 +44,44 @@ export function ArchitectureFlowBanner() {
         </p>
       </div>
 
+      {/* Provider toggle — toggling re-labels every box. Same architecture,
+          three vendors. Subtext underneath drives the point home. */}
+      <div className="mb-4 flex flex-col items-center gap-2">
+        <div
+          role="tablist"
+          aria-label="Cloud provider"
+          className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white p-1 shadow-sm"
+        >
+          {providers.map((p) => {
+            const active = provider === p.id;
+            return (
+              <button
+                key={p.id}
+                role="tab"
+                aria-selected={active}
+                onClick={() => setProvider(p.id)}
+                className={`rounded-full px-4 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
+                  active
+                    ? `${p.accent} ring-2`
+                    : "text-stone-500 hover:text-stone-900"
+                }`}
+              >
+                {p.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-xs text-stone-500">
+          Same architecture, different names. Toggle to see the equivalents.
+        </p>
+      </div>
+
       {/* Animation container */}
       <div
         className="relative overflow-hidden rounded-2xl border border-stone-200 shadow-2xl shadow-stone-300/40"
         style={{ aspectRatio: "1200 / 540", maxHeight: "560px" }}
       >
-        <ArchitectureFlowSvg />
+        <ArchitectureFlowSvg provider={provider} />
 
         {/* Top-left status pill */}
         <div className="pointer-events-none absolute top-4 left-4 inline-flex items-center gap-2 rounded-md bg-black/50 backdrop-blur-md px-3 py-1.5 text-xs font-semibold text-white border border-white/10">
@@ -52,7 +89,7 @@ export function ArchitectureFlowBanner() {
             <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
           </span>
-          Live request flow · 12 services
+          Live request flow · 12 services · click any to learn
         </div>
 
         {/* Bottom CTA strip */}
@@ -75,13 +112,10 @@ export function ArchitectureFlowBanner() {
         </div>
       </div>
 
-      {/* Provider chips */}
+      {/* Provider chips — visual reinforcement of multi-cloud breadth */}
       <div className="mt-6 flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs sm:text-sm">
-        <span className="text-stone-500">Built for:</span>
+        <span className="text-stone-500">Also covered:</span>
         {[
-          { label: "AWS", color: "text-amber-700 bg-amber-50 border-amber-200" },
-          { label: "Azure", color: "text-blue-700 bg-blue-50 border-blue-200" },
-          { label: "Google Cloud", color: "text-green-700 bg-green-50 border-green-200" },
           { label: "Red Hat", color: "text-rose-700 bg-rose-50 border-rose-200" },
           { label: "CompTIA", color: "text-stone-700 bg-stone-50 border-stone-200" },
           { label: "NVIDIA", color: "text-lime-700 bg-lime-50 border-lime-200" },

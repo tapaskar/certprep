@@ -1,58 +1,270 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { ArrowRight, X } from "lucide-react";
 
 /**
  * Animated SVG showing logical data flow through a cloud architecture.
  *
+ * Two interactive layers on top of the base animation:
+ *
+ *   1. Provider toggle (controlled by parent) — same topology, same
+ *      colors, just relabels every box. CloudFront → Front Door →
+ *      Cloud CDN, S3 → Blob → Cloud Storage, etc. The point: an
+ *      architecture is a mental model, the names are vendor lock-in.
+ *
+ *   2. Click-to-learn — clicking a box opens a popover with a 1-line
+ *      description, 2 facts, and a "Practice questions on X →" link
+ *      to the relevant exam page for the active provider. Turns the
+ *      decoration into a content surface that captures intent.
+ *
  * Why SVG + native SMIL animations and not three.js / Lottie / Framer:
  *   - Pure SVG ships zero JS for the animation itself — `<animateMotion>`
- *     and `<animate>` are GPU-rasterised by the browser. The whole
- *     animation loop runs at 60fps on a phone with no main-thread work.
- *   - Total component bundle is ~5KB vs ~600KB for three.js.
- *   - Crisp at any resolution. No WebGL fallback paths. Renders in
- *     screenshot tools, OG image generators, server-side prerender —
- *     three.js can't.
- *
- * Conceptually the diagram is a real-ish AWS request lifecycle:
- *
- *     User → CloudFront → Route 53 → ALB → (Cognito | ECS) → Lambda
- *                                                ├→ RDS
- *                                                ├→ DynamoDB
- *                                                └→ S3
- *                                          Lambda → SQS → SNS
- *
- * Packets (small glowing dots) travel each edge on a 3-second loop, with
- * staggered begin times so the screen always has motion on multiple
- * paths. A caption underneath rotates every 3s through 5 phases that
- * narrate which "slice" of the architecture is currently active — turns
- * decoration into a teaching moment.
+ *     and `<animate>` are GPU-rasterised by the browser.
+ *   - Total component bundle is ~6KB.
+ *   - 60fps on phones, no main-thread animation work.
+ *   - Crisp at any resolution. Renders in screenshot/OG-image tools.
  */
+
+export type Provider = "aws" | "azure" | "gcp";
+
+interface ProviderName {
+  short: string;
+  label: string;
+}
 
 interface Component {
   id: string;
-  label: string;
-  short: string;
   x: number;
   y: number;
   color: string;
+  category: "edge" | "compute" | "data" | "messaging" | "auth";
+  /** Per-provider naming. Same box, just relabeled. */
+  providers: Record<Provider, ProviderName>;
+  /** One-line description shown in the click popover. */
+  description: string;
+  /** Two short facts shown as bullets in the click popover. */
+  facts: [string, string];
 }
 
-// Coordinate system: 1200 × 540 viewBox.
-// Boxes are 80×44, positioned by their top-left corner.
+// ────────────────────────────────────────────────────────────────────
+// Components
+// ────────────────────────────────────────────────────────────────────
+//
+// Coordinate system: 1200 × 540 viewBox. Boxes are 80×44, positioned
+// by their top-left corner.
+//
+// Names sourced from each cloud's own product catalog. When in doubt
+// I picked the closest functional analogue, not the closest marketing
+// name (e.g. SQS ↔ Service Bus, even though Azure also has Storage
+// Queue — Service Bus is the better architecture-level match).
+
 const components: Component[] = [
-  { id: "user",       label: "User",       short: "USER", x: 30,   y: 248, color: "#94a3b8" },
-  { id: "cloudfront", label: "CloudFront", short: "CDN",  x: 200,  y: 160, color: "#f59e0b" },
-  { id: "route53",    label: "Route 53",   short: "DNS",  x: 390,  y: 80,  color: "#3b82f6" },
-  { id: "alb",        label: "ALB",        short: "ALB",  x: 460,  y: 248, color: "#8b5cf6" },
-  { id: "cognito",    label: "Cognito",    short: "AUTH", x: 640,  y: 80,  color: "#ec4899" },
-  { id: "ecs",        label: "ECS",        short: "ECS",  x: 640,  y: 248, color: "#10b981" },
-  { id: "lambda",     label: "Lambda",     short: "λ",    x: 820,  y: 248, color: "#a855f7" },
-  { id: "rds",        label: "RDS",        short: "RDS",  x: 460,  y: 410, color: "#3b82f6" },
-  { id: "dynamo",     label: "DynamoDB",   short: "DDB",  x: 640,  y: 410, color: "#1e40af" },
-  { id: "s3",         label: "S3",         short: "S3",   x: 820,  y: 410, color: "#22c55e" },
-  { id: "sqs",        label: "SQS",        short: "SQS",  x: 1000, y: 340, color: "#f97316" },
-  { id: "sns",        label: "SNS",        short: "SNS",  x: 1080, y: 200, color: "#ef4444" },
+  {
+    id: "user",
+    x: 30,
+    y: 248,
+    color: "#94a3b8",
+    category: "edge",
+    providers: {
+      aws: { short: "USER", label: "User" },
+      azure: { short: "USER", label: "User" },
+      gcp: { short: "USER", label: "User" },
+    },
+    description: "An incoming HTTP request from a real client.",
+    facts: [
+      "Could be a browser, mobile app, IoT device, or another service",
+      "Latency from here is what end-users actually experience",
+    ],
+  },
+  {
+    id: "cloudfront",
+    x: 200,
+    y: 160,
+    color: "#f59e0b",
+    category: "edge",
+    providers: {
+      aws: { short: "CDN", label: "CloudFront" },
+      azure: { short: "CDN", label: "Front Door" },
+      gcp: { short: "CDN", label: "Cloud CDN" },
+    },
+    description: "Global content-delivery network — caches close to users.",
+    facts: [
+      "Serves cached responses from 400+ edge locations worldwide",
+      "Reduces origin load by 70-95% for typical static content",
+    ],
+  },
+  {
+    id: "route53",
+    x: 390,
+    y: 80,
+    color: "#3b82f6",
+    category: "edge",
+    providers: {
+      aws: { short: "DNS", label: "Route 53" },
+      azure: { short: "DNS", label: "Azure DNS" },
+      gcp: { short: "DNS", label: "Cloud DNS" },
+    },
+    description: "Authoritative DNS — turns domain names into IPs.",
+    facts: [
+      "Health checks can route around failed regions automatically",
+      "Latency-based routing sends users to the closest healthy origin",
+    ],
+  },
+  {
+    id: "alb",
+    x: 460,
+    y: 248,
+    color: "#8b5cf6",
+    category: "edge",
+    providers: {
+      aws: { short: "ALB", label: "ALB" },
+      azure: { short: "AGW", label: "App Gateway" },
+      gcp: { short: "LB", label: "Cloud Load Balancing" },
+    },
+    description: "Layer-7 load balancer — distributes traffic across compute.",
+    facts: [
+      "Routes by hostname, path, headers, or query string",
+      "Terminates TLS so backends don't have to manage certificates",
+    ],
+  },
+  {
+    id: "cognito",
+    x: 640,
+    y: 80,
+    color: "#ec4899",
+    category: "auth",
+    providers: {
+      aws: { short: "AUTH", label: "Cognito" },
+      azure: { short: "AUTH", label: "Entra ID" },
+      gcp: { short: "AUTH", label: "Identity Platform" },
+    },
+    description: "Managed identity, sign-up/sign-in, and federation.",
+    facts: [
+      "Issues JWTs the rest of your stack can verify without a roundtrip",
+      "Supports social, SAML, and OIDC providers out of the box",
+    ],
+  },
+  {
+    id: "ecs",
+    x: 640,
+    y: 248,
+    color: "#10b981",
+    category: "compute",
+    providers: {
+      aws: { short: "ECS", label: "ECS / Fargate" },
+      azure: { short: "ACA", label: "Container Apps" },
+      gcp: { short: "RUN", label: "Cloud Run" },
+    },
+    description: "Managed container compute — long-running services.",
+    facts: [
+      "Scales horizontally based on CPU, memory, or custom metrics",
+      "Fargate / Container Apps / Cloud Run are all serverless container runners",
+    ],
+  },
+  {
+    id: "lambda",
+    x: 820,
+    y: 248,
+    color: "#a855f7",
+    category: "compute",
+    providers: {
+      aws: { short: "λ", label: "Lambda" },
+      azure: { short: "FN", label: "Functions" },
+      gcp: { short: "FN", label: "Cloud Functions" },
+    },
+    description: "Event-driven serverless functions — scale to zero.",
+    facts: [
+      "Cold-start latency 100-300ms for typical Node/Python runtimes",
+      "Pay only for execution time billed to the millisecond",
+    ],
+  },
+  {
+    id: "rds",
+    x: 460,
+    y: 410,
+    color: "#3b82f6",
+    category: "data",
+    providers: {
+      aws: { short: "RDS", label: "RDS" },
+      azure: { short: "SQL", label: "Azure SQL" },
+      gcp: { short: "SQL", label: "Cloud SQL" },
+    },
+    description: "Managed relational database — Postgres, MySQL, etc.",
+    facts: [
+      "Multi-AZ / zone-redundant replicas give automatic failover",
+      "Backups, patching, and version upgrades are managed for you",
+    ],
+  },
+  {
+    id: "dynamo",
+    x: 640,
+    y: 410,
+    color: "#1e40af",
+    category: "data",
+    providers: {
+      aws: { short: "DDB", label: "DynamoDB" },
+      azure: { short: "COSMOS", label: "Cosmos DB" },
+      gcp: { short: "FS", label: "Firestore" },
+    },
+    description: "Managed NoSQL / key-value at any scale.",
+    facts: [
+      "Single-digit-ms reads at any throughput level",
+      "On-demand billing — no capacity planning required",
+    ],
+  },
+  {
+    id: "s3",
+    x: 820,
+    y: 410,
+    color: "#22c55e",
+    category: "data",
+    providers: {
+      aws: { short: "S3", label: "S3" },
+      azure: { short: "BLOB", label: "Blob Storage" },
+      gcp: { short: "GCS", label: "Cloud Storage" },
+    },
+    description: "Durable object storage — files, backups, static sites.",
+    facts: [
+      "11 nines (99.999999999%) of durability across multiple AZs",
+      "Tiered storage classes — hot/cool/archive — pay for what you access",
+    ],
+  },
+  {
+    id: "sqs",
+    x: 1000,
+    y: 340,
+    color: "#f97316",
+    category: "messaging",
+    providers: {
+      aws: { short: "SQS", label: "SQS" },
+      azure: { short: "SB", label: "Service Bus" },
+      gcp: { short: "PSUB", label: "Pub/Sub" },
+    },
+    description: "Durable message queue — decouples producers from consumers.",
+    facts: [
+      "At-least-once delivery — handlers must be idempotent",
+      "Visibility timeouts let consumers safely retry on failure",
+    ],
+  },
+  {
+    id: "sns",
+    x: 1080,
+    y: 200,
+    color: "#ef4444",
+    category: "messaging",
+    providers: {
+      aws: { short: "SNS", label: "SNS" },
+      azure: { short: "EVT", label: "Event Grid" },
+      gcp: { short: "EVT", label: "Eventarc" },
+    },
+    description: "Pub/sub fan-out — one event, many subscribers.",
+    facts: [
+      "Push delivery to HTTP, email, SMS, or other queues",
+      "Filter policies let subscribers opt into specific event types",
+    ],
+  },
 ];
 
 interface Edge {
@@ -84,15 +296,24 @@ const captions = [
   "Async work queues and fans out via messaging",
 ];
 
-// Each box is 80×44, centered at (x+40, y+22).
+/** Where the click-to-learn CTA points, per provider. Picked the
+ *  flagship associate-level cert for each cloud. */
+const providerExamId: Record<Provider, string> = {
+  aws: "aws-saa-c03",
+  azure: "azure-az104",
+  gcp: "gcp-ace",
+};
+
+const providerLabel: Record<Provider, string> = {
+  aws: "AWS Solutions Architect (SAA-C03)",
+  azure: "Azure Administrator (AZ-104)",
+  gcp: "GCP Associate Cloud Engineer",
+};
+
 const boxCenter = (c: Component): [number, number] => [c.x + 40, c.y + 22];
 
-/**
- * Build a curved Bezier path from one component box to another.
- * Slight perpendicular curvature makes the network feel organic instead
- * of grid-snapped. Curvature scales with distance so short links are
- * nearly straight (no awkward loops on a 100px hop).
- */
+/** Curved Bezier path between two box centers, with curvature scaling
+ *  by distance — short hops are nearly straight. */
 function buildPath(from: Component, to: Component): string {
   const [x1, y1] = boxCenter(from);
   const [x2, y2] = boxCenter(to);
@@ -101,7 +322,6 @@ function buildPath(from: Component, to: Component): string {
   const dist = Math.sqrt(dx * dx + dy * dy);
   if (dist === 0) return `M ${x1} ${y1} L ${x2} ${y2}`;
   const curve = Math.min(36, dist * 0.15);
-  // Perpendicular offset for the control point
   const px = -dy / dist;
   const py = dx / dist;
   const mx = (x1 + x2) / 2 + px * curve;
@@ -109,10 +329,16 @@ function buildPath(from: Component, to: Component): string {
   return `M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}`;
 }
 
-export function ArchitectureFlowSvg() {
-  // Caption rotator — one phase every 3s. Mounting state on `key` so the
-  // CSS fade-in animation re-fires for each new caption.
+interface Props {
+  provider: Provider;
+}
+
+export function ArchitectureFlowSvg({ provider }: Props) {
   const [captionIdx, setCaptionIdx] = useState(0);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Caption rotator — one phase every 3s
   useEffect(() => {
     const id = setInterval(() => {
       setCaptionIdx((i) => (i + 1) % captions.length);
@@ -120,18 +346,58 @@ export function ArchitectureFlowSvg() {
     return () => clearInterval(id);
   }, []);
 
+  // Dismiss popover on Esc + on outside click
+  useEffect(() => {
+    if (!selectedId) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedId(null);
+    };
+    const onClick = (e: MouseEvent) => {
+      const node = containerRef.current;
+      if (!node) return;
+      // Allow clicks inside the SVG (which trigger box selection) and
+      // inside the popover itself; everything else closes.
+      const target = e.target as HTMLElement;
+      if (!node.contains(target)) setSelectedId(null);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("mousedown", onClick);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("mousedown", onClick);
+    };
+  }, [selectedId]);
+
   const compById = Object.fromEntries(components.map((c) => [c.id, c]));
+  const selected = selectedId ? compById[selectedId] : null;
+
+  // Where to render the popover relative to the container (percent
+  // coords against the 1200×540 viewBox).
+  let popoverLeftPct = 0;
+  let popoverTopPct = 0;
+  let popoverPlaceAbove = false;
+  if (selected) {
+    const [cx, cy] = boxCenter(selected);
+    popoverLeftPct = (cx / 1200) * 100;
+    popoverTopPct = (cy / 540) * 100;
+    // Place popover above the box if the box sits in the lower half,
+    // below it if in the upper half. Keeps it from disappearing off
+    // the canvas.
+    popoverPlaceAbove = cy > 270;
+  }
 
   return (
-    <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-[#0a0e27] via-[#0f1535] to-[#050818]">
+    <div
+      ref={containerRef}
+      className="relative h-full w-full overflow-hidden bg-gradient-to-br from-[#0a0e27] via-[#0f1535] to-[#050818]"
+    >
       <svg
         viewBox="0 0 1200 540"
         className="absolute inset-0 h-full w-full"
         preserveAspectRatio="xMidYMid meet"
-        aria-label="Animated AWS architecture diagram showing data flow between services"
+        aria-label="Animated cloud architecture diagram showing data flow between services"
       >
         <defs>
-          {/* Faint grid background — anchors the diagram visually */}
           <pattern
             id="arch-grid"
             width="40"
@@ -146,7 +412,6 @@ export function ArchitectureFlowSvg() {
               opacity="0.5"
             />
           </pattern>
-          {/* Glow filter for packets and component halos */}
           <filter id="arch-glow" x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3" result="b" />
             <feMerge>
@@ -154,7 +419,6 @@ export function ArchitectureFlowSvg() {
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-          {/* Strong glow for the packets specifically */}
           <filter id="packet-glow" x="-100%" y="-100%" width="300%" height="300%">
             <feGaussianBlur stdDeviation="4" />
           </filter>
@@ -162,7 +426,7 @@ export function ArchitectureFlowSvg() {
 
         <rect width="1200" height="540" fill="url(#arch-grid)" />
 
-        {/* Layer labels (left margin) */}
+        {/* Tier labels */}
         <text
           x="16"
           y="100"
@@ -206,7 +470,6 @@ export function ArchitectureFlowSvg() {
           const pathId = `arch-path-${i}`;
           return (
             <g key={`edge-${i}`}>
-              {/* Faint background path — always visible */}
               <path
                 id={pathId}
                 d={d}
@@ -215,15 +478,11 @@ export function ArchitectureFlowSvg() {
                 fill="none"
                 opacity="0.25"
               />
-              {/* Animated packet — small glowing circle traveling the path.
-                  3s cycle, opacity fades in/out at the ends so packets
-                  don't look like they pop on/off at the endpoints. */}
               <circle r="4" fill={from.color} filter="url(#packet-glow)">
                 <animateMotion
                   dur="3s"
                   repeatCount="indefinite"
                   begin={`${edge.beginAt}s`}
-                  rotate="auto"
                 >
                   <mpath href={`#${pathId}`} />
                 </animateMotion>
@@ -236,7 +495,6 @@ export function ArchitectureFlowSvg() {
                   begin={`${edge.beginAt}s`}
                 />
               </circle>
-              {/* Solid core dot for crispness over the glow */}
               <circle r="2" fill="white">
                 <animateMotion
                   dur="3s"
@@ -259,90 +517,186 @@ export function ArchitectureFlowSvg() {
         })}
 
         {/* Component boxes */}
-        {components.map((c) => (
-          <g key={c.id}>
-            {/* Soft halo behind the box */}
-            <rect
-              x={c.x - 6}
-              y={c.y - 6}
-              width="92"
-              height="56"
-              rx="11"
-              fill={c.color}
-              opacity="0.15"
-              filter="url(#arch-glow)"
-            />
-            {/* Main box */}
-            <rect
-              x={c.x}
-              y={c.y}
-              width="80"
-              height="44"
-              rx="8"
-              fill={c.color}
-              stroke="white"
-              strokeOpacity="0.25"
-              strokeWidth="1"
-            />
-            {/* Subtle highlight strip on top — gives the box dimensionality */}
-            <rect
-              x={c.x + 1}
-              y={c.y + 1}
-              width="78"
-              height="14"
-              rx="7"
-              fill="white"
-              fillOpacity="0.18"
-              pointerEvents="none"
-            />
-            {/* Service short name (bold, inside box) */}
-            <text
-              x={c.x + 40}
-              y={c.y + 27}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              fontSize={c.short.length > 4 ? 11 : 13}
-              fontWeight="800"
-              fill="white"
-              fontFamily="ui-sans-serif, system-ui, -apple-system, sans-serif"
-              letterSpacing="0.5"
+        {components.map((c) => {
+          const names = c.providers[provider];
+          const isSelected = selectedId === c.id;
+          return (
+            <g
+              key={c.id}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedId(isSelected ? null : c.id);
+              }}
+              style={{ cursor: c.id === "user" ? "default" : "pointer" }}
             >
-              {c.short}
-            </text>
-            {/* Service full label below */}
-            <text
-              x={c.x + 40}
-              y={c.y + 60}
-              textAnchor="middle"
-              fontSize="10"
-              fill="#cbd5e1"
-              fontFamily="ui-sans-serif, system-ui, -apple-system, sans-serif"
-            >
-              {c.label}
-            </text>
-          </g>
-        ))}
+              {/* Hit area — slightly larger than the box for easier tapping */}
+              <rect
+                x={c.x - 8}
+                y={c.y - 8}
+                width="96"
+                height="60"
+                rx="12"
+                fill="transparent"
+              />
+              {/* Halo (brighter when selected) */}
+              <rect
+                x={c.x - 6}
+                y={c.y - 6}
+                width="92"
+                height="56"
+                rx="11"
+                fill={c.color}
+                opacity={isSelected ? 0.4 : 0.15}
+                filter="url(#arch-glow)"
+              />
+              {/* Main box */}
+              <rect
+                x={c.x}
+                y={c.y}
+                width="80"
+                height="44"
+                rx="8"
+                fill={c.color}
+                stroke="white"
+                strokeOpacity={isSelected ? 0.9 : 0.25}
+                strokeWidth={isSelected ? 2 : 1}
+              />
+              {/* Top highlight strip */}
+              <rect
+                x={c.x + 1}
+                y={c.y + 1}
+                width="78"
+                height="14"
+                rx="7"
+                fill="white"
+                fillOpacity="0.18"
+                pointerEvents="none"
+              />
+              <text
+                x={c.x + 40}
+                y={c.y + 27}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fontSize={names.short.length > 4 ? 10 : 13}
+                fontWeight="800"
+                fill="white"
+                fontFamily="ui-sans-serif, system-ui, -apple-system, sans-serif"
+                letterSpacing="0.5"
+                pointerEvents="none"
+              >
+                {names.short}
+              </text>
+              <text
+                x={c.x + 40}
+                y={c.y + 60}
+                textAnchor="middle"
+                fontSize="10"
+                fill="#cbd5e1"
+                fontFamily="ui-sans-serif, system-ui, -apple-system, sans-serif"
+                pointerEvents="none"
+              >
+                {names.label}
+              </text>
+            </g>
+          );
+        })}
       </svg>
 
-      {/* Caption pill — overlaid bottom-center. Re-keys on each phase
-          change so the CSS fade-in fires every rotation. */}
-      <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 max-w-[90%]">
-        <div
-          key={captionIdx}
-          className="flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-md px-4 py-2 text-xs sm:text-sm font-medium text-white border border-white/10 shadow-lg animate-[fadeInUp_500ms_ease]"
-        >
-          <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 shrink-0">
-            <span className="block h-full w-full rounded-full bg-emerald-400 animate-ping" />
-          </span>
-          <span className="whitespace-nowrap overflow-hidden text-ellipsis">
-            {captions[captionIdx]}
-          </span>
+      {/* Caption pill — hides when popover is open so they don't overlap */}
+      {!selected && (
+        <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 max-w-[90%]">
+          <div
+            key={captionIdx}
+            className="flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-md px-4 py-2 text-xs sm:text-sm font-medium text-white border border-white/10 shadow-lg animate-[archFadeInUp_500ms_ease]"
+          >
+            <span className="relative inline-flex h-2 w-2 shrink-0">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            </span>
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis">
+              {captions[captionIdx]}
+            </span>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Tiny scoped keyframes — Tailwind doesn't ship a fadeInUp by default */}
+      {/* Click-to-learn popover */}
+      {selected && (
+        <div
+          className="pointer-events-auto absolute z-20 -translate-x-1/2 animate-[archFadeInUp_180ms_ease]"
+          style={{
+            left: `${popoverLeftPct}%`,
+            top: `${popoverTopPct}%`,
+            transform: popoverPlaceAbove
+              ? "translate(-50%, calc(-100% - 36px))"
+              : "translate(-50%, 36px)",
+          }}
+        >
+          <div className="relative w-[260px] sm:w-[320px] rounded-xl border border-white/10 bg-stone-900/95 backdrop-blur-md p-4 text-white shadow-2xl">
+            <button
+              onClick={() => setSelectedId(null)}
+              className="absolute top-2 right-2 rounded-md p-1 text-stone-400 hover:bg-white/10 hover:text-white"
+              aria-label="Close"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+            <div
+              className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+              style={{
+                background: `${selected.color}22`,
+                color: selected.color,
+                border: `1px solid ${selected.color}55`,
+              }}
+            >
+              {selected.category}
+            </div>
+            <h4 className="mt-2 text-sm font-bold">
+              {selected.providers[provider].label}
+            </h4>
+            <p className="mt-1 text-xs text-stone-300 leading-relaxed">
+              {selected.description}
+            </p>
+            <ul className="mt-2 space-y-1">
+              {selected.facts.map((f, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-1.5 text-[11px] text-stone-400 leading-relaxed"
+                >
+                  <span
+                    className="mt-1 inline-block h-1 w-1 rounded-full shrink-0"
+                    style={{ background: selected.color }}
+                  />
+                  <span>{f}</span>
+                </li>
+              ))}
+            </ul>
+            {selected.id !== "user" && (
+              <Link
+                href={`/exams/${providerExamId[provider]}?utm_source=arch_flow&svc=${selected.id}`}
+                className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-amber-500 hover:bg-amber-400 px-3 py-1.5 text-[11px] font-bold text-stone-900 transition-colors"
+              >
+                Practice questions on {providerLabel[provider]}
+                <ArrowRight className="h-3 w-3" />
+              </Link>
+            )}
+            {/* Pointer arrow toward the box */}
+            <div
+              className="absolute left-1/2 -translate-x-1/2 h-3 w-3 rotate-45 bg-stone-900 border-white/10"
+              style={{
+                [popoverPlaceAbove ? "bottom" : "top"]: "-6px",
+                borderRightWidth: popoverPlaceAbove ? "1px" : "0",
+                borderBottomWidth: popoverPlaceAbove ? "1px" : "0",
+                borderLeftWidth: popoverPlaceAbove ? "0" : "1px",
+                borderTopWidth: popoverPlaceAbove ? "0" : "1px",
+                borderStyle: "solid",
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
-        @keyframes fadeInUp {
+        @keyframes archFadeInUp {
           0% {
             opacity: 0;
             transform: translateY(6px);
