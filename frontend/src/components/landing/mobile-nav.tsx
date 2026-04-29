@@ -2,21 +2,46 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, LogIn, LayoutDashboard, Crown } from "lucide-react";
+import {
+  Menu,
+  X,
+  LogIn,
+  LayoutDashboard,
+  Crown,
+  Map,
+  GraduationCap,
+  Trophy,
+  Sparkles,
+  Globe,
+  Zap,
+  Target,
+  BookOpen,
+  Newspaper,
+  Tag,
+  Mail,
+  type LucideIcon,
+} from "lucide-react";
 import { readAuthCookie, type AuthCookiePayload } from "@/lib/auth-cookie";
 
-const navLinks = [
-  { href: "/paths", label: "🗺️ Guided Learning Paths" },
-  { href: "/tutor", label: "🎓 Coach (1-on-1 AI Tutor)" },
-  { href: "/exams", label: "🏆 All 76+ Certifications" },
-  { href: "/try-questions", label: "✨ Try 5 Free Questions" },
-  { href: "/visualizer", label: "🌐 3D Visualizer" },
-  { href: "/simulator", label: "⚡ Simulator" },
-  { href: "/scenarios", label: "🎯 Scenarios" },
-  { href: "/study/heuristics", label: "📘 Heuristics" },
-  { href: "/blog", label: "Blog" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/contact", label: "Contact" },
+// Lucide icons replace the emoji that used to live in the labels.
+// Emoji read as their CLDR names to screen readers ("MAP OF WORLD"
+// instead of "Guided Learning Paths"), and at body-text size their
+// visual weight is unpredictable across font fallbacks. SVG icons we
+// can size + color consistently with the rest of the site, and they're
+// invisible to screen readers (which then read just the label — what
+// we want).
+const navLinks: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/paths", label: "Guided Learning Paths", icon: Map },
+  { href: "/tutor", label: "Coach (1-on-1 AI Tutor)", icon: GraduationCap },
+  { href: "/exams", label: "All 76+ Certifications", icon: Trophy },
+  { href: "/try-questions", label: "Try 5 Free Questions", icon: Sparkles },
+  { href: "/visualizer", label: "3D Visualizer", icon: Globe },
+  { href: "/simulator", label: "Simulator", icon: Zap },
+  { href: "/scenarios", label: "Scenarios", icon: Target },
+  { href: "/study/heuristics", label: "Heuristics", icon: BookOpen },
+  { href: "/blog", label: "Blog", icon: Newspaper },
+  { href: "/pricing", label: "Pricing", icon: Tag },
+  { href: "/contact", label: "Contact", icon: Mail },
 ];
 
 export function MobileNav() {
@@ -51,16 +76,20 @@ export function MobileNav() {
           {/* Menu */}
           <div className="absolute right-4 left-4 top-[calc(100%+0.5rem)] z-50 rounded-xl border border-stone-200 bg-white p-4 shadow-xl">
             <div className="flex flex-col gap-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="rounded-lg px-4 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-100 hover:text-stone-900"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-100 hover:text-stone-900"
+                  >
+                    <Icon className="h-4 w-4 shrink-0 text-stone-500" aria-hidden="true" />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
               <div className="my-2 h-px bg-stone-200" />
 
               {auth ? (
