@@ -32,14 +32,17 @@ const stats: Stat[] = [
     color: "text-violet-700",
     bg: "bg-violet-100",
   },
+  // Color palette consolidated to amber + violet only — was rose/emerald
+  // per stat which read as a rainbow next to the rest of the homepage.
+  // Two-color rotation gives the same visual rhythm without the noise.
   {
     value: 24,
     suffix: "/7",
     label: "AI Tutor Coach",
     sublabel: "Patient, stateful, knows your weak topics",
     Icon: Sparkles,
-    color: "text-rose-700",
-    bg: "bg-rose-100",
+    color: "text-amber-700",
+    bg: "bg-amber-100",
   },
   {
     value: 92,
@@ -47,8 +50,8 @@ const stats: Stat[] = [
     label: "Pass Rate",
     sublabel: "Members who finish a Path + 3 mocks",
     Icon: Trophy,
-    color: "text-emerald-700",
-    bg: "bg-emerald-100",
+    color: "text-violet-700",
+    bg: "bg-violet-100",
   },
 ];
 

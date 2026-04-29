@@ -34,15 +34,18 @@ const testimonials: Testimonial[] = [
     name: "Priya M.",
     role: "GCP Pro Architect",
     company: "Healthcare",
-    avatarColor: "rose",
+    avatarColor: "amber",
     cert: "PCA",
   },
 ];
 
+// Lock the avatar palette to amber + violet only. Was amber/violet/rose,
+// which read as a third "brand" color when the rest of the homepage
+// uses just two accents. The names + cert badges already differentiate
+// the three testifiers — the avatar color was carrying no extra info.
 const avatarBgMap: Record<string, string> = {
   amber: "bg-gradient-to-br from-amber-400 to-amber-600",
   violet: "bg-gradient-to-br from-violet-500 to-violet-700",
-  rose: "bg-gradient-to-br from-rose-500 to-rose-700",
 };
 
 export function TestimonialsSection() {

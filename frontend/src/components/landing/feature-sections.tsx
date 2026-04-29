@@ -172,7 +172,7 @@ export function CoachPreview() {
 export function PathsPreview() {
   return (
     <div className="relative">
-      <div className="absolute -inset-8 bg-gradient-to-br from-amber-300/25 to-rose-300/20 blur-3xl rounded-full" />
+      <div className="absolute -inset-8 bg-gradient-to-br from-amber-300/25 to-violet-300/20 blur-3xl rounded-full" />
       <div className="relative rounded-2xl bg-white border border-stone-200 shadow-2xl shadow-stone-900/10 overflow-hidden">
         {/* Path header */}
         <div
@@ -285,7 +285,7 @@ function SubStep({
 export function SimulatorPreview() {
   return (
     <div className="relative">
-      <div className="absolute -inset-8 bg-gradient-to-br from-violet-300/25 to-blue-300/20 blur-3xl rounded-full" />
+      <div className="absolute -inset-8 bg-gradient-to-br from-amber-300/25 to-violet-300/20 blur-3xl rounded-full" />
       <div className="relative rounded-2xl bg-stone-50 border border-stone-200 shadow-2xl shadow-stone-900/10 overflow-hidden">
         {/* Top bar */}
         <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-stone-200 bg-white">
@@ -403,7 +403,7 @@ function Metric({
 export function AdaptivePreview() {
   return (
     <div className="relative">
-      <div className="absolute -inset-8 bg-gradient-to-br from-emerald-300/25 to-amber-300/20 blur-3xl rounded-full" />
+      <div className="absolute -inset-8 bg-gradient-to-br from-amber-300/25 to-violet-300/20 blur-3xl rounded-full" />
       <div className="relative rounded-2xl bg-white border border-stone-200 shadow-2xl shadow-stone-900/10 overflow-hidden">
         <div className="px-4 py-3 border-b border-stone-200 bg-stone-50">
           <div className="flex items-center gap-2">
@@ -621,7 +621,7 @@ export function FeatureSections() {
         title={
           <>
             Hand-crafted curricula —
-            <span className="text-rose-600"> from zero to certified</span>.
+            <span className="text-amber-600"> from zero to certified</span>.
           </>
         }
         description="Step-by-step modules with hands-on labs and a quiz after every module. Coach sits next to you the entire path. We currently ship the Red Hat EX188V4K (Containers with Podman) full path and an AWS SAA Foundations starter — more coming."
@@ -664,7 +664,7 @@ export function FeatureSections() {
         title={
           <>
             8,800+ questions, picked
-            <span className="text-emerald-600"> by an algorithm that knows you</span>.
+            <span className="text-amber-600"> by an algorithm that knows you</span>.
           </>
         }
         description="Bayesian Knowledge Tracing + a multi-armed bandit pick the next question to maximize your readiness gain. Spaced repetition (SM-2) brings shaky concepts back at exactly the right interval. Plus a free diagnostic quiz to anchor your starting point."
@@ -686,7 +686,7 @@ export function FeatureSections() {
         title={
           <>
             Real timed mocks with
-            <span className="text-rose-600"> domain-by-domain scoring</span>.
+            <span className="text-amber-600"> domain-by-domain scoring</span>.
           </>
         }
         description="Three full-length, timed mock exams per certification — properly weighted to match the official domain ratios. Get a per-domain pass/fail breakdown so you know exactly where to focus before exam day."
