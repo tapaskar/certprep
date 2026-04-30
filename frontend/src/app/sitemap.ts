@@ -37,6 +37,10 @@ interface ApiPath {
   id: string;
 }
 
+interface ApiConcept {
+  id: string;
+}
+
 async function fetchExams(): Promise<ApiExam[]> {
   try {
     const res = await fetch(`${API_URL}/content/exams`, {
@@ -61,8 +65,24 @@ async function fetchPaths(): Promise<ApiPath[]> {
   }
 }
 
+async function fetchPopularConcepts(): Promise<ApiConcept[]> {
+  try {
+    const res = await fetch(`${API_URL}/content/concepts/popular?limit=200`, {
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [exams, paths] = await Promise.all([fetchExams(), fetchPaths()]);
+  const [exams, paths, concepts] = await Promise.all([
+    fetchExams(),
+    fetchPaths(),
+    fetchPopularConcepts(),
+  ]);
 
   const blogUrls: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${BASE_URL}/blog/${post.slug}`,
@@ -94,6 +114,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.75,
   }));
 
+  const conceptUrls: MetadataRoute.Sitemap = concepts.map((c) => ({
+    url: `${BASE_URL}/concepts/${c.id}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    // Long-tail "what is X" intent — moderate priority. Each page is
+    // narrow but high-intent for a specific search query.
+    priority: 0.7,
+  }));
+
   return [
     {
       url: BASE_URL,
@@ -121,6 +150,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     },
     ...pathUrls,
+    ...conceptUrls,
     {
       url: `${BASE_URL}/visualizer`,
       lastModified: new Date(),

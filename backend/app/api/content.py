@@ -15,6 +15,117 @@ router = APIRouter(prefix="/content", tags=["content"])
 ROADMAPS_FILE = Path(__file__).parent.parent.parent / "data" / "roadmaps.json"
 
 
+@router.get("/concepts/popular")
+async def list_popular_concepts(db: DB, limit: int = 200):
+    """Concepts ranked for SEO landing pages.
+
+    Public endpoint — drives `generateStaticParams` and the sitemap
+    for the programmatic /concepts/[slug] route. Without this we'd
+    have no way to know which concepts deserve their own indexable
+    page (we have thousands; ~200 is enough for a first wave).
+
+    Ranking proxy: concepts from the most-popular exams first
+    (the same six certs the homepage features). Within each exam,
+    sort by exam_weight descending so the heaviest topics rank first.
+    """
+    POPULAR_EXAM_IDS = [
+        "aws-clf-c02",
+        "aws-saa-c03",
+        "azure-az900",
+        "azure-az104",
+        "gcp-cdl",
+        "gcp-ace",
+    ]
+    result = await db.execute(
+        select(Concept)
+        .where(Concept.exam_id.in_(POPULAR_EXAM_IDS))
+        .order_by(Concept.exam_id, Concept.exam_weight.desc())
+        .limit(limit)
+    )
+    return [
+        {
+            "id": c.id,
+            "name": c.name,
+            "exam_id": c.exam_id,
+            "exam_weight": float(c.exam_weight),
+        }
+        for c in result.scalars()
+    ]
+
+
+@router.get("/concepts/{concept_id}")
+async def get_concept_public(concept_id: str, db: DB):
+    """Public concept detail — no auth required.
+
+    The original /content/{exam_id}/concept/{concept_id} route is
+    auth-aware (returns user mastery if logged in) and requires the
+    exam_id prefix. This one is purely public, looks up by concept_id
+    only, and bundles the parent exam summary so the SEO page can
+    render in a single fetch.
+    """
+    concept = await db.get(Concept, concept_id)
+    if not concept:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Concept not found"
+        )
+
+    exam = await db.get(Exam, concept.exam_id)
+    q_count_result = await db.execute(
+        select(func.count())
+        .select_from(Question)
+        .where(Question.concept_ids.contains([concept_id]))
+    )
+    q_count = q_count_result.scalar_one() or 0
+
+    # Resolve sibling concept names for the prerequisites/lateral lists
+    # so the SEO page can render real anchor links instead of opaque IDs.
+    related_ids: list[str] = []
+    related_ids.extend(concept.prerequisites or [])
+    related_ids.extend(concept.lateral_relations or [])
+    related_ids = list({rid for rid in related_ids if rid})
+    related_lookup: dict[str, str] = {}
+    if related_ids:
+        rel_result = await db.execute(
+            select(Concept.id, Concept.name).where(Concept.id.in_(related_ids))
+        )
+        related_lookup = {row[0]: row[1] for row in rel_result.all()}
+
+    def hydrate(ids: list[str] | None) -> list[dict]:
+        return [
+            {"id": rid, "name": related_lookup.get(rid, rid)}
+            for rid in (ids or [])
+            if rid
+        ]
+
+    return {
+        "concept": {
+            "id": concept.id,
+            "name": concept.name,
+            "domain_id": concept.domain_id,
+            "topic_id": concept.topic_id,
+            "description": concept.description,
+            "exam_weight": float(concept.exam_weight),
+            "difficulty_tier": concept.difficulty_tier,
+            "key_facts": concept.key_facts or [],
+            "common_misconceptions": concept.common_misconceptions or [],
+            "aws_services": concept.aws_services or [],
+            "prerequisites": hydrate(concept.prerequisites),
+            "lateral_relations": hydrate(concept.lateral_relations),
+        },
+        "exam": (
+            {
+                "id": exam.id,
+                "name": exam.name,
+                "code": exam.code,
+                "provider": exam.provider,
+            }
+            if exam
+            else None
+        ),
+        "question_count": int(q_count),
+    }
+
+
 @router.get("/exams")
 async def list_exams(db: DB):
     """List all available exams."""
