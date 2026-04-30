@@ -2,7 +2,12 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { HomeNav } from "@/components/landing/home-nav";
 import { SiteFooter } from "@/components/landing/site-footer";
-import { JsonLd, courseSchema, faqSchema } from "@/components/seo/json-ld";
+import {
+  JsonLd,
+  courseSchema,
+  faqSchema,
+  breadcrumbSchema,
+} from "@/components/seo/json-ld";
 import {
   BookOpen,
   Clock,
@@ -19,6 +24,30 @@ import {
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+
+interface ExamSummary {
+  id: string;
+  provider: string;
+  name: string;
+  code: string;
+}
+
+/**
+ * Fetch all exams once at build time. Used to compute "sibling" exams
+ * for the in-page footer block — boosts internal link depth and keeps
+ * the long-tail exam pages from being orphaned.
+ */
+async function getAllExams(): Promise<ExamSummary[]> {
+  try {
+    const res = await fetch(`${API_URL}/content/exams`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function getExamDetails(examId: string): Promise<any | null> {
@@ -42,8 +71,14 @@ export async function generateMetadata({
   const exam = await getExamDetails(examId);
   if (!exam) return { title: "Exam Not Found" };
 
-  const title = `${exam.code} ${exam.name} Practice Exam — Free Questions & Mock Test`;
-  const description = `Free practice questions and mock exam for ${exam.code} ${exam.name}. ${exam.questions_in_bank}+ questions, ${exam.domains?.length} domains, timed mock exams with pass/fail scoring. Pass rate: ${exam.passing_score_pct}%.`;
+  // Title trimmed to ~50-60 chars so it doesn't truncate in the SERP.
+  // Lead with the cert code (highest-intent search term) followed by a
+  // shortened name. Removed the "Free Questions & Mock Test" suffix
+  // because the template adds " | SparkUpCloud" already (~75 chars).
+  const title = `${exam.code} Practice Exam — Free Questions`;
+  // Description trimmed to ~155 chars. Cert code first for skim
+  // recognition, key facts (Q count + pass score) second.
+  const description = `${exam.code} ${exam.name}: free practice questions, mock exams, and study guide. ${exam.questions_in_bank}+ questions, ${exam.passing_score_pct}% to pass.`;
 
   return {
     title,
@@ -64,13 +99,26 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * Pre-render every exam page at build time. Was ISR (revalidate 3600)
+ * which meant the first request to each unbuilt path was a cold render.
+ * Now all 76 pages ship as static HTML with hourly revalidation.
+ */
+export async function generateStaticParams() {
+  const exams = await getAllExams();
+  return exams.map((e) => ({ examId: e.id }));
+}
+
 export default async function PublicExamPage({
   params,
 }: {
   params: Promise<{ examId: string }>;
 }) {
   const { examId } = await params;
-  const exam = await getExamDetails(examId);
+  const [exam, allExams] = await Promise.all([
+    getExamDetails(examId),
+    getAllExams(),
+  ]);
 
   if (!exam) {
     return (
@@ -130,9 +178,32 @@ export default async function PublicExamPage({
     });
   }
 
+  // BreadcrumbList — eligible for SERP breadcrumb snippet rendering.
+  // Trail order: Home → Exams → <Provider> → <Code>.
+  const breadcrumbLd = breadcrumbSchema([
+    { name: "Home", url: "https://www.sparkupcloud.com" },
+    { name: "Exams", url: "https://www.sparkupcloud.com/exams" },
+    {
+      name: providerLabel[exam.provider] || exam.provider,
+      url: `https://www.sparkupcloud.com/exams?provider=${exam.provider}`,
+    },
+    {
+      name: exam.code,
+      url: `https://www.sparkupcloud.com/exams/${examId}`,
+    },
+  ]);
+
+  // Sibling exams from the same provider — used in the footer block to
+  // boost internal link depth and reduce orphan-page risk for less-popular
+  // exams. Capped at 6 so the block stays compact.
+  const siblingExams = allExams
+    .filter((e) => e.provider === exam.provider && e.id !== exam.id)
+    .slice(0, 6);
+
   return (
     <div className="min-h-screen bg-stone-50">
       <JsonLd data={courseLd} />
+      <JsonLd data={breadcrumbLd} />
       {faqItems.length > 0 && <JsonLd data={faqSchema(faqItems)} />}
 
       <HomeNav />
@@ -158,11 +229,16 @@ export default async function PublicExamPage({
               <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase text-amber-700">
                 {providerLabel[exam.provider] || exam.provider}
               </span>
+              {/* H1 leads with the cert code — that's the highest-intent
+                  search term users type ("SAA-C03 practice exam", not
+                  "AWS Certified Solutions Architect - Associate"). The
+                  full name follows for context. */}
               <h1 className="mt-3 text-3xl font-bold text-stone-900">
+                <span className="text-amber-600">{exam.code}</span>:{" "}
                 {exam.name}
               </h1>
               <p className="mt-1 text-lg text-stone-500">
-                {exam.code} Practice Exam &amp; Study Guide
+                Practice Exam &amp; Study Guide
               </p>
             </div>
             {info?.difficulty_rating && (
@@ -373,6 +449,40 @@ export default async function PublicExamPage({
                 )
               )}
             </div>
+          </div>
+        )}
+
+        {/* Sibling-exams footer block — internal-link depth booster.
+            Helps Google discover the long-tail exam pages and gives
+            users a path to other certs in the same provider's catalog
+            without bouncing back to /exams. */}
+        {siblingExams.length > 0 && (
+          <div className="rounded-2xl border border-stone-200 bg-white p-6">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-stone-500 mb-4">
+              More {providerLabel[exam.provider] || exam.provider} certifications
+            </h2>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {siblingExams.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/exams/${s.id}`}
+                  className="group flex items-start gap-2 rounded-lg border border-stone-200 px-3 py-2 transition-colors hover:border-amber-400 hover:bg-amber-50/50"
+                >
+                  <span className="shrink-0 rounded-md bg-stone-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-stone-700 group-hover:bg-amber-100 group-hover:text-amber-700">
+                    {s.code}
+                  </span>
+                  <span className="text-xs text-stone-700 line-clamp-2 group-hover:text-amber-700">
+                    {s.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <Link
+              href="/exams"
+              className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-amber-700 hover:text-amber-900"
+            >
+              View all 76+ certifications →
+            </Link>
           </div>
         )}
 

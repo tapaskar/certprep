@@ -43,7 +43,7 @@ export function CertBadge({
     return (
       <img
         src={badge.url}
-        alt={`${code ?? "Certification"} badge`}
+        alt={`${code ?? "Certification"} ${provider ? provider.toUpperCase() : ""} certification badge`.trim()}
         width={size}
         height={size}
         loading="lazy"

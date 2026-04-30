@@ -19,8 +19,12 @@ export const metadata: Metadata = {
     default: "SparkUpCloud — AI-Powered Cloud Certification Exam Prep",
     template: "%s | SparkUpCloud",
   },
+  // Meta description capped at ~157 chars so Google doesn't truncate
+  // it in the SERP snippet (was 217 chars previously). Leads with the
+  // benefit + key proof point, lists provider breadth, ends with the
+  // friction-killing "free to start" hook.
   description:
-    "Master 76+ AWS, Azure, Google Cloud, CompTIA, NVIDIA, and Red Hat certifications with AI-powered adaptive learning, spaced repetition, concept tutorials, practice questions, video lessons, and hands-on labs. 85% pass rate.",
+    "AI-powered exam prep for 76+ AWS, Azure, GCP, CompTIA, NVIDIA & Red Hat certs. Adaptive practice + a 1-on-1 AI tutor. 85% pass rate. Free to start.",
   keywords: [
     "AWS certification",
     "Azure certification",

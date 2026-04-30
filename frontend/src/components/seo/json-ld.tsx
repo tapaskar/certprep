@@ -106,6 +106,32 @@ export function courseSchema(input: {
   };
 }
 
+export interface BreadcrumbItem {
+  /** Display name shown in the SERP breadcrumb trail. */
+  name: string;
+  /** Absolute URL the crumb points to. */
+  url: string;
+}
+
+/**
+ * Emits a BreadcrumbList — Google may render this as a breadcrumb path
+ * in the SERP snippet instead of the raw URL, lifting CTR. Pass items
+ * in trail order (Home first, current page last). The current page's
+ * crumb still gets a URL so structured-data validators don't complain.
+ */
+export function breadcrumbSchema(items: BreadcrumbItem[]): JsonLdPayload {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
 export interface FaqItem {
   question: string;
   answer: string;
