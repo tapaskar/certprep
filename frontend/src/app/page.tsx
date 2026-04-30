@@ -1,16 +1,15 @@
 import Link from "next/link";
 import { Brain, Clock, TrendingUp, Shield, Cloud, Database, Code, Network, Bot, BarChart3, Server, Lock, Cpu, Globe, KeyRound, FileText, Workflow, Container, Activity, HardDrive, BookOpen, Zap, Target, Star, Layers, Monitor, Wifi, HardHat, Lightbulb, Palette } from "lucide-react";
-import { CertTabs } from "@/components/landing/cert-tabs";
 import { HomepageFAQ } from "@/components/landing/homepage-faq";
 import { MobileNav } from "@/components/landing/mobile-nav";
 import { AuthCTA } from "@/components/landing/auth-cta";
 import { HeroMockup } from "@/components/landing/hero-mockup";
 import { ProviderTrustStrip } from "@/components/landing/provider-trust-strip";
 import { StatsBanner } from "@/components/landing/stats-banner";
-import { FeatureSections } from "@/components/landing/feature-sections";
+import { FeatureGrid } from "@/components/landing/feature-grid";
 import { ArchitectureFlowBanner } from "@/components/landing/architecture-flow-banner";
+import { PopularCertsPreview } from "@/components/landing/popular-certs-preview";
 import { ComparisonTable } from "@/components/landing/comparison-table";
-import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { HomeNav } from "@/components/landing/home-nav";
 import { SiteFooter } from "@/components/landing/site-footer";
 
@@ -369,14 +368,18 @@ export default function LandingPage() {
       {/* Stats banner */}
       <StatsBanner />
 
-      {/* Feature deep-dive sections — Coach, Paths, Simulator, Adaptive, Mocks */}
-      <FeatureSections />
-
-      {/* Animated cloud architecture flow — narrates a real request
+      {/* Animated cloud architecture flow — moved up to act as the
+          strongest visual hook below the hero. Narrates a real request
           lifecycle (edge → DNS → ALB → compute → data → messaging) so
           visitors can see in 15 seconds what we mean by "architecture
-          mastery". Pure SVG, ~5KB, 60fps on mobile. */}
+          mastery". Pure SVG, ~6KB, 60fps on mobile, click-to-learn
+          popovers + AWS/Azure/GCP toggle. */}
       <ArchitectureFlowBanner />
+
+      {/* Compact 5-card feature grid — replaces the old FeatureSections
+          which was 5 alternating left-right deep-dives spanning ~3000px.
+          The detail moved to the dedicated routes each card links to. */}
+      <FeatureGrid />
 
       {/* OLD Free Interactive Tools — kept as a quick "Free tools" mini-grid further down
           (the deep-dives above are the primary feature story) */}
@@ -506,8 +509,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Certifications with Provider Tabs */}
-      <CertTabs />
+      {/* 6 popular certs + "View all 76+ →" — replaces the full
+          76-card CertTabs that previously rendered every cert on the
+          homepage. The full catalog still lives at /exams. */}
+      <PopularCertsPreview />
 
       {/* Honest comparison vs competitors */}
       <ComparisonTable />
@@ -540,11 +545,28 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Polished testimonials with avatars + aggregate rating */}
-      <TestimonialsSection />
+      {/* Testimonials moved to /pricing — they work harder near the
+          buy decision than on the homepage where the visitor isn't
+          ready to convert yet. */}
 
       {/* FAQ */}
       <HomepageFAQ />
+
+      {/* Pricing teaser — surfaces the actual price before the bottom
+          CTA so visitors don't have to navigate to /pricing to learn
+          if it's $5 or $500. */}
+      <section className="mx-auto max-w-4xl px-6 pt-4 pb-2 text-center">
+        <p className="text-sm text-stone-600">
+          Free forever ·{" "}
+          <Link
+            href="/pricing"
+            className="font-semibold text-amber-700 underline-offset-4 hover:underline"
+          >
+            Pro from $12.50/mo
+          </Link>{" "}
+          · Pass-or-refund guarantee
+        </p>
+      </section>
 
       {/* CTA Banner */}
       <section className="mx-auto max-w-4xl px-6 pb-16">

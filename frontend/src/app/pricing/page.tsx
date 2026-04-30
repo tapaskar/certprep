@@ -5,6 +5,7 @@ import FAQSection from "@/components/pricing/faq-section";
 import { pricingFaqs } from "@/components/pricing/faq-data";
 import { HomeNav } from "@/components/landing/home-nav";
 import { SiteFooter } from "@/components/landing/site-footer";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { JsonLd, faqSchema } from "@/components/seo/json-ld";
 
 export const metadata = {
@@ -147,23 +148,14 @@ export default function PricingPage() {
             ))}
           </div>
 
-          {/* Testimonial */}
-          <div className="mt-8 rounded-xl border border-stone-200 bg-white p-8 shadow-sm text-center">
-            <p className="text-base italic leading-7 text-stone-600">
-              &ldquo;I passed the AWS Solutions Architect Professional exam on my
-              first try. The adaptive learning and mock exams made all the
-              difference.&rdquo;
-            </p>
-            <div className="mt-4">
-              <p className="text-sm font-bold text-stone-900">
-                Sarah K.
-              </p>
-              <p className="text-xs text-stone-400">
-                AWS Solutions Architect Professional
-              </p>
-            </div>
-          </div>
         </section>
+
+        {/* Testimonials — moved here from the homepage. Social proof
+            works harder near the buy decision than on a landing page
+            where the visitor isn't ready to convert yet. The richer
+            3-card block replaces the single inline testimonial that
+            used to live above. */}
+        <TestimonialsSection />
 
         {/* FAQ */}
         <FAQSection />
