@@ -27,15 +27,21 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/dashboard/:path*",
-    "/study/:path*",
+    // Study session runner — auth-gated. Specifically excludes the
+    // public marketing pages /study/heuristics and /study/anti-patterns
+    // by listing only the auth-gated children explicitly.
+    "/study",
+    "/study/concept/:path*",
+    "/study/domain/:path*",
     "/onboarding/:path*",
     "/mock-exam/:path*",
     "/profile/:path*",
     "/progress/:path*",
     "/admin/:path*",
-    // /paths/[id] is auth-gated but the listing /paths should remain
-    // indexable once it's exposed publicly. Today /paths is also
-    // auth-gated; revisit when that changes.
+    // /paths/[id] is auth-gated; listing /paths is too. Both are
+    // also kept out of the sitemap so Google doesn't try to crawl
+    // them. Revisit when /paths is exposed publicly.
+    "/paths",
     "/paths/:path*",
   ],
 };

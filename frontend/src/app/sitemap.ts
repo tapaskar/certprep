@@ -33,10 +33,6 @@ interface ApiExam {
   updated_at?: string;
 }
 
-interface ApiPath {
-  id: string;
-}
-
 interface ApiConcept {
   id: string;
 }
@@ -44,18 +40,6 @@ interface ApiConcept {
 async function fetchExams(): Promise<ApiExam[]> {
   try {
     const res = await fetch(`${API_URL}/content/exams`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return [];
-    return res.json();
-  } catch {
-    return [];
-  }
-}
-
-async function fetchPaths(): Promise<ApiPath[]> {
-  try {
-    const res = await fetch(`${API_URL}/learning-paths`, {
       next: { revalidate: 3600 },
     });
     if (!res.ok) return [];
@@ -78,9 +62,8 @@ async function fetchPopularConcepts(): Promise<ApiConcept[]> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [exams, paths, concepts] = await Promise.all([
+  const [exams, concepts] = await Promise.all([
     fetchExams(),
-    fetchPaths(),
     fetchPopularConcepts(),
   ]);
 
@@ -107,12 +90,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  const pathUrls: MetadataRoute.Sitemap = paths.map((p) => ({
-    url: `${BASE_URL}/paths/${p.id}`,
-    lastModified: new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.75,
-  }));
+  // /paths and /paths/[id] are intentionally NOT in the sitemap.
+  // They live in the (auth) route group and the AuthLayout client-
+  // redirects unauthenticated visitors to /login. Googlebot executes
+  // that redirect and reports the URL as "Page with redirect" in
+  // Search Console — noisy and pointless because we don't actually
+  // want those pages indexed (the same content is already gated
+  // behind the signup wall). The middleware also sets
+  // X-Robots-Tag: noindex on /paths/* for belt-and-suspenders.
+  // Re-add only if /paths is exposed as a public listing.
 
   const conceptUrls: MetadataRoute.Sitemap = concepts.map((c) => ({
     url: `${BASE_URL}/concepts/${c.id}`,
@@ -143,13 +129,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.95,
     },
     ...examUrls,
-    {
-      url: `${BASE_URL}/paths`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.85,
-    },
-    ...pathUrls,
     ...conceptUrls,
     {
       url: `${BASE_URL}/visualizer`,
