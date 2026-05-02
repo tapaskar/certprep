@@ -34,9 +34,17 @@ class Settings(BaseSettings):
     ses_sender_email: str = "admin@sparkupcloud.com"
     ses_region: str = "ap-south-1"
 
-    # Stripe
+    # Stripe (legacy / future)
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
+
+    # Gumroad — current payment provider
+    # Get the shared secret from Gumroad → Settings → Advanced → Ping URL.
+    # When set, all incoming /payments/webhook requests must include the
+    # `seller_id` matching this value, otherwise the webhook is rejected.
+    # Without this, anyone can POST to the webhook and grant themselves
+    # Pro for free.
+    gumroad_seller_id: str = ""
 
     # ── LLM provider selection ────────────────────────────────
     # "anthropic" (default), "bedrock" (Claude via AWS), or "local" (llama.cpp)

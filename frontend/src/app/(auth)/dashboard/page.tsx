@@ -80,18 +80,65 @@ export default function DashboardPage() {
   const activeExam = enrolledExams.find((e) => e.exam_id === examId);
   const userPlan = user?.plan ?? "free";
   const isFreePlan = userPlan === "free";
+  const loadUser = useAuthStore((s) => s.loadUser);
 
-  // Check for upgrade param from pricing page
+  // Two URL signals from the upgrade flow:
+  //   ?upgrade=<plan>   set by older pricing-banner clicks; user
+  //                     hasn't paid yet, this is a "resume" hint.
+  //   ?upgraded=<plan>  set by Gumroad's post-purchase redirect; user
+  //                     has just paid, show success + refresh user.
   const [upgradeParam, setUpgradeParam] = useState<string | null>(null);
+  const [justUpgraded, setJustUpgraded] = useState<string | null>(null);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const upgrade = params.get("upgrade");
+    const upgraded = params.get("upgraded");
     if (upgrade) setUpgradeParam(upgrade);
-  }, []);
+    if (upgraded) {
+      setJustUpgraded(upgraded);
+      // Refresh the user's plan from the backend — the Gumroad webhook
+      // typically lands within ~1-3s of the redirect. Wait briefly so
+      // the webhook has time to update the user row, then reload. Without
+      // this, the dashboard renders the user's stale Free plan even
+      // though they just paid for Pro.
+      setTimeout(() => loadUser(), 2000);
+      // Strip ?upgraded= from the URL so a refresh doesn't re-trigger
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [loadUser]);
 
   return (
     <div className="space-y-6">
-      {/* Upgrade prompt from pricing page */}
+      {/* Post-purchase success banner — shown when Gumroad redirects
+          back here with ?upgraded=<plan>. This was missing entirely:
+          a user paid via Gumroad, returned, and got zero acknowledgment
+          that anything happened. Now they get an unmissable celebration
+          banner and the dashboard auto-refreshes their plan. */}
+      {justUpgraded && (
+        <div className="flex items-center justify-between rounded-xl border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 via-amber-50/40 to-emerald-50 p-5 shadow-sm">
+          <div className="flex items-center gap-3">
+            <Crown className="h-7 w-7 text-amber-500" />
+            <div>
+              <p className="font-bold text-stone-900">
+                You&apos;re on {justUpgraded.replace("_", " ").replace(/\bpro\b/i, "Pro")} now —
+                welcome aboard
+              </p>
+              <p className="text-sm text-stone-600">
+                Plan unlocked. If your dashboard still looks the same in a
+                few seconds, try a hard refresh.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setJustUpgraded(null)}
+            className="text-sm text-stone-400 hover:text-stone-600"
+          >
+            Got it
+          </button>
+        </div>
+      )}
+
+      {/* Upgrade prompt from pricing page (PRE-purchase resume hint) */}
       {upgradeParam && (
         <div className="flex items-center justify-between rounded-xl border border-amber-300 bg-amber-50 p-5">
           <div className="flex items-center gap-3">
@@ -108,11 +155,15 @@ export default function DashboardPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={async () => {
+                // Same-tab navigation — popup blockers were killing this
+                // exact path before because the click came after an
+                // async fetch (browsers consider that a programmatic
+                // open, not a user gesture).
                 try {
                   const { checkout_url } = await api.createCheckout(upgradeParam);
-                  window.open(checkout_url, "_blank");
+                  window.location.href = checkout_url;
                 } catch {
-                  window.open("/pricing", "_self");
+                  window.location.href = "/pricing";
                 }
               }}
               className="rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-white hover:scale-[1.02] transition-all"

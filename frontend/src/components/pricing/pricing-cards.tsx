@@ -105,29 +105,61 @@ const tiers: Tier[] = [
       { text: "AI-generated study plans", included: true },
       { text: "Weekly reports & analytics", included: true },
     ],
-    cta: "Start Free Trial",
+    // CTA was "Start Free Trial" — misleading because Gumroad charges
+    // immediately and there is no actual trial period. Truthful copy
+    // first; we'll reintroduce a real trial only if/when we wire
+    // Gumroad's free-trial product setting.
+    cta: "Get Pro",
     ctaHref: "/register?plan=pro",
     ctaStyle: "primary",
   },
 ];
 
+// Map our internal plan names to the visual tier name in the cards.
+// A user on `pro_annual` or `pro_monthly` is on the Pro tier; on
+// `single` they're on Single Exam; everything else is Free. This lets
+// us put the "Current Plan" check on the right card instead of always
+// on Free.
+function planToTierName(plan: string | undefined): string {
+  if (!plan) return "Free";
+  if (plan === "pro_annual" || plan === "pro_monthly") return "Pro";
+  if (plan === "single") return "Single Exam";
+  return "Free";
+}
+
 export default function PricingCards() {
   const [billing, setBilling] = useState<Billing>("annual");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [currentTier, setCurrentTier] = useState<string>("Free");
   const autoCheckoutTriggered = useRef(false);
 
-  // Open Stripe / Gumroad checkout for the given plan
+  // Open Gumroad checkout for the given plan.
+  //
+  // Same-tab navigation (window.location.href) instead of a new tab
+  // (window.open). Two reasons:
+  //   1. Most browsers popup-block window.open when not triggered by a
+  //      direct user gesture. The auto-checkout path on this page fires
+  //      from a useEffect — guaranteed to be popup-blocked, which silently
+  //      killed the entire post-signup conversion path.
+  //   2. The user's payment journey is linear (cart → pay → return). A
+  //      new tab fragments their attention; same-tab keeps the back
+  //      button working and hands them a clean return-to-dashboard
+  //      flow when Gumroad redirects after purchase.
   const openCheckout = async (plan: string) => {
+    let url: string | null = null;
     try {
       const { checkout_url } = await api.createCheckout(plan);
-      window.open(checkout_url, "_blank");
+      url = checkout_url;
     } catch {
       const urls: Record<string, string> = {
         single: "https://tapasaurus.gumroad.com/l/eutwyu",
         pro_monthly: "https://tapasaurus.gumroad.com/l/arfrcr",
         pro_annual: "https://tapasaurus.gumroad.com/l/zpchn",
       };
-      if (urls[plan]) window.open(urls[plan], "_blank");
+      if (urls[plan]) url = urls[plan];
+    }
+    if (url) {
+      window.location.href = url;
     }
   };
 
@@ -140,6 +172,13 @@ export default function PricingCards() {
         : null;
     const loggedIn = !!cookie || !!tokenInStorage;
     setIsLoggedIn(loggedIn);
+
+    // Pull the user's current plan from the auth cookie so we can put
+    // the "Current Plan" check on the right card. Was always landing
+    // on Free regardless of what they actually paid for.
+    if (cookie?.p) {
+      setCurrentTier(planToTierName(cookie.p));
+    }
 
     // If user just logged in/registered with a pending plan, auto-trigger checkout
     if (loggedIn && !autoCheckoutTriggered.current) {
@@ -305,8 +344,21 @@ export default function PricingCards() {
                 ))}
               </ul>
 
-              {/* CTA */}
-              {isLoggedIn && tier.name !== "Free" ? (
+              {/* CTA — three states:
+                    1. Logged-in AND this tier is the user's CURRENT plan → "✓ Current Plan"
+                    2. Logged-in AND a paid tier (not their current) → in-app checkout button
+                    3. Logged-out → /register link with the plan saved for resume-checkout
+                  Previously state 1 always landed on Free regardless of
+                  the user's actual plan, which made a Pro user see "Current
+                  Plan" on Free — directly contradicting their billing reality. */}
+              {isLoggedIn && tier.name === currentTier ? (
+                <Link
+                  href="/dashboard"
+                  className="flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all bg-emerald-50 border-2 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                >
+                  ✓ Current Plan
+                </Link>
+              ) : isLoggedIn && tier.name !== "Free" ? (
                 <button
                   onClick={() => {
                     const plan = tier.showToggle
@@ -324,13 +376,6 @@ export default function PricingCards() {
                 >
                   {tier.cta}
                 </button>
-              ) : isLoggedIn && tier.name === "Free" ? (
-                <Link
-                  href="/dashboard"
-                  className="flex h-12 items-center justify-center rounded-lg text-sm font-bold transition-all bg-stone-100 text-stone-600 hover:bg-stone-200"
-                >
-                  ✓ Current Plan
-                </Link>
               ) : (
                 <Link
                   href={

@@ -37,7 +37,19 @@ class CheckoutRequest(BaseModel):
 
 @router.post("/checkout")
 async def create_checkout(body: CheckoutRequest, user: CurrentUser):
-    """Return Gumroad checkout URL with user email pre-filled."""
+    """Return Gumroad checkout URL with user email pre-filled + return URL.
+
+    Both query params matter:
+      email=<user.email>     pre-fills Gumroad's checkout form
+      wanted=true            skips Gumroad's product detail page,
+                             goes straight to the buy form
+
+    The return URL has to be configured on the Gumroad product itself
+    (Gumroad → Product → Edit → Customize → Redirect URL after
+    purchase). Set it to:
+        https://www.sparkupcloud.com/dashboard?upgraded=<plan>
+    so the dashboard can show a success toast + refresh user state.
+    """
     if body.plan not in GUMROAD_CHECKOUT_URLS:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -45,7 +57,7 @@ async def create_checkout(body: CheckoutRequest, user: CurrentUser):
         )
 
     base_url = GUMROAD_CHECKOUT_URLS[body.plan]
-    checkout_url = f"{base_url}?email={user.email}"
+    checkout_url = f"{base_url}?email={user.email}&wanted=true"
 
     return {"checkout_url": checkout_url, "plan": body.plan}
 
@@ -75,6 +87,29 @@ async def gumroad_webhook(request: Request, db: DB):
         "Gumroad webhook: product=%s email=%s sale=%s refunded=%s",
         product_id, email, sale_id, refunded,
     )
+
+    # ── Origin verification ──────────────────────────────────────────
+    # Without this check, anyone with curl can POST to /payments/webhook
+    # and grant themselves Pro. Gumroad signs every webhook with our
+    # seller_id; we reject anything that doesn't match.
+    #
+    # Soft-fails when GUMROAD_SELLER_ID isn't configured so dev/staging
+    # environments don't break — but logs a loud warning so we notice.
+    if settings.gumroad_seller_id:
+        if seller_id != settings.gumroad_seller_id:
+            logger.warning(
+                "Webhook rejected: seller_id mismatch (got=%s expected=%s)",
+                seller_id, settings.gumroad_seller_id,
+            )
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid seller_id",
+            )
+    else:
+        logger.warning(
+            "GUMROAD_SELLER_ID not configured — webhook origin NOT verified. "
+            "Set settings.gumroad_seller_id in production immediately."
+        )
 
     if not email or not product_id:
         logger.warning("Webhook missing email or product_id")
