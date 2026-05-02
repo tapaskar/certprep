@@ -113,8 +113,23 @@ async def create_checkout(body: CheckoutRequest, user: CurrentUser):
             detail=f"Invalid plan: {body.plan}",
         )
 
+    # Gumroad checkout URL with three params:
+    #   email     — pre-fills the buy form
+    #   wanted    — skips Gumroad's product page, goes straight to buy
+    #   redirect_url — overrides the product's configured post-purchase
+    #                  URL. Honored for one-time products (single).
+    #                  Subscription products (pro_monthly, pro_annual)
+    #                  use the per-product setting in Gumroad's UI
+    #                  regardless of this param — set them manually:
+    #                    https://www.sparkupcloud.com/dashboard?upgraded=<plan>
+    return_url = (
+        f"https://www.sparkupcloud.com/dashboard?upgraded={body.plan}"
+    )
     base_url = GUMROAD_CHECKOUT_URLS[body.plan]
-    checkout_url = f"{base_url}?email={user.email}&wanted=true"
+    checkout_url = (
+        f"{base_url}?email={user.email}&wanted=true"
+        f"&redirect_url={return_url}"
+    )
 
     return {"checkout_url": checkout_url, "plan": body.plan}
 
