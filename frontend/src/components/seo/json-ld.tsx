@@ -48,7 +48,7 @@ export function organizationSchema(): JsonLdPayload {
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
-      email: "support@sparkupcloud.com",
+      email: "admin@sparkupcloud.com",
       availableLanguage: ["English"],
     },
   };

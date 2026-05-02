@@ -304,10 +304,10 @@ export default function BillingPage() {
             </button>
             {" "}above or email{" "}
             <a
-              href="mailto:support@sparkupcloud.com"
+              href="mailto:admin@sparkupcloud.com"
               className="text-amber-700 hover:underline"
             >
-              support@sparkupcloud.com
+              admin@sparkupcloud.com
             </a>
             .
           </p>

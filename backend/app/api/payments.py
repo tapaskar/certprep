@@ -46,7 +46,7 @@ PLAN_LABELS = {
 # handle the Gumroad mechanics on the back end. When/if we wire up
 # Gumroad's API directly (PUT /v2/sales/:id/refund, DELETE /v2/
 # subscribers/:id) the UI flow stays the same.
-SUPPORT_EMAIL = "support@sparkupcloud.com"
+SUPPORT_EMAIL = "admin@sparkupcloud.com"
 
 
 class CheckoutRequest(BaseModel):
