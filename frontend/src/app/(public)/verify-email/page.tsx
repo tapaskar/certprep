@@ -72,14 +72,39 @@ export default function VerifyEmailPage() {
     try {
       const data = await api.verifyEmail(email, fullCode);
       setSuccess("Email verified successfully!");
-      setAuthFromToken(data.access_token, { ...data.user, is_admin: false, plan: "free", active_exam_id: null, enrolled_exams: [] });
-      // Decide where to send the freshly-verified user.
-      // Priority order:
-      //   1. They came from a specific cert/page (?redirect= in register URL)
-      //   2. They started from a pricing CTA (resume checkout)
-      //   3. They picked a plan (onboarding for that plan)
-      //   4. Default onboarding
+      setAuthFromToken(data.access_token, {
+        ...data.user,
+        is_admin: false,
+        plan: "free",
+        active_exam_id: null,
+        enrolled_exams: [],
+        is_email_verified: true,
+      });
+
+      // Defense in depth: most paying users now skip /verify-email
+      // entirely (the register page fires checkout straight away). But
+      // if someone *does* land here with a pendingPlan — e.g., the
+      // register-page fast-path failed, or they came from a different
+      // signup origin — fire checkout directly instead of bouncing
+      // them through /pricing first. One redirect, not two.
       const pendingPlan = readPendingPlan();
+      if (pendingPlan) {
+        try {
+          const { checkout_url } = await api.createCheckout(pendingPlan);
+          // Don't clear pendingPlan here — pricing-cards.tsx clears it
+          // when it sees the user post-payment, so a Gumroad-side abort
+          // still has the flag for the next signin.
+          window.location.href = checkout_url;
+          return;
+        } catch {
+          // Fall through to the destination ladder below
+        }
+      }
+
+      // Standard post-verify routing. Priority order:
+      //   1. Explicit ?redirect= preserved from the register URL
+      //   2. They picked a plan via /onboarding flow
+      //   3. Default onboarding
       const savedPlan = sessionStorage.getItem("sparkupcloud_selected_plan");
       const savedRedirect = sessionStorage.getItem(
         "sparkupcloud_post_auth_redirect",
@@ -87,8 +112,6 @@ export default function VerifyEmailPage() {
       let destination: string;
       if (savedRedirect) {
         destination = savedRedirect;
-      } else if (pendingPlan) {
-        destination = "/pricing";
       } else if (savedPlan) {
         destination = `/onboarding?plan=${savedPlan}`;
       } else {

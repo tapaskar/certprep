@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Check, ShieldCheck, Sparkles } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
+import { api } from "@/lib/api";
+import { readPendingPlan, clearPendingPlan } from "@/lib/auth-cookie";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -58,8 +60,31 @@ export default function RegisterPage() {
       // Submitting the form is acceptance of Terms — same legal pattern
       // as Stripe, Slack, Notion, etc. The footer text below the button
       // makes this explicit, removing the friction of an extra checkbox.
+      //
+      // The register call now signs the user in immediately (returns
+      // an access token even though is_email_verified=false). We can
+      // route them straight into the app without forcing /verify-email
+      // first — biggest single conversion lift on this page.
       await register(finalName, email, password);
       sessionStorage.setItem("sparkupcloud_verify_email", email);
+
+      // Fast-path: user came from a paid CTA. Fire checkout NOW so they
+      // land on Gumroad instead of /verify-email. Saves 30-90 seconds
+      // (email roundtrip) at the most-friction point in the funnel.
+      // Email verification becomes a soft dashboard banner post-purchase.
+      const pendingPlan = readPendingPlan();
+      if (pendingPlan) {
+        try {
+          const { checkout_url } = await api.createCheckout(pendingPlan);
+          clearPendingPlan();
+          window.location.href = checkout_url;
+          return;
+        } catch {
+          // Fall through to /verify-email if checkout setup fails for
+          // any reason — better to make them verify than to dead-end.
+        }
+      }
+
       router.push("/verify-email");
     } catch (err: unknown) {
       const message =
@@ -282,28 +307,23 @@ export default function RegisterPage() {
 function SocialLoginRow() {
   const googleEnabled = !!process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
+  // Render nothing when Google isn't configured. A disabled button
+  // is worse than no button — it signals "this would be faster but
+  // doesn't work for me," which causes some users to bounce hunting
+  // for a working Google option elsewhere. Renders the moment the
+  // GOOGLE_CLIENT_ID env var lands.
+  if (!googleEnabled) return null;
+
   return (
     <div className="space-y-3 mb-5">
       <button
         type="button"
-        disabled={!googleEnabled}
-        title={
-          googleEnabled
-            ? "Continue with Google"
-            : "Google sign-in is not yet configured"
-        }
         onClick={() => {
-          if (!googleEnabled) return;
           // Wired up in the OAuth commit. Will load Google Identity
-          // Services on demand and POST the resulting credential to
-          // /auth/oauth/google.
+          // Services on demand and POST the credential to /auth/oauth/google.
           window.dispatchEvent(new CustomEvent("sparkupcloud:google-signin"));
         }}
-        className={`flex w-full items-center justify-center gap-3 rounded-lg border bg-white px-4 py-2.5 text-sm font-semibold transition-all ${
-          googleEnabled
-            ? "border-stone-300 text-stone-800 hover:border-stone-400 hover:bg-stone-50"
-            : "border-stone-200 text-stone-400 cursor-not-allowed"
-        }`}
+        className="flex w-full items-center justify-center gap-3 rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-800 hover:border-stone-400 hover:bg-stone-50 transition-all"
       >
         <GoogleGlyph />
         Continue with Google

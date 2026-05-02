@@ -21,6 +21,10 @@ export interface AuthUser {
   plan: string;
   active_exam_id: string | null;
   enrolled_exams: EnrolledExam[];
+  /** Backend-sourced verification flag. Drives the dashboard
+   *  "verify your email" nudge banner. Optional because legacy
+   *  cached state from before this field shipped won't have it. */
+  is_email_verified?: boolean;
 }
 
 interface AuthState {
@@ -67,7 +71,34 @@ export const useAuthStore = create<AuthState>()(
       },
 
       register: async (name: string, email: string, password: string) => {
-        await api.register(name, email, password);
+        // Backend now returns an access token immediately on register
+        // (even though is_email_verified=false). Sign the user in right
+        // away so the caller can route directly to checkout / dashboard
+        // without waiting on email verification — the verify-email step
+        // moves to a soft dashboard banner instead of a hard gate.
+        const data = await api.register(name, email, password);
+        localStorage.setItem("sparkupcloud_token", data.access_token);
+        api.setToken(data.access_token);
+        setAuthCookie({
+          e: data.user.email,
+          n: data.user.display_name,
+          p: "free",
+        });
+        set({
+          token: data.access_token,
+          user: {
+            ...data.user,
+            is_admin: false,
+            plan: "free",
+            active_exam_id: null,
+            enrolled_exams: [],
+            is_email_verified: data.is_email_verified,
+          },
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        // Pull the full profile so subsequent renders have everything
+        await get().loadUser();
       },
 
       logout: () => {
@@ -108,6 +139,7 @@ export const useAuthStore = create<AuthState>()(
               plan: me.plan ?? "free",
               active_exam_id: me.active_exam_id ?? null,
               enrolled_exams: me.enrolled_exams ?? [],
+              is_email_verified: me.is_email_verified,
             },
             isAuthenticated: true,
             isLoading: false,

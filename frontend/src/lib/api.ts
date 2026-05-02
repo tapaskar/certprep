@@ -174,11 +174,25 @@ class ApiClient {
 
   // ── Auth ───────────────────────────────────────────────────────
 
+  /**
+   * Register a new account. Returns an access token immediately so
+   * the caller can route the user into the app without waiting on
+   * email verification — `is_email_verified` is false on first sign-up
+   * and the dashboard nudges the user to verify later.
+   */
   async register(
     name: string,
     email: string,
     password: string
-  ): Promise<{ user_id: string; email: string; message: string }> {
+  ): Promise<{
+    user_id: string;
+    email: string;
+    message: string;
+    access_token: string;
+    token_type: string;
+    user: { id: string; email: string; display_name: string };
+    is_email_verified: boolean;
+  }> {
     return this.request("/auth/register", {
       method: "POST",
       body: JSON.stringify({ display_name: name, email, password }),

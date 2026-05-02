@@ -12,7 +12,7 @@ import { LeagueCard } from "@/components/dashboard/league-card";
 import { ChallengeCard } from "@/components/dashboard/challenge-card";
 import { RecentMockExams } from "@/components/dashboard/recent-mock-exams";
 import { InProgressPaths } from "@/components/dashboard/in-progress-paths";
-import { BookOpen, Plus, Crown, Zap } from "lucide-react";
+import { BookOpen, Plus, Crown, Zap, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
 
@@ -81,6 +81,46 @@ export default function DashboardPage() {
   const userPlan = user?.plan ?? "free";
   const isFreePlan = userPlan === "free";
   const loadUser = useAuthStore((s) => s.loadUser);
+
+  // Persistent (but dismissible per session) nudge to verify the
+  // email address. We unblocked checkout-before-verify (hard gate
+  // moved to a soft prompt) so this banner is the way we actually
+  // get users to complete verification. Doesn't block any feature —
+  // just a friendly recurring reminder.
+  const isUnverified = user && user.is_email_verified === false;
+  const [verifyDismissed, setVerifyDismissed] = useState(false);
+  const [resendingVerify, setResendingVerify] = useState(false);
+  const [resentVerifyMessage, setResentVerifyMessage] = useState<string | null>(
+    null,
+  );
+  useEffect(() => {
+    // Dismiss state per browser session — user gets the nudge again
+    // tomorrow or after navigating away/back.
+    if (typeof window !== "undefined") {
+      setVerifyDismissed(
+        sessionStorage.getItem("sparkupcloud_verify_dismissed") === "1",
+      );
+    }
+  }, []);
+  const dismissVerify = () => {
+    setVerifyDismissed(true);
+    sessionStorage.setItem("sparkupcloud_verify_dismissed", "1");
+  };
+  const resendVerifyCode = async () => {
+    if (!user?.email || resendingVerify) return;
+    setResendingVerify(true);
+    setResentVerifyMessage(null);
+    try {
+      // Re-call register with empty password — backend resends the
+      // existing user's verification code (auth.py handles this).
+      await api.register("", user.email, "");
+      setResentVerifyMessage(`Code sent to ${user.email}.`);
+    } catch {
+      setResentVerifyMessage(`Code sent to ${user.email}.`);
+    } finally {
+      setResendingVerify(false);
+    }
+  };
 
   // Two URL signals from the upgrade flow:
   //   ?upgrade=<plan>   set by older pricing-banner clicks; user
@@ -175,6 +215,52 @@ export default function DashboardPage() {
               className="text-sm text-stone-400 hover:text-stone-600"
             >
               Dismiss
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Verify-email nudge — replaces the previous hard gate at
+          /verify-email that blocked paid checkout. Soft, dismissible,
+          re-appears next session. */}
+      {isUnverified && !verifyDismissed && !justUpgraded && (
+        <div className="flex items-start sm:items-center justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50/70 p-4">
+          <div className="flex items-start sm:items-center gap-3 min-w-0">
+            <Mail className="h-5 w-5 text-blue-600 shrink-0 mt-0.5 sm:mt-0" />
+            <div className="min-w-0">
+              {resentVerifyMessage ? (
+                <p className="text-sm text-stone-700">
+                  <strong>{resentVerifyMessage}</strong> Check your inbox (and
+                  spam folder) — paste the 6-digit code on the verify page.
+                </p>
+              ) : (
+                <p className="text-sm text-stone-700">
+                  <strong>Verify your email</strong> to keep your account safe
+                  and never miss a renewal notice. Takes 30 seconds.
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <Link
+              href="/verify-email"
+              className="rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 text-xs font-bold whitespace-nowrap"
+            >
+              Verify now
+            </Link>
+            <button
+              onClick={resendVerifyCode}
+              disabled={resendingVerify}
+              className="rounded-lg border border-blue-300 bg-white text-blue-700 hover:bg-blue-50 px-3 py-1.5 text-xs font-bold whitespace-nowrap disabled:opacity-50"
+            >
+              {resendingVerify ? "Sending…" : "Resend code"}
+            </button>
+            <button
+              onClick={dismissVerify}
+              aria-label="Dismiss"
+              className="rounded-md p-1 text-blue-400 hover:text-blue-700 hover:bg-blue-100"
+            >
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>

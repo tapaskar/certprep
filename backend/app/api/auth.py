@@ -132,10 +132,28 @@ async def register(body: RegisterRequest, db: DB):
         body_text=f"Your SparkUpCloud verification code is: {verification_code}. This code expires in 1 hour.",
     )
 
+    # Return an access token immediately — even though the email isn't
+    # yet verified — so the frontend can route the user straight into
+    # the app (and, critically, straight to checkout for paying flows).
+    # The previous behavior of returning no token forced everyone
+    # through /verify-email before they could pay, which industry data
+    # puts as the single biggest funnel-killer in modern paid SaaS
+    # signup. Verification is now a soft requirement enforced by the
+    # dashboard banner + a 7-day grace period (see /auth/me response
+    # for `is_email_verified`).
+    token = _create_access_token(str(user.id))
     return {
         "user_id": str(user.id),
         "email": user.email,
         "message": "Verification code sent",
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "display_name": user.display_name,
+        },
+        "is_email_verified": False,
     }
 
 
@@ -156,11 +174,11 @@ async def login(body: LoginRequest, db: DB):
             detail="Invalid email or password",
         )
 
-    if not user.is_email_verified:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Email not verified. Please check your email for the verification code.",
-        )
+    # Email verification is no longer a HARD gate on login — users can
+    # sign in unverified and the dashboard nudges them with a banner.
+    # This unblocks the paid-checkout flow (most acute drop-off point)
+    # and matches modern SaaS norms (Stripe, Vercel, Linear all let you
+    # use a paid product before verifying email).
 
     # Auto-promote admin emails
     if user.email in ADMIN_EMAILS and not user.is_admin:
@@ -180,6 +198,7 @@ async def login(body: LoginRequest, db: DB):
             "email": user.email,
             "display_name": user.display_name,
         },
+        "is_email_verified": user.is_email_verified,
     }
 
 

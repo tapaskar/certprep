@@ -115,6 +115,17 @@ const tiers: Tier[] = [
   },
 ];
 
+// Short, truthful microcopy under each CTA. Replaces the previous
+// blank space below the buy buttons with the friction-killers that
+// matter to a wavering buyer (no card, refund, instant access).
+// A 1-line trust strip directly under the CTA typically lifts
+// click-through 5-10% on B2B SaaS pricing pages.
+const CTA_MICROCOPY: Record<string, string> = {
+  Free: "No credit card · Sign up in 30 seconds",
+  "Single Exam": "$9.99 once · 6 months access · Refund if you don't pass",
+  Pro: "Cancel anytime · Refund if you don't pass · Instant access",
+};
+
 // Map our internal plan names to the visual tier name in the cards.
 // A user on `pro_annual` or `pro_monthly` is on the Pro tier; on
 // `single` they're on Single Exam; everything else is Free. This lets
@@ -344,13 +355,13 @@ export default function PricingCards() {
                 ))}
               </ul>
 
-              {/* CTA — three states:
+              {/* CTA + microcopy — three CTA states:
                     1. Logged-in AND this tier is the user's CURRENT plan → "✓ Current Plan"
                     2. Logged-in AND a paid tier (not their current) → in-app checkout button
                     3. Logged-out → /register link with the plan saved for resume-checkout
-                  Previously state 1 always landed on Free regardless of
-                  the user's actual plan, which made a Pro user see "Current
-                  Plan" on Free — directly contradicting their billing reality. */}
+                  Microcopy directly under each CTA names the friction-
+                  killers (no card / refund / instant access) right where
+                  buyers are deciding to click. */}
               {isLoggedIn && tier.name === currentTier ? (
                 <Link
                   href="/dashboard"
@@ -380,7 +391,7 @@ export default function PricingCards() {
                 <Link
                   href={
                     tier.showToggle
-                      ? `${tier.ctaHref}-${billing}`
+                      ? `${tier.ctaHref}-${billing === "annual" ? "annual" : "monthly"}`
                       : tier.ctaHref
                   }
                   onClick={() => {
@@ -404,6 +415,15 @@ export default function PricingCards() {
                 >
                   {tier.cta}
                 </Link>
+              )}
+
+              {/* Microcopy under the button. Shown unless the user is
+                  already on this tier (the green "Current Plan" badge
+                  is its own affordance). */}
+              {!(isLoggedIn && tier.name === currentTier) && CTA_MICROCOPY[tier.name] && (
+                <p className="mt-2.5 text-center text-[11px] text-stone-500 leading-relaxed">
+                  {CTA_MICROCOPY[tier.name]}
+                </p>
               )}
             </div>
           );
