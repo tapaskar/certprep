@@ -432,10 +432,40 @@ class ApiClient {
     expires_at: string | null;
     days_left: number | null;
     is_expiring_soon: boolean;
-    manage_url: string | null;
+    can_cancel: boolean;
+    can_refund: boolean;
     upgrade_url: string | null;
   }> {
     return this.request("/payments/me");
+  }
+
+  /**
+   * Request cancellation of an active subscription. The user keeps
+   * access until the current period ends; SparkUpCloud handles the
+   * provider-side mechanics so the UI never references third parties.
+   */
+  async cancelSubscription(reason?: string): Promise<{
+    status: string;
+    access_until: string | null;
+    message: string;
+  }> {
+    return this.request("/payments/cancel", {
+      method: "POST",
+      body: JSON.stringify({ reason: reason ?? null }),
+    });
+  }
+
+  /**
+   * Request a refund under the pass-or-refund guarantee.
+   */
+  async requestRefund(reason?: string): Promise<{
+    status: string;
+    message: string;
+  }> {
+    return this.request("/payments/refund", {
+      method: "POST",
+      body: JSON.stringify({ reason: reason ?? null }),
+    });
   }
 
   // ── Engagement (Badges, Leagues, Challenges) ────────────────

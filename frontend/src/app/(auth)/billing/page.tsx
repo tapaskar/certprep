@@ -5,26 +5,25 @@ import Link from "next/link";
 import {
   Crown,
   Calendar,
-  ExternalLink,
   ArrowRight,
   RefreshCw,
   Shield,
   Loader2,
   AlertTriangle,
   CheckCircle2,
+  X,
 } from "lucide-react";
 import { api } from "@/lib/api";
 
 /**
- * Plan & billing landing page.
+ * Plan & billing landing page — white-labeled (no third-party brand
+ * exposed in the UI).
  *
- * Single comprehensive surface for "what plan am I on, when does it
- * end, how do I change it" — replaces the previous absence of any
- * subscription-management UI on SparkUpCloud at all (users had to
- * find their way to Gumroad's library on their own).
- *
- * Reads from /payments/me which is the single source of truth shared
- * with the /profile billing card and the dashboard plan badge.
+ * Cancel and refund actions go through internal /payments/cancel and
+ * /payments/refund endpoints. Today those forward the request to the
+ * SparkUpCloud support inbox over SES; when we wire Gumroad's API
+ * directly the UI doesn't change. Users always see this as a
+ * SparkUpCloud-owned flow end-to-end.
  */
 
 interface BillingState {
@@ -35,7 +34,8 @@ interface BillingState {
   expires_at: string | null;
   days_left: number | null;
   is_expiring_soon: boolean;
-  manage_url: string | null;
+  can_cancel: boolean;
+  can_refund: boolean;
   upgrade_url: string | null;
 }
 
@@ -66,10 +66,16 @@ const PLAN_FEATURES: Record<string, string[]> = {
   ],
 };
 
+type ModalKind = "cancel" | "refund" | null;
+
 export default function BillingPage() {
   const [billing, setBilling] = useState<BillingState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [modal, setModal] = useState<ModalKind>(null);
+  const [reason, setReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState<string | null>(null);
 
   const refresh = async () => {
     setLoading(true);
@@ -87,6 +93,40 @@ export default function BillingPage() {
   useEffect(() => {
     refresh();
   }, []);
+
+  const closeModal = () => {
+    setModal(null);
+    setReason("");
+    setSubmitMessage(null);
+  };
+
+  const handleCancel = async () => {
+    setSubmitting(true);
+    try {
+      const res = await api.cancelSubscription(reason.trim() || undefined);
+      setSubmitMessage(res.message);
+    } catch (e) {
+      setSubmitMessage(
+        e instanceof Error ? `Couldn't process: ${e.message}` : "Something went wrong",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleRefund = async () => {
+    setSubmitting(true);
+    try {
+      const res = await api.requestRefund(reason.trim() || undefined);
+      setSubmitMessage(res.message);
+    } catch (e) {
+      setSubmitMessage(
+        e instanceof Error ? `Couldn't process: ${e.message}` : "Something went wrong",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -125,7 +165,7 @@ export default function BillingPage() {
       <div>
         <h1 className="text-2xl font-bold text-stone-900">Plan & Billing</h1>
         <p className="mt-1 text-sm text-stone-500">
-          Your subscription, renewal, and payment history.
+          Your subscription, renewal, and refund options.
         </p>
       </div>
 
@@ -175,9 +215,6 @@ export default function BillingPage() {
           )}
         </div>
 
-        {/* Expiring-soon callout — fires when ≤7 days remain. Gives the
-            user time to renew before access is cut off, and creates a
-            soft renewal-conversion moment for recurring plans. */}
         {billing.is_expiring_soon && (
           <div className="mt-5 flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-100/60 px-4 py-3">
             <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
@@ -217,31 +254,38 @@ export default function BillingPage() {
         </div>
       </div>
 
-      {/* Manage subscription card — only shown for paid plans. */}
-      {billing.is_paid && billing.manage_url && (
+      {/* Manage actions — SparkUpCloud-branded, no third-party reference. */}
+      {(billing.can_cancel || billing.can_refund) && (
         <div className="rounded-xl border border-stone-200 bg-white p-6">
           <h3 className="text-lg font-bold text-stone-900 mb-1">
-            Manage your subscription
+            Manage subscription
           </h3>
           <p className="text-sm text-stone-600 mb-4">
-            Update your payment method, view invoices, or cancel from your
-            Gumroad account. Cancellations take effect at the end of your
-            current billing period — you keep access until then.
+            Cancel anytime — you keep access until the current period ends.
+            Or request a refund under our pass-or-refund guarantee.
           </p>
-          <a
-            href={billing.manage_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border-2 border-stone-300 px-5 py-2.5 text-sm font-bold text-stone-700 hover:border-amber-400 hover:text-amber-700 transition-colors"
-          >
-            Open Gumroad
-            <ExternalLink className="h-4 w-4" />
-          </a>
+          <div className="flex flex-wrap gap-3">
+            {billing.can_cancel && (
+              <button
+                onClick={() => setModal("cancel")}
+                className="inline-flex items-center gap-2 rounded-lg border-2 border-stone-300 px-5 py-2.5 text-sm font-bold text-stone-700 hover:border-amber-400 hover:text-amber-700 transition-colors"
+              >
+                Cancel subscription
+              </button>
+            )}
+            {billing.can_refund && (
+              <button
+                onClick={() => setModal("refund")}
+                className="inline-flex items-center gap-2 rounded-lg border-2 border-rose-200 bg-rose-50/60 px-5 py-2.5 text-sm font-bold text-rose-700 hover:bg-rose-50 transition-colors"
+              >
+                Request refund
+              </button>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Refund policy reassurance — same card on /pricing, lifted
-          here so a paying user can find it without scrolling pricing. */}
+      {/* Refund policy reassurance */}
       <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50/40 p-5">
         <Shield className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
         <div>
@@ -250,21 +294,27 @@ export default function BillingPage() {
           </p>
           <p className="text-sm text-stone-600 leading-relaxed">
             If you complete a study plan and don&apos;t pass your certification
-            exam, we refund 100% of your payment. Email{" "}
+            exam, we refund 100% of your payment. Use the
+            {" "}<button
+              onClick={() => setModal("refund")}
+              className="text-amber-700 hover:underline font-semibold"
+              disabled={!billing.can_refund}
+            >
+              refund button
+            </button>
+            {" "}above or email{" "}
             <a
               href="mailto:support@sparkupcloud.com"
               className="text-amber-700 hover:underline"
             >
               support@sparkupcloud.com
-            </a>{" "}
-            with your exam result to start the refund.
+            </a>
+            .
           </p>
         </div>
       </div>
 
-      {/* Refresh control — Gumroad webhooks usually land within seconds
-          of payment, but if a user just paid and the dashboard hasn't
-          caught up yet, this lets them poll. */}
+      {/* Refresh control */}
       <div className="flex justify-center">
         <button
           onClick={refresh}
@@ -274,6 +324,117 @@ export default function BillingPage() {
           Refresh billing data
         </button>
       </div>
+
+      {/* Cancel / Refund modal — same shape, different copy + handler. */}
+      {modal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          onClick={closeModal}
+        >
+          <div
+            className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <h3 className="text-lg font-bold text-stone-900">
+                {modal === "cancel"
+                  ? "Cancel subscription?"
+                  : "Request a refund"}
+              </h3>
+              <button
+                onClick={closeModal}
+                className="rounded-md p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {submitMessage ? (
+              <>
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-4 mb-4">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <p className="text-sm text-stone-700 leading-relaxed">
+                      {submitMessage}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    closeModal();
+                    refresh();
+                  }}
+                  className="w-full rounded-lg bg-stone-900 hover:bg-stone-800 text-white py-2.5 text-sm font-bold"
+                >
+                  Done
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-stone-600 mb-4 leading-relaxed">
+                  {modal === "cancel" ? (
+                    <>
+                      You&apos;ll keep <strong>full access</strong> until your
+                      current period ends, then automatically drop to the Free
+                      plan. No charge after that.
+                    </>
+                  ) : (
+                    <>
+                      We process refunds within <strong>5 business days</strong>.
+                      You&apos;ll see the money back on your card 3-5 days after
+                      that.
+                    </>
+                  )}
+                </p>
+                <label className="block">
+                  <span className="text-xs font-medium text-stone-700">
+                    {modal === "cancel"
+                      ? "Anything we could've done better? (optional)"
+                      : "What didn't work? (optional)"}
+                  </span>
+                  <textarea
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    rows={3}
+                    maxLength={500}
+                    className="mt-1 block w-full rounded-lg border border-stone-300 p-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    placeholder={
+                      modal === "cancel"
+                        ? "Help us understand — feedback is the only way we improve."
+                        : "Tell us briefly. Optional but helpful."
+                    }
+                  />
+                </label>
+                <div className="mt-4 flex flex-col sm:flex-row gap-2">
+                  <button
+                    onClick={modal === "cancel" ? handleCancel : handleRefund}
+                    disabled={submitting}
+                    className={`flex-1 rounded-lg py-2.5 text-sm font-bold text-white transition-colors disabled:opacity-60 ${
+                      modal === "cancel"
+                        ? "bg-stone-900 hover:bg-stone-800"
+                        : "bg-rose-600 hover:bg-rose-700"
+                    }`}
+                  >
+                    {submitting
+                      ? "Processing..."
+                      : modal === "cancel"
+                        ? "Confirm cancellation"
+                        : "Submit refund request"}
+                  </button>
+                  <button
+                    onClick={closeModal}
+                    disabled={submitting}
+                    className="flex-1 rounded-lg border-2 border-stone-300 text-stone-700 hover:border-stone-400 py-2.5 text-sm font-bold"
+                  >
+                    Keep my plan
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

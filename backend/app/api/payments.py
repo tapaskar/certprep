@@ -41,14 +41,24 @@ PLAN_LABELS = {
     "pro_annual": "Pro Annual",
 }
 
-# Where to send users who want to manage / cancel their subscription.
-# Gumroad's customer-facing portal lives under their account login,
-# not per-product, so we direct everyone to the same place.
-GUMROAD_LIBRARY_URL = "https://app.gumroad.com/library"
+# Internal support inbox for cancel / refund requests. Users never
+# see Gumroad's name on the SparkUpCloud side — they email us and we
+# handle the Gumroad mechanics on the back end. When/if we wire up
+# Gumroad's API directly (PUT /v2/sales/:id/refund, DELETE /v2/
+# subscribers/:id) the UI flow stays the same.
+SUPPORT_EMAIL = "support@sparkupcloud.com"
 
 
 class CheckoutRequest(BaseModel):
     plan: str
+
+
+class CancelRequest(BaseModel):
+    reason: str | None = None
+
+
+class RefundRequest(BaseModel):
+    reason: str | None = None
 
 
 @router.get("/me")
@@ -83,12 +93,156 @@ async def get_billing_summary(user: CurrentUser):
         "expires_at": expires_at.isoformat() if expires_at else None,
         "days_left": days_left,
         "is_expiring_soon": is_expiring_soon,
-        # Gumroad's portal manages all subscriptions in one place
-        # (cancel, update payment method, view receipts).
-        "manage_url": GUMROAD_LIBRARY_URL if is_paid else None,
+        # `can_cancel` and `can_refund` drive which actions the /billing
+        # page exposes. We never expose the third-party (Gumroad) brand
+        # in the API response — the SparkUpCloud frontend handles all
+        # cancel/refund UX as if it owned the subscription end-to-end.
+        "can_cancel": is_recurring,
+        "can_refund": is_paid,
         # Where to upgrade from — used by the /billing page CTA when
         # the user is on Free or Single and could move up.
         "upgrade_url": "/pricing" if user.plan in ("free", "single") else None,
+    }
+
+
+@router.post("/cancel")
+async def cancel_subscription(body: CancelRequest, user: CurrentUser):
+    """Request cancellation of a recurring subscription.
+
+    Currently routes to the support inbox via SES. We email the
+    request, send the user a confirmation, and keep their access
+    active until the current period ends (their plan_expires_at
+    already has the right date — no DB write needed). When/if we
+    wire Gumroad's DELETE /v2/subscribers/:id endpoint, this becomes
+    instant + automated.
+    """
+    if user.plan not in ("pro_monthly", "pro_annual"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No active subscription to cancel.",
+        )
+
+    plan_label = PLAN_LABELS.get(user.plan, user.plan)
+    expires_str = (
+        user.plan_expires_at.strftime("%B %d, %Y")
+        if user.plan_expires_at
+        else "the end of the current period"
+    )
+    reason_block = (
+        f"\nReason: {body.reason}\n" if body.reason else ""
+    )
+
+    # 1) Notify support so they can process on Gumroad's side
+    send_email(
+        to=SUPPORT_EMAIL,
+        subject=f"[Cancel] {user.email} — {plan_label}",
+        body_html=(
+            f"<p>User {user.email} requested subscription cancellation.</p>"
+            f"<p>Plan: <strong>{plan_label}</strong><br>"
+            f"Access until: <strong>{expires_str}</strong></p>"
+            f"<p>Reason: {body.reason or '(not provided)'}</p>"
+        ),
+        body_text=(
+            f"User {user.email} requested subscription cancellation.\n"
+            f"Plan: {plan_label}\n"
+            f"Access until: {expires_str}\n"
+            f"{reason_block}"
+        ),
+    )
+
+    # 2) Confirm to the user
+    send_email(
+        to=user.email,
+        subject="Your SparkUpCloud cancellation request — confirmed",
+        body_html=(
+            f"<p>Hi,</p>"
+            f"<p>We received your request to cancel your <strong>{plan_label}</strong> "
+            f"subscription. You'll keep full access until <strong>{expires_str}</strong>, "
+            f"then automatically drop to the Free plan.</p>"
+            f"<p>Nothing more to do on your side. If you change your mind before "
+            f"{expires_str}, just reply to this email and we'll restore the renewal.</p>"
+            f"<p>— SparkUpCloud</p>"
+        ),
+        body_text=(
+            f"Hi,\n\n"
+            f"We received your request to cancel your {plan_label} subscription. "
+            f"You'll keep full access until {expires_str}, then automatically drop to Free.\n\n"
+            f"Nothing more to do on your side. Reply to this email if you change your mind "
+            f"before {expires_str}.\n\n"
+            f"— SparkUpCloud\n"
+        ),
+    )
+
+    return {
+        "status": "cancellation_requested",
+        "access_until": user.plan_expires_at.isoformat() if user.plan_expires_at else None,
+        "message": (
+            f"You'll keep access until {expires_str}. We sent confirmation to "
+            f"{user.email}."
+        ),
+    }
+
+
+@router.post("/refund")
+async def request_refund(body: RefundRequest, user: CurrentUser):
+    """Request a refund (pass-or-refund guarantee).
+
+    Same email-the-support-inbox pattern as /cancel. The pass-or-refund
+    SLA is 5 business days; we set expectations accordingly in the
+    user-facing confirmation. When Gumroad API integration is wired,
+    this becomes the auto-refund + plan-revert path.
+    """
+    if user.plan not in ("single", "pro_monthly", "pro_annual"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No paid plan to refund.",
+        )
+
+    plan_label = PLAN_LABELS.get(user.plan, user.plan)
+
+    send_email(
+        to=SUPPORT_EMAIL,
+        subject=f"[Refund] {user.email} — {plan_label}",
+        body_html=(
+            f"<p>User {user.email} requested a refund.</p>"
+            f"<p>Plan: <strong>{plan_label}</strong></p>"
+            f"<p>Reason: {body.reason or '(not provided)'}</p>"
+        ),
+        body_text=(
+            f"User {user.email} requested a refund.\n"
+            f"Plan: {plan_label}\n"
+            f"Reason: {body.reason or '(not provided)'}\n"
+        ),
+    )
+
+    send_email(
+        to=user.email,
+        subject="Your SparkUpCloud refund request — received",
+        body_html=(
+            f"<p>Hi,</p>"
+            f"<p>We received your refund request for <strong>{plan_label}</strong>. "
+            f"Our team will review and process it within <strong>5 business days</strong>. "
+            f"You'll see the refund hit your card 3-5 days after that.</p>"
+            f"<p>If you'd like to share more about what didn't work, reply to this "
+            f"email — feedback shapes what we ship next.</p>"
+            f"<p>— SparkUpCloud</p>"
+        ),
+        body_text=(
+            f"Hi,\n\n"
+            f"We received your refund request for {plan_label}. We'll process it "
+            f"within 5 business days. You'll see the refund 3-5 days after that.\n\n"
+            f"Reply to this email if you'd like to share what didn't work — feedback "
+            f"shapes what we ship next.\n\n"
+            f"— SparkUpCloud\n"
+        ),
+    )
+
+    return {
+        "status": "refund_requested",
+        "message": (
+            f"Refund request received. We'll process within 5 business days and "
+            f"email you at {user.email} when complete."
+        ),
     }
 
 
