@@ -6,8 +6,6 @@ import string
 import uuid
 from datetime import datetime, timedelta, timezone
 
-import boto3
-from botocore.exceptions import ClientError
 from fastapi import APIRouter, HTTPException, status
 from jose import jwt
 from passlib.hash import bcrypt
@@ -16,35 +14,13 @@ from sqlalchemy import select
 
 from app.api.deps import DB, CurrentUser
 from app.config import settings
+from app.services.email import send_email as _send_email
 
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
-SENDER = f"SparkUpCloud <{settings.ses_sender_email}>"
 ADMIN_EMAILS = {"tapas.eric@gmail.com"}
-
-
-def _send_email(to: str, subject: str, body_html: str, body_text: str) -> bool:
-    """Send an email via AWS SES. Returns True on success."""
-    try:
-        ses = boto3.client("ses", region_name=settings.ses_region)
-        ses.send_email(
-            Source=SENDER,
-            Destination={"ToAddresses": [to]},
-            Message={
-                "Subject": {"Data": subject, "Charset": "UTF-8"},
-                "Body": {
-                    "Html": {"Data": body_html, "Charset": "UTF-8"},
-                    "Text": {"Data": body_text, "Charset": "UTF-8"},
-                },
-            },
-        )
-        logger.info("Email sent to %s: %s", to, subject)
-        return True
-    except ClientError as e:
-        logger.error("SES error sending to %s: %s", to, e)
-        return False
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

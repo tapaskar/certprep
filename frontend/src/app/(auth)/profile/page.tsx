@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Crown, ArrowRight, Calendar } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { api } from "@/lib/api";
 import type { ProgressResponse } from "@/lib/api-types";
@@ -29,6 +31,15 @@ export default function ProfilePage() {
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [progress, setProgress] = useState<ProgressResponse | null>(null);
+  const [billing, setBilling] = useState<{
+    plan: string;
+    plan_label: string;
+    is_paid: boolean;
+    is_recurring: boolean;
+    expires_at: string | null;
+    days_left: number | null;
+    is_expiring_soon: boolean;
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
@@ -37,6 +48,14 @@ export default function ProfilePage() {
       try {
         const me = await api.getMe();
         setProfile(me);
+
+        // Billing summary — non-fatal if it fails
+        try {
+          const b = await api.getBilling();
+          setBilling(b);
+        } catch {
+          /* leave null; billing card just won't render */
+        }
 
         // Try to load progress (may fail if no enrollment)
         try {
@@ -105,12 +124,18 @@ export default function ProfilePage() {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
+          {/* Plan badge sources from /payments/me when available so the
+              label matches what /billing shows. Falls back to the user
+              row's plan field if billing didn't load. */}
           <span className="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
-            {profile?.plan === "free"
-              ? "Free Plan"
-              : profile?.plan === "pro"
-                ? "Pro Plan"
-                : "Team Plan"}
+            {billing?.plan_label ??
+              (profile?.plan === "pro_annual"
+                ? "Pro Annual"
+                : profile?.plan === "pro_monthly"
+                  ? "Pro Monthly"
+                  : profile?.plan === "single"
+                    ? "Single Exam"
+                    : "Free")}
           </span>
           {profile?.is_email_verified && (
             <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
@@ -119,6 +144,65 @@ export default function ProfilePage() {
           )}
         </div>
       </div>
+
+      {/* Plan & Billing card — replaces the previous absence of any
+          subscription surface on /profile. Links out to the dedicated
+          /billing page for full management (cancel / update payment
+          method). Renders even on the Free plan as an upgrade prompt. */}
+      {billing && (
+        <Link
+          href="/billing"
+          className="block rounded-xl border border-stone-200 bg-white p-6 shadow-md shadow-stone-200/60 transition-all hover:border-amber-300 hover:shadow-lg group"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+              <div
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+                  billing.is_paid
+                    ? "bg-gradient-to-br from-amber-100 to-amber-200"
+                    : "bg-stone-100"
+                }`}
+              >
+                <Crown
+                  className={`h-6 w-6 ${
+                    billing.is_paid ? "text-amber-600" : "text-stone-400"
+                  }`}
+                />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-lg font-bold text-stone-900">
+                  {billing.plan_label}
+                </h3>
+                {billing.expires_at && (
+                  <div className="flex items-center gap-1.5 text-xs text-stone-500 mt-0.5">
+                    <Calendar className="h-3 w-3" />
+                    {billing.is_recurring ? "Renews" : "Expires"} in{" "}
+                    {billing.days_left} day
+                    {billing.days_left === 1 ? "" : "s"}
+                  </div>
+                )}
+                {!billing.expires_at && (
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    {billing.is_paid
+                      ? "Lifetime access"
+                      : "No expiration · upgrade anytime"}
+                  </p>
+                )}
+              </div>
+            </div>
+            <ArrowRight className="h-5 w-5 text-stone-400 group-hover:text-amber-600 group-hover:translate-x-0.5 transition-all" />
+          </div>
+          {billing.is_expiring_soon && (
+            <div className="mt-3 rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs font-medium text-amber-800">
+              ⚠ {billing.is_recurring ? "Renews" : "Expires"} in{" "}
+              {billing.days_left} day{billing.days_left === 1 ? "" : "s"} —{" "}
+              {billing.is_recurring
+                ? "card on file will be charged"
+                : "renew to keep access"}
+            </div>
+          )}
+        </Link>
+      )}
 
       {/* Study Progress */}
       {progress && (

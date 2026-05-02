@@ -12,6 +12,7 @@ from sqlalchemy import select
 from app.api.deps import DB, CurrentUser
 from app.config import settings
 from app.models.user import User
+from app.services.email import send_email
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +31,65 @@ GUMROAD_CHECKOUT_URLS = {
     "pro_annual": "https://tapasaurus.gumroad.com/l/zpchn",
 }
 
+# Human-readable plan labels — shared by /payments/me, the
+# confirmation email, and the dashboard plan badge so they never
+# drift apart.
+PLAN_LABELS = {
+    "free": "Free",
+    "single": "Single Exam",
+    "pro_monthly": "Pro Monthly",
+    "pro_annual": "Pro Annual",
+}
+
+# Where to send users who want to manage / cancel their subscription.
+# Gumroad's customer-facing portal lives under their account login,
+# not per-product, so we direct everyone to the same place.
+GUMROAD_LIBRARY_URL = "https://app.gumroad.com/library"
+
 
 class CheckoutRequest(BaseModel):
     plan: str
+
+
+@router.get("/me")
+async def get_billing_summary(user: CurrentUser):
+    """Current user's billing summary.
+
+    Powers the /billing route + /profile billing card + dashboard
+    plan badge. Single source of truth so all three surfaces show the
+    same numbers.
+    """
+    now = datetime.now(timezone.utc)
+    expires_at = user.plan_expires_at
+    days_left: int | None = None
+    is_expiring_soon = False
+    if expires_at:
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        delta = expires_at - now
+        days_left = max(0, delta.days)
+        # Warn when ≤7 days remain so the UI can render the
+        # renewal-coming-up state.
+        is_expiring_soon = 0 < days_left <= 7
+
+    is_paid = user.plan in ("single", "pro_monthly", "pro_annual")
+    is_recurring = user.plan in ("pro_monthly", "pro_annual")
+
+    return {
+        "plan": user.plan,
+        "plan_label": PLAN_LABELS.get(user.plan, user.plan),
+        "is_paid": is_paid,
+        "is_recurring": is_recurring,
+        "expires_at": expires_at.isoformat() if expires_at else None,
+        "days_left": days_left,
+        "is_expiring_soon": is_expiring_soon,
+        # Gumroad's portal manages all subscriptions in one place
+        # (cancel, update payment method, view receipts).
+        "manage_url": GUMROAD_LIBRARY_URL if is_paid else None,
+        # Where to upgrade from — used by the /billing page CTA when
+        # the user is on Free or Single and could move up.
+        "upgrade_url": "/pricing" if user.plan in ("free", "single") else None,
+    }
 
 
 @router.post("/checkout")
@@ -152,4 +209,104 @@ async def gumroad_webhook(request: Request, db: DB):
         email, plan, user.plan_expires_at.isoformat(),
     )
 
+    # Send a SparkUpCloud-branded confirmation email. Gumroad sends
+    # their own receipt — this is the SparkUpCloud welcome message
+    # that thanks them and tells them what's now unlocked. Failure to
+    # send is non-fatal; the plan is already activated.
+    _send_upgrade_confirmation_email(
+        to=email,
+        plan=plan,
+        expires_at=user.plan_expires_at,
+        display_name=user.display_name or email.split("@")[0],
+    )
+
     return {"status": "activated", "plan": plan}
+
+
+def _send_upgrade_confirmation_email(
+    to: str, plan: str, expires_at: datetime, display_name: str
+) -> None:
+    """SparkUpCloud welcome email after plan activation. Best-effort."""
+    plan_label = PLAN_LABELS.get(plan, plan)
+    expires_str = expires_at.strftime("%B %d, %Y")
+    is_recurring = plan in ("pro_monthly", "pro_annual")
+    period_word = "renews" if is_recurring else "expires"
+
+    subject = f"You're on {plan_label} — welcome to SparkUpCloud"
+    body_text = (
+        f"Hi {display_name},\n\n"
+        f"Your {plan_label} plan is now active. "
+        f"It {period_word} on {expires_str}.\n\n"
+        f"What's unlocked:\n"
+    )
+    if plan == "single":
+        body_text += (
+            "- Full content for one certification of your choice\n"
+            "- Unlimited practice questions for that exam\n"
+            "- 3 timed mock exams with domain-by-domain scoring\n"
+            "- 6 months of access\n"
+        )
+    elif plan in ("pro_monthly", "pro_annual"):
+        body_text += (
+            "- All 76+ certifications (AWS, Azure, GCP, CompTIA, NVIDIA, Red Hat)\n"
+            "- Unlimited practice questions and mock exams\n"
+            "- AI-powered Coach with conversation memory per exam\n"
+            "- Bayesian Knowledge Tracing + spaced repetition\n"
+            "- Hands-on labs and learning paths\n"
+        )
+    body_text += (
+        f"\nJump back into the dashboard: https://www.sparkupcloud.com/dashboard\n"
+        f"Manage your subscription: https://www.sparkupcloud.com/billing\n\n"
+        f"— The SparkUpCloud team\n"
+    )
+
+    body_html = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin: 0; font-family: system-ui, -apple-system, sans-serif; background: #f5f5f4; padding: 40px 20px;">
+  <div style="max-width: 560px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+    <div style="padding: 32px 32px 0; border-bottom: 1px solid #e7e5e4;">
+      <div style="font-size: 22px; font-weight: 800; margin-bottom: 24px;">
+        <span style="color: #1c1917;">Spark</span><span style="color: #f59e0b;">Up</span><span style="color: #1c1917;">Cloud</span>
+      </div>
+    </div>
+    <div style="padding: 32px;">
+      <h1 style="font-size: 24px; color: #1c1917; margin: 0 0 16px;">You're on {plan_label} — welcome aboard 🎉</h1>
+      <p style="color: #44403c; line-height: 1.6; margin: 0 0 16px;">Hi {display_name},</p>
+      <p style="color: #44403c; line-height: 1.6; margin: 0 0 24px;">
+        Your <strong>{plan_label}</strong> plan is now active. It {period_word} on
+        <strong>{expires_str}</strong>.
+      </p>
+      <h2 style="font-size: 16px; color: #1c1917; margin: 0 0 12px;">What's unlocked</h2>
+      <ul style="color: #44403c; line-height: 1.8; padding-left: 20px; margin: 0 0 24px;">
+"""
+    if plan == "single":
+        body_html += """
+        <li>Full content for one certification of your choice</li>
+        <li>Unlimited practice questions for that exam</li>
+        <li>3 timed mock exams with domain-by-domain scoring</li>
+        <li>6 months of access</li>"""
+    elif plan in ("pro_monthly", "pro_annual"):
+        body_html += """
+        <li>All 76+ certifications (AWS, Azure, GCP, CompTIA, NVIDIA, Red Hat)</li>
+        <li>Unlimited practice questions and mock exams</li>
+        <li>AI-powered Coach with conversation memory per exam</li>
+        <li>Bayesian Knowledge Tracing + spaced repetition</li>
+        <li>Hands-on labs and learning paths</li>"""
+    body_html += f"""
+      </ul>
+      <div style="text-align: center; margin: 32px 0;">
+        <a href="https://www.sparkupcloud.com/dashboard" style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; font-weight: 700; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-size: 14px;">Open Dashboard →</a>
+      </div>
+      <p style="color: #78716c; font-size: 13px; line-height: 1.6; margin: 0; text-align: center;">
+        Manage your subscription anytime at <a href="https://www.sparkupcloud.com/billing" style="color: #d97706; text-decoration: underline;">sparkupcloud.com/billing</a>
+      </p>
+    </div>
+    <div style="padding: 20px 32px; background: #fafaf9; color: #a8a29e; font-size: 12px; text-align: center;">
+      You received this because you upgraded your SparkUpCloud account.
+    </div>
+  </div>
+</body>
+</html>"""
+
+    send_email(to=to, subject=subject, body_html=body_html, body_text=body_text)

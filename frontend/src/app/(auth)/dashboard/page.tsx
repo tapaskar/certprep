@@ -181,7 +181,7 @@ export default function DashboardPage() {
       )}
 
       {/* Free plan upgrade banner */}
-      {isFreePlan && !upgradeParam && (
+      {isFreePlan && !upgradeParam && !justUpgraded && (
         <Link
           href="/pricing"
           className="flex items-center justify-between rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-white p-4 transition-all hover:shadow-md"
@@ -196,6 +196,30 @@ export default function DashboardPage() {
           <span className="shrink-0 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-xs font-bold text-white">
             View Plans
           </span>
+        </Link>
+      )}
+
+      {/* Paid-plan badge — small unobtrusive indicator showing the
+          user what they're paying for + when it ends. Replaces the
+          previous absence of any plan-status surface on the dashboard
+          (users could pay $150/yr and the dashboard never acknowledged
+          it). Links to /billing for full management. */}
+      {!isFreePlan && !justUpgraded && (
+        <Link
+          href="/billing"
+          className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 hover:bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800 transition-colors"
+        >
+          <Crown className="h-3 w-3" />
+          {userPlan === "pro_annual"
+            ? "Pro Annual"
+            : userPlan === "pro_monthly"
+              ? "Pro Monthly"
+              : userPlan === "single"
+                ? "Single Exam"
+                : "Premium"}
+          {user?.enrolled_exams && user.enrolled_exams.length > 0 && (
+            <span className="text-amber-600">· Manage →</span>
+          )}
         </Link>
       )}
 

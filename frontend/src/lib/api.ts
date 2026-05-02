@@ -419,6 +419,25 @@ class ApiClient {
     });
   }
 
+  /**
+   * Single source of truth for the user's billing state. Powers the
+   * /billing page, the /profile billing card, and the dashboard
+   * plan badge — keeping all three in sync.
+   */
+  async getBilling(): Promise<{
+    plan: string;
+    plan_label: string;
+    is_paid: boolean;
+    is_recurring: boolean;
+    expires_at: string | null;
+    days_left: number | null;
+    is_expiring_soon: boolean;
+    manage_url: string | null;
+    upgrade_url: string | null;
+  }> {
+    return this.request("/payments/me");
+  }
+
   // ── Engagement (Badges, Leagues, Challenges) ────────────────
 
   async getBadges(): Promise<{ badges: import("./api-types").Badge[] }> {
