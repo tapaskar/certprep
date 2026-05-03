@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { SiteAnalytics } from "@/components/analytics/site-analytics";
 import { ExitIntentPopup } from "@/components/landing/exit-intent-popup";
+import { SupportFab } from "@/components/support/support-fab";
 import {
   JsonLd,
   organizationSchema,
@@ -99,6 +100,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-stone-100 text-stone-900 antialiased">
         {children}
         <ExitIntentPopup />
+        <SupportFab />
         <SiteAnalytics />
       </body>
     </html>
