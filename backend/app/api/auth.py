@@ -87,10 +87,45 @@ def _generate_verification_code() -> str:
     return "".join(random.choices(string.digits, k=6))
 
 
+# Domains that are confirmed disposable / fake — bots scanning
+# /auth/register often use these. Real users almost never do.
+# Conservative list; expand as we see new patterns in /list-signups.
+DISPOSABLE_EMAIL_DOMAINS = frozenset({
+    "g9e.mail.com",
+    "mailinator.com",
+    "guerrillamail.com",
+    "10minutemail.com",
+    "throwawaymail.com",
+    "tempmail.com",
+    "tempmail.net",
+    "yopmail.com",
+    "trashmail.com",
+    "mintemail.com",
+    "fakeinbox.com",
+    "spamgourmet.com",
+    "dispostable.com",
+    "maildrop.cc",
+    "getnada.com",
+    "tempmailo.com",
+    "emailondeck.com",
+})
+
+
 # ── Endpoints ────────────────────────────────────────────────────
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def register(body: RegisterRequest, db: DB):
+    # Reject obvious disposable-email signups. We saw 0085@g9e.mail.com
+    # in our /list-signups audit; pure bot pattern. Keep the list
+    # conservative — false-positives here actively block real users.
+    domain = body.email.split("@")[-1].lower().strip()
+    if domain in DISPOSABLE_EMAIL_DOMAINS:
+        logger.warning("Register blocked: disposable domain %s", domain)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please use a permanent email address (we send your verification code there).",
+        )
+
     # Check if email already taken
     result = await db.execute(select(User).where(User.email == body.email))
     if result.scalar_one_or_none():
@@ -141,6 +176,14 @@ async def register(body: RegisterRequest, db: DB):
     # signup. Verification is now a soft requirement enforced by the
     # dashboard banner + a 7-day grace period (see /auth/me response
     # for `is_email_verified`).
+    #
+    # Also stamp last_login_at — registration auto-signs the user in
+    # via the issued token, so it counts as their first login. Without
+    # this, the admin dashboard incorrectly shows users as "never
+    # logged in" forever (since most never call /auth/login again
+    # under the new flow).
+    user.last_login_at = datetime.now(timezone.utc)
+    await db.commit()
     token = _create_access_token(str(user.id))
     return {
         "user_id": str(user.id),

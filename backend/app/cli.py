@@ -372,6 +372,58 @@ async def seed_demo_account(
         print("─" * 60)
 
 
+async def list_signups(days: int = 14) -> None:
+    """Audit recent user signups for abuse patterns.
+
+    Prints a compact table: when, verified status, plan, email,
+    last login. Use to spot bot waves (lots of free signups in a
+    short window with display_name == email-local-part) and to
+    seed the DISPOSABLE_EMAIL_DOMAINS allowlist in auth.py.
+    """
+    from sqlalchemy import text as _text
+
+    async with get_engine().connect() as conn:
+        result = await conn.execute(
+            _text(
+                "SELECT created_at, email, display_name, "
+                "       is_email_verified, last_login_at, plan "
+                "FROM users "
+                "WHERE created_at > now() - (:days || ' days')::interval "
+                "ORDER BY created_at DESC"
+            ),
+            {"days": days},
+        )
+        rows = list(result)
+
+    print(f"\n=== Last {days} days · {len(rows)} signups ===\n")
+    print(
+        f'{"created_at":21s} {"verified":>8s} {"logged_in":>10s} '
+        f'{"plan":12s} {"email":40s} {"display_name":20s}'
+    )
+    print("─" * 120)
+    for row in rows:
+        ver = "YES" if row[3] else "no"
+        login = "YES" if row[4] else "no"
+        # Flag suspicious: display_name == email local-part is the
+        # automated-POST signature (real frontend users either fill
+        # the name field or leave it blank).
+        local = (row[1] or "").split("@")[0]
+        sus = "🚩" if (row[2] or "") == local else "  "
+        print(
+            f"{str(row[0])[:19]:21s} {ver:>8s} {login:>10s} "
+            f"{row[5][:12]:12s} {(row[1] or '')[:40]:40s} "
+            f"{sus} {(row[2] or '')[:18]:18s}"
+        )
+
+    # Domain breakdown — quick way to spot a flood from one domain
+    print()
+    from collections import Counter
+    domains = Counter((r[1] or "").split("@")[-1].lower() for r in rows)
+    print("Top domains:")
+    for d, n in domains.most_common(8):
+        print(f"  {n:5d}  {d}")
+
+
 def main() -> None:
     if len(sys.argv) < 2:
         print("Usage:")
@@ -381,6 +433,7 @@ def main() -> None:
         print("  python -m app.cli seed-all")
         print("  python -m app.cli backfill-embeddings    # embed existing Coach history for RAG")
         print("  python -m app.cli seed-demo-account [--email <e>] [--password <p>] [--exam <id>]")
+        print("  python -m app.cli list-signups [--days N]  # audit recent registrations")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -423,6 +476,17 @@ def main() -> None:
             elif arg == "--exam" and i + 1 < len(args):
                 kwargs["exam_id"] = args[i + 1]
         asyncio.run(seed_demo_account(**kwargs))
+    elif command == "list-signups":
+        days = 14
+        args = sys.argv[2:]
+        for i, arg in enumerate(args):
+            if arg == "--days" and i + 1 < len(args):
+                try:
+                    days = int(args[i + 1])
+                except ValueError:
+                    print(f"--days must be an integer; got {args[i + 1]}")
+                    sys.exit(1)
+        asyncio.run(list_signups(days))
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)
