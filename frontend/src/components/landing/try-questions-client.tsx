@@ -13,6 +13,7 @@ import {
 import { CertBadge } from "@/components/cert-badge";
 import { cn } from "@/lib/utils";
 import type { SampleQuestion } from "@/lib/sample-questions";
+import { trackEngagementConversion } from "@/lib/analytics";
 
 interface Props {
   questions: SampleQuestion[];
@@ -38,6 +39,12 @@ export function TryQuestionsClient({ questions }: Props) {
   const handleSubmit = () => {
     if (!selected) return;
     setRevealed({ ...revealed, [q.id]: true });
+    // Fire Google Ads "Engagement" conversion on the first answer
+    // submitted in this session. The helper dedupes per visitor per
+    // day so additional answers don't double-count. Anonymous —
+    // user is logged-out at this point. NO-OP until the engagement
+    // conversion label is pasted into lib/analytics.ts.
+    trackEngagementConversion();
   };
 
   const handleNext = () => {

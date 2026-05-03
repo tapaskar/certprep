@@ -143,12 +143,11 @@ export default function DashboardPage() {
       // this, the dashboard renders the user's stale Free plan even
       // though they just paid for Pro.
       setTimeout(() => loadUser(), 2000);
-      // Fire Google Ads "Purchase" conversion event. Idempotent per
-      // session — refreshes don't double-count. transaction_id is
+      // Fire Google Ads "Purchase" conversion event with Enhanced
+      // Conversions (hashed email passed via gtag user_data). Idempotent
+      // per session — refreshes don't double-count. transaction_id is
       // stable across refreshes for additional dedupe on Google's side.
-      // Reading user from the closure is fine because this useEffect
-      // runs once on mount, after the auth-store has hydrated.
-      trackPurchaseConversion(upgraded, user?.id);
+      trackPurchaseConversion(upgraded, user?.id, user?.email);
       // Strip ?upgraded= from the URL so a refresh doesn't re-trigger
       window.history.replaceState({}, "", window.location.pathname);
     }

@@ -7,6 +7,7 @@ import { Eye, EyeOff, Check, ShieldCheck, Sparkles } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { api } from "@/lib/api";
 import { readPendingPlan, clearPendingPlan } from "@/lib/auth-cookie";
+import { trackLeadConversion } from "@/lib/analytics";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -67,6 +68,16 @@ export default function RegisterPage() {
       // first — biggest single conversion lift on this page.
       await register(finalName, email, password);
       sessionStorage.setItem("sparkupcloud_verify_email", email);
+
+      // Fire Google Ads "Lead" conversion — captures the signup
+      // separately from the eventual purchase. Reads the freshly-
+      // populated user from the auth-store (the await above already
+      // signed them in). NO-OP until the lead conversion label is
+      // pasted into lib/analytics.ts.
+      const newUserId = useAuthStore.getState().user?.id;
+      if (newUserId) {
+        trackLeadConversion(newUserId, email);
+      }
 
       // Fast-path: user came from a paid CTA. Fire checkout NOW so they
       // land on Gumroad instead of /verify-email. Saves 30-90 seconds
