@@ -129,11 +129,26 @@ export default function VerifyEmailPage() {
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Verification failed.";
-      if (message.includes("400")) {
-        setError("Invalid or expired verification code.");
+      // Backend distinguishes "Invalid verification code" from
+      // "Verification code expired" — surface that distinction so the
+      // user knows whether to re-check the email (wrong code) or
+      // request a new one (expired). Salima was sending the SAME
+      // wrong code 6 times because the generic "Invalid or expired"
+      // message didn't tell her which problem she had.
+      if (/expired/i.test(message)) {
+        setError("That code has expired. Click 'Resend code' to get a new one.");
+      } else if (message.includes("400")) {
+        setError(
+          "That code didn't match. Double-check the email — code is 6 digits, no spaces.",
+        );
       } else {
         setError(message);
       }
+      // Clear the inputs and refocus the first one so the user can't
+      // accidentally hammer the verify button with the same wrong
+      // code (Salima fired 6 identical 400s in 17 seconds).
+      setCode(["", "", "", "", "", ""]);
+      setTimeout(() => inputRefs.current[0]?.focus(), 50);
     } finally {
       setLoading(false);
     }

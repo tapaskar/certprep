@@ -568,18 +568,26 @@ def _welcome_email_html(display_name: str, verification_code: str) -> str:
           </a>
         </div>
 
-        <!-- Verification code (truthful framing — required for paid + password reset) -->
-        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:16px 20px;margin:28px 0 16px;">
-          <p style="margin:0 0 8px;color:#78716c;font-size:12px;line-height:1.5;">
-            <strong style="color:#92400e;">Required to upgrade or reset your password.</strong>
-            Free use works without it — verify when you're ready to go further.
+        <!-- Verification code — prominent display.
+             Was previously rendered too small (18px) because we framed
+             verification as "optional". Under the surgical-gate model
+             (verification required to upgrade / reset password) the
+             code needs to be the kind of thing you can read at a
+             glance and type without misreading a digit. -->
+        <div style="background:#fffbeb;border:2px solid #f59e0b;border-radius:12px;padding:24px;margin:28px 0 16px;text-align:center;">
+          <p style="margin:0 0 12px;color:#78716c;font-size:13px;line-height:1.5;text-align:center;">
+            <strong style="color:#92400e;">Required to upgrade or reset your password.</strong><br>
+            Free use works without it.
           </p>
-          <p style="margin:0;color:#78716c;font-size:12px;">
-            Your code (expires in 1 hour):
-            <span style="display:inline-block;margin-left:8px;font-family:'SF Mono',Menlo,monospace;font-size:18px;font-weight:700;letter-spacing:4px;color:#d97706;">{verification_code}</span>
-          </p>
-          <p style="margin:8px 0 0;font-size:11px;color:#a8a29e;">
-            Paste it at <a href="https://www.sparkupcloud.com/verify-email" style="color:#d97706;">sparkupcloud.com/verify-email</a>
+          <div style="margin:8px 0 4px;color:#a8a29e;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;">
+            Your verification code
+          </div>
+          <div style="font-family:'SF Mono',Menlo,Consolas,monospace;font-size:36px;font-weight:800;letter-spacing:10px;color:#d97706;line-height:1.2;margin:8px 0;">
+            {verification_code}
+          </div>
+          <p style="margin:12px 0 0;font-size:11px;color:#a8a29e;">
+            Expires in 1 hour. Paste it at
+            <a href="https://www.sparkupcloud.com/verify-email" style="color:#d97706;">sparkupcloud.com/verify-email</a>
           </p>
         </div>
 
