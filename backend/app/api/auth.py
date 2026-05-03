@@ -150,21 +150,22 @@ async def register(body: RegisterRequest, db: DB):
     await db.commit()
     await db.refresh(user)
 
-    # Send verification email via SES
+    # Send welcome email — combines warm intro + features + verification
+    # code in one email instead of firing two separate messages on signup
+    # (which feels spammy). The verification code is intentionally
+    # secondary now that signup auto-issues a token; "verify when you
+    # have a sec" matches the new soft-gate UX.
     _send_email(
         to=body.email,
-        subject="SparkUpCloud — Verify Your Email",
-        body_html=f"""
-        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto; padding: 32px;">
-            <h2 style="color: #1c1917; margin-bottom: 8px;">Welcome to SparkUpCloud!</h2>
-            <p style="color: #57534e;">Your verification code is:</p>
-            <div style="background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px; padding: 24px; text-align: center; margin: 24px 0;">
-                <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #d97706;">{verification_code}</span>
-            </div>
-            <p style="color: #78716c; font-size: 14px;">This code expires in 1 hour. If you didn't create an account, ignore this email.</p>
-        </div>
-        """,
-        body_text=f"Your SparkUpCloud verification code is: {verification_code}. This code expires in 1 hour.",
+        subject=f"Welcome to SparkUpCloud, {body.display_name}!",
+        body_html=_welcome_email_html(
+            display_name=body.display_name,
+            verification_code=verification_code,
+        ),
+        body_text=_welcome_email_text(
+            display_name=body.display_name,
+            verification_code=verification_code,
+        ),
     )
 
     # Return an access token immediately — even though the email isn't
@@ -408,3 +409,158 @@ async def get_me(user: CurrentUser, db: DB):
         "created_at": user.created_at.isoformat() if user.created_at else None,
         "last_login_at": user.last_login_at.isoformat() if user.last_login_at else None,
     }
+
+
+# ── Welcome email content ────────────────────────────────────────
+#
+# Single email on signup (replaces the previous bare verification-code
+# email). Combines: warm welcome, what they get, the verification code
+# as a soft secondary nudge, and a clear "open dashboard" CTA. Plain-
+# text version mirrors the HTML structure so Gmail and Outlook don't
+# mark it as suspicious.
+
+def _welcome_email_html(display_name: str, verification_code: str) -> str:
+    name = display_name.strip() or "there"
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f5f5f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <div style="max-width:560px;margin:0 auto;padding:40px 20px;">
+    <div style="background:white;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+
+      <!-- Logo header -->
+      <div style="padding:28px 32px;border-bottom:1px solid #f5f5f4;">
+        <div style="font-size:22px;font-weight:800;letter-spacing:-0.01em;">
+          <span style="color:#1c1917;">Spark</span><span style="color:#f59e0b;">Up</span><span style="color:#1c1917;">Cloud</span>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div style="padding:32px;">
+        <h1 style="font-size:26px;color:#1c1917;line-height:1.25;margin:0 0 16px;font-weight:700;">
+          Welcome to SparkUpCloud, {name}.
+        </h1>
+        <p style="color:#44403c;line-height:1.65;margin:0 0 20px;font-size:15px;">
+          Really glad you're here. You just joined a community of cloud-cert
+          candidates getting smarter prep, not just more practice tests.
+        </p>
+
+        <!-- Three things to try -->
+        <p style="color:#44403c;line-height:1.65;margin:0 0 12px;font-size:15px;">
+          <strong>Three things worth trying first:</strong>
+        </p>
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin:0 0 24px;">
+          <tr><td style="padding:6px 0;color:#44403c;font-size:14.5px;line-height:1.6;">
+            <span style="color:#f59e0b;font-weight:700;">→</span>
+            <strong>Practice your target cert</strong> — adaptive engine
+            (Bayesian Knowledge Tracing) feeds you what you don't know,
+            not what you already do.
+          </td></tr>
+          <tr><td style="padding:6px 0;color:#44403c;font-size:14.5px;line-height:1.6;">
+            <span style="color:#f59e0b;font-weight:700;">→</span>
+            <strong>Meet Sage, your AI tutor</strong> — stateful, remembers
+            every conversation, watches your answer patterns and steps in
+            when you're stuck. Knows your top weak concepts.
+          </td></tr>
+          <tr><td style="padding:6px 0;color:#44403c;font-size:14.5px;line-height:1.6;">
+            <span style="color:#f59e0b;font-weight:700;">→</span>
+            <strong>Browse 76+ certifications</strong> — AWS, Azure, GCP,
+            CompTIA, NVIDIA, Red Hat. Plus hands-on guided learning paths
+            for performance-based exams (start with EX188 Containers with
+            Podman).
+          </td></tr>
+        </table>
+
+        <!-- CTA -->
+        <div style="text-align:center;margin:28px 0;">
+          <a href="https://www.sparkupcloud.com/dashboard"
+             style="display:inline-block;background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:white;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;">
+            Open Your Dashboard →
+          </a>
+        </div>
+
+        <!-- Verification code (secondary, soft amber box) -->
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:16px 20px;margin:28px 0 16px;">
+          <p style="margin:0 0 8px;color:#78716c;font-size:12px;line-height:1.5;">
+            <strong style="color:#92400e;">Optional:</strong> verify your email
+            so you never miss a renewal notice or password reset.
+            Nothing breaks if you skip — your account works either way.
+          </p>
+          <p style="margin:0;color:#78716c;font-size:12px;">
+            Your code (expires in 1 hour):
+            <span style="display:inline-block;margin-left:8px;font-family:'SF Mono',Menlo,monospace;font-size:18px;font-weight:700;letter-spacing:4px;color:#d97706;">{verification_code}</span>
+          </p>
+          <p style="margin:8px 0 0;font-size:11px;color:#a8a29e;">
+            Paste it at <a href="https://www.sparkupcloud.com/verify-email" style="color:#d97706;">sparkupcloud.com/verify-email</a>
+          </p>
+        </div>
+
+        <!-- Personal sign-off — important for warmth -->
+        <p style="color:#57534e;line-height:1.65;margin:24px 0 8px;font-size:14px;">
+          We're a tiny team and we read every reply to this address. If
+          something's broken, weird, or missing, just hit reply. We genuinely
+          want to know.
+        </p>
+        <p style="color:#1c1917;line-height:1.5;margin:16px 0 0;font-size:14px;">
+          Welcome aboard,<br>
+          <strong>The SparkUpCloud team</strong>
+        </p>
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:18px 32px;background:#fafaf9;color:#a8a29e;font-size:11px;text-align:center;border-top:1px solid #f5f5f4;">
+        You're getting this because you signed up at sparkupcloud.com.
+        Questions? Email <a href="mailto:admin@sparkupcloud.com" style="color:#a8a29e;">admin@sparkupcloud.com</a>.
+      </div>
+    </div>
+  </div>
+</body>
+</html>"""
+
+
+def _welcome_email_text(display_name: str, verification_code: str) -> str:
+    name = display_name.strip() or "there"
+    return f"""Welcome to SparkUpCloud, {name}.
+
+Really glad you're here. You just joined a community of cloud-cert
+candidates getting smarter prep, not just more practice tests.
+
+Three things worth trying first:
+
+  → Practice your target cert. The adaptive engine (Bayesian
+    Knowledge Tracing) feeds you what you don't know, not what you
+    already do.
+
+  → Meet Sage, your AI tutor. Stateful, remembers every conversation,
+    watches your answer patterns and steps in when you're stuck.
+    Knows your top weak concepts.
+
+  → Browse 76+ certifications. AWS, Azure, GCP, CompTIA, NVIDIA,
+    Red Hat. Plus hands-on guided learning paths for performance-based
+    exams (start with EX188 Containers with Podman).
+
+Open your dashboard: https://www.sparkupcloud.com/dashboard
+
+---
+
+Optional: verify your email so you never miss a renewal notice or
+password reset. Nothing breaks if you skip — your account works
+either way.
+
+Your code (expires in 1 hour): {verification_code}
+
+Paste it at: https://www.sparkupcloud.com/verify-email
+
+---
+
+We're a tiny team and we read every reply to this address. If
+something's broken, weird, or missing, just hit reply. We genuinely
+want to know.
+
+Welcome aboard,
+The SparkUpCloud team
+
+—
+You're getting this because you signed up at sparkupcloud.com.
+Questions? admin@sparkupcloud.com
+"""
