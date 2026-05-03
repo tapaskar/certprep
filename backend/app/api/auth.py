@@ -201,6 +201,90 @@ async def register(body: RegisterRequest, db: DB):
     }
 
 
+@router.post("/resend-verification")
+async def resend_verification(user: CurrentUser, db: DB):
+    """Generate + email a fresh verification code for the current user.
+
+    Auth-gated so we can only ever email the code to the user's own
+    address — keeps the endpoint from being weaponized to spam SES
+    with codes sent to arbitrary email addresses.
+
+    Replaces the previous flawed pattern where the frontend called
+    /auth/register with empty password to "resend" — which 409'd on
+    every existing user, the dashboard banner then misleadingly
+    showed "code sent" regardless.
+
+    60-second per-user cooldown — protects SES quota and stops the
+    user accidentally double-tapping the button. Returns 429 if
+    they hit it inside the window.
+    """
+    if user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email is already verified",
+        )
+
+    # Cooldown: if a verification code was generated less than 60s
+    # ago, refuse. We use email_verification_expires (set 1h in the
+    # future on send) to derive the send time.
+    now = datetime.now(timezone.utc)
+    if user.email_verification_expires:
+        expires = user.email_verification_expires
+        if expires.tzinfo is None:
+            expires = expires.replace(tzinfo=timezone.utc)
+        # If the code is fresh (less than 1h old means sent within the
+        # last 1h, but we want the LAST 60 seconds), check directly.
+        sent_at = expires - timedelta(hours=1)
+        if (now - sent_at).total_seconds() < 60:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Please wait a minute before requesting another code.",
+            )
+
+    code = _generate_verification_code()
+    user.email_verification_code = code
+    user.email_verification_expires = now + timedelta(hours=1)
+    await db.commit()
+
+    # Bare resend email — the warm welcome was already sent on signup,
+    # this is the "I lost the code" follow-up so it just delivers the
+    # code without re-pitching the platform.
+    _send_email(
+        to=user.email,
+        subject="Your SparkUpCloud verification code",
+        body_html=f"""<!DOCTYPE html>
+<html><body style="margin:0;padding:40px 20px;background:#f5f5f4;font-family:system-ui,-apple-system,sans-serif;">
+  <div style="max-width:480px;margin:0 auto;background:white;border-radius:14px;padding:32px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+    <div style="font-size:18px;font-weight:800;letter-spacing:-0.01em;margin-bottom:24px;">
+      <span style="color:#1c1917;">Spark</span><span style="color:#f59e0b;">Up</span><span style="color:#1c1917;">Cloud</span>
+    </div>
+    <p style="color:#44403c;line-height:1.6;margin:0 0 16px;font-size:15px;">
+      Here's your fresh verification code:
+    </p>
+    <div style="background:#fffbeb;border:2px solid #f59e0b;border-radius:12px;padding:24px;text-align:center;margin:20px 0;">
+      <span style="font-family:'SF Mono',Menlo,monospace;font-size:36px;font-weight:700;letter-spacing:8px;color:#d97706;">{code}</span>
+    </div>
+    <p style="color:#78716c;font-size:13px;line-height:1.6;margin:0 0 8px;">
+      Paste it at <a href="https://www.sparkupcloud.com/verify-email" style="color:#d97706;">sparkupcloud.com/verify-email</a>.
+    </p>
+    <p style="color:#a8a29e;font-size:12px;margin:16px 0 0;">
+      Code expires in 1 hour. Didn't request this? You can safely ignore.
+    </p>
+  </div>
+</body></html>""",
+        body_text=(
+            f"Your SparkUpCloud verification code: {code}\n\n"
+            f"Paste it at https://www.sparkupcloud.com/verify-email\n\n"
+            f"Code expires in 1 hour. Didn't request this? Safely ignore.\n"
+        ),
+    )
+
+    return {
+        "status": "sent",
+        "message": f"Verification code sent to {user.email}.",
+    }
+
+
 @router.post("/login")
 async def login(body: LoginRequest, db: DB):
     result = await db.execute(select(User).where(User.email == body.email))

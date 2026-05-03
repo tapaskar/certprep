@@ -112,12 +112,19 @@ export default function DashboardPage() {
     setResendingVerify(true);
     setResentVerifyMessage(null);
     try {
-      // Re-call register with empty password — backend resends the
-      // existing user's verification code (auth.py handles this).
-      await api.register("", user.email, "");
-      setResentVerifyMessage(`Code sent to ${user.email}.`);
-    } catch {
-      setResentVerifyMessage(`Code sent to ${user.email}.`);
+      const res = await api.resendVerificationCode();
+      setResentVerifyMessage(res.message);
+    } catch (err) {
+      // Surface the real backend message — covers the 60s cooldown
+      // ("Please wait a minute…"), already-verified case, etc. The
+      // previous swallow-all-errors behavior misled users into
+      // thinking a code was sent when it wasn't.
+      const msg =
+        err instanceof Error
+          ? // The api client throws "API <status>: <body>" — strip the prefix
+            err.message.replace(/^API \d+:\s*/, "").replace(/^"|"$/g, "")
+          : "Couldn't send code. Try again in a moment.";
+      setResentVerifyMessage(msg);
     } finally {
       setResendingVerify(false);
     }

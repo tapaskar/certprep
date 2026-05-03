@@ -175,6 +175,19 @@ class ApiClient {
   // ── Auth ───────────────────────────────────────────────────────
 
   /**
+   * Generate + email a fresh verification code for the current user.
+   * Auth-gated. Used by the dashboard's "Resend code" nudge button.
+   * Replaces the previous broken pattern of calling register("") to
+   * trigger a resend (which 409'd silently for existing users).
+   */
+  async resendVerificationCode(): Promise<{
+    status: string;
+    message: string;
+  }> {
+    return this.request("/auth/resend-verification", { method: "POST" });
+  }
+
+  /**
    * Register a new account. Returns an access token immediately so
    * the caller can route the user into the app without waiting on
    * email verification — `is_email_verified` is false on first sign-up
