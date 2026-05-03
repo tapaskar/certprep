@@ -372,6 +372,57 @@ async def seed_demo_account(
         print("─" * 60)
 
 
+async def resend_verification_for(email: str) -> None:
+    """Generate + email a fresh verification code for an arbitrary user.
+
+    Manual rescue tool when a real user is stuck on the
+    /verify-email page. Bypasses the 60-second cooldown that the
+    public /auth/resend-verification endpoint enforces.
+
+    Prints the new code to stdout so support can confirm what was
+    sent (handy if the user replies "I never got it"). Email is sent
+    via the same template the welcome email uses — prominent
+    36px monospace code in an amber box.
+    """
+    from datetime import datetime, timedelta, timezone
+    from sqlalchemy import select
+    from sqlalchemy.ext.asyncio import AsyncSession
+    from sqlalchemy.orm import sessionmaker
+
+    from app.models.user import User
+    from app.api.auth import (
+        _generate_verification_code,
+        _welcome_email_html,
+        _welcome_email_text,
+    )
+    from app.services.email import send_email
+
+    Session = sessionmaker(get_engine(), class_=AsyncSession, expire_on_commit=False)
+    async with Session() as db:
+        result = await db.execute(select(User).where(User.email == email.lower().strip()))
+        user = result.scalar_one_or_none()
+        if not user:
+            print(f"✗ No user with email {email}")
+            return
+        if user.is_email_verified:
+            print(f"✓ {email} is already verified — no action needed.")
+            return
+
+        code = _generate_verification_code()
+        user.email_verification_code = code
+        user.email_verification_expires = datetime.now(timezone.utc) + timedelta(hours=1)
+        await db.commit()
+
+        send_email(
+            to=user.email,
+            subject="Your fresh SparkUpCloud verification code",
+            body_html=_welcome_email_html(user.display_name or "there", code),
+            body_text=_welcome_email_text(user.display_name or "there", code),
+        )
+
+    print(f"✓ Sent fresh code {code} to {email} (expires in 1 hour)")
+
+
 async def list_signups(days: int = 14) -> None:
     """Audit recent user signups for abuse patterns.
 
@@ -436,6 +487,7 @@ def main() -> None:
         print("  python -m app.cli backfill-embeddings    # embed existing Coach history for RAG")
         print("  python -m app.cli seed-demo-account [--email <e>] [--password <p>] [--exam <id>]")
         print("  python -m app.cli list-signups [--days N]  # audit recent registrations")
+        print("  python -m app.cli resend-verification <email>  # manual rescue for stuck users")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -478,6 +530,11 @@ def main() -> None:
             elif arg == "--exam" and i + 1 < len(args):
                 kwargs["exam_id"] = args[i + 1]
         asyncio.run(seed_demo_account(**kwargs))
+    elif command == "resend-verification":
+        if len(sys.argv) < 3:
+            print("Usage: python -m app.cli resend-verification <email>")
+            sys.exit(1)
+        asyncio.run(resend_verification_for(sys.argv[2]))
     elif command == "list-signups":
         days = 14
         args = sys.argv[2:]
