@@ -386,7 +386,12 @@ async def forgot_password(body: ForgotPasswordRequest, db: DB):
     result = await db.execute(select(User).where(User.email == body.email))
     user = result.scalar_one_or_none()
 
-    if user:
+    # Only send the reset link to verified emails. If a user never
+    # confirmed their address (typo at signup, bot signup, etc.), we
+    # have no proof the inbox is theirs and shouldn't deliver a
+    # password-reset link there. Stays silent (always returns the
+    # generic success message below) to prevent email enumeration.
+    if user and user.is_email_verified:
         reset_token = uuid.uuid4().hex
         user.password_reset_token = reset_token
         user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
@@ -563,12 +568,11 @@ def _welcome_email_html(display_name: str, verification_code: str) -> str:
           </a>
         </div>
 
-        <!-- Verification code (secondary, soft amber box) -->
+        <!-- Verification code (truthful framing — required for paid + password reset) -->
         <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:16px 20px;margin:28px 0 16px;">
           <p style="margin:0 0 8px;color:#78716c;font-size:12px;line-height:1.5;">
-            <strong style="color:#92400e;">Optional:</strong> verify your email
-            so you never miss a renewal notice or password reset.
-            Nothing breaks if you skip — your account works either way.
+            <strong style="color:#92400e;">Required to upgrade or reset your password.</strong>
+            Free use works without it — verify when you're ready to go further.
           </p>
           <p style="margin:0;color:#78716c;font-size:12px;">
             Your code (expires in 1 hour):
@@ -627,9 +631,8 @@ Open your dashboard: https://www.sparkupcloud.com/dashboard
 
 ---
 
-Optional: verify your email so you never miss a renewal notice or
-password reset. Nothing breaks if you skip — your account works
-either way.
+Required to upgrade or reset your password. Free use works
+without it — verify when you're ready to go further.
 
 Your code (expires in 1 hour): {verification_code}
 

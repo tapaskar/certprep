@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy import select
 
-from app.api.deps import DB, CurrentUser
+from app.api.deps import DB, CurrentUser, VerifiedUser
 from app.config import settings
 from app.models.user import User
 from app.services.email import send_email
@@ -106,7 +106,7 @@ async def get_billing_summary(user: CurrentUser):
 
 
 @router.post("/cancel")
-async def cancel_subscription(body: CancelRequest, user: CurrentUser):
+async def cancel_subscription(body: CancelRequest, user: VerifiedUser):
     """Request cancellation of a recurring subscription.
 
     Currently routes to the support inbox via SES. We email the
@@ -184,7 +184,7 @@ async def cancel_subscription(body: CancelRequest, user: CurrentUser):
 
 
 @router.post("/refund")
-async def request_refund(body: RefundRequest, user: CurrentUser):
+async def request_refund(body: RefundRequest, user: VerifiedUser):
     """Request a refund (pass-or-refund guarantee).
 
     Same email-the-support-inbox pattern as /cancel. The pass-or-refund
@@ -247,7 +247,7 @@ async def request_refund(body: RefundRequest, user: CurrentUser):
 
 
 @router.post("/checkout")
-async def create_checkout(body: CheckoutRequest, user: CurrentUser):
+async def create_checkout(body: CheckoutRequest, user: VerifiedUser):
     """Return Gumroad checkout URL with user email pre-filled + return URL.
 
     Both query params matter:

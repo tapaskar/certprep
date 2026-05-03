@@ -161,7 +161,19 @@ export default function PricingCards() {
     try {
       const { checkout_url } = await api.createCheckout(plan);
       url = checkout_url;
-    } catch {
+    } catch (err) {
+      // EMAIL_NOT_VERIFIED — sensitive endpoints now require a
+      // verified email (Option B surgical gate). Route the user to
+      // /verify-email with a contextual reason + the plan they were
+      // about to buy preserved as pendingPlan, so the verify page
+      // can resume checkout after they paste the code.
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.includes("EMAIL_NOT_VERIFIED") || msg.includes("403")) {
+        setPendingPlan(plan);
+        window.location.href = `/verify-email?reason=upgrade`;
+        return;
+      }
+
       const urls: Record<string, string> = {
         single: "https://tapasaurus.gumroad.com/l/eutwyu",
         pro_monthly: "https://tapasaurus.gumroad.com/l/arfrcr",

@@ -114,3 +114,34 @@ async def get_admin_user(user: CurrentUser) -> User:
 
 
 AdminUser = Annotated[User, Depends(get_admin_user)]
+
+
+async def get_verified_user(user: CurrentUser) -> User:
+    """Require authenticated user whose email has been verified.
+
+    Used at sensitive moments only — paid checkout, subscription
+    cancel, refund, password change. Free use of the product
+    deliberately stays open to unverified accounts so first-time
+    visitors can try the site without an email-roundtrip step.
+
+    The 403 detail uses a stable code ("EMAIL_NOT_VERIFIED") so the
+    frontend can switch on it and route the user to /verify-email
+    with a contextual reason, rather than showing a generic auth
+    error.
+    """
+    if not user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={
+                "code": "EMAIL_NOT_VERIFIED",
+                "message": (
+                    "Verify your email address to continue. We need to "
+                    "confirm we can reach you before processing this "
+                    "action."
+                ),
+            },
+        )
+    return user
+
+
+VerifiedUser = Annotated[User, Depends(get_verified_user)]

@@ -249,8 +249,8 @@ export default function DashboardPage() {
                 </p>
               ) : (
                 <p className="text-sm text-stone-700">
-                  <strong>Verify your email</strong> to keep your account safe
-                  and never miss a renewal notice. Takes 30 seconds.
+                  <strong>Verify your email</strong> — required to upgrade
+                  your plan or reset your password. Takes 30 seconds.
                 </p>
               )}
             </div>

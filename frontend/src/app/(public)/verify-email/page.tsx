@@ -15,6 +15,7 @@ export default function VerifyEmailPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [reason, setReason] = useState<"upgrade" | "reset" | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -22,6 +23,11 @@ export default function VerifyEmailPage() {
     if (savedEmail) {
       setEmail(savedEmail);
     }
+    // ?reason= param tells us why the user landed here. Drives the
+    // headline copy below so they know what unlocks after they verify.
+    const params = new URLSearchParams(window.location.search);
+    const r = params.get("reason");
+    if (r === "upgrade" || r === "reset") setReason(r);
     inputRefs.current[0]?.focus();
   }, []);
 
@@ -137,22 +143,49 @@ export default function VerifyEmailPage() {
     setError("");
     setSuccess("");
     try {
-      await api.register("", email, "");
-    } catch {
-      // Registration will fail but that's expected since user exists
+      // Real resend endpoint — replaces the previous register("") hack
+      // that 409'd silently. Surfaces real errors (cooldown, etc.).
+      const res = await api.resendVerificationCode();
+      setSuccess(res.message);
+    } catch (err) {
+      const msg =
+        err instanceof Error
+          ? err.message.replace(/^API \d+:\s*/, "").replace(/^"|"$/g, "")
+          : "Couldn't send code. Try again in a moment.";
+      setError(msg);
     }
-    setSuccess("A new verification code has been sent to your email.");
   };
+
+  // Headline copy based on why the user is here. Without a reason the
+  // page just says "Verify your email" — generic. With a reason, lead
+  // with what they'll unlock after verifying.
+  const headline =
+    reason === "upgrade"
+      ? "One step to complete your purchase"
+      : reason === "reset"
+        ? "Verify to reset your password"
+        : "Verify your email";
+  const subhead =
+    reason === "upgrade"
+      ? "Confirm your email so we can deliver your invoice and keep your access secure. Takes 30 seconds."
+      : reason === "reset"
+        ? "We need to confirm we can reach you before resetting your password."
+        : null;
 
   return (
     <div className="rounded-xl border border-stone-200 bg-white p-8 shadow-md shadow-stone-200/60">
       <h1 className="mb-2 text-center text-2xl font-bold text-stone-900">
-        Verify your email
+        {headline}
       </h1>
-      <p className="mb-6 text-center text-sm text-stone-500">
+      <p className="mb-2 text-center text-sm text-stone-500">
         We sent a 6-digit code to{" "}
         <span className="font-medium text-stone-700">{email || "your email"}</span>
       </p>
+      {subhead && (
+        <p className="mb-4 text-center text-xs text-stone-500 leading-relaxed">
+          {subhead}
+        </p>
+      )}
 
       <div className="mb-6 flex justify-center gap-2" onPaste={handlePaste}>
         {code.map((digit, index) => (

@@ -5,8 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Check, ShieldCheck, Sparkles } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
-import { api } from "@/lib/api";
-import { readPendingPlan, clearPendingPlan } from "@/lib/auth-cookie";
+import { readPendingPlan } from "@/lib/auth-cookie";
 import { trackLeadConversion } from "@/lib/analytics";
 
 export default function RegisterPage() {
@@ -79,24 +78,22 @@ export default function RegisterPage() {
         trackLeadConversion(newUserId, email);
       }
 
-      // Fast-path: user came from a paid CTA. Fire checkout NOW so they
-      // land on Gumroad instead of /verify-email. Saves 30-90 seconds
-      // (email roundtrip) at the most-friction point in the funnel.
-      // Email verification becomes a soft dashboard banner post-purchase.
+      // Paid path: under the surgical-gate model (Option B), checkout
+      // requires a verified email. Brand-new accounts haven't verified
+      // yet, so we route them to /verify-email with the plan saved —
+      // the verify page resumes checkout once the code is confirmed.
+      //
+      // Free path: route to /verify-email with no upgrade context.
+      // Their account works without verification (Free tier is
+      // unblocked), but we still nudge so future upgrades are smooth.
       const pendingPlan = readPendingPlan();
       if (pendingPlan) {
-        try {
-          const { checkout_url } = await api.createCheckout(pendingPlan);
-          clearPendingPlan();
-          window.location.href = checkout_url;
-          return;
-        } catch {
-          // Fall through to /verify-email if checkout setup fails for
-          // any reason — better to make them verify than to dead-end.
-        }
+        // Don't clear pendingPlan — verify-email will fire checkout
+        // on success and clear it then.
+        router.push("/verify-email?reason=upgrade");
+      } else {
+        router.push("/verify-email");
       }
-
-      router.push("/verify-email");
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Registration failed.";
