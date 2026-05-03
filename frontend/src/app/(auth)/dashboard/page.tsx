@@ -15,6 +15,7 @@ import { InProgressPaths } from "@/components/dashboard/in-progress-paths";
 import { BookOpen, Plus, Crown, Zap, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import { trackPurchaseConversion } from "@/lib/analytics";
 
 export default function DashboardPage() {
   const { progress, isLoading, error, fetchProgress } = useProgressStore();
@@ -142,9 +143,16 @@ export default function DashboardPage() {
       // this, the dashboard renders the user's stale Free plan even
       // though they just paid for Pro.
       setTimeout(() => loadUser(), 2000);
+      // Fire Google Ads "Purchase" conversion event. Idempotent per
+      // session — refreshes don't double-count. transaction_id is
+      // stable across refreshes for additional dedupe on Google's side.
+      // Reading user from the closure is fine because this useEffect
+      // runs once on mount, after the auth-store has hydrated.
+      trackPurchaseConversion(upgraded, user?.id);
       // Strip ?upgraded= from the URL so a refresh doesn't re-trigger
       window.history.replaceState({}, "", window.location.pathname);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loadUser]);
 
   return (
