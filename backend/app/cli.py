@@ -383,6 +383,8 @@ async def list_signups(days: int = 14) -> None:
     from sqlalchemy import text as _text
 
     async with get_engine().connect() as conn:
+        # Pass days as a string — asyncpg's `||` (string concat) operator
+        # is strict about types, won't auto-cast int to text.
         result = await conn.execute(
             _text(
                 "SELECT created_at, email, display_name, "
@@ -391,7 +393,7 @@ async def list_signups(days: int = 14) -> None:
                 "WHERE created_at > now() - (:days || ' days')::interval "
                 "ORDER BY created_at DESC"
             ),
-            {"days": days},
+            {"days": str(days)},
         )
         rows = list(result)
 
