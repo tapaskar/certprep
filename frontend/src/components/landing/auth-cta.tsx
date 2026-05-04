@@ -93,14 +93,44 @@ export function AuthCTA({ variant }: AuthCTAProps) {
   // ─────────────────────── HERO ───────────────────────
   if (variant === "hero") {
     if (!hydrated || !auth) {
+      // Cold traffic from Google Ads needs THREE choices, not two:
+      //   1. Sign up (highest commitment)
+      //   2. Try the product instantly with zero commitment ← the
+      //      missing link that was killing conversions. Without
+      //      this, evaluators bounce because the only way to see
+      //      the product is to hand over an email.
+      //   3. See pricing (lower commitment than signup, higher than try)
       return (
         <>
-          <Link
-            href="/register"
-            className="inline-flex h-12 items-center justify-center rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 text-base font-bold text-white shadow-md shadow-stone-200/60 hover:scale-105 transition-all"
-          >
-            Get Started Free
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 items-center w-full sm:w-auto">
+            <Link
+              href="/register"
+              className="inline-flex h-12 w-full sm:w-auto items-center justify-center rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-8 text-base font-bold text-white shadow-md shadow-stone-200/60 hover:scale-105 transition-all"
+            >
+              Get Started Free
+            </Link>
+            <Link
+              href="/try-questions?utm_source=hero_cta"
+              className="inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-lg border-2 border-stone-300 bg-white px-6 text-base font-bold text-stone-800 hover:border-amber-400 hover:text-amber-700 transition-all"
+            >
+              Try 5 Questions — No Signup →
+            </Link>
+          </div>
+          {/* Trust strip directly under the CTAs — names the
+              friction-killers buyers actually wonder about (cost,
+              card, refund). Single-line on desktop, wraps on mobile. */}
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-stone-500">
+            <span className="flex items-center gap-1">
+              <svg className="h-3 w-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              No credit card
+            </span>
+            <span className="text-stone-300">·</span>
+            <span>8,800+ practice questions</span>
+            <span className="text-stone-300">·</span>
+            <span>Pass-or-refund on Pro</span>
+          </div>
           <Link
             href="/pricing"
             className="text-sm font-medium text-amber-600 hover:text-amber-700 transition-colors"
