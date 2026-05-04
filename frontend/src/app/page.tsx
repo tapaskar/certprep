@@ -189,7 +189,12 @@ const jsonLd = {
     "@type": "Offer",
     price: "0",
     priceCurrency: "USD",
-    description: "Free tier with 10 questions per day",
+    // Description must mirror what /pricing actually advertises
+    // (the public pricing-cards Free tier). Was "10 questions/day"
+    // — wrong, contradicting the real Free tier description and
+    // confusing buyers who saw both.
+    description:
+      "Free tier — 50% of one exam's content, basic practice questions, progress tracking",
   },
   aggregateRating: {
     "@type": "AggregateRating",
@@ -288,20 +293,14 @@ export default function LandingPage() {
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
                 <AuthCTA variant="hero" />
               </div>
-              <div className="mt-6 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 text-xs sm:text-sm text-stone-500">
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Free plan: 10 questions/day
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  No credit card
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Pass-or-refund on Pro
-                </span>
-              </div>
+              {/* The trust strip below the CTAs (no card / 8800+ /
+                  pass-or-refund) is rendered inside the AuthCTA hero
+                  variant — was duplicated here as a separate block,
+                  which made the page render the same three benefits
+                  twice within ~200px of each other. Removed.
+                  Also dropped the misleading "10 questions/day" line
+                  that contradicted the /pricing page's actual Free
+                  tier description. */}
             </div>
 
             {/* Right: mockup */}

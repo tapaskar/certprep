@@ -38,6 +38,14 @@ class Settings(BaseSettings):
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
 
+    # Google OAuth — for "Continue with Google" sign-in. When unset,
+    # /auth/oauth/google returns 503 and the frontend hides the
+    # button (NEXT_PUBLIC_GOOGLE_CLIENT_ID also has to be set for
+    # the button to appear). Get the ID at:
+    #   Google Cloud Console → APIs & Services → Credentials
+    #   → Create OAuth 2.0 Client ID → Web application
+    google_client_id: str = ""
+
     # Gumroad — current payment provider
     # Get the shared secret from Gumroad → Settings → Advanced → Ping URL.
     # When set, all incoming /payments/webhook requests must include the

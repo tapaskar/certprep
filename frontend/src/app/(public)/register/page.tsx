@@ -126,11 +126,22 @@ export default function RegisterPage() {
       </div>
 
       <h1 className="mb-2 text-center text-2xl font-bold text-stone-900">
-        Start your cert prep — free
+        {plan && plan !== "free"
+          ? "One step to your subscription"
+          : "Start your cert prep — free"}
       </h1>
-      <p className="mb-6 text-center text-sm text-stone-500">
-        Email + password and you&apos;re in. Pro plan unlocks 76+ exams.
+      <p className="mb-4 text-center text-sm text-stone-500">
+        {plan && plan !== "free"
+          ? "Create your account, then complete checkout."
+          : "Email + password and you're in. Pro plan unlocks 76+ exams."}
       </p>
+
+      {/* Plan context — when the visitor came from a Buy CTA on
+          /pricing, the URL carries ?plan=pro-annual / pro-monthly /
+          single. Show what they're signing up for so the page doesn't
+          feel like a generic registration form (the "wait, what am I
+          actually signing up for?" doubt is a real abandonment cause). */}
+      <PlanContextCard plan={plan} />
 
       {/* Social-login row — scaffolded UI. The Google button wires up in a
           separate commit once GOOGLE_CLIENT_ID is provisioned. Disabled
@@ -379,5 +390,70 @@ function GoogleGlyph() {
         d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
       />
     </svg>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// PlanContextCard
+// ─────────────────────────────────────────────────────────────────
+//
+// Renders a small "you're signing up for X" card above the form when
+// the URL carries ?plan=pro-annual etc. Replaces the cold generic
+// register page with a contextual one that shows what the user is
+// committing to. Renders nothing for ?plan=free or no plan param —
+// in that case the generic form is the right shape.
+//
+// URL param uses hyphen ("pro-annual") for prettiness; pendingPlan
+// cookie uses underscore ("pro_annual"). Both are valid; this lookup
+// normalizes whichever it gets.
+
+const PLAN_INFO: Record<string, { label: string; price: string; tagline: string }> = {
+  "pro-annual": {
+    label: "Pro Annual",
+    price: "$149.99/year",
+    tagline: "All 76+ certifications · save 37% vs monthly",
+  },
+  pro_annual: {
+    label: "Pro Annual",
+    price: "$149.99/year",
+    tagline: "All 76+ certifications · save 37% vs monthly",
+  },
+  "pro-monthly": {
+    label: "Pro Monthly",
+    price: "$19.99/month",
+    tagline: "All 76+ certifications · cancel anytime",
+  },
+  pro_monthly: {
+    label: "Pro Monthly",
+    price: "$19.99/month",
+    tagline: "All 76+ certifications · cancel anytime",
+  },
+  single: {
+    label: "Single Exam",
+    price: "$9.99 once",
+    tagline: "One certification · 6 months access",
+  },
+};
+
+function PlanContextCard({ plan }: { plan: string | null }) {
+  if (!plan || plan === "free") return null;
+  const info = PLAN_INFO[plan];
+  if (!info) return null;
+
+  return (
+    <div className="mb-5 rounded-lg border-2 border-amber-200 bg-gradient-to-br from-amber-50/80 to-white px-4 py-3">
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
+            You&apos;re signing up for
+          </div>
+          <div className="mt-0.5 text-sm font-bold text-stone-900">
+            {info.label}
+            <span className="ml-2 text-amber-700">· {info.price}</span>
+          </div>
+        </div>
+      </div>
+      <div className="mt-1.5 text-xs text-stone-600">{info.tagline}</div>
+    </div>
   );
 }

@@ -285,6 +285,156 @@ async def resend_verification(user: CurrentUser, db: DB):
     }
 
 
+class GoogleOAuthRequest(BaseModel):
+    """Body for /auth/oauth/google.
+
+    `credential` is the JWT ID token returned by Google Identity
+    Services after the user clicks "Continue with Google" on the
+    register/login page. The frontend doesn't decode it — we do that
+    server-side so we can verify Google's signature.
+    """
+
+    credential: str
+
+
+@router.post("/oauth/google")
+async def oauth_google(body: GoogleOAuthRequest, db: DB):
+    """Sign in or create an account from a Google ID token.
+
+    Flow:
+      1. Frontend loads Google Identity Services script and shows the
+         "Continue with Google" button (only when GOOGLE_CLIENT_ID is
+         set in NEXT_PUBLIC env vars).
+      2. User clicks → Google returns a JWT ID token via callback.
+      3. Frontend POSTs the token here.
+      4. We verify Google's signature using their public keys + check
+         that the token's `aud` matches our GOOGLE_CLIENT_ID.
+      5. On success, find-or-create the user (matched by verified
+         Google email) and return our own access token. Google-verified
+         emails are trusted, so is_email_verified=True from the start
+         — bypassing our verification flow entirely. That's the whole
+         point of social login.
+
+    No-op endpoint when GOOGLE_CLIENT_ID isn't configured: returns
+    503 with a clear message. The frontend hides the button anyway
+    in that case (auth-cta env-gate).
+
+    Setup steps for activating this:
+      1. Google Cloud Console → APIs & Services → Credentials
+         → Create OAuth 2.0 Client ID → Web application
+         → Authorized JavaScript origins: https://www.sparkupcloud.com
+         → Authorized redirect URIs: (none needed for Identity Services)
+      2. Copy the client ID (looks like XXX.apps.googleusercontent.com)
+      3. Set NEXT_PUBLIC_GOOGLE_CLIENT_ID and GOOGLE_CLIENT_ID in env
+      4. The button auto-appears on /register and /login.
+    """
+    if not settings.google_client_id:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Google sign-in is not configured. Use email instead.",
+        )
+
+    # Verify the Google ID token. Use Google's public OAuth2 library
+    # so we don't have to maintain key rotation logic ourselves.
+    try:
+        from google.auth.transport import requests as google_requests
+        from google.oauth2 import id_token as google_id_token
+    except ImportError as e:
+        logger.error("Google auth libraries not installed: %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "Google sign-in is not yet installed on the server. "
+                "Run: pip install google-auth"
+            ),
+        )
+
+    try:
+        idinfo = google_id_token.verify_oauth2_token(
+            body.credential,
+            google_requests.Request(),
+            settings.google_client_id,
+        )
+    except ValueError as e:
+        logger.warning("Google OAuth: invalid token — %s", e)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid Google sign-in token",
+        )
+
+    email = (idinfo.get("email") or "").lower().strip()
+    email_verified = bool(idinfo.get("email_verified"))
+    name = idinfo.get("name") or email.split("@")[0]
+
+    if not email or not email_verified:
+        # Google sends `email_verified=false` for unverified work-domain
+        # accounts (rare but real). Refuse — we don't want to register
+        # someone with an email they can't actually receive at.
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google account email is not verified",
+        )
+
+    # Find or create the user. Google-verified email is trusted, so
+    # is_email_verified=True from the start — no verification email
+    # needed.
+    result = await db.execute(select(User).where(User.email == email))
+    user = result.scalar_one_or_none()
+    is_new_user = False
+    if user is None:
+        is_new_user = True
+        # Use the same raw-INSERT pattern as the demo-account CLI to
+        # tolerate the legacy clerk_id NOT NULL column on prod schema.
+        from sqlalchemy import text as _text
+
+        new_id_result = await db.execute(
+            _text(
+                "INSERT INTO users "
+                "(id, clerk_id, email, display_name, "
+                " is_email_verified, is_admin, plan, timezone, "
+                " daily_study_target_minutes, preferred_session_length, "
+                " notification_preferences, nudge_time, "
+                " referral_credits_usd, subscription_status, "
+                " last_login_at) "
+                "VALUES (gen_random_uuid(), :cid, :email, :name, "
+                " true, false, 'free', 'UTC', 30, 30, "
+                " '{\"push\": true, \"email\": true, \"sms\": false}'::jsonb, "
+                " '08:00:00', 0.00, 'none', now()) "
+                "RETURNING id"
+            ).bindparams(cid=f"google-{email}", email=email, name=name)
+        )
+        new_id = new_id_result.scalar_one()
+        await db.flush()
+        result2 = await db.execute(select(User).where(User.id == new_id))
+        user = result2.scalar_one()
+    else:
+        # Existing user — promote them to email-verified if they
+        # weren't already (Google has confirmed the email is theirs).
+        if not user.is_email_verified:
+            user.is_email_verified = True
+        user.last_login_at = datetime.now(timezone.utc)
+        await db.commit()
+
+    # Auto-promote admin emails on login for parity with /auth/login
+    if user.email in ADMIN_EMAILS and not user.is_admin:
+        user.is_admin = True
+        await db.commit()
+
+    token = _create_access_token(str(user.id))
+
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": str(user.id),
+            "email": user.email,
+            "display_name": user.display_name,
+        },
+        "is_email_verified": True,
+        "is_new_user": is_new_user,
+    }
+
+
 @router.post("/login")
 async def login(body: LoginRequest, db: DB):
     result = await db.execute(select(User).where(User.email == body.email))
