@@ -62,6 +62,54 @@ export default function OnboardingPage() {
     if (selectedExam) setCurrentStep("preferences");
   };
 
+  // Fast-start path — default for the new minimal onboarding flow.
+  // Bypasses the preferences step (exam date / experience level /
+  // daily study minutes) AND the 15-question diagnostic — drops the
+  // user straight into the dashboard with their exam enrolled and
+  // sensible defaults set.
+  //
+  // Why: the engagement audit showed the previous 3-step onboarding
+  // (preferences → diagnostic → results) was a wall most users
+  // never crossed. Pick exam, get studying — that's the goal.
+  // Power users can still do "Personalize" via the secondary link.
+  const handleFastStart = async () => {
+    if (!selectedExam) return;
+    setError(null);
+    try {
+      await api.startOnboarding({
+        exam_id: selectedExam.id,
+        exam_date: null,
+        experience_level: "intermediate",
+        daily_study_minutes: 30,
+      });
+    } catch (err) {
+      // 409 = already enrolled — fine, just route to dashboard. The
+      // user might have hit fast-start twice or come back later.
+      if (!(err instanceof Error && err.message.includes("409"))) {
+        setError(err instanceof Error ? err.message : "Couldn't enroll");
+        return;
+      }
+    }
+    // Performance-based exams (EX188 etc.) → route to learning path
+    // if one exists, same logic as the personalized path.
+    const skipDiagnostic = (selectedExam.total_questions ?? 0) === 0;
+    if (skipDiagnostic) {
+      try {
+        const matching = await api.listLearningPaths({
+          exam_id: selectedExam.id,
+        });
+        const first = matching?.[0];
+        if (first?.id) {
+          window.location.href = `/paths/${first.id}?utm_source=onboarding_fast`;
+          return;
+        }
+      } catch {
+        /* fall through */
+      }
+    }
+    window.location.href = "/dashboard?utm_source=onboarding_fast";
+  };
+
   const [error, setError] = useState<string | null>(null);
 
   const handlePreferences = async (prefs: {
@@ -217,12 +265,32 @@ export default function OnboardingPage() {
               onSelect={handleExamSelect}
             />
             {selectedExam && (
-              <button
-                onClick={handleExamContinue}
-                className="w-full rounded-lg bg-blue-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-blue-400"
-              >
-                Continue
-              </button>
+              <div className="space-y-3">
+                {/* Primary CTA — fast-start. Skips preferences +
+                    diagnostic; drops the user on /dashboard with
+                    sensible defaults so they can start studying
+                    within seconds, not minutes. */}
+                <button
+                  onClick={handleFastStart}
+                  className="w-full rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-3.5 font-bold text-white shadow-md transition-all hover:scale-[1.01]"
+                >
+                  Start studying {selectedExam.code} now →
+                </button>
+                <p className="text-center text-xs text-stone-500">
+                  Studying in 5 seconds. You can personalize later from{" "}
+                  <span className="font-medium text-stone-700">Profile</span>.
+                </p>
+                {/* Secondary — for users who want the full setup. The
+                    existing 3-step preferences + diagnostic path. */}
+                <div className="pt-2 text-center">
+                  <button
+                    onClick={handleExamContinue}
+                    className="text-xs font-semibold text-stone-500 hover:text-stone-900 underline-offset-4 hover:underline"
+                  >
+                    Personalize first (set exam date + take 15-min diagnostic)
+                  </button>
+                </div>
+              </div>
             )}
           </div>
         )}
