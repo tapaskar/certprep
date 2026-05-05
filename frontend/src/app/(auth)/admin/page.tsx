@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/auth-store";
+import { EngagementDashboard } from "@/components/admin/engagement-dashboard";
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -74,9 +75,9 @@ export default function AdminPage() {
   const [questions, setQuestions] = useState<QuestionRow[]>([]);
   const [selectedExamId, setSelectedExamId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"users" | "exams" | "questions">(
-    "users"
-  );
+  const [activeTab, setActiveTab] = useState<
+    "engagement" | "users" | "exams" | "questions"
+  >("engagement");
 
   const USERS_PER_PAGE = 20;
 
@@ -254,7 +255,7 @@ export default function AdminPage() {
 
       {/* Tab Navigation */}
       <div className="flex gap-1 rounded-lg bg-stone-200 p-1">
-        {(["users", "exams", "questions"] as const).map((tab) => (
+        {(["engagement", "users", "exams", "questions"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -268,6 +269,12 @@ export default function AdminPage() {
           </button>
         ))}
       </div>
+
+      {/* Engagement Dashboard — funnel + activity timeline + LLM cost +
+          top users + per-feature usage. Powered by /admin/engagement
+          which the component fetches independently of this page's
+          initial bare-counts call. */}
+      {activeTab === "engagement" && <EngagementDashboard />}
 
       {/* Users Table */}
       {activeTab === "users" && (

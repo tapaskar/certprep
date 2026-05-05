@@ -309,6 +309,48 @@ class ApiClient {
 
   // ── Admin ─────────────────────────────────────────────────────
 
+  /**
+   * Real engagement dashboard — funnel, daily timeseries, top users,
+   * LLM cost. Replaces the bare counts from getAdminStats() as the
+   * primary admin dashboard surface.
+   */
+  async getAdminEngagement(): Promise<{
+    generated_at: string;
+    funnel: { label: string; count: number; icon: string }[];
+    plan_distribution: { plan: string; count: number }[];
+    daily_activity: {
+      day: string;
+      signups: number;
+      answers: number;
+      sessions: number;
+      mocks: number;
+      coach: number;
+    }[];
+    top_users: {
+      email: string;
+      display_name: string | null;
+      plan: string;
+      signup_day: string | null;
+      answers_14d: number;
+      sessions_14d: number;
+      mocks_14d: number;
+      coach_msgs_14d: number;
+    }[];
+    llm_usage_7d: {
+      endpoint: string;
+      calls: number;
+      total_tokens: number;
+      cached_tokens: number;
+      cost_usd: number;
+      avg_latency_ms: number;
+      errors: number;
+    }[];
+    llm_total_cost_7d: number;
+    feature_usage: { label: string; count: number }[];
+  }> {
+    return this.request("/admin/engagement");
+  }
+
   async getAdminStats(): Promise<{
     total_users: number;
     active_today: number;
