@@ -12,6 +12,7 @@ import { LeagueCard } from "@/components/dashboard/league-card";
 import { ChallengeCard } from "@/components/dashboard/challenge-card";
 import { RecentMockExams } from "@/components/dashboard/recent-mock-exams";
 import { InProgressPaths } from "@/components/dashboard/in-progress-paths";
+import { FirstQuestionHook } from "@/components/dashboard/first-question-hook";
 import { BookOpen, Plus, Crown, Zap, Mail, X } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api";
@@ -61,19 +62,22 @@ export default function DashboardPage() {
   }, [examId]);
 
   if (!examId && enrolledExams.length === 0) {
-    // Even without an MCQ exam enrolled, the user may have a learning path
-    // in progress (e.g. Red Hat EX188). Render the resume surface above the
-    // welcome CTA so they can find their way back.
+    // Empty state for brand-new users (and anyone without an exam
+    // enrolled). Was previously a wall: "Welcome! Pick an exam." that
+    // required 5+ clicks before any value landed. Engagement audit
+    // showed real-user activation at ~0% — most signups bounced here.
+    //
+    // New empty state drops a real practice question on the dashboard
+    // so the user can see what the product actually does within 3
+    // seconds, then routes to /onboarding with context once they've
+    // seen the gameplay.
+    //
+    // InProgressPaths still renders above for users who have a path
+    // started but no MCQ exam enrolled (covers the EX188 case).
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         <InProgressPaths />
-        <div className="flex h-64 flex-col items-center justify-center gap-4">
-          <h2 className="text-xl font-bold text-stone-900">Welcome to SparkUpCloud!</h2>
-          <p className="text-stone-500">Pick an exam to get started.</p>
-          <a href="/onboarding" className="rounded-lg bg-amber-500 px-6 py-3 font-semibold text-white hover:bg-amber-600">
-            Start Onboarding
-          </a>
-        </div>
+        <FirstQuestionHook />
       </div>
     );
   }
