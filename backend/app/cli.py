@@ -372,6 +372,176 @@ async def seed_demo_account(
         print("─" * 60)
 
 
+async def send_day1_reengagement(dry_run: bool = False) -> None:
+    """Email users who signed up ~24h ago but haven't tried a question.
+
+    Activation rescue. Engagement audit showed ~95% of signups never
+    answer a single question. This email is a polite "you signed up
+    yesterday, here's the one-click path to actually use the thing"
+    nudge with a direct link to /dashboard (which now has the
+    first-question hook front and center).
+
+    Idempotency: tracked via notification_preferences->>'day1_email_sent'
+    on the User row. Re-runs of this command skip users who already
+    received it. Set the JSON field by string ISO timestamp so we
+    can also see WHEN it was sent for ops/debugging.
+
+    Use --dry-run to preview the candidate list without sending.
+
+    Cron schedule (run hourly, hits each user exactly once when their
+    24-hour mark falls inside the window):
+      0 * * * * cd /opt/certprep/backend && source .venv/bin/activate && python -m app.cli send-day1-reengagement
+    """
+    from datetime import datetime, timezone
+    from sqlalchemy import text as _text
+    from sqlalchemy.ext.asyncio import AsyncSession
+    from sqlalchemy.orm import sessionmaker
+
+    from app.services.email import send_email
+
+    Session = sessionmaker(get_engine(), class_=AsyncSession, expire_on_commit=False)
+    async with Session() as db:
+        result = await db.execute(
+            _text(
+                """
+                SELECT u.id, u.email, u.display_name
+                FROM users u
+                WHERE u.created_at BETWEEN
+                       now() - interval '48 hours'
+                       AND now() - interval '24 hours'
+                  AND NOT EXISTS (
+                      SELECT 1 FROM user_answers a WHERE a.user_id = u.id
+                  )
+                  AND COALESCE(
+                      (u.notification_preferences->>'day1_email_sent'),
+                      ''
+                  ) = ''
+                """
+            )
+        )
+        candidates = list(result)
+
+        if not candidates:
+            print("No candidates for day-1 reengagement.")
+            return
+
+        print(f"Found {len(candidates)} candidate(s) for day-1 reengagement.")
+
+        sent = 0
+        skipped = 0
+        for user_id, email, display_name in candidates:
+            name = (display_name or email.split("@")[0] or "there").strip()
+            if dry_run:
+                print(f"  [DRY RUN] Would send to {email} (name={name})")
+                continue
+
+            ok = send_email(
+                to=email,
+                subject="Try one question — see if SparkUpCloud is actually for you",
+                body_html=_day1_reengagement_html(name),
+                body_text=_day1_reengagement_text(name),
+            )
+            if ok:
+                # Mark as sent so re-runs skip this user
+                await db.execute(
+                    _text(
+                        """
+                        UPDATE users
+                        SET notification_preferences =
+                            COALESCE(notification_preferences, '{}'::jsonb)
+                            || jsonb_build_object('day1_email_sent', :ts)
+                        WHERE id = :uid
+                        """
+                    ),
+                    {
+                        "ts": datetime.now(timezone.utc).isoformat(),
+                        "uid": user_id,
+                    },
+                )
+                sent += 1
+                print(f"  ✓ sent to {email}")
+            else:
+                skipped += 1
+                print(f"  ✗ SES error for {email}")
+
+        await db.commit()
+        print(f"\nDone. Sent {sent}, failed {skipped}, of {len(candidates)} candidates.")
+
+
+def _day1_reengagement_html(name: str) -> str:
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:40px 20px;background:#f5f5f4;font-family:system-ui,-apple-system,sans-serif;">
+  <div style="max-width:520px;margin:0 auto;background:white;border-radius:14px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+    <div style="padding:28px 32px;border-bottom:1px solid #f5f5f4;">
+      <div style="font-size:18px;font-weight:800;letter-spacing:-0.01em;">
+        <span style="color:#1c1917;">Spark</span><span style="color:#f59e0b;">Up</span><span style="color:#1c1917;">Cloud</span>
+      </div>
+    </div>
+    <div style="padding:32px;">
+      <h1 style="font-size:22px;color:#1c1917;line-height:1.3;margin:0 0 16px;font-weight:700;">
+        Hi {name} — try one question?
+      </h1>
+      <p style="color:#44403c;line-height:1.65;margin:0 0 16px;font-size:15px;">
+        You signed up yesterday but haven't tried a practice question yet —
+        totally fair, life happens.
+      </p>
+      <p style="color:#44403c;line-height:1.65;margin:0 0 24px;font-size:15px;">
+        If you've got <strong>30 seconds</strong>, here's the easiest place
+        to start. One sample question is waiting on your dashboard —
+        no commitment.
+      </p>
+      <div style="text-align:center;margin:24px 0 28px;">
+        <a href="https://www.sparkupcloud.com/dashboard?utm_source=day1_email"
+           style="display:inline-block;background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);color:white;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;">
+          Try one question →
+        </a>
+      </div>
+      <p style="color:#57534e;line-height:1.65;margin:0 0 16px;font-size:14px;">
+        Click anything (right or wrong), see the explanation, and you'll know
+        in a minute whether SparkUpCloud is what you need.
+      </p>
+      <p style="color:#57534e;line-height:1.65;margin:0;font-size:14px;">
+        If it's not for you, that's fine too — just hit reply and tell us
+        what felt off. We read every reply.
+      </p>
+      <p style="color:#1c1917;line-height:1.5;margin:20px 0 0;font-size:14px;">
+        — The SparkUpCloud team
+      </p>
+    </div>
+    <div style="padding:14px 32px;background:#fafaf9;color:#a8a29e;font-size:11px;text-align:center;border-top:1px solid #f5f5f4;">
+      You're getting this because you signed up at sparkupcloud.com.
+      We send at most one of these. Don't want it? Just reply with "stop".
+    </div>
+  </div>
+</body></html>"""
+
+
+def _day1_reengagement_text(name: str) -> str:
+    return f"""Hi {name} — try one question?
+
+You signed up yesterday but haven't tried a practice question yet —
+totally fair, life happens.
+
+If you've got 30 seconds, here's the easiest place to start. One sample
+question is waiting on your dashboard — no commitment.
+
+  → https://www.sparkupcloud.com/dashboard?utm_source=day1_email
+
+Click anything (right or wrong), see the explanation, and you'll know
+in a minute whether SparkUpCloud is what you need.
+
+If it's not for you, that's fine too — just hit reply and tell us what
+felt off. We read every reply.
+
+— The SparkUpCloud team
+
+—
+You're getting this because you signed up at sparkupcloud.com. We send
+at most one of these. Don't want it? Just reply with "stop".
+"""
+
+
 async def resend_verification_for(email: str) -> None:
     """Generate + email a fresh verification code for an arbitrary user.
 
@@ -488,6 +658,7 @@ def main() -> None:
         print("  python -m app.cli seed-demo-account [--email <e>] [--password <p>] [--exam <id>]")
         print("  python -m app.cli list-signups [--days N]  # audit recent registrations")
         print("  python -m app.cli resend-verification <email>  # manual rescue for stuck users")
+        print("  python -m app.cli send-day1-reengagement [--dry-run]  # email yesterday's silent signups")
         sys.exit(1)
 
     command = sys.argv[1]
@@ -535,6 +706,9 @@ def main() -> None:
             print("Usage: python -m app.cli resend-verification <email>")
             sys.exit(1)
         asyncio.run(resend_verification_for(sys.argv[2]))
+    elif command == "send-day1-reengagement":
+        dry = "--dry-run" in sys.argv[2:]
+        asyncio.run(send_day1_reengagement(dry_run=dry))
     elif command == "list-signups":
         days = 14
         args = sys.argv[2:]
