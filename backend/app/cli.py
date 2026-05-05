@@ -627,15 +627,18 @@ async def list_signups(days: int = 14) -> None:
     for row in rows:
         ver = "YES" if row[3] else "no"
         login = "YES" if row[4] else "no"
-        # Flag suspicious: display_name == email local-part is the
-        # automated-POST signature (real frontend users either fill
-        # the name field or leave it blank).
-        local = (row[1] or "").split("@")[0]
-        sus = "🚩" if (row[2] or "") == local else "  "
+        # Earlier versions of this script flagged "display_name ==
+        # email local-part" as a bot signature. That was wrong — the
+        # frontend's register form auto-derives display_name from the
+        # email when the user leaves the optional name field blank
+        # (which is the default — the field is hidden behind a
+        # disclosure). So display_name == email-local-part is the
+        # NORMAL pattern for real signups, not a bot tell. The flag
+        # was misleading; removed.
         print(
             f"{str(row[0])[:19]:21s} {ver:>8s} {login:>10s} "
             f"{row[5][:12]:12s} {(row[1] or '')[:40]:40s} "
-            f"{sus} {(row[2] or '')[:18]:18s}"
+            f"{(row[2] or '')[:20]:20s}"
         )
 
     # Domain breakdown — quick way to spot a flood from one domain
