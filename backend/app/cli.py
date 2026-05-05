@@ -442,24 +442,48 @@ async def send_day1_reengagement(dry_run: bool = False) -> None:
                 body_text=_day1_reengagement_text(name),
             )
             if ok:
-                # Mark as sent so re-runs skip this user
-                await db.execute(
-                    _text(
-                        """
-                        UPDATE users
-                        SET notification_preferences =
-                            COALESCE(notification_preferences, '{}'::jsonb)
-                            || jsonb_build_object('day1_email_sent', :ts)
-                        WHERE id = :uid
-                        """
-                    ),
-                    {
-                        "ts": datetime.now(timezone.utc).isoformat(),
-                        "uid": user_id,
-                    },
-                )
-                sent += 1
-                print(f"  ✓ sent to {email}")
+                # Mark as sent so re-runs skip this user.
+                #
+                # The :ts param needs an explicit text cast — asyncpg
+                # can't infer the type for a jsonb_build_object value
+                # parameter and crashes with IndeterminateDatatypeError.
+                # to_jsonb(:ts::text) wraps the string in a JSONB
+                # scalar, which is what we actually want stored.
+                #
+                # Wrapped in try/except so a single mark-failure can't
+                # crash the whole batch — better to risk one duplicate
+                # email on rerun than to leave 8 other users unsent
+                # because of one bad UPDATE.
+                try:
+                    await db.execute(
+                        _text(
+                            """
+                            UPDATE users
+                            SET notification_preferences =
+                                COALESCE(notification_preferences, '{}'::jsonb)
+                                || jsonb_build_object(
+                                    'day1_email_sent',
+                                    to_jsonb(cast(:ts as text))
+                                )
+                            WHERE id = :uid
+                            """
+                        ),
+                        {
+                            "ts": datetime.now(timezone.utc).isoformat(),
+                            "uid": user_id,
+                        },
+                    )
+                    sent += 1
+                    print(f"  ✓ sent + marked: {email}")
+                except Exception as e:
+                    # Email went out but couldn't mark — log loudly so
+                    # ops can manually mark before the next cron run.
+                    print(
+                        f"  ⚠ EMAIL SENT but mark failed for {email}: {e}\n"
+                        f"    User id: {user_id}\n"
+                        f"    They may receive a duplicate on the next run."
+                    )
+                    sent += 1
             else:
                 skipped += 1
                 print(f"  ✗ SES error for {email}")
